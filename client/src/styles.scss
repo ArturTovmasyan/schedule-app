@@ -27,6 +27,14 @@ html, body {
       flex: 1;
     }
   }
+
+  @for $i from 1 through 20 {
+    &.flex-full-#{$i} {
+      > *:nth-child(#{$i}) {
+        flex: 1;
+      }
+    }
+  }
 }
 
 input[type="checkbox"] {

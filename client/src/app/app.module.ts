@@ -13,9 +13,10 @@ import { RouterModule } from '@angular/router';
 import { jwtInterceptorProvider } from './services/auth/jwt.interceptor';
 import { errorInterceptorProvider } from './services/auth/error.interceptor';
 import { LoginComponent } from './components/login/login.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent, LoginComponent],
+  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent, LoginComponent, FooterComponent],
   imports: [
     AppRoutingModule,
     BrowserModule,
