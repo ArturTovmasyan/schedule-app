@@ -3,15 +3,12 @@ import {Injectable} from '@angular/core';
 @Injectable()
 export class TokenService {
 
-  constructor() {
-  }
-
   setWithExpiry(key: string, token: string, ttl: number) {
     const now = new Date();
 
     const item = {
       accessToken: token,
-      expiresIn: now.getTime() + ttl,
+      expiresIn: now.getTime() + ttl
     }
 
     localStorage.setItem(key, JSON.stringify(item))
@@ -22,8 +19,7 @@ export class TokenService {
    * @param key
    */
   getWithExpiry(key: string) {
-    debugger;
-    let tokenData = localStorage.getItem(key)
+    const tokenData = localStorage.getItem(key)
 
     if (!tokenData) {
       return null

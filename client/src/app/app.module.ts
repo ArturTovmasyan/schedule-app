@@ -6,8 +6,6 @@ import {AppComponent} from './app.component';
 import {HomeComponent} from './core/components/home/home.component';
 import {HeaderComponent} from './core/components/header/header.component';
 import {AuthComponent} from './core/components/auth/auth.component';
-import {jwtInterceptorProvider} from './core/interceptors/jwt.interceptor';
-import {errorInterceptorProvider} from './core/interceptors/error.interceptor';
 import {HttpClientModule} from '@angular/common/http';
 import {LoginComponent} from './core/components/login/login.component';
 import {FooterComponent} from './core/components/footer/footer.component';
@@ -19,6 +17,8 @@ import { ConfirmAccountComponent } from './core/components/confirm-account/confi
 import { ChangePasswordComponent } from './core/components/change-password/change-password.component';
 import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
+import {jwtInterceptorProvider} from './core/interceptors/jwt.interceptor';
+import {errorInterceptorProvider} from './core/interceptors/error.interceptor';
 
 @NgModule({
   declarations: [

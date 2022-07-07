@@ -10,6 +10,7 @@ import {ConfirmAccountComponent} from "./core/components/confirm-account/confirm
 import {ChangePasswordComponent} from "./core/components/change-password/change-password.component";
 import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
+import {RedirectGuard} from "./core/guards/redirect.guard";
 
 const routes: Routes = [
   {
@@ -28,18 +29,26 @@ const routes: Routes = [
       {
         path: 'confirm',
         component: ConfirmAccountComponent,
-        data: {title: 'Confirm Registration'}
+        data: {title: 'Confirm Registration'},
+        canActivate: [RedirectGuard]
       },
       {
         path: 'change-password',
         component: ChangePasswordComponent,
-        data: {title: 'Change Password'}
+        data: {title: 'Change Password'},
+        canActivate: [RedirectGuard]
       },
       {
-        path: 'register', component: SignupComponent, data: {title: 'Sign Up'}
+        path: 'register',
+        component: SignupComponent,
+        data: {title: 'Sign Up'},
+        canActivate: [RedirectGuard]
       },
       {
-        path: 'reset-password', component: ResetPasswordComponent, data: {title: 'Reset Password'}
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        data: {title: 'Reset Password'},
+        canActivate: [RedirectGuard]
       }
     ]
   },

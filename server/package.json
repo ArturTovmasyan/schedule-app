@@ -37,8 +37,10 @@
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "compression": "^1.7.4",
     "csurf": "^1.11.0",
     "dotenv": "^16.0.0",
+    "joi": "^17.6.0",
     "mailgun-js": "^0.22.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
@@ -59,6 +61,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/jest": "27.4.1",
+    "@types/mailgun-js": "^0.22.3",
     "@types/node": "^16.0.0",
     "@types/passport": "^1.0.7",
     "@types/passport-jwt": "^3.0.6",
@@ -74,8 +77,7 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.7.0",
     "tsconfig-paths": "^3.14.1",
-    "typescript": "^4.3.5",
-    "@types/mailgun-js": "^0.22.3"
+    "typescript": "^4.3.5"
   },
   "jest": {
     "moduleFileExtensions": [

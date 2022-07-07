@@ -9,6 +9,7 @@ import * as dotenv from 'dotenv';
 import {MailModule} from "../mail/mail.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {User} from "@user/entity/user.entity";
+import {ConfigModule} from "@nestjs/config";
 dotenv.config();
 
 @Module({
@@ -27,6 +28,7 @@ dotenv.config();
         expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
+      ConfigModule.forRoot()
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

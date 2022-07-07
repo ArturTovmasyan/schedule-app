@@ -3,9 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
-  selector: 'app-confirm-account',
-  templateUrl: './confirm-account.component.html',
-  styleUrls: ['./confirm-account.component.scss']
+  templateUrl: './confirm-account.component.html'
 })
 export class ConfirmAccountComponent {
 

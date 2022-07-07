@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -10,13 +10,13 @@ import {ErrorResponse} from "../../interfaces/error/error-response.interface";
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent {
   form: FormGroup;
   fullName: string | undefined;
   firstName: string | undefined;
   email: string | undefined;
   password: string | undefined;
-  register: boolean = false;
+  register = false;
   error?: ErrorResponse;
   errorMessage: undefined;
 
@@ -26,9 +26,6 @@ export class SignupComponent implements OnInit {
       email: ['', [ValidationService.emailValidator, Validators.required]],
       password: ['', [ValidationService.passwordValidator, Validators.required]]
     });
-  }
-
-  ngOnInit() {
   }
 
   get f() {

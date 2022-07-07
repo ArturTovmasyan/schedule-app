@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import {AuthService} from 'src/app/core/services/auth/auth.service';
 import {ApplicationUser} from "../../interfaces/user/app.user.interface";
 import {BroadcasterService} from "../../../shared/services";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
   selector: 'app-header',
@@ -10,9 +11,9 @@ import {BroadcasterService} from "../../../shared/services";
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  isLoginPage: boolean = true;
+  isLoginPage = true;
   currentUser: ApplicationUser | null = null;
-  subscription: any;
+  subscription: BehaviorSubject<string>;
 
   constructor(private authService: AuthService, private router: Router, private broadcaster: BroadcasterService) {
     this.isLoginPage = window.location.pathname !== '/register';

@@ -29,7 +29,7 @@ export class UsersService {
   async create(userDto: UserCreateDto): Promise<UserDto> {
     const { email, firstName, lastName, password } = userDto;
     const userInDb = await this.userRepo.findOne({
-      where: { email },
+      where: { email }, withDeleted: true
     });
 
     if (userInDb) {

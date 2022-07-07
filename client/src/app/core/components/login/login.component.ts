@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import {ValidationService} from "../../../shared/services";
+import {BroadcasterService, ValidationService} from "../../../shared/services";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 
 @Component({
@@ -21,7 +21,8 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private broadcaster: BroadcasterService
   ) {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]],
@@ -33,6 +34,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.logout();
+    this.broadcaster.broadcast('isLoginPage', true);
   }
 
   get f() {

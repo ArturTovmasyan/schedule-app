@@ -13,8 +13,9 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     UsersModule,
     AuthModule,
-    ConfigModule.forRoot({ //TODO maybe will be separate for each module and not use as Global
+    ConfigModule.forRoot({
       isGlobal: false,
+      expandVariables: true,
       load: [AppConfig],
     }),
     TypeOrmModule.forRootAsync({

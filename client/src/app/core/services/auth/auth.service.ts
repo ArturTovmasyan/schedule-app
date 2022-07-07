@@ -26,7 +26,6 @@ export class AuthService {
   }
 
   login(formData: LoginUser) {
-    debugger;
     return this.http.post<any>('/api/auth/login', {...formData}).pipe(
       map((response: any) => {
         if (response && response.accessToken) {
