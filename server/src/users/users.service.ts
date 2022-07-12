@@ -79,6 +79,7 @@ export class UsersService {
     await this.userRepo.update({ id }, user);
 
     user = await this.userRepo.findOne({ where: { id } });
+    
     return toUserDto(user);
   }
 
