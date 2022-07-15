@@ -19,7 +19,7 @@
         <label for="password">Password</label>
         <input type="password" id="password" formControlName="password" placeholder="Password" />
         <app-control-messages [control]="f['password']"></app-control-messages>
-        <span *ngIf="error" class="error">{{ error.message }}</span>
+        <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error.message }}</span>
         <small class="small-text">By creating an Handshake account, you agree to the <a href="javascript:void(0)">Term & Conditions</a> and <a href="javascript:void(0)"> Privacy & Policy</a>
         </small>
       </div>
@@ -32,7 +32,7 @@
         <hr /><span>Or continue with</span> <hr />
       </div>
       <div id="social-buttons">
-        <button id="google"></button>
+        <button id="google" (click)="googleLogin()"></button>
         <button id="apple"></button>
         <button id="outlook"></button>
       </div>

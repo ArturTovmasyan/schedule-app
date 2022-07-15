@@ -4,7 +4,7 @@ import {
     HttpStatus,
     Injectable,
     InternalServerErrorException,
-    NotFoundException, Provider,
+    NotFoundException,
     UnauthorizedException
 } from '@nestjs/common';
 import {UsersService} from '@user/users.service';
@@ -24,7 +24,6 @@ import {Repository} from "typeorm";
 import {ChangePasswordDto} from "./dto/change-password.dto";
 import {UserUpdateDto} from "@user/dto/user-update.dto";
 import {ConfigService} from "@nestjs/config";
-import {OauthUserDto} from "@user/dto/user-oauth-create.dto";
 import {OauthProvider} from "./enums/oauth.provider.enum";
 
 @Injectable()
@@ -138,10 +137,16 @@ export class AuthService {
             });
         }
 
+        if (user.provider) {
+            throw new NotFoundException({
+                status: HttpStatus.NOT_FOUND,
+                message: ErrorMessages.socialAccountExistError,
+            });
+        }
+
         const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
         const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
 
-        // TODO use microservice for send by queue
         await this.mailService.send({
             from: this.configService.get<string>('NO_REPLY_EMAIL'),
             to: user.email,
@@ -177,7 +182,7 @@ export class AuthService {
 
     async validateOAuthLogin(data: any, provider: OauthProvider): Promise<string> {
         try {
-            let {sub, email} = data;
+            let {sub} = data;
             let oauthId = sub;
             let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
 

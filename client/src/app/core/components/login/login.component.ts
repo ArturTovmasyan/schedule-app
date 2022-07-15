@@ -65,9 +65,7 @@ export class LoginComponent implements OnInit {
     window.location.href = environment.host+"api/auth/google";
   }
 
-  appleLogin() {
-  }
-
-  outlookLogin() {
+  microsoftLogin() {
+    window.location.href = environment.host+"api/auth/microsoft";
   }
 }

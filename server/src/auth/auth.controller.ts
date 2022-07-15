@@ -68,8 +68,7 @@ export class AuthController {
 
     @Get('google')
     @UseGuards(AuthGuard('google'))
-    googleLogin() {
-    }
+    googleLogin() {}
 
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))

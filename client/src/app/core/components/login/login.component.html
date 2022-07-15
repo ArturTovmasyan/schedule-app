@@ -13,7 +13,7 @@
       <label for="password">Password</label>
       <input type="password" id="password" formControlName="password" placeholder="Password" />
       <app-control-messages [control]="f['password']"></app-control-messages>
-      <span *ngIf="error" class="error">{{ error?.message }}</span>
+      <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
     </div>
     <div id="actions">
       <label class="checkbox">

@@ -4,6 +4,7 @@ import {AuthService} from "../../services/auth/auth.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-signup',
@@ -63,4 +64,14 @@ export class SignupComponent {
         }
       })
   }
+
+  // TODO don't duplicate with login!!
+  googleLogin() {
+    window.location.href = environment.host+"api/auth/google";
+  }
+
+  microsoftLogin() {
+    window.location.href = environment.host+"api/auth/microsoft";
+  }
+
 }
