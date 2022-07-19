@@ -3,6 +3,9 @@ import {Router} from '@angular/router';
 import {AuthService} from 'src/app/core/services/auth/auth.service';
 import {BroadcasterService} from "../../../shared/services";
 import {BehaviorSubject} from "rxjs";
+import {environment} from "../../../../environments/environment";
+import {MsalService} from "@azure/msal-angular";
+import {MICROSOFT_USER} from "../../interfaces/constant/user.constants";
 
 @Component({
   selector: 'app-header',
@@ -14,7 +17,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   loggedUser = false;
   subscription: BehaviorSubject<string>;
 
-  constructor(private authService: AuthService, private router: Router, private broadcaster: BroadcasterService) {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private msService: MsalService,
+    private broadcaster: BroadcasterService) {
     this.isLoginPage = window.location.pathname !== '/register';
 
     this.subscription = this.broadcaster.on('isLoginPage').subscribe((data: boolean) => {
@@ -46,10 +53,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return 'Handshake';
   }
 
-  get slogan() {
-    return '';
-  }
-
   register() {
     this.isLoginPage = false;
     this.router.navigate(['/register']);
@@ -62,7 +65,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     this.loggedUser = false;
+    const user = JSON.parse(localStorage.getItem('cu') || 'null')
     this.authService.logout();
-    this.router.navigate(['/login']);
+
+    if (user && user.provider) {
+      if (user.provider === MICROSOFT_USER) {
+        this.msLogout();
+      }
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  msLogout() {
+    this.msService.logoutRedirect({
+      postLogoutRedirectUri: environment.host
+    });
   }
 }

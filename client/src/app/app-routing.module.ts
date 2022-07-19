@@ -12,7 +12,6 @@ import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
 import {RedirectGuard} from "./core/guards/redirect.guard";
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
-// import {MsalGuard} from "@azure/msal-angular";
 
 const routes: Routes = [
   {

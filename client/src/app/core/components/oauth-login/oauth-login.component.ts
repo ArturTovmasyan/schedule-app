@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {AuthService} from "../../services/auth/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
@@ -7,7 +8,10 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class OauthLoginComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private authService: AuthService,
+              private route: ActivatedRoute,
+              private router: Router) {
+  }
 
   ngOnInit(): void {
     this.loginOauthUser();
@@ -15,9 +19,7 @@ export class OauthLoginComponent implements OnInit {
 
   loginOauthUser() {
     const token = this.route.snapshot.queryParams['token'];
-    if (token) {
-      localStorage.setItem('cu', JSON.stringify({accessToken: token}));
-      this.router.navigate(['/']);
-    }
+    localStorage.setItem('cu', JSON.stringify({accessToken: token}));
+    this.router.navigate(['/']);
   }
 }

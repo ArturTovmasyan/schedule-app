@@ -180,7 +180,6 @@ export class AuthService {
     async validateGoogleLogin(data: any): Promise<string> {
         try {
 
-            debugger;
             let {sub, email} = data;
             let oauthId = sub;
             let user: UserDto = await this.userRepo.findOne({where: {oauthId}});

@@ -11,6 +11,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {User} from "@user/entity/user.entity";
 import {ConfigModule} from "@nestjs/config";
 import {GoogleStrategy} from "./google.strategy";
+import {AzureADStrategy} from "./microsoft.strategy";
 dotenv.config();
 
 @Module({
@@ -32,7 +33,7 @@ dotenv.config();
     ConfigModule.forRoot()
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy],
-  exports: [PassportModule, JwtModule, AuthService],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, AzureADStrategy],
+  exports: [PassportModule, JwtModule, AuthService, AzureADStrategy],
 })
 export class AuthModule {}

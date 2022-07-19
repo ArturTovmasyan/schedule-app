@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ApplicationUser} from "../../interfaces/user/app.user.interface";
@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('cu');
+    localStorage.clear();
     this.currentUserSubject.next(null);
   }
 
@@ -81,23 +81,29 @@ export class AuthService {
     }
   }
 
-  isAuthenticated(token:string) {
-      return this.http.post<boolean>('/api/auth/logged', {token: token}).pipe(
+  isAuthenticated() {
+      return this.http.post<boolean>('/api/auth/logged', {}).pipe(
         map((response: boolean) => {
           return response;
         })
       );
   }
 
-  microsoftLogin(data: MicrosoftUserType) {
-    return this.http.post<any>('/api/auth/microsoft/callback', {...data}).pipe(
+  microsoftLogin(data: MicrosoftUserType, token: string) { //, token: string
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    const requestOptions = { headers: headers };
+
+    return this.http.post<any>('/api/auth/microsoft/callback', {...data}, requestOptions).pipe(
       map((response: any) => {
-        debugger;
         if (response && response.accessToken) {
           localStorage.setItem('cu', JSON.stringify(response));
           this.currentUserSubject.next(response);
         }
-        return response.accessToken;
+        return response;
       })
     );
   }

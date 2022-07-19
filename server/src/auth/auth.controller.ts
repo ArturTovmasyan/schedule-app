@@ -3,7 +3,7 @@ import {
     Controller,
     Get,
     HttpException,
-    HttpStatus,
+    HttpStatus, NotFoundException,
     Patch,
     Post,
     Query,
@@ -22,6 +22,8 @@ import {SignInDto} from "./dto/signin.dto";
 import {ConfirmAccountDto} from "./dto/confirm-account.dto";
 import {ChangePasswordDto} from "./dto/change-password.dto";
 import {ConfigService} from "@nestjs/config";
+import {ErrorMessages} from "@shared/error.messages";
+import {OauthProvider} from "./enums/oauth.provider.enum";
 
 @Controller('api/auth')
 export class AuthController {
@@ -72,7 +74,6 @@ export class AuthController {
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
     async googleLoginCallback(@Req() req, @Res() res) {
-        debugger;
         const user: any = req.user._json;
         const jwt = await this.authService.validateGoogleLogin(user);
         const webHost = this.configService.get<string>('WEB_HOST');
@@ -85,31 +86,29 @@ export class AuthController {
     }
 
     @Post('microsoft/callback')
-    // @UseGuards(AuthGuard('ms-azure'))
-    async msLoginCallback(@Req() req, @Res() res): Promise<any> {
-        debugger;
+    // @UseGuards(AuthGuard('oauth-bearer'))
+    async msLoginCallback(@Req() req, @Res() res) {
         const user: any = req.body;
-        const webHost = this.configService.get<string>('WEB_HOST');
 
         if (user && user.id) {
             const jwt = await this.authService.validateMicrosoftLogin(user);
             if (jwt) {
-
-                return {accessToken: jwt};
-                // res.redirect(webHost+'oauth/success?token=' + jwt);
+                return res.status(200).json({
+                    accessToken: jwt,
+                    provider: OauthProvider.MICROSOFT
+                });
             }
         }
 
-        return null;
-
+        throw new NotFoundException({
+            status: HttpStatus.NOT_FOUND,
+            message: ErrorMessages.userNotFound,
+        });
     }
 
     @Post('logged')
-    async checkUser(@Body() data) {
-        if (data && data.token) {
-            return !!(await this.authService.verifyToken(data.token));
-        } else {
-            throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-        }
+    @UseGuards(AuthGuard())
+    async checkUser() {
+        return true;
     }
 }

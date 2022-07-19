@@ -7,7 +7,7 @@ import {BroadcasterService, ValidationService} from "../../../shared/services";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {HttpClient} from "@angular/common/http";
-import {InteractionStatus} from '@azure/msal-browser';
+import {AuthenticationResult, InteractionStatus} from '@azure/msal-browser';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {environment} from "../../../../environments/environment";
@@ -89,57 +89,35 @@ export class LoginComponent implements OnInit {
     window.location.href = environment.host + "api/auth/google";
   }
 
-  microsoftLogin() {
-      this.msService.loginPopup()
+  async microsoftLogin() {
+      await this.msService.loginPopup()
         .subscribe({
           next: (result) => {
-            debugger;
-            if (result.accessToken) {
-              this.http.get(GRAPH_ENDPOINT)
-                .subscribe({
-
-                  next: (profileData) => {
-                    this.authService.microsoftLogin(profileData).subscribe({
-                      next: (data) => {
-                        debugger;
-                        console.log(data);
-                      },
-                      error: (error) => {
-                        this.router.navigate(['/']);
-                      }
-                    });
-                  },
-                  error: (error) => console.log(error)
-                });
-            }
+             this.getProfileData(result);
           },
           error: (error) => console.log(error)
         });
   }
 
-   getProfileData() {
-    this.http.get(GRAPH_ENDPOINT)
+  async getProfileData(result: AuthenticationResult) { //TODO check and enable bearer-ms guard
+    await this.http.get(GRAPH_ENDPOINT)
       .subscribe({
-
         next: (profileData) => {
-          this.authService.microsoftLogin(profileData).subscribe({
+            this.authService.microsoftLogin(profileData, result.accessToken).subscribe({
             next: (data) => {
-              debugger;
-              console.log(data);
+              if (data) {
+                this.router.navigate(['/']);
+              } else {
+                this.router.navigate(['/login']);
+              }
             },
-            error: (error) => {
-              this.router.navigate(['/']);
+            error: () => {
+              this.router.navigate(['/404']);
             }
           });
         },
         error: (error) => console.log(error)
       });
-  }
-
-  msLogout() {
-    this.msService.logoutRedirect({
-      postLogoutRedirectUri: environment.host
-    });
   }
 
   setLoginDisplay() {
