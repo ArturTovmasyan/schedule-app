@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required]],
       remember: ['']
     });
+
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
@@ -77,7 +78,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: () => {
           this.form.reset();
-          this.router.navigate(['/']);
+          this.router.navigate(['/payment']);
         },
         error: (error) => {
           this.error = error;
@@ -99,7 +100,7 @@ export class LoginComponent implements OnInit {
         });
   }
 
-  async getProfileData(result: AuthenticationResult) { //TODO check and enable bearer-ms guard
+  async getProfileData(result: AuthenticationResult) {
     await this.http.get(GRAPH_ENDPOINT)
       .subscribe({
         next: (profileData) => {

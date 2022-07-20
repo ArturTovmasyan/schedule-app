@@ -7,7 +7,8 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class SubscriptionPlanItemComponent implements OnInit {
 
-  @Input('subscription-plan') subscriptionPlan: {
+  @Input('subscription-plan')
+  subscriptionPlan!: {
     name: string;
     price: number;
     isMonthly: boolean;
@@ -21,8 +22,6 @@ export class SubscriptionPlanItemComponent implements OnInit {
   };
 
   @Input() isSelected = false;
-
-  constructor() { }
 
   ngOnInit(): void {
   }

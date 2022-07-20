@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-subscription-plan',
   templateUrl: './subscription-plan.component.html',
   styleUrls: ['./subscription-plan.component.scss']
 })
-export class SubscriptionPlanComponent implements OnInit {
+export class SubscriptionPlanComponent {
 
   subscriptionPlans = [
     {
@@ -45,10 +45,4 @@ export class SubscriptionPlanComponent implements OnInit {
       recommended: false
     }
   ]
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

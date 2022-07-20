@@ -34,9 +34,7 @@ export class AuthController {
     }
 
     @Post('register')
-    public async register(
-        @Body() dto: UserCreateDto,
-    ): Promise<RegistrationStatus> {
+    public async register(@Body() dto: UserCreateDto): Promise<RegistrationStatus> {
         const result: RegistrationStatus = await this.authService.register(dto);
         if (!result.success) {
             throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
@@ -56,8 +54,7 @@ export class AuthController {
 
     @Patch('change-password')
     @UseGuards(AuthGuard())
-    public async changePassword(
-        @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto): Promise<boolean> {
+    public async changePassword(@Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto): Promise<boolean> {
         let user: UserDto = await this.authService.verifyToken(changePasswordDto.token);
         return await this.authService.changePassword(user.id, changePasswordDto);
     }
