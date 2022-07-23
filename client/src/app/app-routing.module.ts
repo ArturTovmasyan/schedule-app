@@ -24,6 +24,10 @@ const routes: Routes = [
         component: OnboardingComponent,
         children: [
           {
+            path: 'subscription-plan',
+            component: SubscriptionPlanComponent
+          },
+          {
             path: 'calendar',
             component: OnboardingCalendarComponent
           },
