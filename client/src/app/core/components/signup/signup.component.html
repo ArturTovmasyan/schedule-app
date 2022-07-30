@@ -1,8 +1,8 @@
 <div id="container">
   <div *ngIf="!register; else confirmRegister">
     <div id="title">
-      <span id="welcome-back">Welcome to Handshake.</span>
-      <span id="login">Start for free.</span>
+      <span id="line1">Welcome to Handshake.</span>
+      <span id="line2">Start for free.</span>
     </div>
     <form id="form" [formGroup]="form" (ngSubmit)="signup()" autocomplete="off">
       <div class="form-group">
