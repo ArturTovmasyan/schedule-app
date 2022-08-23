@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConnectionOptions } from 'typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import AppConfig from './config/app.config';
-import { UsersModule } from '@user/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { AvailabilityModule } from './availability/availability.module';
 import { AuthController } from './auth/auth.controller';
+import { AppController } from './app.controller';
+import { UsersModule } from '@user/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PaymentModule } from './payment/payment.module';
 
@@ -14,6 +14,7 @@ import { PaymentModule } from './payment/payment.module';
   imports: [
     UsersModule,
     AuthModule,
+    AvailabilityModule,
     ConfigModule.forRoot({
       isGlobal: false,
       expandVariables: true,
