@@ -4,13 +4,11 @@ import { User } from '@user/entity/user.entity';
 import { CalendarPermissionsService } from './calendarPermissions.service';
 import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { Response } from 'express';
-import { UsersService } from '@user/users.service';
 
 @Controller('calendar-permissions')
 export class CalendarPermissionsController {
   constructor(
     private readonly calendarPermissionsService: CalendarPermissionsService,
-    private readonly usersService: UsersService,
   ) {}
 
   @Get('status-of-calendars')
@@ -24,10 +22,8 @@ export class CalendarPermissionsController {
   }
 
   @Get('google-calendar')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async googleCalendar(@Req() req: { user: User }, @Res() res: Response) {
-    req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
-
     const { url, statusOfCalendars } =
       await this.calendarPermissionsService.toggleGoogleCalendar(req.user);
     if (url) {
@@ -37,13 +33,11 @@ export class CalendarPermissionsController {
   }
 
   @Get('google-calendar-callback')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async googleCalendarCallback(
     @Req() req: { user: User },
     @Query() query: any,
   ) {
-    req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
-
     return await this.calendarPermissionsService.getTokensFromGoogleAndSave(
       req.user,
       query.code,
@@ -51,23 +45,20 @@ export class CalendarPermissionsController {
   }
 
   @Get('ms-calendar')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async ms365Calendar(@Req() req: { user: User }, @Res() res: Response) {
-    // const {url, statusOfCalendars} =
-    const url = await this.calendarPermissionsService.toggleMs365Calendar(
-      req.user,
-    );
+    const { url, statusOfCalendars } =
+      await this.calendarPermissionsService.toggleMS365Calendar(req.user);
     if (url) {
       return res.redirect(url);
     }
-    // return res.send(statusOfCalendars);
+    return res.send(statusOfCalendars);
   }
 
   @Get('ms-calendar-callback')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async ms365CalendarCallback(@Req() req: { user: User }, @Query() query: any) {
-    req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
-    return await this.calendarPermissionsService.getTokensFromMs365AndSave(
+    return await this.calendarPermissionsService.getTokensFromMS365AndSave(
       req.user,
       query.code,
     );

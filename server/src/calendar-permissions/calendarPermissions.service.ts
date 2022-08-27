@@ -66,7 +66,7 @@ export class CalendarPermissionsService {
       },
     });
 
-    if (existingTokens?.accessToken) {
+    if (existingTokens?.refreshToken) {
       const resRevokeToken = await this.googleOAuth2Client.revokeToken(
         existingTokens.accessToken,
       );
@@ -86,6 +86,7 @@ export class CalendarPermissionsService {
 
     const url = this.googleOAuth2Client.generateAuthUrl({
       access_type: 'offline',
+      prompt: 'consent',
       scope: [
         'openid',
         'profile',
@@ -119,7 +120,34 @@ export class CalendarPermissionsService {
     });
   }
 
-  async toggleMs365Calendar(user: UserDto) {
+  async toggleMS365Calendar(user: UserDto) {
+    const statusOfCalendarsAndUrl: {
+      url: null | string;
+      statusOfCalendars: null | object;
+    } = {
+      url: null,
+      statusOfCalendars: null,
+    };
+
+    const existingTokens = await this.calendarTokenRepository.findOne({
+      where: {
+        owner: user.id,
+        calendarType: CalendarTypeEnum.Office365Calendar,
+      },
+    });
+
+    if (existingTokens?.refreshToken) {
+      await this.calendarTokenRepository.delete({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.Office365Calendar,
+      });
+
+      const statusOfCalendars = await this.getUserStatusOfCalendars(user.id);
+
+      statusOfCalendarsAndUrl.statusOfCalendars = statusOfCalendars;
+
+      return statusOfCalendarsAndUrl;
+    }
     const url = await this.msalInstance.getAuthCodeUrl({
       scopes: [
         'offline_access',
@@ -128,13 +156,15 @@ export class CalendarPermissionsService {
         'profile',
         'User.Read',
       ],
-      redirectUri:
-        'http://localhost:3000/calendar-permissions/ms-calendar-callback',
+      redirectUri: this.configService.get<string>(
+        'MICROSOFT_CALENDAR_CALLBACK_URL',
+      ),
     });
-    return url;
+    statusOfCalendarsAndUrl.url = url;
+    return statusOfCalendarsAndUrl;
   }
 
-  async getTokensFromMs365AndSave(user: UserDto, code: string) {
+  async getTokensFromMS365AndSave(user: UserDto, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
 
@@ -147,14 +177,20 @@ export class CalendarPermissionsService {
           'profile',
           'User.Read',
         ],
-        redirectUri:
-          'http://localhost:3000/calendar-permissions/ms-calendar-callback',
+        redirectUri: this.configService.get<string>(
+          'MICROSOFT_CALENDAR_CALLBACK_URL',
+        ),
       });
 
-      console.log('tokenResponse ', tokenResponse);
+      const tokenCache = this.msalInstance.getTokenCache().serialize();
+      const refreshTokenObject = JSON.parse(tokenCache).RefreshToken;
+
+      const refreshToken =
+        refreshTokenObject[Object.keys(refreshTokenObject)[0]].secret;
 
       const calendarTokenBody = {
         accessToken: tokenResponse.accessToken,
+        refreshToken,
         expiryDate: tokenResponse.expiresOn,
         extExpiryDate: tokenResponse.extExpiresOn,
         calendarType: CalendarTypeEnum.Office365Calendar,
@@ -202,7 +238,6 @@ export class CalendarPermissionsService {
               break;
           }
         });
-
         return tokensByCalendar;
       },
     );
