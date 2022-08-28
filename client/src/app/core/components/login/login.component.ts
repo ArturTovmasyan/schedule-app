@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]],
       password: ['', [Validators.required]],
-      remember: ['']
+      remember: [false]
     });
 
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
@@ -81,6 +81,7 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/onboarding/calendar']);
         },
         error: (error) => {
+          debugger;
           this.error = error;
         }
       });

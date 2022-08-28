@@ -4,4 +4,5 @@ export const ErrorMessages = {
   confirmError: 'Account confirmation error',
   socialAccountExistError: 'Account with this email registered as social',
   socialAccountExist: 'User already exists, but Social account was not connected to user\'s account',
+  availabilityExists: 'Availability data already exists!'
 };

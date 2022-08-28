@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {toUserDto, toUserInfoDto} from 'src/shared/mapper';
+import {toUserDto, toUserInfoDto} from 'src/components/helpers/mapper';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from '@user/entity/user.entity';
@@ -13,8 +13,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from './dto/user-update.dto';
-import {comparePasswords, generatePassword} from '@shared/utils';
-import { ErrorMessages } from '@shared/error.messages';
+import {comparePasswords, generatePassword} from '../components/helpers/utils';
+import { ErrorMessages } from '../components/constants/error.messages';
 import {OauthUserDto} from "@user/dto/user-oauth-create.dto";
 import {StatusEnum} from "@user/enums/status.enum";
 

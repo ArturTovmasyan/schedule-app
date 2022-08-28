@@ -12,7 +12,7 @@ export const getDbConnectionOptions = async (connectionName = 'default') => {
 };
 
 export const getDbConnection = async (connectionName = 'default') => {
-  return await getConnection(connectionName);
+  return getConnection(connectionName);
 };
 
 export const runDbMigrations = async (connectionName = 'default') => {

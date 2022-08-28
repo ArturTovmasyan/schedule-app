@@ -16,7 +16,7 @@ import {UserDto} from '@user/dto/user.dto';
 import {LoginStatus} from './interfaces/login-status.interface';
 import {SignInDto} from "./dto/signin.dto";
 import {MailService} from "../mail/mail.service";
-import {ErrorMessages} from "@shared/error.messages";
+import {ErrorMessages} from "../components/constants/error.messages";
 import {StatusEnum} from "@user/enums/status.enum";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "@user/entity/user.entity";
@@ -251,4 +251,3 @@ export class AuthService {
         }
     }
 }
-server/package-lock.json

@@ -1,13 +1,13 @@
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {Repository} from 'typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
+import {BadRequestException, Injectable} from '@nestjs/common';
 
-import { AVAILABILITY_EXISTS } from 'src/components/constants/availability.const';
-import { IResponseMessage } from 'src/components/interfaces/response.interface';
-import { CreateAvailabilityDto } from './dto/create-availability.dto';
-import { UpdateAvailabilityDto } from './dto/update-availability.dto';
-import { Availability } from './entities/availability.entity';
-import { User } from '@user/entity/user.entity';
+import {IResponseMessage} from 'src/components/interfaces/response.interface';
+import {CreateAvailabilityDto} from './dto/create-availability.dto';
+import {UpdateAvailabilityDto} from './dto/update-availability.dto';
+import {Availability} from './entities/availability.entity';
+import {User} from '@user/entity/user.entity';
+import {ErrorMessages} from "../components/constants/error.messages";
 
 @Injectable()
 export class AvailabilityService {
@@ -35,16 +35,14 @@ export class AvailabilityService {
 
     if (checkUser) {
       throw new BadRequestException({
-        message: AVAILABILITY_EXISTS,
+        message: ErrorMessages.availabilityExists,
       });
     }
 
-    const data = await this.availabilityRepo.save({
-      user: { id: user.id },
+    return await this.availabilityRepo.save({
+      user: {id: user.id},
       ...createAvailabilityDto,
     });
-
-    return data;
   }
 
   /**
@@ -54,11 +52,9 @@ export class AvailabilityService {
    */
 
   async findAll(user: User): Promise<Availability> {
-    const data = await this.availabilityRepo.findOne({
-      user: { id: user.id },
+    return await this.availabilityRepo.findOne({
+      user: {id: user.id},
     });
-
-    return data;
   }
 
   findOne(id: number) {
