@@ -82,16 +82,24 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
+        path: 'subscription-plan',
+        component: SubscriptionPlanComponent
+      },
+      {
         path: 'calendar',
-        component: ConnectCalendarComponent
+        component: OnboardingCalendarComponent
       },
       {
         path: 'configuration',
-        component: ConfigurationComponent
+        component: OnboardingConfigurationComponent
       },
       {
         path: 'availability',
-        component: AvailabilityComponent
+        component: OnboardingAvailabilityComponent
+      },
+      {
+        path: 'account-info',
+        component: AccountInfoComponent
       },
       {
         path: '**',

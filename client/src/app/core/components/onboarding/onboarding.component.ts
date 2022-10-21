@@ -22,6 +22,11 @@ export class OnboardingComponent implements OnInit {
       id: 'availability',
       title: 'Availability',
       route: '/onboarding/availability'
+    },
+    {
+      id: 'account-info',
+      title: 'Account & Profile',
+      route: '/onboarding/account-info'
     }
   ];
 
