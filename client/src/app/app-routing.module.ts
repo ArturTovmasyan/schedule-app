@@ -178,6 +178,16 @@ const routes: Routes = [
         component: AccountInfoComponent
       },
       {
+        path: 'terms-conditions',
+        component: TermsConditionsComponent,
+        data: {title: 'Terms & Conditions'}
+      },
+      {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent,
+        data: {title: 'Privacy Policy'}
+      },
+      {
         path: '**',
         redirectTo: '/settings/availability'
       }
