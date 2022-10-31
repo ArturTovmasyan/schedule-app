@@ -4,11 +4,13 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ControlMessageComponent} from "../core/components/control-message/control-message.component";
 import {NotificationComponent} from "../core/components/notification/notification.component";
+import { NotificationItemComponent } from '../core/components/notification/notification-item/notification-item.component';
 
 @NgModule({
   declarations: [
     ControlMessageComponent,
-    NotificationComponent
+    NotificationComponent,
+    NotificationItemComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +22,8 @@ import {NotificationComponent} from "../core/components/notification/notificatio
     FormsModule,
     ReactiveFormsModule,
     ControlMessageComponent,
-    NotificationComponent
+    NotificationComponent,
+    NotificationItemComponent
   ]
 })
 

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { first } from 'rxjs';
 import { Notification } from '../../interfaces/notification.interface';
-import { CalendarAccessService } from '../../services/calendar/access.service';
 import { CommonService } from '../../services/common.service';
 import { NotificationService } from '../../services/notification/notification.service';
 
@@ -21,7 +20,6 @@ export class NotificationComponent implements OnInit {
 
   constructor(
     private readonly notificationService: NotificationService,
-    private readonly calendarAccessService: CalendarAccessService,
     private readonly commonService: CommonService
   ) {}
 
@@ -30,7 +28,7 @@ export class NotificationComponent implements OnInit {
   }
   
   fetchNotifications() {
-    this.notificationService.fetch()
+    this.notificationService.fetchPendingNotifications()
     .pipe(first())
       .subscribe({
         next: ([array, total]: [Notification[] | null, number]) => {
@@ -44,56 +42,6 @@ export class NotificationComponent implements OnInit {
             }
             this.data.notifications[key].push(notification);
           })
-        },
-        error: (error) => {
-          this.error = error;
-        }
-      });
-  }
-
-  getSenderName(notification: Notification): string {
-    return notification.sender.firstName + " " + notification.sender.lastName;
-  }
-
-  getNotificationMessage(notification: Notification): string {
-    if(notification.type == 'access_request') {
-      const timeForAccess = notification.accessRequest?.timeForAccess
-      let message = 'requested access to your calendar';
-      if(timeForAccess != null) {
-        const requestStatus = notification.accessRequest?.status
-        message = `${message} until ${this.commonService.getFormattedDateString(moment(timeForAccess), 'YYYY-MM-DD')} - ${requestStatus === 'pending' ? '' : requestStatus }`;
-      }
-      return `${message}.`;
-    } else if(notification.type == 'calendar_shared') return 'shared their calendar with you.';
-    else if(notification.type == 'request_approved') return 'approved your request.';
-    else if(notification.type == 'request_denied') return 'denied your request.';
-    else return 'N/A'
-  }
-
-  hasActions(notification: Notification): boolean {
-    const validTypes = ["access_request"];
-    return validTypes.includes(notification.type) && notification.accessRequest?.status == 'pending';
-  }
-
-  denyRequest(notification: Notification) {
-    this.calendarAccessService.denyAccessRequest(notification.accessRequest?.id ?? 'undefined')
-    .pipe(first())
-      .subscribe({
-        next: () => {
-          this.fetchNotifications();
-        },
-        error: (error) => {
-          this.error = error;
-        }
-      });
-  }
-
-  approveRequest(notification: Notification) {
-    this.calendarAccessService.denyAccessRequest(notification.accessRequest?.id ?? 'undefined')
-    .pipe(first())
-      .subscribe({
-        next: () => {
-          this.fetchNotifications();
         },
         error: (error) => {
           this.error = error;

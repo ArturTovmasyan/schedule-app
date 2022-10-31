@@ -49,7 +49,7 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     IMaskModule,
     HttpClientModule,
     CalendarModule,
-    NgHttpLoaderModule.forRoot(),
+    NgHttpLoaderModule.forRoot()
   ],
   providers: [
     jwtInterceptorProvider,

@@ -14,26 +14,8 @@
       <div class="timestamp">
         {{ item.key }} ago
       </div>
-      <div class="notification-body-container">
-        <div *ngFor="let notification of item.value" class="notification-body">
-          <div class="notification-body-wrapper">
-            <div class="avatar">
-              <img src="assets/alexisohanian.jpeg" alt="avatar">
-            </div>
-
-            <div class="notification-info">
-              <p><span class="name">{{ getSenderName(notification) }} -</span> {{ getNotificationMessage(notification) }}</p>
-              <div *ngIf="hasActions(notification)" class="buttons">
-                <button class="transparent-button" id="denyButton" (click)="denyRequest(notification)">
-                  Deny
-                </button>
-                <button class="blue-button" id="approveButton" (click)="approveRequest(notification)">
-                  Approve
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="notification-body-container" *ngFor="let notification of item.value">
+        <app-notification-item [notification]="notification"></app-notification-item>
       </div>
     </div>
   </div>

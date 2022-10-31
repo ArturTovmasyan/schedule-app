@@ -18,21 +18,21 @@ export class NotificationService {
     return '/api/notifications';
   }
 
-  fetch() {
-    return this.http.get<ApiResponse<Notification[]>>(this.url, {
+  fetchPendingNotifications() {
+    return this.http.get<ApiResponse<Notification[]>>(`${this.url}/pending`, {
     }).pipe(
       map((response: ApiResponse<Notification[]>): [Notification[] | null, number] => {
         return [response.data, response.metadata?.['total'] ?? 0];
       })
-    )
+    );
   }
 
-  // create(formData: CalendarAccessibility) {
-  //   return this.http.post<ApiResponse<any>>(this.url, {...formData}, {
-  //   }).pipe(
-  //     map(() => {
-  //       return formData
-  //     })
-  //   );
-  // }
+  markAsViewed(id: string) {
+    return this.http.patch<ApiResponse<Notification[]>>(`${this.url}/${id}`, {
+    }).pipe(
+      map(() => {
+        return true;
+      })
+    )
+  }
 }
