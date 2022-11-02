@@ -70,7 +70,7 @@
 
         //Start Profile dropdown styles
         .profile-dropdown {
-          .dropdown-toggle::after {
+          .dropdown-toggle:after {
             display: none;
           }
 
@@ -81,6 +81,7 @@
             padding: 0;
             box-shadow: 0px 0px 4px #0000004D;
             border: 0;
+
             .dropdown-item {
               width: 90px;
               text-align: left;
@@ -117,6 +118,7 @@
             }
           }
         }
+
         //End of Profile dropdown styles
       }
     }
