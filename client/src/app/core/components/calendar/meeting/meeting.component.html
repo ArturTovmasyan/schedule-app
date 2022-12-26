@@ -92,11 +92,11 @@
         </div>
         <div class="save-to-calendar">
           <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img
-            [src]="getCalendarIcon(selectedCalendar?.type ?? null)"
+            [src]="getCalendarIcon(selectedCalendar?.calendarType ?? null)"
             alt="calendar icon"> {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
           <div id="calendar-dropdown" *ngIf="showCalendars">
             <span *ngFor="let calendar of myCalendars" (click)="selectCalendar(calendar)">
-              <img [src]="getCalendarIcon(calendar.type)" alt="calendar icon"> {{ calendar.summary }}
+              <img [src]="getCalendarIcon(calendar?.calendarType ?? null)" alt="calendar icon"> {{ calendar.summary }}
             </span>
           </div>
         </div>

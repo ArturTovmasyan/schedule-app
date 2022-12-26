@@ -12,5 +12,5 @@ export interface Calendar {
   id: string,
   calendarId: string,
   summary: string,
-  type: CalendarType
+  calendarType: CalendarType,
 }
