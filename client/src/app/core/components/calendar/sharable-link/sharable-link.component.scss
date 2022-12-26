@@ -56,7 +56,6 @@ section.sharable-link {
       }
 
 
-
       //accordion start
       .accordion > input[type="checkbox"] {
         position: absolute;
@@ -116,9 +115,10 @@ section.sharable-link {
       }
 
 
-      .accordion .handle label::before{
+      .accordion .handle label::before {
         display: none;
       }
+
       .accordion .handle label::after {
         content: "+";
         display: inline-block;
@@ -134,6 +134,7 @@ section.sharable-link {
         font-size: 30px;
         transition: 0.5s;
       }
+
       //accordion end
 
       //users input container start
@@ -222,7 +223,8 @@ section.sharable-link {
 
             input {
               border: 0;
-              &:focus{
+
+              &:focus {
                 outline: none;
                 text-decoration: none;
               }
@@ -232,10 +234,8 @@ section.sharable-link {
 
 
       }
+
       //users input container end
-
-
-
 
 
       ul.time-slots {
@@ -474,6 +474,48 @@ section.sharable-link {
         margin-top: 3px;
       }
 
+      .url-wrapper {
+        border: 1px solid #adabab;
+        padding: 7px 5px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        button {
+          background-color: transparent;
+          border: 0;
+        }
+        button.url{
+          font-family: 'Lexend Deca', sans-serif;
+          font-size: 12px;
+          font-weight: 400;
+          color: #315EA0;
+        }
+        .buttons{
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          justify-content: space-between;
+
+          img{
+            height: 25px;
+          }
+        }
+        .buttons button:first-child{
+          img{
+            height: 22px;
+          }
+        }
+      }
+      p.copy-send{
+        font-family: 'Lexend Deca', sans-serif;
+        text-align: left;
+        margin-bottom: 0;
+        margin-top: 5px;
+        font-size: 13px;
+        font-weight: 300;
+        color: #9B9B9B;
+      }
 
     }
 
