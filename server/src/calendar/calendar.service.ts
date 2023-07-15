@@ -410,7 +410,7 @@ class OfficeEventManager implements EventManager {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  createWebhook(_internalCalendarId: string, _externalCalendarId: string) {
+  createWebhook(_internalCalendarId: string, externalCalendarId: string) {
     const baseUrl = this.configService.get<string>('WEB_PRODUCTION_HOST');
     return new Promise((resolve, reject) => {
       this.officeClient
@@ -418,7 +418,7 @@ class OfficeEventManager implements EventManager {
         .post({
           changeType: 'deleted,updated,created',
           notificationUrl: `${baseUrl}/api/calendar/events/outlook-webhook`,
-          resource: 'me/events',
+          resource: `me/calendars/${externalCalendarId}/events`,
           token: this.accessToken,
           expirationDateTime: new Date(Date.now() + 250560000).toISOString(),
         })

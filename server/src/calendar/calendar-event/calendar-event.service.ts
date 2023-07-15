@@ -790,10 +790,372 @@ export class CalendarEventService {
         await calendarWebhookChannelRepo.save(webhookChannel);
     }
 
+<<<<<<< HEAD
     async getWebhookByChannelId(channel: string | string[]) {
         return this.calendarWebhookChannelRepository.findOne({
             where: { channelId: channel },
             relations: ['owner', 'calendar'],
+=======
+    const eventManager = await this.calendarService.initManager(
+      calendar.calendarToken.accessToken,
+      CalendarTypeEnum.Office365Calendar,
+    );
+    const watchResponse = await eventManager.createWebhook(
+      calendar.id,
+      calendar.calendarId,
+    );
+
+    const webhookChannel = new CalendarWebhookChannel();
+    webhookChannel.channelId = watchResponse.id;
+    webhookChannel.expirationDate = new Date(watchResponse.expirationDateTime);
+    webhookChannel.owner = user;
+    webhookChannel.calendarType = CalendarTypeEnum.Office365Calendar;
+    webhookChannel.calendar = calendar;
+
+    await calendarWebhookChannelRepo.save(webhookChannel);
+  }
+
+  async getWebhookByChannelId(channel: string | string[]) {
+    return this.calendarWebhookChannelRepository.findOne({
+      where: { channelId: channel },
+      relations: ['owner', 'calendar'],
+    });
+  }
+
+  async getTokens(
+    user: User,
+    manager: EntityManager,
+  ): Promise<{ googleToken: CalendarToken; outlookToken: CalendarToken }> {
+    const googleToken = await manager.getRepository(CalendarToken).findOne({
+      owner: { id: user.id },
+      calendarType: CalendarTypeEnum.GoogleCalendar,
+    });
+
+    const outlookToken = await manager.getRepository(CalendarToken).findOne({
+      owner: { id: user.id },
+      calendarType: CalendarTypeEnum.Office365Calendar,
+    });
+    return { googleToken, outlookToken };
+  }
+
+  async getEventsByUserIds(
+    userIds: string[],
+    query: TimeIntervalDto,
+  ): Promise<CalendarEvent[]> {
+    const commonEvents = await this.calendarEventRepository
+      .createQueryBuilder()
+      .where({ owner: In(userIds.map((id) => id)) })
+      .andWhere('"start" > :start', { start: query.startDate })
+      .andWhere('"end" < :end', { end: query.dateEnd })
+      .andWhere('"recurrenceType" is null')
+      .orderBy('start')
+      .getMany();
+
+    const recurringEventsFromDb = await this.calendarEventRepository
+      .createQueryBuilder()
+      .where({ owner: In(userIds.map((id) => id)) })
+      .andWhere('"recurrenceType" IS NOT NULL')
+      .orderBy('start')
+      .getMany();
+
+    return this.joinCommonAndRecurrenceEvents(
+      commonEvents,
+      recurringEventsFromDb,
+      query,
+    );
+  }
+
+  private compareEvents(eventsFromDb, remoteEvents, eventIdProperty) {
+    function mapFromArray(
+      array: Array<any>,
+      prop: string,
+    ): { [index: number]: any } {
+      const map = {};
+      for (let i = 0; i < array.length; i++) {
+        map[array[i][prop]] = array[i];
+      }
+      return map;
+    }
+
+    function isEqualAttendee(a, b): boolean {
+      return (
+        a.email === b.email &&
+        a.optional == b.optional &&
+        a.responseStatus === b.responseStatus
+      );
+    }
+
+    function isEqualEvent(a, b): boolean {
+      const basicDataMatch =
+        a.start &&
+        a.start.getTime() === b.start.getTime() &&
+        a.end.getTime() === b.end.getTime() &&
+        a.title === b.title &&
+        a.description === b.description;
+
+      if (basicDataMatch) {
+        let attendeeDataMatch = a.attendees?.length == b.attendees?.length;
+        if (attendeeDataMatch) {
+          const arrMapA = mapFromArray(a.attendees, 'email');
+          const arrMapB = mapFromArray(b.attendees, 'email');
+
+          for (const email in arrMapA) {
+            if (!arrMapB.hasOwnProperty(email)) {
+              attendeeDataMatch = false;
+              break;
+            } else {
+              attendeeDataMatch = isEqualAttendee(
+                arrMapA[email],
+                arrMapB[email],
+              );
+              if (!attendeeDataMatch) break;
+            }
+          }
+
+          if (attendeeDataMatch) {
+            const recurrenceDataMatch =
+              a.recurrenceType == b.recurrenceType &&
+              a.recurrenceInterval == b.recurrenceInterval &&
+              a.recurrenceDaysOfWeek == b.recurrenceDaysOfWeek &&
+              a.recurrenceIndexOfWeek == b.recurrenceIndexOfWeek &&
+              a.recurrenceDayOfMonth == b.recurrenceDayOfMonth &&
+              a.recurrenceMonth == b.recurrenceMonth &&
+              a.recurrenceFirstDayOfWeek == b.recurrenceFirstDayOfWeek &&
+              a.recurrenceStartDate?.getTime() ==
+                b.recurrenceStartDate?.getTime() &&
+              a.recurrenceEndDate?.getTime() ==
+                b.recurrenceEndDate?.getTime() &&
+              a.recurrenceNumberOfOccurrences ==
+                b.recurrenceNumberOfOccurrences;
+
+            return recurrenceDataMatch;
+          }
+        }
+      }
+      return false;
+    }
+
+    function getDelta(
+      o: Array<any>,
+      n: Array<any>,
+      comparator: (a, b) => boolean,
+      eventIdProperty: string,
+    ): { added: Array<any>; deleted: Array<any>; changed: Array<any> } {
+      const delta = {
+        added: <Array<any>>[],
+        deleted: <Array<any>>[],
+        changed: <Array<any>>[],
+      };
+      const mapO = mapFromArray(o, eventIdProperty);
+      const mapN = mapFromArray(n, eventIdProperty);
+      for (const id in mapO) {
+        if (!mapN.hasOwnProperty(id)) {
+          delta.deleted.push(mapO[id]);
+        } else if (!comparator(mapN[id], mapO[id])) {
+          delta.changed.push(mapN[id]);
+        }
+      }
+
+      for (const id in mapN) {
+        if (!mapO.hasOwnProperty(id)) {
+          delta.added.push(mapN[id]);
+        }
+      }
+      return delta;
+    }
+
+    return getDelta(eventsFromDb, remoteEvents, isEqualEvent, eventIdProperty);
+  }
+
+  private convertDateToNegativeLocalTimeZone(inputDate: string) {
+    const date = new Date(inputDate);
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() + userTimezoneOffset);
+  }
+
+  private serializedOutlookEventRecurrence(event: CalendarEvent, item) {
+    const recurrenceType = item.recurrence?.pattern.type;
+    const firstDayOfWeek = item.recurrence?.pattern.firstDayOfWeek;
+    if (
+      recurrenceType === 'absoluteMonthly' ||
+      recurrenceType === 'relativeMonthly'
+    ) {
+      event.recurrenceType = EventRecurrenceTypeEnum.MONTHLY || null;
+    } else if (
+      recurrenceType === 'absoluteYearly' ||
+      recurrenceType === 'relativeYearly'
+    ) {
+      event.recurrenceType = EventRecurrenceTypeEnum.YEARLY || null;
+    } else {
+      event.recurrenceType = recurrenceType || null;
+    }
+    event.recurrenceInterval = item.recurrence?.pattern.interval || null;
+    event.recurrenceDaysOfWeek = item.recurrence?.pattern.daysOfWeek
+      ? item.recurrence?.pattern.daysOfWeek.map((weekDay) => {
+          const capitalizedWeekDay =
+            weekDay.charAt(0).toUpperCase() + weekDay.slice(1);
+          return WeekDaysEnum[capitalizedWeekDay];
+        })
+      : null;
+    event.recurrenceIndexOfWeek = item.recurrence?.pattern.index || null;
+    event.recurrenceDayOfMonth = item.recurrence?.pattern.dayOfMonth || null;
+    event.recurrenceMonth = item.recurrence?.pattern.month || null;
+    event.recurrenceFirstDayOfWeek = firstDayOfWeek
+      ? FirstWeekDaysOutlookAbbreviateEnum[firstDayOfWeek]
+      : null;
+    event.recurrenceStartDate = item.recurrence?.range.startDate
+      ? this.convertDateToNegativeLocalTimeZone(
+          item.recurrence?.range.startDate,
+        )
+      : null;
+    event.recurrenceEndDate = item.recurrence?.range.endDate
+      ? this.convertDateToNegativeLocalTimeZone(item.recurrence?.range.endDate)
+      : null;
+    event.recurrenceNumberOfOccurrences =
+      item.recurrence?.range.numberOfOccurrences || null;
+  }
+
+  private serializedGoogleEventRecurrence(
+    event: CalendarEvent,
+    eventFromGoogle,
+  ) {
+    const recurrence = eventFromGoogle.recurrence[0].split(';');
+
+    function serializer(event, recurrenceElementArr, eventFromGoogle) {
+      event.recurrenceStartDate = eventFromGoogle.created
+        ? new Date(eventFromGoogle.created)
+        : null;
+      switch (recurrenceElementArr[0]) {
+        case 'RRULE:FREQ':
+          if (recurrenceElementArr[1] === 'YEARLY') {
+            event.recurrenceDayOfMonth =
+              new Date(eventFromGoogle.start?.dateTime).getDate() || null;
+            event.recurrenceMonth =
+              new Date(eventFromGoogle.start?.dateTime).getMonth() + 1 || null;
+          }
+          if (recurrenceElementArr[1] === 'MONTHLY') {
+            event.recurrenceDayOfMonth =
+              new Date(eventFromGoogle.start?.dateTime).getDate() || null;
+          }
+
+          event.recurrenceType = recurrenceElementArr[1].toLowerCase();
+          break;
+        case 'WKST':
+          event.recurrenceFirstDayOfWeek =
+            FirstWeekDaysAbbreviateEnum[recurrenceElementArr[1]];
+          break;
+
+        case 'COUNT':
+          event.recurrenceNumberOfOccurrences = recurrenceElementArr[1]
+            ? Number(recurrenceElementArr[1])
+            : null;
+          break;
+
+        case 'BYDAY':
+          const byDay = recurrenceElementArr[1];
+
+          if (/\d/.test(byDay)) {
+            const index = Math.floor(byDay.length / 2);
+            const byDayArr = [byDay.slice(0, index), byDay.slice(index)];
+            const byDayIndex = Number(byDayArr[0]);
+            const byDayWeekDay = byDayArr[1];
+
+            event.recurrenceDaysOfWeek = [GoogleWeekDaysEnum[byDayWeekDay]];
+            event.recurrenceIndexOfWeek = GoogleIndexOfWeekEnum[byDayIndex];
+            break;
+          }
+          const weekDays = recurrenceElementArr[1].split(',');
+          event.recurrenceDaysOfWeek = weekDays.map((item) => {
+            return GoogleWeekDaysEnum[item];
+          });
+          break;
+        case 'UNTIL':
+          event.recurrenceEndDate = new Date(
+            +moment(recurrenceElementArr[1]).format('X'),
+          );
+          break;
+        case 'INTERVAL':
+          event.recurrenceInterval = recurrenceElementArr[1]
+            ? Number(recurrenceElementArr[1])
+            : null;
+          break;
+      }
+    }
+
+    for (const recurrenceElement of recurrence) {
+      const recurrenceElementArr = recurrenceElement.split('=');
+      serializer(event, recurrenceElementArr, eventFromGoogle);
+    }
+  }
+
+  private joinCommonAndRecurrenceEvents(
+    commonEvents,
+    recurringEventsFromDb,
+    query,
+  ): CalendarEvent[] {
+    const recurringEvents = [];
+
+    recurringEventsFromDb.map((event) => {
+      const recurrenceType = getEnumKeyByEnumValue(
+        EventRecurrenceTypeEnum,
+        event.recurrenceType,
+      );
+
+      const firstDayOfWeek = getEnumKeyByEnumValue(
+        FirstWeekDaysAbbreviateEnum,
+        event.recurrenceFirstDayOfWeek,
+      );
+
+      const recurrenceDaysOfWeek = event.recurrenceDaysOfWeek
+        ? event.recurrenceDaysOfWeek.map((day) => {
+            return RRule[getEnumKeyByEnumValue(WeekDaysAbbreviateEnum, day)];
+          })
+        : null;
+
+      const generatedRecurringEvents = new RRule({
+        freq: RRule[recurrenceType],
+        dtstart: new Date(event.recurrenceStartDate),
+        interval: event.recurrenceInterval ? event.recurrenceInterval : 1,
+        wkst: RRule[firstDayOfWeek],
+        count: event.recurrenceNumberOfOccurrences,
+        until: event.recurrenceEndDate
+          ? new Date(event.recurrenceEndDate)
+          : null,
+        bysetpos:
+          Number(IndexOfWeekToNumberEnum[event.recurrenceIndexOfWeek]) || null,
+        byweekday: recurrenceDaysOfWeek,
+        bymonth: event.recurrenceMonth,
+        bymonthday: event.recurrenceDayOfMonth,
+      }).between(new Date(query.startDate), new Date(query.dateEnd));
+
+      for (const generatedRecurringEvent of generatedRecurringEvents) {
+        let start = null;
+        let end = null;
+
+        if (event.allDay) {
+          const startIso = event.recurrenceStartDate.toISOString();
+          const startDay = moment(generatedRecurringEvent).format('YYYY-MM-DD');
+          start = startDay + startIso.slice(startIso.indexOf('T'));
+          start = new Date(start);
+        } else {
+          const startIso = event.start.toISOString();
+          const endIso = event.end.toISOString();
+          const startDay = moment(generatedRecurringEvent).format('YYYY-MM-DD');
+          const endDay = moment(generatedRecurringEvent).format('YYYY-MM-DD');
+
+          start = startDay + startIso.slice(startIso.indexOf('T'));
+          start = new Date(start);
+
+          end = endDay + endIso.slice(endIso.indexOf('T'));
+          end = new Date(end);
+        }
+
+        commonEvents.push({
+          ...event,
+          start: start,
+          end: end,
+          allDay: event.allDay,
+>>>>>>> f8a7810 (fix: refactor event comparison to check also for attendees)
         });
     }
 
