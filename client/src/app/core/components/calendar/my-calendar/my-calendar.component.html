@@ -1,4 +1,5 @@
 <div id="container">
+  <button *ngIf="showSyncCal" id="sync" (click)="syncCalendars()">Sync Calendars</button>
   <full-calendar class="" id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true">
     <ng-template #eventContent let-arg>
       <div class="my-event" title="{{arg.event.title ?? ''}}&#10;&#10;[{{arg.timeText}}]">

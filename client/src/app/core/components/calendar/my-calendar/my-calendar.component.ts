@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {Component,  OnDestroy, OnInit} from '@angular/core';
 import {CalendarOptions} from "@fullcalendar/angular";
 import {first} from "rxjs/operators";
@@ -6,6 +7,37 @@ import DateConverter from "../../helpers/date.converter";
 import {BroadcasterService} from "../../../../shared/services";
 import {BehaviorSubject} from "rxjs";
 import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interface";
+=======
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { FullCalendarComponent } from '@fullcalendar/angular';
+import { CalendarOptions, DateInput } from '@fullcalendar/core';
+import { first } from 'rxjs/operators';
+import { CalendarService } from '../../../services/calendar/calendar.service';
+import { BroadcasterService } from '../../../../shared/services';
+import { BehaviorSubject } from 'rxjs';
+import * as moment from 'moment-timezone';
+import { Router } from '@angular/router';
+import { CommonService } from '../../../services/common.service';
+import {
+  AVAILABILITY_EVENT_CLASS,
+  SUGGEST_EVENT_CLASS,
+} from '../../../interfaces/constant/calendar.constant';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import bootstrapPlugin from '@fullcalendar/bootstrap';
+import rrulePlugin from '@fullcalendar/rrule';
+import { UserData } from '../../chip-user-input/chip-user-input.component';
+import { CalendarType } from '../connect-calendar/connect-calendar.component';
+import { environment } from 'src/environments/environment';
+>>>>>>> c8c9b63 (add api to  sync all calendar events)
 
 @Component({
   selector: 'app-my-calendar',
@@ -54,6 +86,8 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   currentEventSelection: any | null;
   cancellationMessage = "";
 
+  showSyncCal = false;
+
   user: UserData = {
     id: '',
     name: '',
@@ -63,6 +97,56 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   };
 >>>>>>> 831cabe (feat: allow user to cancel event)
 
+<<<<<<< HEAD
+=======
+  constructor(
+    private calendarService: CalendarService,
+    private broadcaster: BroadcasterService,
+    private readonly commonService: CommonService,
+    private readonly router: Router
+  ) {
+    this.showSyncCal = !environment.production
+    this.subscription = this.broadcaster.on('reset_event').subscribe(() => {
+      this.fetchMyEvents();
+      this.calendarOptions.events = this.myEvents;
+      this.calendarOptions.selectConstraint = undefined;
+      this.mySelectedDateEvents = [];
+      this.oldEvents = this.myEvents ? [...this.myEvents] : [];
+      this.closeDetail();
+    });
+
+    this.subscription = this.broadcaster
+      .on('contact_calendar_data')
+      .subscribe((dates: any) => {
+        const availabilityDates: any[] = [];
+        const availabilityEvents: any[] = [];
+        this.selectedContactEmail = dates.contactEmail ?? null;
+        this.selectedContactId = dates.contactId ?? null;
+
+        if (this.selectedContactEmail) {
+          delete dates.contactEmail;
+        }
+
+        if (this.selectedContactId) {
+          delete dates.contactId;
+        }
+
+        for (const key in dates) {
+          let className = AVAILABILITY_EVENT_CLASS;
+          if (+key === 0) {
+            className = SUGGEST_EVENT_CLASS;
+          }
+
+          availabilityEvents.push({
+            start: new Date(dates[key].start),
+            end: new Date(dates[key].end),
+            className: className,
+            groupId: 'availableSlot',
+            display: 'background',
+          });
+
+          const weekDay = new Date(dates[key].start).getDay();
+>>>>>>> c8c9b63 (add api to  sync all calendar events)
           availabilityDates.push({
             //TODO convert to local time zone
             // start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].start)),
@@ -345,6 +429,20 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
             }
           }
         },
+      });
+  }
+
+  syncCalendars() {
+    console.log('sync')
+    this.calendarService.syncCalendars()
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          console.log('calendar synced!')
+        },
+        error: (e) => {
+          console.log(e);
+        }
       });
   }
 

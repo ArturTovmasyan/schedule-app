@@ -38,6 +38,7 @@ import moment = require('moment');
 
 @Injectable()
 export class CalendarEventService {
+<<<<<<< HEAD
     constructor(
         @InjectRepository(CalendarToken)
         private readonly calendarTokenRepository: Repository<CalendarToken>,
@@ -50,6 +51,20 @@ export class CalendarEventService {
         private readonly clientsCredentials: ClientsCredentialsService,
         private readonly configService: ConfigService,
     ) {}
+=======
+  constructor(
+    @InjectRepository(CalendarToken)
+    private readonly calendarTokenRepository: Repository<CalendarToken>,
+    @InjectRepository(CalendarEvent)
+    private readonly calendarEventRepository: Repository<CalendarEvent>,
+    @InjectRepository(CalendarWebhookChannel)
+    private readonly calendarWebhookChannelRepository: Repository<CalendarWebhookChannel>,
+    @InjectRepository(Calendar)
+    private readonly calendarRepository: Repository<Calendar>,
+    private readonly calendarService: CalendarService,
+    private readonly connection: Connection,
+  ) {}
+>>>>>>> c8c9b63 (add api to  sync all calendar events)
 
     async getCalendarsFromGoogle(
         user: User,
@@ -81,9 +96,427 @@ export class CalendarEventService {
                         return calendar;
                     });
 
+<<<<<<< HEAD
                 return await manager
                     .getRepository(Calendar)
                     .save(calendarSerializedList[0]);
+=======
+        return await manager
+          .getRepository(Calendar)
+          .save(await calendarSerializedList[0]);
+      },
+    );
+  }
+
+  async getCalendarsFromOutlook(
+    user: User,
+    token: CalendarToken,
+    manager?: EntityManager,
+  ) {
+    return transactionManagerWrapper(
+      manager,
+      this.calendarTokenRepository,
+      async (manager) => {
+        const eventManager = await this.calendarService.initManager(
+          token.accessToken,
+          CalendarTypeEnum.Office365Calendar,
+        );
+
+        const calendarList = await eventManager.getAllCalendars();
+
+        const calendarSerializedList = calendarList
+          .filter((item) => {
+            return item.isDefaultCalendar;
+          })
+          .map(async (item) => {
+            const existedCalendar = await manager
+              .getRepository(Calendar)
+              .findOne({
+                where: { calendarId: item.id },
+              });
+            const calendar = new Calendar();
+            calendar.id = existedCalendar ? existedCalendar.id : randomUUID();
+            calendar.calendarId = item.id;
+            calendar.summary = token.ownerEmail;
+            calendar.isPrimary = item.isDefaultCalendar
+              ? item.isDefaultCalendar
+              : false;
+            calendar.calendarType = CalendarTypeEnum.Office365Calendar;
+            calendar.owner = user;
+            calendar.calendarToken = token;
+            return calendar;
+          });
+
+        return await manager
+          .getRepository(Calendar)
+          .save(await calendarSerializedList[0]);
+      },
+    );
+  }
+
+  async syncAllCalendarEvents(user: User) {
+    const calendars = await this.calendarRepository.find({
+      owner: { id: user.id },
+    });
+    calendars.forEach(async (calendar) => {
+      try {
+        if (calendar.calendarType == CalendarTypeEnum.GoogleCalendar) {
+          await this.syncGoogleCalendarEventList(user, calendar);
+        } else if (
+          calendar.calendarType == CalendarTypeEnum.Office365Calendar
+        ) {
+          await this.syncOutlookCalendarEventList(user, calendar);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    });
+    return { data: true };
+  }
+
+  async syncGoogleCalendarEventList(
+    user: User,
+    calendar: Calendar,
+    manager?: EntityManager,
+  ) {
+    return transactionManagerWrapper(
+      manager,
+      this.calendarTokenRepository,
+      async (manager) => {
+        const cal = await manager.getRepository(Calendar).findOne({
+          where: { id: calendar.id },
+          relations: ['calendarToken'],
+        });
+        const token = cal.calendarToken;
+        if (!token) {
+          throw new NotFoundException(
+            'You have not calendar-event access token',
+          );
+        }
+
+        const { accessToken } = token;
+
+        const eventsFromDb = await manager.getRepository(CalendarEvent).find({
+          owner: { id: user.id },
+          externalId: Not(IsNull()),
+          eventType: EventTypeEnum.GoogleCalendarEvent,
+        });
+
+        const eventManager = await this.calendarService.initManager(
+          accessToken,
+        );
+        const events = await eventManager.getAllEvents(
+          calendar.calendarId,
+          moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+          'GMT',
+        );
+
+        const serializedEvents = events.map((item) => {
+          const event = new CalendarEvent();
+          event.externalId = item.id;
+          event.calendar = calendar;
+          event.eventType = EventTypeEnum.GoogleCalendarEvent;
+          event.owner = user;
+          event.title = item.summary || null;
+          event.entanglesLocation = null;
+          event.attendees = item.attendees || [];
+          event.createdOn = item.created
+            ? new Date(item.created)
+            : new Date(Date.now());
+          event.updatedOn = item.updated
+            ? new Date(item.updated)
+            : new Date(Date.now());
+          event.description = item.description || null;
+          event.allDay = item.start.date !== undefined; // allDay events format in google (yyyy-mm-dd)
+
+          if (event.allDay) {
+            event.start = moment(item.start.date)
+              .set({
+                hour: 0,
+                minute: 0,
+                second: 0,
+                millisecond: 0,
+              })
+              .toDate();
+            event.end = moment(item.start.date)
+              .set({
+                hour: 23,
+                minute: 59,
+                second: 59,
+                millisecond: 0,
+              })
+              .toDate();
+          } else {
+            event.start = item.start?.dateTime
+              ? new Date(item.start.dateTime)
+              : null;
+            event.end = item.end?.dateTime ? new Date(item.end.dateTime) : null;
+          }
+
+          if (item.recurrence) {
+            this.serializedGoogleEventRecurrence(event, item);
+          }
+
+          return event;
+        });
+
+        const delta = this.compareEvents(
+          eventsFromDb,
+          serializedEvents,
+          'externalId',
+        );
+
+        if (delta.changed.length > 0) {
+          const externalId = delta.changed[0].externalId;
+
+          await manager
+            .getRepository(CalendarEvent)
+            .createQueryBuilder()
+            .update()
+            .set(delta.changed[0])
+            .where('"calendar_event"."externalId" = :externalId', {
+              externalId: externalId,
+            })
+            .andWhere('"calendar_event"."eventType" = :eventType', {
+              eventType: EventTypeEnum.GoogleCalendarEvent,
+            })
+            .execute();
+        }
+
+        if (delta.deleted.length > 0) {
+          const externalId = delta.deleted[0].externalId;
+
+          await manager
+            .createQueryBuilder()
+            .delete()
+            .from(CalendarEvent)
+            .where('"calendar_event"."externalId" = :externalId', {
+              externalId: externalId,
+            })
+            .andWhere('"calendar_event"."eventType" = :eventType', {
+              eventType: EventTypeEnum.GoogleCalendarEvent,
+            })
+            .execute();
+        }
+
+        return await manager.getRepository(CalendarEvent).save(delta.added);
+      },
+    );
+  }
+
+  async syncOutlookCalendarEventList(
+    user: User,
+    calendar: Calendar,
+    manager?: EntityManager,
+  ) {
+    return transactionManagerWrapper(
+      manager,
+      this.calendarTokenRepository,
+      async (manager) => {
+        const cal = await manager.getRepository(Calendar).findOne({
+          where: { id: calendar.id },
+          relations: ['calendarToken'],
+        });
+        const token = cal.calendarToken;
+
+        if (!token) {
+          throw new NotFoundException(
+            'You have not calendar-event access token',
+          );
+        }
+
+        const eventsFromDb = await manager.getRepository(CalendarEvent).find({
+          owner: { id: user.id },
+          externalId: Not(IsNull()),
+          eventType: EventTypeEnum.Office365CalendarEvent,
+        });
+
+        const eventManager = await this.calendarService.initManager(
+          token.accessToken,
+          CalendarTypeEnum.Office365Calendar,
+        );
+        const events = await eventManager.getAllEvents(
+          calendar.calendarId,
+          '',
+          'GMT',
+        );
+
+        const serializedEvents = events.value.map((item) => {
+          const event = new CalendarEvent();
+          event.externalId = item.id;
+          event.calendar = calendar;
+          event.eventType = EventTypeEnum.Office365CalendarEvent;
+          event.owner = user;
+
+          event.title = item.subject || null;
+          event.entanglesLocation = null;
+          event.createdOn = new Date(item.createdDateTime);
+          event.updatedOn = new Date(item.lastModifiedDateTime);
+          event.description = item.bodyPreview || null;
+          event.allDay = item.isAllDay || false;
+          event.attendees = this.mapOutlookAttendees(item.attendees);
+
+          if (event.allDay) {
+            event.start = moment(item.start.dateTime)
+              .set({
+                hour: 0,
+                minute: 0,
+                second: 0,
+                millisecond: 0,
+              })
+              .toDate();
+            event.end = moment(item.start.dateTime)
+              .set({
+                hour: 23,
+                minute: 59,
+                second: 59,
+                millisecond: 0,
+              })
+              .toDate();
+          } else {
+            event.start = item.start.dateTime
+              ? new Date(item.start.dateTime)
+              : null;
+            event.end = item.end.dateTime ? new Date(item.end.dateTime) : null;
+          }
+
+          if (item.recurrence) {
+            this.serializedOutlookEventRecurrence(event, item);
+          }
+
+          return event;
+        });
+
+        const delta = this.compareEvents(
+          eventsFromDb,
+          serializedEvents,
+          'externalId',
+        );
+        console.log(delta.changed.length);
+        if (delta.changed.length > 0) {
+          const externalId = delta.changed[0].externalId;
+
+          await manager
+            .getRepository(CalendarEvent)
+            .createQueryBuilder()
+            .update()
+            .set(delta.changed[0])
+            .where('"calendar_event"."externalId" = :externalId', {
+              externalId: externalId,
+            })
+            .andWhere('"calendar_event"."eventType" = :eventType', {
+              eventType: EventTypeEnum.Office365CalendarEvent,
+            })
+            .execute();
+        }
+
+        if (delta.deleted.length > 0) {
+          const externalId = delta.deleted[0].externalId;
+
+          await manager
+            .createQueryBuilder()
+            .delete()
+            .from(CalendarEvent)
+            .where('"calendar_event"."externalId" = :externalId', {
+              externalId: externalId,
+            })
+            .andWhere('"calendar_event"."eventType" = :eventType', {
+              eventType: EventTypeEnum.Office365CalendarEvent,
+            })
+            .execute();
+        }
+
+        return await manager.getRepository(CalendarEvent).save(delta.added);
+      },
+    );
+  }
+
+  async getUserCalendarEvents(userId: string, query: TimeIntervalDto) {
+    const commonEvents = await this.calendarEventRepository
+      .createQueryBuilder('calendarEvent')
+      .leftJoinAndSelect('calendarEvent.calendar', 'calendar')
+      .where('"calendarEvent"."ownerId" = :id', { id: userId })
+      .andWhere('"start" > :start', { start: query.startDate })
+      .andWhere('"end" < :end', { end: query.dateEnd })
+      .andWhere('"recurrenceType" is null')
+      .orderBy('start')
+      .getMany();
+
+    const recurringEventsFromDb = await this.calendarEventRepository
+      .createQueryBuilder('calendarEvent')
+      .leftJoinAndSelect('calendarEvent.calendar', 'calendar')
+      .where('"calendarEvent"."ownerId" = :id', { id: userId })
+      .andWhere('"recurrenceType" is not null')
+      .orderBy('start')
+      .getMany();
+
+    return this.joinCommonAndRecurrenceEvents(
+      commonEvents,
+      recurringEventsFromDb,
+      query,
+    );
+  }
+
+  async getEventDetail(eventId: string): Promise<CalendarEvent> {
+    return this.calendarEventRepository
+      .createQueryBuilder('calendarEvent')
+      .leftJoinAndSelect('calendarEvent.calendar', 'calendar')
+      .where('"calendarEvent"."id" = :id', { id: eventId })
+      .getOne();
+  }
+
+  async createUserCalendarEvent(user: User, eventDto: CreateEventDto) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const event = await this.getEventFromThirdPartyResponse(
+        manager,
+        user,
+        eventDto,
+      );
+      return await manager.getRepository(CalendarEvent).save(event);
+    });
+  }
+
+  async createGoogleMeetLink(user: User, body: GoogleMeetLinkDto) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const tokens = await this.getTokens(user, manager);
+      const googleToken = tokens.googleToken;
+
+      const calendar = await manager.getRepository(Calendar).findOne({
+        where: { id: body.calendarId, owner: user.id },
+      });
+
+      if (!calendar) {
+        throw new BadRequestException({
+          message: ErrorMessages.calendarNotFound,
+        });
+      }
+      // TODO: check
+      const eventManager = await this.calendarService.initManager(
+        googleToken.accessToken,
+      );
+      const attendeeData = body.attendees.map((attendee) => {
+        return {
+          email: attendee,
+          optional: false,
+        };
+      });
+
+      const eventData = {
+        conferenceDataVersion: 1,
+        sendNotifications: true,
+        calendarId: calendar.calendarId,
+        requestBody: {
+          summary: 'Share Meet Link',
+          start: { dateTime: body.start, timeZone: 'GMT' },
+          end: { dateTime: body.end, timeZone: 'GMT' },
+          attendees: attendeeData,
+          conferenceData: {
+            createRequest: {
+              conferenceSolutionKey: {
+                type: 'hangoutsMeet',
+              },
+              requestId: randomUUID(),
+>>>>>>> c8c9b63 (add api to  sync all calendar events)
             },
 <<<<<<< HEAD
 =======

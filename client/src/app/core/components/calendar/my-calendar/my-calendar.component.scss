@@ -29,6 +29,11 @@
 }
 
 #container {
+    #sync {
+        position: absolute;
+        z-index: 10;
+    }
+
     .event-detail {
         text-align: start;
         position: fixed;

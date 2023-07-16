@@ -83,4 +83,12 @@ export class CalendarService {
         })
       );
   }
+
+  syncCalendars() {
+    return this.http
+      .post<ApiResponse<any>>(`${this.url}/sync`, {})
+      .pipe(
+        map((res) => res.data)
+      );
+  }
 }
