@@ -31,8 +31,9 @@ export class AvailabilityComponent implements OnInit {
 
   availableTimezones = moment.tz.names().map((zone: string) => {
     const data = zone.split('/')
+    const offset = moment().tz(zone).format('UTCZ');
     return {
-      label: data.map((text: string) => text.trim().charAt(0).toUpperCase() + text.replaceAll('_', ' ').slice(1)).join(' / '),
+      label: data.map((text: string) => text.trim().charAt(0).toUpperCase() + text.replaceAll('_', ' ').slice(1)).join(' / ') + ` [${offset}]`,
       value: zone
     }
   });
