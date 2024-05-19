@@ -24,6 +24,7 @@ import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
 import { WeekDaysEnum } from './enums/weekDays.enum';
+import { GoogleWeekDaysEnum } from './enums/googleWeekDays.enum';
 import moment = require('moment');
 
 @Injectable()
@@ -817,5 +818,67 @@ export class CalendarEventService {
       : null;
     event.recurrenceNumberOfOccurrences =
       item.recurrence?.range.numberOfOccurrences || null;
+  }
+
+  private serializedGoogleEventRecurrence(event: CalendarEvent, item) {
+    console.log('item recurrence ', item);
+    const recurrence = item.recurrence[0].split(';');
+    console.log('recurrence ', recurrence);
+
+    function serializer(event, recurrenceElementArr) {
+      switch (recurrenceElementArr[0]) {
+        case 'RRULE:FREQ':
+          event.recurrenceType = recurrenceElementArr[1].toLowerCase();
+          break;
+        case 'WKST':
+          event.recurrenceFirstDayOfWeek =
+            recurrenceElementArr[1] === 'SU' ? 'sunday' : 'monday';
+          break;
+
+        case 'COUNT':
+          event.recurrenceInterval =
+            recurrenceElementArr[1] === Number(recurrenceElementArr[1]);
+          break;
+
+        case 'BYDAY':
+          const weekDays = recurrenceElementArr[1].split(',');
+          event.recurrenceDaysOfWeek = weekDays.map((item) => {
+            return GoogleWeekDaysEnum[item];
+          });
+          break;
+        default:
+        // code block
+      }
+    }
+
+    for (const recurrenceElement of recurrence) {
+      const recurrenceElementArr = recurrenceElement.split('=');
+      serializer(event, recurrenceElementArr);
+    }
+
+    // event.recurrenceType = item.recurrence?.pattern.type || null;
+    // event.recurrenceInterval = item.recurrence?.pattern.interval || null;
+    // event.recurrenceDaysOfWeek = item.recurrence?.pattern.daysOfWeek
+    //   ? item.recurrence?.pattern.daysOfWeek.map((weekDay) => {
+    //       const capitalizedWeekDay =
+    //         weekDay.charAt(0).toUpperCase() + weekDay.slice(1);
+    //       return WeekDaysEnum[capitalizedWeekDay];
+    //     })
+    //   : null;
+    // event.recurrenceIndexOfWeek = item.recurrence?.pattern.index || null;
+    // event.recurrenceDayOfMonth = item.recurrence?.pattern.dayOfMonth || null;
+    // event.recurrenceMonth = item.recurrence?.pattern.month || null;
+    // event.recurrenceFirstDayOfWeek =
+    //   item.recurrence?.pattern.firstDayOfWeek || null;
+    // event.recurrenceStartDate = item.recurrence?.range.startDate
+    //   ? this.convertDateToNegativeLocalTimeZone(
+    //       item.recurrence?.range.startDate,
+    //     )
+    //   : null;
+    // event.recurrenceEndDate = item.recurrence?.range.endDate
+    //   ? this.convertDateToNegativeLocalTimeZone(item.recurrence?.range.endDate)
+    //   : null;
+    // event.recurrenceNumberOfOccurrences =
+    //   item.recurrence?.range.numberOfOccurrences || null;
   }
 }
