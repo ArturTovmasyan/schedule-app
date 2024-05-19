@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+const $ = require('jquery');
 
 @Component({
   selector: 'app-root',

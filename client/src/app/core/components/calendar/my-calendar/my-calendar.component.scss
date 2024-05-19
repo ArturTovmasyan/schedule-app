@@ -8,11 +8,13 @@ button.fc-prev-button {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  &:hover{
+
+  &:hover {
     transition: 0.4s ease;
     background-color: #95c1de !important;
   }
-  span{
+
+  span {
     font-size: 10px;
     color: #656565;
     line-height: inherit;
@@ -29,11 +31,13 @@ button.fc-next-button {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  &:hover{
+
+  &:hover {
     transition: 0.4s ease;
     background-color: #95c1de !important;
   }
-  span{
+
+  span {
     font-size: 10px;
     color: #656565;
     line-height: inherit;
@@ -77,12 +81,68 @@ h2#fc-dom-1 {
   height: fit-content !important;
   text-align: center;
   border-left: 10px solid #7fb8ff !important;
-  border-radius: 10px !important;
+  border-radius: 9px !important;
 }
 
 .event-standard {
   height: fit-content !important;
   text-align: center;
   border-left: 10px solid #7fb8ff !important;
-  border-radius: 10px !important;
+  border-radius: 9px !important;
+  border: 1px solid #7296C5;
+}
+
+.fc-scrollgrid-sync-inner .fc-col-header-cell-cushion {
+  font-size: 13px;
+  color: #8E8E8E;
+  font-family: 'Lexend Deca', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+.fc-timegrid-event .fc-event-main{
+  text-align: left;
+  padding: 8px !important;
+}
+.fc-scrollgrid-shrink-cushion{
+  color: #8E8E8E !important;
+  font-family: 'Lexend Deca', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+}
+//.fc-day-past, .fc-day-today, .fc-day-future .date-styled {
+//  color: #8E8E8E;
+//  font-size: 22px;
+//  margin-right: 2px;
+//  font-weight: 700;
+//}
+.date-styled {
+  color: #8E8E8E;
+  font-size: 22px;
+  margin-right: 2px;
+  font-weight: 700;
+}
+.fc-timegrid-slots table{
+  border: #D9D9D9;
+}
+table.fc-scrollgrid{
+  border-color: #D9D9D9;
+}
+thead{
+  box-shadow: 0px 2px 3px #3E4F6F33;
+}
+td.fc-timegrid-col{
+  border-right: 1px solid #D9D9D9;
+}
+.fc-timegrid-slots table tbody tr{
+  height: 100px;
+}
+.fc-theme-bootstrap a:not([href]){
+  color: #8E8E8E !important;
+}
+th.fc-day-today .fc-col-header-cell-cushion{
+  color: #000 !important;
+  .date-styled {
+    color: #000;
+  }
 }

@@ -17,7 +17,7 @@ export class MyCalendarComponent implements OnInit {
   constructor(private calendarService: CalendarService) {}
 
   ngOnInit(): void {
-    this.fetchMyEvents();
+    // this.fetchMyEvents();
   }
 
   fetchMyEvents() {
