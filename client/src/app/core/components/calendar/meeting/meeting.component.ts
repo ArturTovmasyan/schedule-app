@@ -134,21 +134,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
   }
 
-  parsedStartTime(startDate: string): string {
-    if (startDate) {
-      return this.commonService.getFormattedDateString(moment.utc(startDate).local(), 'hh:mmA') ?? "";
-    }
-
-    return "";
-  }
-
-  parsedEndTime(endDate: string): string {
-    if (endDate) {
-      return this.commonService.getFormattedDateString(moment.utc(endDate).local(), 'hh:mmA') ?? "";
-    }
-    return "";
-  }
-
   updateAttendeeEmails() {
     this.getContactsAvailability();
   }

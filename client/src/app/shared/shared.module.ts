@@ -7,6 +7,7 @@ import {NotificationComponent} from "../core/components/notification/notificatio
 import { NotificationItemComponent } from '../core/components/notification/notification-item/notification-item.component';
 import {AvatarComponent} from "../core/components/avatar/avatar.component";
 import {AcronymNamePipe} from "../core/pipes/acronym-name.pipe";
+import { ParseTimePipe } from "../core/pipes/parse-time.pipe";
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import {AcronymNamePipe} from "../core/pipes/acronym-name.pipe";
     NotificationComponent,
     NotificationItemComponent,
     AvatarComponent,
-    AcronymNamePipe
+    AcronymNamePipe,
+    ParseTimePipe
   ],
   imports: [
     CommonModule,
@@ -29,7 +31,8 @@ import {AcronymNamePipe} from "../core/pipes/acronym-name.pipe";
     NotificationComponent,
     NotificationItemComponent,
     AvatarComponent,
-    AcronymNamePipe
+    AcronymNamePipe,
+    ParseTimePipe
   ]
 })
 

@@ -80,10 +80,10 @@
             </li>
             <li class="list-inline-item timeframe">
               <input type="text" id="meetingStartTime" name="meetingStartTime"
-                     placeholder="{{ parsedStartTime(this.data.start) }}" readonly>
+                     placeholder="{{ this.data.start | parseTime:'hh:mmA' }}" readonly>
               <p> - </p>
               <input type="text" id="meetingEndTime" name="meetingEndTime"
-                     placeholder="{{ parsedEndTime(this.data.end) }}" readonly>
+                     placeholder="{{ this.data.end | parseTime:'hh:mmA' }}" readonly>
             </li>
             <li class="list-inline-item timezone">
               <span id="timezoneText">{{ timezone }}</span>
