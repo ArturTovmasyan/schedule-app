@@ -92,6 +92,10 @@ const routes: Routes = [
         component: LoginComponent
       },
       {
+        path: 'logout',
+        redirectTo: 'login'
+      },
+      {
         path: 'confirm',
         component: ConfirmAccountComponent,
         data: {title: 'Confirm Registration'},
