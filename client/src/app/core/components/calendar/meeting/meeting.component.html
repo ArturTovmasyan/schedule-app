@@ -95,24 +95,37 @@
         </h3>
         <div class="select-wrapper">
           <div class="select open">
-            <div class="select__trigger" (click)="showLocation = !showLocation">
-              <span *ngIf="!choosedLocationObj?.title">Choose...</span>
-              <div *ngIf="choosedLocationObj?.title" class="d-flex custom-option">
+            <div class="select__trigger" (click)="showLocationDropdown = !showLocationDropdown">
+              <span *ngIf="!selectedLocation?.title">Choose...</span>
+              <div *ngIf="selectedLocation?.title" class="d-flex custom-option">
                 <span class="logo">
-                  <img [src]="choosedLocationObj?.image" alt="{{choosedLocationObj?.title}}">
+                  <img [src]="selectedLocation?.image" alt="{{selectedLocation?.title}}">
                 </span>
                 <div class="text">
                   <span>
-                    {{ choosedLocationObj?.title }}
+                    {{ selectedLocation?.title }}
                   </span>
                   <p>
-                    {{ choosedLocationObj?.sub_title }}
+                    {{ selectedLocation?.sub_title }}
                   </p>
                 </div>
               </div>
               <img src="assets/ic_expand.svg">
             </div>
-            <div class="custom-options" *ngIf="showLocation">
+            <div class="custom-options" *ngIf="showLocationDropdown">
+              <span *ngIf="selectedLocation" class="custom-option" (click)="chooseLocation()">
+                <span class="logo">
+                  <img class="empty">
+                </span>
+                <div class="text">
+                  <span>
+                    None
+                  </span>
+                  <p>
+                    No Location
+                  </p>
+                </div>
+              </span>
               <span class="custom-option" *ngFor="let loc of locations" (click)="chooseLocation(loc)">
                 <span class="logo">
                   <img [src]="loc.image" alt="{{loc.title}}">
@@ -129,18 +142,18 @@
             </div>
           </div>
         </div>
-        <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.InboundCall">
+        <ng-container *ngIf="selectedLocation?.value == MeetViaEnum.InboundCall">
           <h3 class="section-title-secondary mt-4 mb-2">
             Phone number
           </h3>
-          <input type="text" [(ngModel)]="phoneNumber" name="phoneNumber">
+          <input type="text" [(ngModel)]="data.phoneNumber" name="phoneNumber">
         </ng-container>
 
-        <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.PhysicalAddress">
+        <ng-container *ngIf="selectedLocation?.value == MeetViaEnum.PhysicalAddress">
           <h3 class="section-title-secondary mt-4 mb-2">
             Address
           </h3>
-          <input type="text" [(ngModel)]="address" name="address">
+          <input type="text" [(ngModel)]="data.address" name="address">
         </ng-container>
 
         <div class="connect-message" *ngIf="connectMessage.title != ''">

@@ -4,7 +4,7 @@ export interface CreateEventRequest {
   start: string,
   end: string,
   calendarId: string,
-  entanglesLocation?: string,
+  entanglesLocation?: string | null,
   attendees?: string[],
   optionalAttendees?: string[],
   duration?: number,

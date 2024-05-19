@@ -33,7 +33,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     description: '',
     start: '',
     end: '',
-    entanglesLocation: '',
+    entanglesLocation: null,
     calendarId: '',
     attendees: [],
     optionalAttendees: [],
@@ -59,11 +59,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
   emailsWithAvailabilityMap = new Map();
   linkId = '';
   locations: Location[] = [];
-  choosedLocationObj: Location | null = null;
-  showLocation = false;
+  selectedLocation: Location | null = null;
+  showLocationDropdown = false;
   connectMessage = { title: '', type: '' };
-  address = null;
-  phoneNumber = null;
   readonly MeetViaEnum = MeetViaEnum;
   errorMessage = '';
 
@@ -176,7 +174,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     const savedData = localStorage.getItem('meetingDatas') as string;
     if (savedData) {
       const savedDataArr = JSON.parse(savedData);
-      this.choosedLocationObj = savedDataArr.choosedLocationObj;
+      this.selectedLocation = savedDataArr.selectedLocation;
       this.data = savedDataArr.data;
       this.selectedAttendees = savedDataArr.selectedAttendees ?? [];
       this.selectedOptionalAttendees = savedDataArr.selectedOptionalAttendees ?? [];
@@ -188,11 +186,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
           this.getContactAvailabilities();
       }
       // this.onDurationSelectionChanged(this.data.duration!);
-      if (!this.choosedLocationObj?.available) {
+      if (!this.selectedLocation?.available) {
         // if not connected show connect message
         this.connectMessage = {
-          title: this.choosedLocationObj?.title as string,
-          type: this.choosedLocationObj?.value as string,
+          title: this.selectedLocation?.title as string,
+          type: this.selectedLocation?.value as string,
         };
       }
     }
@@ -297,16 +295,14 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.errorMessages.push('Select a time for the meeting.');
     }
 
-    if (!this.choosedLocationObj) {
-      this.errorMessages.push('Please select the location.');
-    } else if (
-      this.choosedLocationObj?.value == MeetViaEnum.InboundCall &&
-      !this.phoneNumber
+    if (
+      this.selectedLocation?.value == MeetViaEnum.InboundCall &&
+      !this.data.phoneNumber
     ) {
       this.errorMessages.push('Please enter a phone number.');
     } else if (
-      this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress &&
-      !this.address
+      this.selectedLocation?.value == MeetViaEnum.PhysicalAddress &&
+      !this.data.address
     ) {
       this.errorMessages.push('Please enter an address.');
     }
@@ -314,13 +310,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     if (this.errorMessages.length) {
       this.autoHideErrorMessage(3000);
       return;
-    }
-
-    if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
-      this.data['phoneNumber'] = this.phoneNumber!;
-    }
-    if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress) {
-      this.data['address'] = this.address!;
     }
 
     this.calendarService
@@ -346,6 +335,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       description: '',
       start: '',
       end: '',
+      entanglesLocation: null,
       calendarId: this.data.calendarId,
       attendees: [],
       optionalAttendees: [],
@@ -353,6 +343,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       phoneNumber: '',
       address: '',
     };
+    this.selectedLocation = null;
     this.selectedAttendees = [];
     this.selectedOptionalAttendees = [];
     this.broadcaster.broadcast('reset_event');
@@ -397,35 +388,40 @@ export class MeetingComponent implements OnInit, OnDestroy {
     });
   }
 
-  chooseLocation(loc: Location) {
-    this.choosedLocationObj = loc;
-    this.data.entanglesLocation = loc.value;
-    this.showLocation = false;
-    if (
-      ![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(
-        loc.value
-      )
-    ) {
-      // if incoming and outgoing and address is choosed from location option
-      // no need to check for connection of location choosed
-      this.connectMessage = {
-        title: '',
-        type: '',
-      };
-      return;
-    }
+  chooseLocation(loc: Location | null = null) {
+    this.selectedLocation = loc;
+    this.data.address = '';
+    this.data.phoneNumber = '';
+    this.data.entanglesLocation = loc?.value ?? null;
+    this.showLocationDropdown = false;
 
-    if (!loc.available) {
-      // if not connected show connect message
-      this.connectMessage = {
-        title: loc.title,
-        type: loc.value,
-      };
-    } else {
-      this.connectMessage = {
-        title: '',
-        type: '',
-      };
+    if (loc) {
+      if (
+        ![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(
+          loc.value
+        )
+      ) {
+        // if incoming and outgoing and address is choosed from location option
+        // no need to check for connection of location choosed
+        this.connectMessage = {
+          title: '',
+          type: '',
+        };
+        return;
+      }
+
+      if (!loc.available) {
+        // if not connected show connect message
+        this.connectMessage = {
+          title: loc.title,
+          type: loc.value,
+        };
+      } else {
+        this.connectMessage = {
+          title: '',
+          type: '',
+        };
+      }
     }
   }
 
@@ -434,7 +430,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   connect(type: string) {
     const savedData = {
       data: this.data,
-      choosedLocationObj: this.choosedLocationObj,
+      selectedLocation: this.selectedLocation,
       selectedAttendees: this.selectedAttendees,
       selectedOptionalAttendees: this.selectedOptionalAttendees,
     };

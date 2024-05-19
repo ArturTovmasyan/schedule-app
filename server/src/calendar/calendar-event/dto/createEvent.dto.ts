@@ -7,6 +7,7 @@ import {
   ValidateIf,
   MinLength,
   IsNumberString,
+  IsOptional,
 } from 'class-validator';
 import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
 
@@ -39,8 +40,9 @@ export class CreateEventDto {
   @IsString()
   calendarId: string;
 
+  @IsOptional()
   @IsString()
-  entanglesLocation: MeetViaEnum;
+  entanglesLocation?: MeetViaEnum;
 
   @ValidateIf((o) => o.entanglesLocation == MeetViaEnum.InboundCall)
   @MinLength(5)
