@@ -63,6 +63,17 @@ export class AuthController {
   }
 
   @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Set new password' })
+  @UseGuards(AuthGuard())
+  @Post('set-new-password')
+  public async setNewPassword(
+    @Body() dto: ResetPasswordDto,
+    @GetUser() user: User,
+  ): Promise<IResponseMessage> {
+    return await this.authService.setNewPassword(user, dto);
+  }
+
+  @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Change password' })
   @Patch('change-password')
   public async changePassword(
