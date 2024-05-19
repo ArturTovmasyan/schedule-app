@@ -25,6 +25,10 @@ export class ShareCalendarComponent {
     private readonly commonService: CommonService
   ) { }
 
+  ngOnInit() {
+    this.message = `Hey all,\n\nFollow the link and you will have access to my calendar availability, meaning we can schedule easily.`;
+  }
+
   updateEmails(emails: string[]) {
     this.emails = emails;
   }

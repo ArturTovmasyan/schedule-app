@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { first } from 'rxjs';
@@ -11,7 +11,7 @@ import { CommonService } from 'src/app/core/services/common.service';
   templateUrl: './access-request.component.html',
   styleUrls: ['./access-request.component.scss']
 })
-export class AccessRequestComponent {
+export class AccessRequestComponent implements OnInit {
 
   emails: string[] = [];
   currentDurationIndex = 2;
@@ -25,6 +25,10 @@ export class AccessRequestComponent {
     private readonly commonService: CommonService,
     private readonly changeDetectorRef: ChangeDetectorRef
   ) { }
+
+  ngOnInit() {
+    this.message = `Hey all,\n\nPlease Share your calendars with me so I can schedule with ease.`;
+  }
 
   updateEmails(emails: string[]) {
     this.emails = emails;
