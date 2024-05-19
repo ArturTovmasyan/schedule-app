@@ -6,14 +6,14 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { InvitationStatusEnum } from '../enums/invitation-status.enum';
 
 @Entity('invitation')
 export class Invitation {
-  @PrimaryGeneratedColumn('uuid') id: string;
+  @PrimaryColumn('uuid') id: string;
 
   @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'user_id' })

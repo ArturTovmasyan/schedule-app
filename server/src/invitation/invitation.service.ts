@@ -4,8 +4,7 @@ import { Connection, In, Repository } from 'typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
-import { CalendarAccessService } from 'src/calendar/calendar-access/calendar-access.service';
-import { AccessRequestService } from 'src/access-request/access-request.service';
+import { InvitationPendingEmails } from './entities/invitation-pending-emails.entity';
 import { IResponseMessage } from 'src/components/interfaces/response.interface';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { InvitationStatusEnum } from './enums/invitation-status.enum';
@@ -13,6 +12,7 @@ import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { MailService, MailTemplate } from '../mail/mail.service';
 import { Invitation } from './entities/invitation.entity';
 import { User } from '@user/entity/user.entity';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class InvitationService {
@@ -21,10 +21,10 @@ export class InvitationService {
     private readonly userRepo: Repository<User>,
     @InjectRepository(Invitation)
     private readonly invitationRepo: Repository<Invitation>,
+    @InjectRepository(InvitationPendingEmails)
+    private readonly invitationPendingEmailsRepo: Repository<InvitationPendingEmails>,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
-    private readonly calendarAccessService: CalendarAccessService,
-    private readonly accessRequestService: AccessRequestService,
     private readonly connection: Connection,
   ) {}
 
@@ -59,11 +59,26 @@ export class InvitationService {
 
     const bulkInvitations: QueryDeepPartialEntity<Invitation>[] = [];
 
+    const bulkInvitationPendingEmails: QueryDeepPartialEntity<InvitationPendingEmails>[] =
+      [];
+
     createInvitationDto.emails.map((email) => {
+      const invitationId = randomUUID();
       bulkInvitations.push({
+        id: invitationId,
         toEmail: email,
         user: { id: user.id },
         message: createInvitationDto.message,
+      });
+
+      bulkInvitationPendingEmails.push({
+        user,
+        invitation: { id: invitationId },
+        email,
+        comment: createInvitationDto.message,
+        accessRequest: createInvitationDto.requestCalendarView,
+        shareCalendar: createInvitationDto.shareMyCalendar,
+        timeForAccess: createInvitationDto.endDate,
       });
     });
 
@@ -79,22 +94,6 @@ export class InvitationService {
         .values(bulkInvitations)
         .returning('id')
         .execute();
-
-      if (createInvitationDto.shareMyCalendar) {
-        await this.calendarAccessService.create(user, {
-          toEmails: createInvitationDto.emails,
-          comment: createInvitationDto.message,
-          timeForAccess: createInvitationDto.endDate,
-        });
-      }
-
-      if (createInvitationDto.requestCalendarView) {
-        await this.accessRequestService.create(user, {
-          toEmails: createInvitationDto.emails,
-          comment: createInvitationDto.message,
-          timeForAccess: createInvitationDto.endDate,
-        });
-      }
 
       this.mailService.send({
         from: this.configService.get<string>('NO_REPLY_EMAIL'),
@@ -112,6 +111,15 @@ export class InvitationService {
       });
 
       await queryRunner.commitTransaction();
+
+      if (
+        createInvitationDto.requestCalendarView ||
+        createInvitationDto.shareMyCalendar
+      ) {
+        await this.invitationPendingEmailsRepo.insert(
+          bulkInvitationPendingEmails,
+        );
+      }
 
       return { message: 'Invited', status: 1 };
     } catch (error) {

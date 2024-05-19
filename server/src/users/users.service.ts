@@ -30,10 +30,14 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
     @InjectRepository(Invitation)
     private readonly invitationRepo: Repository<Invitation>,
+    @InjectRepository(InvitationPendingEmails)
+    private readonly invitationPendingEmailsRepo: Repository<InvitationPendingEmails>,
     @InjectRepository(CalendarAccess)
     private readonly calendarAccessRepo: Repository<CalendarAccess>,
     private readonly invitationService: InvitationService,
     private readonly fileUploadService: FileUploadService,
+    private readonly calendarAccessService: CalendarAccessService,
+    private readonly accessRequestService: AccessRequestService,
   ) {}
 
   async create(userDto: UserCreateDto): Promise<UserDto> { // TODO add stripeCustomerId to userDTo
@@ -70,6 +74,37 @@ export class UsersService {
     );
 
     if (invitationId) {
+      const pendingEmails = await this.invitationPendingEmailsRepo.findOne({
+        where: { invitation: { id: invitationId } },
+        relations: ['user'],
+      });
+
+      if (pendingEmails) {
+        if (pendingEmails.accessRequest) {
+          await this.accessRequestService
+            .create(pendingEmails.user, {
+              toEmails: [pendingEmails.email],
+              comment: pendingEmails.comment,
+              timeForAccess: pendingEmails.timeForAccess,
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+
+        if (pendingEmails.shareCalendar) {
+          await this.calendarAccessService
+            .create(pendingEmails.user, {
+              toEmails: [pendingEmails.email],
+              comment: pendingEmails.comment,
+              timeForAccess: pendingEmails.timeForAccess,
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      }
+
       await this.invitationService.update(invitationId);
     }
 

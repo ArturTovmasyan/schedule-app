@@ -3,10 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
-import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
-import { CalendarAccessModule } from 'src/calendar/calendar-access/calendar-access.module';
-import { AccessRequest } from 'src/access-request/entities/access-request.entity';
-import { AccessRequestModule } from 'src/access-request/access-request.module';
+import { InvitationPendingEmails } from './entities/invitation-pending-emails.entity';
 import { InvitationController } from './invitation.controller';
 import { Invitation } from './entities/invitation.entity';
 import { InvitationService } from './invitation.service';
@@ -16,10 +13,8 @@ import { User } from '@user/entity/user.entity';
 @Module({
   imports: [
     MailModule,
-    CalendarAccessModule,
-    AccessRequestModule,
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([User, CalendarAccess, Invitation, AccessRequest]),
+    TypeOrmModule.forFeature([User, Invitation, InvitationPendingEmails]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [InvitationController],

@@ -8,11 +8,21 @@ import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-a
 import { InvitationModule } from 'src/invitation/invitation.module';
 import { Invitation } from 'src/invitation/entities/invitation.entity';
 import { FileUploadService } from 'src/components/services/file-upload.service';
+import { InvitationPendingEmails } from 'src/invitation/entities/invitation-pending-emails.entity';
+import { CalendarAccessModule } from 'src/calendar/calendar-access/calendar-access.module';
+import { AccessRequestModule } from 'src/access-request/access-request.module';
 
 @Module({
   imports: [
     InvitationModule,
-    TypeOrmModule.forFeature([User, CalendarAccess, Invitation]),
+    AccessRequestModule,
+    CalendarAccessModule,
+    TypeOrmModule.forFeature([
+      User,
+      Invitation,
+      CalendarAccess,
+      InvitationPendingEmails,
+    ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   providers: [UsersService, FileUploadService],

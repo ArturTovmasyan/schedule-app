@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsEmail,
@@ -7,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateInvitationDto {
   @ApiProperty({ required: true, isArray: true, type: 'string' })
@@ -23,12 +23,12 @@ export class CreateInvitationDto {
   @ApiProperty({ required: false, type: 'boolean' })
   @IsOptional()
   @IsBoolean()
-  shareMyCalendar?: Boolean;
+  shareMyCalendar?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsBoolean()
-  requestCalendarView?: Boolean;
+  requestCalendarView?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()

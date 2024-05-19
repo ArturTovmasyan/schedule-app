@@ -74,7 +74,7 @@ export class AccessRequestService {
 
     const checkAccess = await this.calendarAccessRepo.findOne({
       where: {
-        owner: { id: In(findUsersByEmail.map((user) => user.email)) },
+        owner: { id: In(findUsersByEmail.map((user) => user.id)) },
         toEmail: In([user.email]),
       },
     });
