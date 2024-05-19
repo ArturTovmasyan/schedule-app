@@ -24,15 +24,15 @@ import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
 import {
-  FirstWeekDaysAbbreviateEnum,
-  FirstWeekDaysOutlookAbbreviateEnum,
-  GoogleWeekDaysEnum,
-  WeekDaysAbbreviateEnum,
-  WeekDaysEnum,
+    FirstWeekDaysAbbreviateEnum,
+    FirstWeekDaysOutlookAbbreviateEnum,
+    GoogleWeekDaysEnum,
+    WeekDaysAbbreviateEnum,
+    WeekDaysEnum,
 } from './enums/weekDays.enum';
 import {
-  GoogleIndexOfWeekEnum,
-  IndexOfWeekToNumberEnum,
+    GoogleIndexOfWeekEnum,
+    IndexOfWeekToNumberEnum,
 } from './enums/indexOfWeek.enum';
 import { EventRecurrenceTypeEnum } from './enums/eventRecurrenceType.enum';
 import { RRule } from 'rrule';
@@ -64,7 +64,9 @@ export class CalendarEventService {
             this.calendarTokenRepository,
             async (manager) => {
                 const { accessToken } = token;
+
                 const googleCalendar = await this.getGoogleCredentials(accessToken);
+
                 const calendarList = await googleCalendar.calendarList.list();
 
                 const calendarSerializedList = calendarList.data.items
