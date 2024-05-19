@@ -1,4 +1,8 @@
-import {BadGatewayException, BadRequestException, Injectable} from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CalendarToken } from './entity/calendarToken.entity';
@@ -176,7 +180,8 @@ export class CalendarPermissionsService {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
 
       try {
-        getTokenResponse = await this.clientsCredentials.googleOAuth2Client.getToken(code);
+        getTokenResponse =
+          await this.clientsCredentials.googleOAuth2Client.getToken(code);
       } catch (err) {
         throw new BadRequestException({
           message: `${err.message}: try new code`,
@@ -188,7 +193,8 @@ export class CalendarPermissionsService {
       }
 
       const tokens = getTokenResponse.tokens;
-      const ownerEmail = (await this.getGoogleUsersInfo(tokens.access_token)).data.email;
+      const ownerEmail = (await this.getGoogleUsersInfo(tokens.access_token))
+        .data.email;
       const expiryDate = new Date(tokens.expiry_date).toISOString();
 
       const calendarTokenBody = {
@@ -201,6 +207,7 @@ export class CalendarPermissionsService {
       };
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
+
       const calendar = await this.calendarEventService.getCalendarsFromGoogle(
         user,
         token,
@@ -324,6 +331,7 @@ export class CalendarPermissionsService {
       this.msalInstance.clearCache();
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
+
       const calendar = await this.calendarEventService.getCalendarsFromOutlook(
         user,
         token,
