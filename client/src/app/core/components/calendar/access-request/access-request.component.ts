@@ -60,13 +60,8 @@ export class AccessRequestComponent {
   }
 
   submitRequest() {
-    console.log({
-      toEmail: this.emails[0],
-      comment: this.message,
-      timeForAccess: this.commonService.getFormattedDateString(this.endDate)
-    })
     this.accessService.requestCalendarAccess({
-      toEmail: this.emails[0],
+      toEmails: this.emails,
       comment: this.message,
       timeForAccess: this.commonService.getFormattedDateString(this.endDate)
     }).pipe(first())

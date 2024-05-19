@@ -60,7 +60,7 @@ export class ShareCalendarComponent {
 
   submitRequest() {
     this.accessService.shareCalendarAccess({
-      toEmail: this.emails[0],
+      toEmails: this.emails,
       comment: this.message,
       timeForAccess: this.commonService.getFormattedDateString(this.endDate)
     }).pipe(first())

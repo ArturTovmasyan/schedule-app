@@ -1,5 +1,5 @@
 export interface AccessRequest {
-  toEmail: string,
+  toEmails: string[],
   timeForAccess: string | null,
   comment: string
 }
