@@ -6,5 +6,8 @@ export interface CreateEventRequest {
   end: string,
   syncWith: string,
   attendees?: string[],
-  optionalAttendees?: string[]
+  optionalAttendees?: string[],
+  duration?: number,
+  phoneNumber?: string,
+  address?: string
 }

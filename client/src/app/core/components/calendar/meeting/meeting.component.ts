@@ -33,7 +33,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     end: "",
     syncWith: "",
     attendees: [],
-    optionalAttendees: []
+    optionalAttendees: [],
+    duration: 1
   };
   myCalendar: CalendarData | null = null;
   selectedCalendar: Calendar | null = null;
@@ -48,7 +49,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
   error = false;
 
   showRequiredErrors = false;
-  @ViewChild("focusField") focusField:any;
 
   // manoj
   emailsWithAvailabilityMap = new Map();
@@ -60,10 +60,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
   address = null;
   phoneNumber = null;
   readonly MeetViaEnum = MeetViaEnum;
+  errorMessage = '';
 
   constructor(
-    private readonly router: Router,
-    private readonly calendarService: CalendarService,
     private readonly permissionService: CalendarPermissionService,
     private readonly commonService: CommonService,
     private readonly availabilityService: AvailabilityService,
@@ -72,6 +71,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private readonly sharableLinkService: SharableLinkService,
     private formBuilder: FormBuilder,
     private readonly calendarPermissionService: CalendarPermissionService,
+    private readonly calendarService: CalendarService
   ) {
     this.fetchMyAttendees();
     this.getLocations();
@@ -172,15 +172,34 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   scheduleEvent() {
-    if (this.form.invalid) {
-      this.focusField.nativeElement.focus();
-      this.showRequiredErrors = true;
-      return;
+    this.errorMessages = [];
+    if (this.data.title == '') {
+      this.errorMessages.push('Message title is required.')
     }
 
-    this.errorMessages = [];
-    this.data.title = this.form.get('meetTitle')?.value;
-    this.data.meetLink = this.form.get('meetingLocation')?.value;
+    if (this.data.start == '') {
+      this.errorMessages.push('Date/Time cannot be empty')
+    }
+
+    if (!this.choosedLocationObj) {
+      this.errorMessages.push('Please select the Location');
+    } else if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall && !this.phoneNumber) {
+      this.errorMessages.push('Please enter Phone Number');
+    } else if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress && !this.address) {
+      this.errorMessages.push('Please enter Address');
+    }
+
+    if (this.errorMessages.length) {
+      this.autoHideErrorMessage(3000);
+      return;
+    }
+    
+    if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
+      this.data['phoneNumber'] = this.phoneNumber!;
+    }
+    if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress) {
+      this.data['address'] = this.address!;
+    }
 
     this.calendarService.scheduleEvent(this.data)
       .pipe(first())
@@ -188,8 +207,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
         next: () => {
           this.resetData();
         },
-        error: (error) => {
+        error: (error:any) => {
           this.errorMessages.push(error?.message);
+          this.autoHideErrorMessage();
         }
       });
   }
@@ -203,14 +223,17 @@ export class MeetingComponent implements OnInit, OnDestroy {
       end: "",
       syncWith: "",
       attendees: [],
-      optionalAttendees: []
+      optionalAttendees: [],
+      duration: 1,
+      phoneNumber: "",
+      address: ""
     }
   }
 
   getContactsAvailability(contact: UserData) {
     const contactId = contact.id;
     const contactEmail = contact.email;
-
+    this.data.attendees?.push(contactEmail);
     if(!contactId) return;
 
     this.availabilityService.getByUserId([contactId])
@@ -294,6 +317,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   chooseLocation(loc: Location) {
     this.choosedLocationObj = loc;
+    this.data.meetLink = loc.value;
     this.showLocation = false;
     if (![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(loc.value)) {
       // if incoming and outgoing and address is choosed from location option
@@ -360,28 +384,28 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   onDurationSelectionChanged(index: number){
-    let endDate = null;
-    switch (index) {
-      case 0:
-        endDate = moment(new Date()).add(2, 'weeks');
-        break;
-      case 1:
-        endDate = moment(new Date()).add(1, 'month');
-        break;
-      default:
-        break;
-    }
-
     this.form.patchValue({
       'duration': index,
-      'endDate': this.commonService.getFormattedDateString(endDate)
     });
+    this.data.duration = index;
+    if (index != 4) {
+      const newIndex = index+1;
+      this.broadcaster.broadcast('timeSLotInterval', 15 * newIndex);
+      return;
+    }
+    this.broadcaster.broadcast('timeSLotInterval', 30);
+    
   }
 
   close() {
     this.broadcaster.broadcast('calendar_full_size', true);
   }
   
+  autoHideErrorMessage(time=3000) {
+    setTimeout(() => {
+        this.errorMessages = [];
+      }, time);
+  }
 
   get f() {
     return this.form.controls;

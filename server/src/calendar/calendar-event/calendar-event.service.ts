@@ -41,7 +41,6 @@ import moment = require('moment');
 
 @Injectable()
 export class CalendarEventService {
-<<<<<<< HEAD
     constructor(
         @InjectRepository(CalendarToken)
         private readonly calendarTokenRepository: Repository<CalendarToken>,
@@ -54,19 +53,6 @@ export class CalendarEventService {
         private readonly clientsCredentials: ClientsCredentialsService,
         private readonly configService: ConfigService,
     ) {}
-=======
-  constructor(
-    @InjectRepository(CalendarToken)
-    private readonly calendarTokenRepository: Repository<CalendarToken>,
-    @InjectRepository(CalendarEvent)
-    private readonly calendarEventRepository: Repository<CalendarEvent>,
-    @InjectRepository(CalendarWebhookChannel)
-    private readonly calendarWebhookChannelRepository: Repository<CalendarWebhookChannel>,
-    private readonly clientsCredentials: ClientsCredentialsService,
-    private readonly configService: ConfigService,
-    private readonly connection: Connection,
-  ) {}
->>>>>>> 6d4720f (congif module made global,parallerized some async operations)
 
     async getCalendarsFromGoogle(
         user: User,

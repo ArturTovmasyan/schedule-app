@@ -346,7 +346,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   createSharableLink() {
     const selectedDates = this.selectedDates$.value;
-    console.log(selectedDates)
     if (Object.keys(selectedDates).length == 0) {
       this.errorMessage = 'Please select at least one available time slot';
     } else if (!this.choosedLocationObj) {

@@ -19,6 +19,7 @@
           <input type="radio" name="duration" id="15minutes" value="15 minutes">
           <label for="15minutes">15m</label>
 
+
         </div>
         <div class="duration-radio-wrapper">
           <input type="radio" name="duration" id="30minutes" value="30 minutes">
@@ -161,17 +162,19 @@
           Text
         </h3>
         <textarea class="form-control" name="customMessage" id="customMessage" style="resize: none"
-          placeholder="Add your message here..."></textarea>
+          placeholder="Add your message here..." [(ngModel)]="data.description"></textarea>
       </div>
+
       <div class="d-flex justify-content-end">
-        <button class="send-request" [disabled]="!selectEvent">
+        <button class="send-request">
           Send
         </button>
       </div>
-
-      <span class="error" *ngFor="let errorMessage of errorMessages">
-        <i class="fa fa-exclamation-triangle"></i>{{errorMessage}}
-      </span>
+      <div class="error  {{errorMessages.length ? 'animate' : ''}} d-flex flex-column">
+        <span class=" w-100" *ngFor="let errorMessage of errorMessages">
+          <i class="fa fa-exclamation-triangle"></i>{{errorMessage}}
+        </span>
+      </div>
 
     </fieldset>
   </form>
