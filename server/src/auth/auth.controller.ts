@@ -78,7 +78,6 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req, @Res() res) {
-    debugger;
     const user: any = req.user._json;
     const jwt = await this.authService.validateGoogleLogin(user);
     const webHost = this.configService.get<string>('WEB_HOST');
@@ -91,17 +90,13 @@ export class AuthController {
   }
 
   @Post('microsoft/callback')
-  // @UseGuards(AuthGuard('ms-azure'))
   async msLoginCallback(@Req() req, @Res() res): Promise<any> {
-    debugger;
     const user: any = req.body;
-    const webHost = this.configService.get<string>('WEB_HOST');
 
     if (user && user.id) {
       const jwt = await this.authService.validateMicrosoftLogin(user);
       if (jwt) {
         return { accessToken: jwt };
-        // res.redirect(webHost+'oauth/success?token=' + jwt);
       }
     }
 

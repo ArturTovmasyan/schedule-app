@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: () => {
           this.form.reset();
-          this.router.navigate(['/']);
+          this.router.navigate(['/onboarding/calendar']);
         },
         error: (error) => {
           this.error = error;
