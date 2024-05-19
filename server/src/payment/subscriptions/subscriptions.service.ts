@@ -86,13 +86,8 @@ export default class SubscriptionsService {
     }
 
     public async notActiveYet(id): Promise<boolean> {
-<<<<<<< HEAD
         const subscription = await this.subscriptionRepo.findOne(+id);
         return (subscription.endsAt === null || new Date(new Date(subscription.endsAt)) > new Date()) && subscription.status === SubscriptionStatusEnum.INACTIVE;
-=======
-        const subscription = await this.subscriptionRepo.findOne({where: { id: id }});
-        return (subscription.endsAt === null || new Date(subscription.endsAt) > new Date()) && subscription.status === SubscriptionStatusEnum.INACTIVE;
->>>>>>> 2cd4f4b (Finish payment integration)
     }
 
     public async isCancelled(id): Promise<boolean> {

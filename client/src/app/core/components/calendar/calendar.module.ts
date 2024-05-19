@@ -30,23 +30,7 @@ import { ChipUserItemComponent } from '../chip-user-item/chip-user-item.componen
     ContactsComponent,
     MeetingComponent,
     ProposeTimeSlotComponent,
-<<<<<<< HEAD
     MyCalendarComponent
-=======
-    ChipEmailInputComponent,
-    ChipUserInputComponent,
-    ChipUserItemComponent,
-    MyCalendarComponent,
-    InviteAndConnectComponent,
-    ContactItemComponent,
-    SuggestContactComponent,
-    SharableLinkComponent,
-    GetContactNamePipe,
-    GetContactCompanyPipe,
-    GroupAvailabilityComponent,
-    SharableLinkListComponent,
-    SharableLinkItemComponent
->>>>>>> 5dee4a2 (refactor closing side panel)
   ],
   imports: [
     CommonModule,

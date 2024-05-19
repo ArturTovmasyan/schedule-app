@@ -27,30 +27,15 @@ export class AuthGuard implements CanActivate {
     const token = JSON.parse(localStorage.getItem('cu') || 'null');
 
     if (token && token.accessToken) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-       return this.authService.isAuthenticated();
-=======
-      this.authService.hasAccess(token.accessToken).subscribe({
-        next: (user) => {
-          if (user && !user.stripeSubscriptionId) {
-=======
       this.authService.hasAccess().subscribe({
-<<<<<<< HEAD
-        next: ({ isActive, user }) => {
-          if (user && !isActive) {
->>>>>>> 2cd4f4b (Finish payment integration)
-            this.router.navigate(['/onboarding/subscription-plan'])
-=======
         next: ({ user }) => { //isActive
           if (!user) { // && !isActive
             this.router.navigate(['/logout'])
->>>>>>> 0eaf580 (Disable payment functionality)
           }
         }
       });
+
       return true;
->>>>>>> a6d9f60 (Finish payment functionality)
     }
 
     this.router.navigate(['/login']);

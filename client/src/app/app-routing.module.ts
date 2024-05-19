@@ -11,48 +11,7 @@ import {RecoveryPasswordComponent} from "./core/components/recovery-password/rec
 import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
 import {RedirectGuard} from "./core/guards/redirect.guard";
-<<<<<<< HEAD
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
-=======
-import {PaymentSuccessComponent} from "./core/components/payment/payment-success/payment-success.component";
-import {
-  GoogleCalendarComponent
-} from "./core/components/calendar/calendar-permission/google-calendar/google-calendar.component";
-import {MsCalendarComponent} from "./core/components/calendar/calendar-permission/ms-calendar/ms-calendar.component";
-import {CalendarComponent} from "./core/components/calendar/calendar.component";
-import {AccessRequestComponent} from "./core/components/calendar/access-request/access-request.component";
-import {ShareCalendarComponent} from "./core/components/calendar/share-calendar/share-calendar.component";
-import {ContactsComponent} from "./core/components/calendar/contacts/contacts.component";
-import {MeetingComponent} from "./core/components/calendar/meeting/meeting.component";
-import {ProposeTimeSlotComponent} from "./core/components/calendar/propose-time-slot/propose-time-slot.component";
-import {SettingsComponent} from './core/components/settings/settings.component';
-import {AvailabilityComponent} from './core/components/availability/availability.component';
-import {ConfigurationComponent} from './core/components/configuration/configuration.component';
-import {ConnectCalendarComponent} from './core/components/calendar/connect-calendar/connect-calendar.component';
-import {ChangePasswordComponent} from "./core/components/change-password/change-password.component";
-import {AccountInfoComponent} from "./core/components/account-info/account-info.component";
-import {OnboardingComponent} from "./core/components/onboarding/onboarding.component";
-
-import {
-  OnboardingCalendarComponent
-} from './core/components/onboarding/onboarding-calendar/onboarding-calendar.component';
-import {
-  OnboardingAvailabilityComponent
-} from './core/components/onboarding/onboarding-availability/onboarding-availability.component';
-import {
-  OnboardingConfigurationComponent
-} from './core/components/onboarding/onboarding-configuration/onboarding-configuration.component';
-import {SubscriptionPlanComponent} from "./core/components/subscription-plan/subscription-plan.component";
-import {InviteAndConnectComponent} from "./core/components/calendar/invite-and-connect/invite-and-connect.component";
-import {SuggestContactComponent} from "./core/components/calendar/suggest-contact/suggest-contact.component";
-import {SharableLinkComponent} from "./core/components/calendar/sharable-link/sharable-link.component";
-import { ZoomOauthComponent } from './core/components/integration/zoom-oauth/zoom-oauth.component';
-import { CallbackComponent as ZoomCallbackComponent } from './core/components/integration/zoom-oauth/callback/callback.component';
-import { SetupComponent as ZoomSetupComponent } from './core/components/integration/zoom-oauth/setup/setup.component';
-import {GroupAvailabilityComponent} from "./core/components/calendar/group-availability/group-availability.component";
-import {SharableLinkListComponent} from "./core/components/calendar/sharable-link-list/sharable-link-list.component";
-import { RecoveryPasswordComponent } from './core/components/public/pages/recovery-password/recovery-password.component';
->>>>>>> 619a84c (move recovery-password component to layouts and update routing)
 
 const routes: Routes = [
   {path: '404', component: P404Component, data: {title: 'Page 404'}},

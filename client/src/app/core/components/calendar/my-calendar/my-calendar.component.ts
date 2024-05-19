@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import {Component,  OnDestroy, OnInit} from '@angular/core';
-import {CalendarOptions} from "@fullcalendar/angular";
-import {first} from "rxjs/operators";
-import {CalendarService} from "../../../services/calendar/calendar.service";
-import DateConverter from "../../helpers/date.converter";
-import {BroadcasterService} from "../../../../shared/services";
-import {BehaviorSubject} from "rxjs";
-import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interface";
-=======
 import {
   Component,
   ElementRef,
@@ -37,7 +27,6 @@ import rrulePlugin from '@fullcalendar/rrule';
 import { UserData } from '../../chip-user-input/chip-user-input.component';
 import { CalendarType } from '../connect-calendar/connect-calendar.component';
 import { environment } from 'src/environments/environment';
->>>>>>> c8c9b63 (add api to  sync all calendar events)
 
 @Component({
   selector: 'app-my-calendar',
@@ -45,13 +34,6 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./my-calendar.component.scss'],
 })
 export class MyCalendarComponent implements OnInit, OnDestroy {
-<<<<<<< HEAD
-  events: any = [];
-  error: any = null;
-  calendarApi: any;
-  contactEvents: any;
-  contactAvailabilityDates: any;
-=======
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   @ViewChild('eventDetailView') eventDetailView!: ElementRef;
   @ViewChild('eventCancellationView') eventCancellationView!: ElementRef;
@@ -59,7 +41,6 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   screenWidth: any;
   screenHeight: any;
 
->>>>>>> 831cabe (feat: allow user to cancel event)
   subscription: BehaviorSubject<boolean>;
   multiSelectSubscription!: BehaviorSubject<never>;
   initSharableLinkSubscription!: BehaviorSubject<any>;
@@ -73,16 +54,6 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   oldEvents: any;
   initOldEvents$ = new BehaviorSubject(false);
 
-<<<<<<< HEAD
-  constructor(private calendarService: CalendarService, private broadcaster: BroadcasterService) {
-    this.subscription = this.broadcaster.on('contact_calendar_data').subscribe((contactAvailabilities: any) => {
-      const availabilityDates: any[] = [];
-      const contactId = contactAvailabilities.contactId;
-
-      if (contactAvailabilities) {
-        // delete contactAvailabilities['contactId'];
-        for (const key in contactAvailabilities) {
-=======
   currentEventSelection: any | null;
   cancellationMessage = "";
 
@@ -95,12 +66,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     removable: false,
     avatar: null,
   };
->>>>>>> 831cabe (feat: allow user to cancel event)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
   calendarOptions: CalendarOptions = {
     plugins: [
       dayGridPlugin,
@@ -225,7 +191,6 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     },
   };
 
->>>>>>> 3ae0f09 (remove timeslot selection constraint when no contacts)
   constructor(
     private calendarService: CalendarService,
     private broadcaster: BroadcasterService,
@@ -273,212 +238,109 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
           });
 
           const weekDay = new Date(dates[key].start).getDay();
->>>>>>> c8c9b63 (add api to  sync all calendar events)
           availabilityDates.push({
-            //TODO convert to local time zone
-            // start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].start)),
-            // end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].end)),
-            start: contactAvailabilities[key].start,
-            end: contactAvailabilities[key].end,
-            className: 'available-event'
-          })
+            daysOfWeek: [weekDay],
+            startTime: new Date(dates[key].start),
+            endTime: new Date(dates[key].end),
+          });
         }
-<<<<<<< HEAD
-=======
         // init calendar options dynamically
         if (availabilityDates && availabilityDates.length > 0) {
           this.calendarOptions.slotDuration = '00:30:00';
           this.calendarOptions.slotLabelInterval = 30;
->>>>>>> 3ae0f09 (remove timeslot selection constraint when no contacts)
 
-        this.contactAvailabilityDates = availabilityDates;
-
-        // this.fetchContactEvents(contactId);
-        this.calendarOptions.events = this.myEvents.concat(availabilityDates);
-        //TODO compare with my events and availability
-      }
-    });
-  }
-
-  ngOnInit(): void {
-    this.fetchMyEvents();
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
-  fetchMyEvents() {
-    this.calendarService.fetchEvents()
-      .pipe(first())
-      .subscribe({
-        next: (events: any) => {
-          const data: any[] = [];
-          if (events.length > 0) {
-            events.forEach((el: any) => {
-              data.push({
-                // start: DateConverter.convertUTCDateToLocalDate(new Date(el.start)),
-                // end: DateConverter.convertUTCDateToLocalDate(new Date(el.end)),
-                start: el.start,
-                end: el.end,
-                title: el.title,
-                description: el.description
-              })
-            })
-            this.myEvents = data;
-            this.calendarOptions.events = data;
-          }
-        },
-        error: (error) => {
-          this.error = error;
+          this.calendarOptions.validRange = {
+            start: moment().subtract(1, 'month').toDate(),
+            end: moment().add(2, 'year').toDate(),
+          };
+        } else {
+          this.calendarOptions.validRange = undefined;
+          this.calendarOptions.selectable = false;
+          this.broadcaster.broadcast('meet_date_range', []);
         }
+        const myEv = this.myEvents ? [...this.myEvents] : [];
+        this.calendarOptions.events = this.myEvents
+          ? myEv.concat(availabilityEvents)
+          : availabilityEvents;
+        this.oldEvents = this.oldEvents
+          ? myEv.concat(availabilityEvents)
+          : availabilityEvents;
       });
-  }
 
-  fetchContactEvents(userId: string) {
-    this.calendarService.fetchContactEvents(userId)
-      .pipe(first())
-      .subscribe({
-        next: (events: any) => {
-          const data: any[] = [];
-          if (events.length > 0) {
-            events.forEach((el: any) => {
-              data.push({
-                start: DateConverter.convertUTCDateToLocalDate(new Date(el.start)),
-                end: DateConverter.convertUTCDateToLocalDate(new Date(el.end)),
-                className: 'available-event'
-              })
-            })
-            this.contactEvents = data;
-            // this.calendarOptions.events = data;
+    this.reloadEventSubscription = this.broadcaster
+      .on('reload_events')
+      .subscribe(() => {
+
+      });
+
+    this.multiSelectSubscription = this.broadcaster
+      .on('multiselect_calendar')
+      .subscribe((selectable: boolean) => {
+        this.calendarOptions.selectable = selectable;
+      });
+
+    // to reset date selection which is selected on date click on calendar
+    this.subscription = this.broadcaster
+      .on('selectUnselectDate')
+      .subscribe(
+        (dates: { startDate: any; endDate: DateInput | undefined }) => {
+          if (dates.startDate) {
+            setTimeout(() => {
+              this.calendarComponent
+                ?.getApi()
+                .select(dates.startDate, dates.endDate);
+            }, 0);
+          } else {
+            this.calendarComponent.getApi().unselect();
           }
-        },
-        error: (error) => {
-          this.error = error;
         }
-      });
-  }
-
-<<<<<<< HEAD
-  calendarOptions: CalendarOptions = {
-    plugins: [
-      dayGridPlugin,
-      bootstrapPlugin,
-      interactionPlugin,
-      timeGridPlugin,
-      rrulePlugin,
-      interactionPlugin,
-    ],
-    initialView: 'timeGridWeek',
-    dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },
-    direction: 'ltr',
-    themeSystem: 'bootstrap',
-    dayHeaders: true,
-    allDaySlot: false,
-    eventTextColor: 'black',
-    eventBackgroundColor: '#E9F6FD',
-    eventOrderStrict: true,
-    stickyHeaderDates: true,
-    windowResizeDelay: 100,
-    dragRevertDuration: 500,
-    handleWindowResize: false,
-    expandRows: false,
-    showNonCurrentDates: false,
-    lazyFetching: false,
-    slotLabelFormat: [
-      {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-        meridiem: 'lowercase',
-        separator: '.',
-      },
-    ],
-    titleFormat: {
-      month: 'long',
-      day: 'numeric',
-    },
-    eventTimeFormat: {
-      hour: 'numeric',
-      minute: '2-digit',
-      meridiem: 'short',
-      hour12: true,
-    },
-    headerToolbar: {
-      left: '',
-      center: 'prev,title,next',
-      right: '',
-    },
-<<<<<<< HEAD
-    events: [],
-    eventContent: this.eventContent.bind(this),
-    eventClassNames: function () {
-      return 'event';
-<<<<<<< HEAD
-    }
-  };
-=======
-=======
-    eventClassNames: function (arg) {
-      return `event ${arg.event.extendedProps['event_class']}`;
->>>>>>> 418f4b0 (fix: style calenadar event adn add color code)
-    },
-    select: (info: any) => {
-      this.currentUrl = this.router.url;
-
-      if (this.currentUrl.indexOf('/calendar/sharable-link') != -1) {
-        this.runSharableLink(info);
-        return;
-      }
-
-      const data = { start: info.startStr, end: info.endStr };
-
-      if (this.selectedContactEmail) {
-        Object.assign(data, {
-          contact_email: this.selectedContactEmail,
-          contact_id: this.selectedContactId,
-        });
-      }
-
-      setTimeout(() => {
-        this.broadcaster.broadcast('meet_date_range', data);
-      }, 0);
-
-      if (
-        this.currentUrl !== '/calendar/meeting' &&
-        this.currentUrl != '/calendar/sharable-link'
-      ) {
-        this.router.navigate(['/calendar/meeting']);
-      }
-    },
-    selectOverlap: function (info: any) {
-      return (
-        info._def.ui.classNames[0] == AVAILABILITY_EVENT_CLASS ||
-        info._def.ui.classNames[0] == SUGGEST_EVENT_CLASS
       );
-    },
-    eventClick: (info) => {
-      const { el, jsEvent, view } = info;
-      const elX = jsEvent.clientX - jsEvent.offsetX;
-      const elY = jsEvent.clientY - jsEvent.offsetY;
-      const xOffset = elX < this.screenWidth * 0.65 ? 10 : -420;
-      var yOffset = 0;
-      if (elY > this.screenHeight * 0.65) yOffset = -300;
-      else if (elY < this.screenHeight * 0.4) yOffset = 10;
-      else yOffset = -100;
 
-      this.eventDetailView.nativeElement.style.top = `${elY + yOffset}px`;
-      this.eventDetailView.nativeElement.style.left = `${
-        elX + el.clientWidth + xOffset
-      }px`;
+    this.multiSelectSubscription = this.broadcaster
+      .on('removeSharableLinkTimeSlot')
+      .subscribe((timeSlot: any) => {
+        const filt = this.mySelectedDateEvents.filter((res: any) => {
+          return res.start != timeSlot[0].start;
+        });
+        this.mySelectedDateEvents = filt;
+        this.calendarOptions.events = this.oldEvents
+          ? [...this.oldEvents].concat(filt)
+          : filt;
+      });
 
-      this.currentEventSelection = info.event;
-      this.showDetail();
-    },
-  };
+    this.initSharableLinkSubscription = this.broadcaster
+      .on('addSharableLinkTimeSlot')
+      .subscribe((timeSlots: any) => {
+        const events = [];
+        const startDateArr: any = [];
+        for (const timeslot of timeSlots) {
+          const startDate = timeslot.startDate;
+          if (!startDateArr.includes(startDate)) {
+            events.push({
+              start: startDate,
+              end: timeslot.endDate,
+              display: 'background',
+              overlap: false,
+              color: '#83b4f0',
+            });
+            startDateArr.push(startDate);
+          }
+        }
 
-=======
->>>>>>> 3ae0f09 (remove timeslot selection constraint when no contacts)
+        this.mySelectedDateEvents = events;
+        this.calendarOptions.events = this.oldEvents
+          ? [...this.oldEvents].concat(events)
+          : events;
+      });
+
+    this.subscription = this.broadcaster
+      .on('timeSLotInterval')
+      .subscribe((minutes: number) => {
+        this.calendarOptions.slotLabelInterval = minutes;
+        this.calendarOptions.slotDuration = `00:${String(minutes)}:00`;
+      });
+  }
+
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.screenWidth = window.innerWidth;
@@ -641,7 +503,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
         });
     }
   }
-  
+
   showCancellation(): void {
     this.closeDetail();
     this.eventCancellationView.nativeElement.classList.remove('hidden');
@@ -661,5 +523,4 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     // TODO: SHOW BUTTON ON HOVER OF EVENT. DONOT DELETE
     // console.log('Event mouse leave:', arg);
   }
->>>>>>> 831cabe (feat: allow user to cancel event)
 }

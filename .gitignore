@@ -1,9 +1,2 @@
 .idea/*
 .DS_Store
-<<<<<<< HEAD
-=======
-*.orig
-extras/
-.vscode/
-
->>>>>>> 5e1f6e7 (optimize calendar API functions)

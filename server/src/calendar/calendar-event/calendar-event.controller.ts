@@ -98,17 +98,8 @@ export class CalendarEventController {
     );
   }
 
-<<<<<<< HEAD
   @Post('google-webhook')
-=======
-  @Post('events/sync')
-  @UseGuards(AuthGuard())
-  async syncCalendarEvents(@Req() req: { user: User }) {
-    return await this.calendarEventService.syncAllCalendarEvents(req.user);
-  }
 
-  @Post('events/google-webhook')
->>>>>>> c8c9b63 (add api to  sync all calendar events)
   async forGoogleWebhook(@Req() req: Request, @Res() res: Response) {
     const resourceId = req.headers['x-goog-resource-id'];
     const resourceState = req.headers['x-goog-resource-state'];
