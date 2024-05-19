@@ -11,7 +11,6 @@ import {AvailabilityService} from "../../../../services/calendar/availability.se
 })
 export class ContactItemComponent implements OnInit {
 
-
   @Input("contact")
   contact!: CalendarAccess;
 
@@ -48,7 +47,8 @@ export class ContactItemComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (data: any | null) => {
-          const dates = data.availabilityDates;
+          debugger;
+          const dates = data?.availabilityDates;
           const contactData = {
             ...dates,
             contactId

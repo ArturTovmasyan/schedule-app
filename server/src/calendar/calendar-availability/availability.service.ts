@@ -1,4 +1,4 @@
-import {Repository} from 'typeorm';
+import {In, Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {BadRequestException, HttpStatus, Injectable} from '@nestjs/common';
 import {ErrorMessages} from '../../components/constants/error.messages';
@@ -8,6 +8,9 @@ import {Availability} from './entities/availability.entity';
 import {User} from '@user/entity/user.entity';
 import {IResponse, IResponseMessage} from 'src/components/interfaces/response.interface';
 import {ClockType} from "./enums/clockType.enum";
+import {CalendarEventService} from "../calendar-event/calendar-event.service";
+import {CalendarEvent} from "../calendar-event/entities/calendarEvent.entity";
+import TimeIntervalDto from "../calendar-event/dto/timeInterval.dto";
 
 const moment = require('moment');
 require('moment-weekday-calc');
@@ -17,6 +20,7 @@ export class AvailabilityService {
     constructor(
         @InjectRepository(Availability)
         private readonly availabilityRepo: Repository<Availability>,
+        private readonly eventService: CalendarEventService
     ) {
     }
 
@@ -63,13 +67,46 @@ export class AvailabilityService {
             user: {id: userId},
         });
 
-        if (convert) {
-            const availabilityDates: any[] = await this.convertAvailabilityToDate(data);
-            // const contactEvents:any[] = await this.eventService.getEventsByUserIds([userId]);
-            return {availabilityDates};
+        return {data};
+    }
+
+    /**
+     * @description `Find user calendar aval. times`
+     * @param userIds - `User id`
+     * @returns `{Event times data}`
+     */
+
+    async findUserAvailabilityTimes(userIds: string[]): Promise<any> {
+        let availabilityDates;
+        let data: Availability[] = await this.availabilityRepo.find({
+            where: { user: In(userIds) },
+        });
+
+        debugger;
+        if (data) {
+            const weekDays = await this.generateWeekDays(data[0]);
+            const startDate = moment().toDate();
+            const dateEnd = moment().add(1, 'week').format('yyyy-MM-DD') //TODO get from time_for_access
+            const contactEvents:any[] = await this.eventService.getEventsByUserIds(userIds, {startDate, dateEnd});
+            availabilityDates = await this.convertAvailabilityToDate(data[0], contactEvents);
+            availabilityDates.push(...contactEvents);
+
+            debugger;
+
+            //TODO extract/split event dates  by service and use it in create event also (with my event)
+            // let start = new Date();
+            // let end = moment(new Date()).add(10, 'days').toDate();
+            // let dates = await this.splitDatesByInterval(start, end, weekDays, 30);
+
+            // availabilityDates = await this.extractEmptyEventDates(availabilityDates, contactEvents);
+            debugger;
         }
 
-        return {data};
+        return {availabilityDates};
+    }
+
+    async extractEmptyEventDates(availabilityDates, contactEvents) {
+        debugger;
     }
 
     /**
@@ -104,14 +141,23 @@ export class AvailabilityService {
      *
      * @returns `{dates}`
      * @param data
+     * @param contactEvents
      */
-    async convertAvailabilityToDate(data: Availability): Promise<any[]> {
+    async convertAvailabilityToDate(data: Availability, contactEvents:any): Promise<any[]> {
         const dates = [];
+        const contactEventDates = [];
+        const weekDays = await this.generateWeekDays(data);
 
+
+        // contactEvents.forEach((event) => {
+        //     debugger;
+        // });
+        //
         const dateRange = moment().dateRangeToDates({
             rangeStart: moment().toDate(),
-            rangeEnd: moment().add(2, 'week').format('yyyy-MM-DD'),//TODO get from time_for_access
-            weekdays: await this.generateWeekDays(data)
+            rangeEnd: moment().add(2, 'week').format('yyyy-MM-DD'),
+            weekdays: await this.generateWeekDays(data),
+            exclusions: []
         });
 
         dateRange.forEach((date) => {
@@ -151,13 +197,33 @@ export class AvailabilityService {
         return dates;
     }
 
+    async splitDatesByInterval(start: Date, end: Date, weekDays: [], interval:number): Promise<any>  {
+        let dates = [];
+        let count = 0;
+
+        while (end >= start) {
+            start = new Date(start.getTime() + (interval * 60 * 1000));
+            let day = start.getDay();
+
+            debugger;
+            // @ts-ignore
+            if (weekDays.includes(day)) {
+                dates[count] = start;
+                count++;
+            }
+        }
+
+        debugger;
+        return dates;
+    }
+
     /**
      * @description `Generate week days array by user availability data`
      *
      * @returns `{weekDays}`
      * @param data
      */
-    async generateWeekDays(data: Availability) {
+    async generateWeekDays(data: Availability): Promise<any> {
         const weekDays = [];
 
         if (data.monday) {

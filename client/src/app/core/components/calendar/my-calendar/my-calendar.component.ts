@@ -92,7 +92,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
                 className: 'available-event'
               })
             })
-            // this.contactEvents = data;
+            this.contactEvents = data;
             // this.calendarOptions.events = data;
           }
         },

@@ -55,11 +55,11 @@ export class AvailabilityController {
   @ApiExcludeEndpoint()
   @Get(':userId')
   findOne(@Param('userId') userId: string) {
-    return this.availabilityService.findOne(userId, true);
+    return this.availabilityService.findUserAvailabilityTimes([userId]);
   }
 
   @ApiResponse({ type: IResponseMessage })
-  @ApiOperation({ summary: 'Update user avaliliability' })
+  @ApiOperation({ summary: 'Update user availability' })
   @Patch()
   @UseGuards(AuthGuard())
   update(
