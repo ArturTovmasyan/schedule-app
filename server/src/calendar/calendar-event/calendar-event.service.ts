@@ -145,23 +145,7 @@ export class CalendarEventService {
 
     const cal = await calendar.calendarList.list();
 
-<<<<<<< HEAD
     // console.log('cal ', cal.data.items);
-=======
-        const serializedEvents = events.data.items.map((item) => {
-          const event = new CalendarEvent();
-          event.googleId = item.id;
-          event.eventType = EventTypeEnum.GoogleCalendarEvent;
-          event.owner = user;
-          event.start = item.start?.dateTime ? new Date(item.start.dateTime) : null;
-          event.end = item.end?.dateTime ? new Date(item.end.dateTime) : null;
-          event.title = item.summary || null;
-          event.creatorFromGoogle = item.creator?.email || null;
-          event.meetLink = item.hangoutLink || null;
-          event.createdOn = new Date(item.created);
-          event.updatedOn = new Date(item.updated);
-          event.description = item.description || null;
->>>>>>> 17cd03b (Add remove google events after disconnect calendar)
 
     const events = await calendar.events.list({
       calendarId: cal.data.items[0].id,
@@ -178,96 +162,9 @@ export class CalendarEventService {
       calendarType: CalendarTypeEnum.Office365Calendar,
     });
 
-<<<<<<< HEAD
     const client = graph.Client.init({
       authProvider: (done) => {
         done(null, accessToken);
-=======
-  async syncOutlookCalendarEventList(user: User, calendar: Calendar, manager?: EntityManager) {
-    return transactionManagerWrapper(
-      manager,
-      this.calendarTokenRepository,
-      async (manager) => {
-        const cal = await manager.getRepository(Calendar).findOne({
-          where: { id: calendar.id },
-          relations: ['calendarToken']
-        })
-        const token = cal.calendarToken;
-
-        if (!token) {
-          throw new NotFoundException(
-            'You have not calendar-event access token',
-          );
-        }
-
-        const { accessToken } = token;
-
-        const eventsFromDb = await manager.getRepository(CalendarEvent).find({
-          owner: { id: user.id },
-          outlookId: Not(IsNull()),
-        });
-
-        const calendarClient = await this.getOutlookCredentials(accessToken);
-        const events = await calendarClient
-          .api(`/me/calendars/${calendar.calendarId}/events`)
-          .options({ timeZone: 'GMT' })
-          .get();
-
-        const serializedEvents = events.value.map((item) => {
-          const event = new CalendarEvent();
-          event.outlookId = item.id;
-          event.eventType = EventTypeEnum.Office365CalendarEvent;
-          event.owner = user;
-          event.start = item.start.dateTime
-            ? new Date(item.start.dateTime)
-            : null;
-          event.end = item.end.dateTime ? new Date(item.end.dateTime) : null;
-          event.title = item.subject || null;
-          event.creatorFromOutlook =
-            item.organizer.emailAddress.address || null;
-          event.meetLink = item.onlineMeeting || null;
-          event.createdOn = new Date(item.createdDateTime);
-          event.updatedOn = new Date(item.lastModifiedDateTime);
-          event.description = item.bodyPreview || null;
-
-          return event;
-        });
-
-        const delta = this.compareEvents(
-          eventsFromDb,
-          serializedEvents,
-          'outlookId',
-        );
-
-        if (delta.changed.length > 0) {
-          const outlookId = delta.changed[0].outlookId;
-
-          await manager
-            .getRepository(CalendarEvent)
-            .createQueryBuilder()
-            .update()
-            .set(delta.changed[0])
-            .where('"calendar_event"."outlookId" = :outlookId', {
-              outlookId: outlookId,
-            })
-            .execute();
-        }
-
-        if (delta.deleted.length > 0) {
-          const outlookId = delta.deleted[0].outlookId;
-
-          await manager
-            .createQueryBuilder()
-            .delete()
-            .from(CalendarEvent)
-            .where('"calendar_event"."outlookId" = :outlookId', {
-              outlookId: outlookId,
-            })
-            .execute();
-        }
-
-        return await manager.getRepository(CalendarEvent).save(delta.added);
->>>>>>> 17cd03b (Add remove google events after disconnect calendar)
       },
     });
     const calendars = await client
