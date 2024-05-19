@@ -12,7 +12,6 @@ import { User } from '@user/entity/user.entity';
 import { CalendarTypeEnum } from '../enums/calendarType.enum';
 
 @Entity()
-@Unique(['calendarType', 'owner'])
 export class CalendarToken {
   @PrimaryGeneratedColumn('uuid')
   id!: number;

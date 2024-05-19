@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
+import { Calendar } from './calendar.entity';
 
 @Entity()
 export class CalendarWebhookChannel {
@@ -17,6 +19,10 @@ export class CalendarWebhookChannel {
 
   @Column({ type: 'varchar', nullable: true, default: null })
   channelId!: string;
+
+  @OneToOne(() => Calendar, (calendar) => calendar.id, { nullable: false })
+  @JoinColumn()
+  calendar!: Calendar;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false })
   @JoinColumn()

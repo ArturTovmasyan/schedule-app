@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {CalendarPermissionService} from "../../../../services/calendar/permission.service";
 
 @Component({
-  selector: 'app-google-calendar',
+  selector: 'app-google-calendars',
   templateUrl: './google-calendar.component.html',
   styleUrls: ['./google-calendar.component.scss']
 })
@@ -25,10 +25,11 @@ export class GoogleCalendarComponent implements OnInit {
               .pipe(first())
               .subscribe({
                 next: () => {
-                  this.router.navigate(['/onboarding/calendar'])
+                  const route = localStorage.getItem('calendar-redirect') ?? '/onboarding/calendar';
+                  this.router.navigate([route]);
                 },
                 error: () => {
-                  this.router.navigate(['/404'])
+                  this.router.navigate(['/404']);
                 }
               });
           }

@@ -2,6 +2,7 @@ import { BadGatewayException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CalendarToken } from './entity/calendarToken.entity';
+import { Calendar } from '../calendar-event/entities/calendar.entity';
 import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { ConfigService } from '@nestjs/config';
 import * as msal from '@azure/msal-node';
@@ -15,6 +16,8 @@ import { CalendarEventService } from '../calendar-event/calendar-event.service';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
 import { google, oauth2_v2 } from 'googleapis';
 import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
+import { CalendarData } from './types/calendar-data.type';
+import { ca } from 'date-fns/locale';
 
 @Injectable()
 export class CalendarPermissionsService {
@@ -73,7 +76,7 @@ export class CalendarPermissionsService {
     });
   }
 
-  async toggleGoogleCalendar(user: User) {
+  async connectGoogleCalendar() {
     const statusOfCalendarsAndUrl: {
       url: null | string;
       statusOfCalendars: null | object;
@@ -130,6 +133,61 @@ export class CalendarPermissionsService {
     return statusOfCalendarsAndUrl;
   }
 
+  async disconnectGoogleCalendar(user: User, calendarId: string) {
+    const statusOfCalendarsAndUrl: {
+      url: null | string;
+      statusOfCalendars: null | object;
+    } = {
+      url: null,
+      statusOfCalendars: null,
+    };
+
+    const existingTokens = await this.calendarTokenRepository.findOne({
+      where: {
+        owner: user.id,
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+        ownerEmail: calendarId
+      },
+    });
+
+    if (existingTokens?.refreshToken) {
+      await this.calendarTokenRepository.manager.transaction(
+        async (manager) => {
+          await this.calendarEventService.stopGoogleWebhookChannel(
+            user,
+            existingTokens.accessToken,
+            calendarId,
+            manager,
+          );
+          const resRevokeToken =
+            await this.clientsCredentials.googleOAuth2Client.revokeToken(
+              existingTokens.refreshToken,
+            );
+
+          if (resRevokeToken.status === 200) {
+            await manager.getRepository(Calendar).delete({
+              owner: { id: user.id },
+              calendarId: calendarId,
+              calendarType: CalendarTypeEnum.GoogleCalendar,
+            });
+            
+            await manager.getRepository(CalendarToken).delete({
+              owner: { id: user.id },
+              ownerEmail: calendarId,
+              calendarType: CalendarTypeEnum.GoogleCalendar,
+            });
+          }
+        },
+      );
+      statusOfCalendarsAndUrl.statusOfCalendars =
+        await this.getUserStatusOfCalendars(user.id);
+
+      return statusOfCalendarsAndUrl;
+    }
+
+    return statusOfCalendarsAndUrl;
+  }
+
   async getTokensFromGoogleAndSave(user: User, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
@@ -151,22 +209,7 @@ export class CalendarPermissionsService {
 
       const expiryDate = new Date(tokens.expiry_date).toISOString();
 
-      const existingToken = await calendarTokenRepository.findOne({
-        calendarType: CalendarTypeEnum.GoogleCalendar,
-        owner: { id: user.id },
-      });
-
-      const calendarTokenBody = existingToken
-        ? {
-            id: existingToken.id,
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token ? tokens.refresh_token : null,
-            expiryDate,
-            calendarType: CalendarTypeEnum.GoogleCalendar,
-            owner: { id: user.id },
-            ownerEmail,
-          }
-        : {
+      const calendarTokenBody = {
             accessToken: tokens.access_token,
             refreshToken: tokens.refresh_token ? tokens.refresh_token : null,
             expiryDate,
@@ -177,14 +220,15 @@ export class CalendarPermissionsService {
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
 
-      await this.calendarEventService.getCalendarsFromGoogle(user, manager);
-      await this.calendarEventService.googleEventWatcher(user, token, manager);
+      const calendar = await this.calendarEventService.getCalendarsFromGoogle(user, token, manager);
+      await this.calendarEventService.googleEventWatcher(user, calendar, manager);
+      await this.calendarEventService.syncGoogleCalendarEventList(user, calendar, manager);
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });
   }
 
-  async toggleMS365Calendar(user: User) {
+  async connectMS365Calendar() {
     const statusOfCalendarsAndUrl: {
       url: null | string;
       statusOfCalendars: null | object;
@@ -270,50 +314,54 @@ export class CalendarPermissionsService {
       const refreshToken =
         refreshTokenObject[Object.keys(refreshTokenObject)[0]].secret;
 
-      const existingToken = await calendarTokenRepository.findOne({
-        calendarType: CalendarTypeEnum.Office365Calendar,
-        owner: { id: user.id },
-      });
-
-      const calendarTokenBody = existingToken
-        ? {
-            id: existingToken.id,
+      const calendarTokenBody = {
             accessToken: tokenResponse.accessToken,
             refreshToken,
             expiryDate: tokenResponse.expiresOn,
             extExpiryDate: tokenResponse.extExpiresOn,
             calendarType: CalendarTypeEnum.Office365Calendar,
             owner: { id: user.id },
-            ownerEmail: tokenResponse.account.idTokenClaims.email,
-          }
-        : {
-            accessToken: tokenResponse.accessToken,
-            refreshToken,
-            expiryDate: tokenResponse.expiresOn,
-            extExpiryDate: tokenResponse.extExpiresOn,
-            calendarType: CalendarTypeEnum.Office365Calendar,
-            owner: { id: user.id },
-            ownerEmail: tokenResponse.account.idTokenClaims.email,
+            ownerEmail: tokenResponse.account.username,
           };
 
       await calendarTokenRepository.save(calendarTokenBody);
 
       this.msalInstance.clearCache();
 
-      await this.calendarEventService.getCalendarsFromOutlook(user, manager);
+      const token = await calendarTokenRepository.save(calendarTokenBody);
+      const calendar = await this.calendarEventService.getCalendarsFromOutlook(user, token, manager);
 
-      await this.calendarEventService.outlookEventWatcher(
-        user,
-        tokenResponse.accessToken,
-        manager,
-      );
-      await this.calendarEventService.syncOutlookCalendarEventList(
-        user,
-        manager,
-      );
+      await this.calendarEventService.outlookEventWatcher(user, calendar, manager);
+      await this.calendarEventService.syncOutlookCalendarEventList(user, calendar, manager);
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });
+  }
+
+  async getUserCalendars(user: User, manager?: EntityManager) {
+    return transactionManagerWrapper(
+      manager,
+      this.calendarTokenRepository,
+      async (manager) => {
+        const userCalendars: CalendarData = {
+          googleCalendar: [],
+          office365Calendar: []
+        };
+
+        const calendars = await manager
+          .getRepository(Calendar)
+          .find({ where: { owner: user.id } });
+        
+          calendars.map((calendar) => {
+            if (calendar.calendarType === CalendarTypeEnum.GoogleCalendar.valueOf()) {
+              userCalendars.googleCalendar.push(calendar);
+            } else if (calendar.calendarType === CalendarTypeEnum.Office365Calendar.valueOf()) {
+              userCalendars.office365Calendar.push(calendar);
+            }
+          });
+        return userCalendars;
+      },
+    );
   }
 
   async getUserStatusOfCalendars(userId: string, manager?: EntityManager) {

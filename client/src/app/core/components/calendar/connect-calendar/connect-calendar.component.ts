@@ -1,12 +1,16 @@
 import {Component, OnInit} from '@angular/core';
+import { Router } from '@angular/router';
 import {first} from "rxjs/operators";
+import { CalendarData } from 'src/app/core/interfaces/calendar/calendar-data.interface';
 import {CalendarPermissionService} from "../../../services/calendar/permission.service";
-import {CalendarPermission} from "../../../interfaces/calendar/permission.calendar.inteface";
 
 export enum CalendarType {
-  GOOGLE = "googleCalendar",
-  MS = "office365Calendar",
-  POPUP_NAME = 'calendar-access'
+  GoogleCalendar = 'GoogleCalendar',
+  Office365Calendar = 'Office365Calendar',
+  ExchangeCalendar = 'ExchangeCalendar',
+  OutlookPlugIn = 'OutlookPlugIn',
+  iCloudCalendar = 'iCloudCalendar',
+  PopupName = 'calendar-access'
 }
 
 @Component({
@@ -16,11 +20,16 @@ export enum CalendarType {
 })
 export class ConnectCalendarComponent implements OnInit {
 
-  googleCalendar: any = null
-  msCalendar: any = null
+  data: CalendarData = {
+    googleCalendar: [],
+    office365Calendar: []
+  }
   error: any | null = null;
 
-  constructor(private calendarPermissionService: CalendarPermissionService) {
+  constructor(
+    private calendarPermissionService: CalendarPermissionService,
+    private readonly router: Router
+  ) {
   }
 
   ngOnInit(): void {
@@ -28,12 +37,11 @@ export class ConnectCalendarComponent implements OnInit {
   }
 
   fetchCurrentCalendar() {
-    this.calendarPermissionService.fetch()
+    this.calendarPermissionService.fetchCalendars()
       .pipe(first())
       .subscribe({
-        next: (value: CalendarPermission | any) => {
-          this.googleCalendar = value.googleCalendar
-          this.msCalendar = value.office365Calendar
+        next: (data: CalendarData | any) => {
+          this.data = data;
         },
         error: (error) => {
           this.error = error;
@@ -41,22 +49,63 @@ export class ConnectCalendarComponent implements OnInit {
       });
   }
 
-  accessGoogleCalendar(checked: boolean) {
-    this.calendarPermissionService.googleCalendarAccess(checked).subscribe();
+  addGoogleCalendar() {
+    localStorage.setItem('calendar-redirect', window.location.pathname);
+    this.calendarPermissionService.connectGoogleCalendar()
+      .pipe(first())
+      .subscribe({
+        next: (url: string) => {
+          window.location.href = url;
+        }
+      });
   }
 
-  accessMsCalendar(checked: boolean) {
-    this.calendarPermissionService.msCalendarAccess(checked).subscribe();
+  removeGoogleCalendar(calendarId: string) {
+    this.calendarPermissionService.disconnectGoogleCalendar(calendarId)
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          const temp = this.data.googleCalendar.filter((calendar) => {
+            return calendarId != calendar.calendarId;
+          });
+          this.data.googleCalendar = temp;
+        }
+      });
+  }
+
+  addOffice365Calendar() {
+    this.calendarPermissionService.connectOffice365Calendar()
+      .pipe(first())
+      .subscribe({
+        next: (url: string) => {
+          window.location.href = url;
+        }
+      });
+  }
+
+  removeOffice365Calendar(calendarId: string) {
+    this.calendarPermissionService.disconnectOffice365Calendar(calendarId)
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          const temp = this.data.office365Calendar.filter((calendar) => {
+            return calendarId != calendar.calendarId;
+          });
+          this.data.office365Calendar = temp;
+        }
+      });
   }
 
   hasCalendarPermission(type: CalendarType): boolean {
-    if (this.googleCalendar != null) {
-      if (type === CalendarType.GOOGLE) {
-        return this.googleCalendar === true;
-      } else if (type === CalendarType.MS) {
-        return this.msCalendar === true;
-      }
+    if (type === CalendarType.GoogleCalendar) {
+      return this.data.googleCalendar.length !== 0;
+    } else if (type === CalendarType.Office365Calendar) {
+      return this.data.office365Calendar.length !== 0;
     }
+    return false
+  }
+
+  notifyAvailable(type: CalendarType): boolean {
     return false
   }
 

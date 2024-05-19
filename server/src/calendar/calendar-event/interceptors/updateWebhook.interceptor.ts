@@ -54,7 +54,7 @@ export class UpdateWebhookInterceptor implements NestInterceptor {
               owner: { id: user.id },
               calendarType: CalendarTypeEnum.GoogleCalendar,
             });
-            await this.calendarEventService.googleEventWatcher(user, token);
+            await this.calendarEventService.googleEventWatcher(user, webhook.calendar);
           } else if (
             webhook.calendarType === CalendarTypeEnum.Office365Calendar
           ) {

@@ -22,6 +22,7 @@ import * as locaTunnel from 'localtunnel';
 import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity';
 import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
+import moment = require('moment');
 
 @Injectable()
 export class CalendarEventService {
@@ -35,68 +36,48 @@ export class CalendarEventService {
     @InjectRepository(CalendarWebhookChannel)
     private readonly calendarWebhookChannelRepository: Repository<CalendarWebhookChannel>,
     private readonly clientsCredentials: ClientsCredentialsService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
-  async getCalendarsFromGoogle(user: User, manager?: EntityManager) {
+  async getCalendarsFromGoogle(user: User, token: CalendarToken, manager?: EntityManager) {
     return transactionManagerWrapper(
       manager,
       this.calendarTokenRepository,
       async (manager) => {
-        const token = await manager.getRepository(CalendarToken).findOne({
-          owner: { id: user.id },
-          calendarType: CalendarTypeEnum.GoogleCalendar,
-        });
-
-        if (!token) {
-          throw new NotFoundException(
-            'You have not calendar-event access token',
-          );
-        }
 
         const { accessToken } = token;
 
-        const calendar = await this.getGoogleCredentials(accessToken);
+        const googleCalendar = await this.getGoogleCredentials(accessToken);
 
-        const calendarList = await calendar.calendarList.list();
+        const calendarList = await googleCalendar.calendarList.list();
 
-        await manager.getRepository(Calendar).delete({
-          owner: { id: user.id },
-          calendarType: CalendarTypeEnum.GoogleCalendar,
-        });
-
-        const calendarSerializedList = calendarList.data.items.map((item) => {
-          const calendar = new Calendar();
-          calendar.calendarId = item.id;
-          calendar.summary = item.summary;
-          calendar.isPrimary = item.primary ? item.primary : false;
-          calendar.calendarType = CalendarTypeEnum.GoogleCalendar;
-          calendar.owner = user;
-          return calendar;
-        });
+        const calendarSerializedList = calendarList.data.items
+          .filter((item) => {
+            return item.primary;
+          })
+          .map((item) => {
+            const calendar = new Calendar();
+            calendar.calendarId = item.id;
+            calendar.summary = item.summary;
+            calendar.isPrimary = item.primary ? item.primary : false;
+            calendar.calendarType = CalendarTypeEnum.GoogleCalendar;
+            calendar.owner = user;
+            calendar.calendarToken = token;
+            return calendar;
+          });
 
         return await manager
           .getRepository(Calendar)
-          .save(calendarSerializedList);
+          .save(calendarSerializedList[0]);
       },
     );
   }
 
-  async getCalendarsFromOutlook(user: User, manager?: EntityManager) {
+  async getCalendarsFromOutlook(user: User, token: CalendarToken, manager?: EntityManager) {
     return transactionManagerWrapper(
       manager,
       this.calendarTokenRepository,
       async (manager) => {
-        const token = await manager.getRepository(CalendarToken).findOne({
-          owner: { id: user.id },
-          calendarType: CalendarTypeEnum.Office365Calendar,
-        });
-        if (!token) {
-          throw new NotFoundException(
-            'You have not calendar-event access token',
-          );
-        }
-
         const { accessToken } = token;
 
         const client = await this.getOutlookCredentials(accessToken);
@@ -105,40 +86,40 @@ export class CalendarEventService {
           .api('https://graph.microsoft.com/v1.0/me/calendars/')
           .get();
 
-        await manager.getRepository(Calendar).delete({
-          owner: { id: user.id },
-          calendarType: CalendarTypeEnum.Office365Calendar,
-        });
-
-        const calendarSerializedList = calendarList.value.map((item) => {
-          const calendar = new Calendar();
-          calendar.calendarId = item.id;
-          calendar.summary = item.name;
-          calendar.isPrimary = item.isDefaultCalendar
-            ? item.isDefaultCalendar
-            : false;
-          calendar.calendarType = CalendarTypeEnum.Office365Calendar;
-          calendar.owner = user;
-          return calendar;
-        });
+        const calendarSerializedList = calendarList.value
+          .filter((item) => {
+            return item.isDefaultCalendar;
+          })
+          .map((item) => {
+            const calendar = new Calendar();
+            calendar.calendarId = item.id;
+            calendar.summary = token.ownerEmail;
+            calendar.isPrimary = item.isDefaultCalendar
+              ? item.isDefaultCalendar
+              : false;
+            calendar.calendarType = CalendarTypeEnum.Office365Calendar;
+            calendar.owner = user;
+            calendar.calendarToken = token;
+            return calendar;
+          });
 
         return await manager
           .getRepository(Calendar)
-          .save(calendarSerializedList);
+          .save(calendarSerializedList[0]);
       },
     );
   }
 
-  async syncGoogleCalendarEventList(user: User, manager?: EntityManager) {
+  async syncGoogleCalendarEventList(user: User, calendar: Calendar, manager?: EntityManager) {
     return transactionManagerWrapper(
       manager,
       this.calendarTokenRepository,
       async (manager) => {
-        const token = await manager.getRepository(CalendarToken).findOne({
-          owner: { id: user.id },
-          calendarType: CalendarTypeEnum.GoogleCalendar,
-        });
-
+        const cal = await manager.getRepository(Calendar).findOne({
+          where: { id: calendar.id },
+          relations: ['calendarToken']
+        })
+        const token = cal.calendarToken;
         if (!token) {
           throw new NotFoundException(
             'You have not calendar-event access token',
@@ -480,6 +461,7 @@ export class CalendarEventService {
   async stopGoogleWebhookChannel(
     user: User,
     token: string,
+    calendarId: string,
     manager: EntityManager,
   ) {
     const calendarWebhookChannelRepo = manager.getRepository(
@@ -491,14 +473,15 @@ export class CalendarEventService {
       .findOne({
         owner: { id: user.id },
         calendarType: CalendarTypeEnum.GoogleCalendar,
+        calendarId: calendarId,
         isPrimary: true,
       });
     const existedGoogleWebhookChannel =
       await calendarWebhookChannelRepo.findOne({
         owner: { id: user.id },
+        calendar: googleLocalPrimaryCalendar,
         calendarType: CalendarTypeEnum.GoogleCalendar,
       });
-
     if (existedGoogleWebhookChannel) {
       const stopChannelResponse = await googleCalendarClient.channels.stop({
         requestBody: {
@@ -520,16 +503,26 @@ export class CalendarEventService {
   async stopOutlookWebhookChannel(
     user: User,
     token: string,
+    calendarId: string,
     manager: EntityManager,
   ) {
     const calendarWebhookChannelRepo = manager.getRepository(
       CalendarWebhookChannel,
     );
     const outlookCalendarClient = await this.getOutlookCredentials(token);
+    const msLocalPrimaryCalendar = await manager
+      .getRepository(Calendar)
+      .findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.Office365Calendar,
+        calendarId: calendarId,
+        isPrimary: true,
+      });
 
     const existedOutlookWebhookChannel =
       await calendarWebhookChannelRepo.findOne({
         owner: { id: user.id },
+        calendar: msLocalPrimaryCalendar,
         calendarType: CalendarTypeEnum.Office365Calendar,
       });
 
@@ -547,7 +540,7 @@ export class CalendarEventService {
 
   async googleEventWatcher(
     user: User,
-    token: CalendarToken,
+    calendar: Calendar,
     manager?: EntityManager,
   ) {
     return transactionManagerWrapper(
@@ -555,7 +548,7 @@ export class CalendarEventService {
       this.calendarWebhookChannelRepository,
       async (manager) => {
         const googleCalendarClient = await this.getGoogleCredentials(
-          token.accessToken,
+          calendar.calendarToken.accessToken,
         );
 
         const tunnel = await locaTunnel({
@@ -571,23 +564,15 @@ export class CalendarEventService {
           CalendarWebhookChannel,
         );
 
-        const googleLocalPrimaryCalendar = await manager
-          .getRepository(Calendar)
-          .findOne({
-            owner: { id: user.id },
-            calendarType: CalendarTypeEnum.GoogleCalendar,
-            isPrimary: true,
-          });
-
         const watchResponse = await googleCalendarClient.events.watch({
           requestBody: {
-            id: googleLocalPrimaryCalendar.id,
+            id: calendar.id,
             type: 'web_hook',
             address: `${baseUrl}/api/calendar/events/google-webhook`,
-            token: token.accessToken,
-            expiration: null,
+            token: calendar.calendarToken.accessToken,
+            expiration: null
           },
-          calendarId: googleLocalPrimaryCalendar.calendarId,
+          calendarId: calendar.calendarId,
         });
 
         const webhookResourceId = watchResponse.data.resourceId;
@@ -598,18 +583,15 @@ export class CalendarEventService {
         webhookChannel.expirationDate = new Date(webhookExpiration);
         webhookChannel.owner = user;
         webhookChannel.calendarType = CalendarTypeEnum.GoogleCalendar;
+        webhookChannel.calendar = calendar;
 
         await calendarWebhookChannelRepo.save(webhookChannel);
       },
     );
   }
 
-  async outlookEventWatcher(user: User, token, manager?: EntityManager) {
-    const outlookCalendarClient = await this.getOutlookCredentials(token);
-
-    const calendarWebhookChannelRepo = manager.getRepository(
-      CalendarWebhookChannel,
-    );
+  async outlookEventWatcher(user: User, calendar: Calendar, manager?: EntityManager) {
+    const outlookCalendarClient = await this.getOutlookCredentials(calendar.calendarToken.accessToken);
 
     const tunnel = await locaTunnel({
       port: +this.configService.get<string>('PORT'),
@@ -620,12 +602,15 @@ export class CalendarEventService {
         ? tunnel.url
         : this.configService.get<string>('WEB_PRODUCTION_HOST');
 
+    const calendarWebhookChannelRepo = manager.getRepository(CalendarWebhookChannel);
+
     const watchResponse = await outlookCalendarClient
       .api('/subscriptions')
       .post({
         changeType: 'deleted,updated,created',
         notificationUrl: `${baseUrl}/api/calendar/events/outlook-webhook`,
         resource: 'me/events',
+        token: calendar.calendarToken.accessToken,
         expirationDateTime: new Date(Date.now() + 250560000).toISOString(),
       });
 
@@ -634,6 +619,7 @@ export class CalendarEventService {
     webhookChannel.expirationDate = new Date(watchResponse.expirationDateTime);
     webhookChannel.owner = user;
     webhookChannel.calendarType = CalendarTypeEnum.Office365Calendar;
+    webhookChannel.calendar = calendar;
 
     await calendarWebhookChannelRepo.save(webhookChannel);
   }
@@ -641,7 +627,7 @@ export class CalendarEventService {
   async getWebhookByChannelId(channel: string | string[]) {
     return this.calendarWebhookChannelRepository.findOne({
       where: { channelId: channel },
-      relations: ['owner'],
+      relations: ['owner', 'calendar'],
     });
   }
 

@@ -134,6 +134,23 @@ section.choose-calendar {
           }
         }
 
+        button.add {
+          border: 1px solid #EFEFEF;
+          border-radius: 25px;
+          color: #747474;
+          font-family: 'Lexend Deca', sans-serif;
+          font-size: 13px;
+          padding: 0 10px;
+          height: 30px;
+          border: 0;
+          font-weight: 400;
+          &:hover {
+            transition: 0.4s ease;
+            background-color: #747474;
+            color: #fff;
+          }
+        }
+
         .switch {
           display: inline-block;
           margin-left: 10px;

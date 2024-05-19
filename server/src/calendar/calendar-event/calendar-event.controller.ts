@@ -87,7 +87,7 @@ export class CalendarEventController {
     const resourceId = req.headers['x-goog-resource-id'];
     const resourceState = req.headers['x-goog-resource-state'];
 
-    const webhook = await this.calendarEventService.getWebhookByChannelId(
+    const webhookChannel = await this.calendarEventService.getWebhookByChannelId(
       resourceId,
     );
     setTimeout(async () => {
@@ -101,6 +101,15 @@ export class CalendarEventController {
     if (resourceState === 'sync') {
       return res.status(200).send();
     }
+
+    setTimeout(async () => {
+      await this.calendarEventService.syncGoogleCalendarEventList(
+        webhookChannel.owner,
+        webhookChannel.calendar
+      );
+    }, 1000);
+
+    res.status(200).send();
   }
 
   @Post('outlook-webhook')
@@ -112,14 +121,15 @@ export class CalendarEventController {
     if (req.body.value) {
       const resourceId = req.body.value[0].subscriptionId;
 
-      const webhook = await this.calendarEventService.getWebhookByChannelId(
+      const webhookChannel = await this.calendarEventService.getWebhookByChannelId(
         resourceId,
       );
 
       setTimeout(async () => {
         console.log('forOutlookWebhook');
         await this.calendarEventService.syncOutlookCalendarEventList(
-          webhook.owner,
+          webhookChannel.owner,
+          webhookChannel.calendar
         );
       }, 1000);
     }

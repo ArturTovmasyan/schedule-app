@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
+import { CalendarToken } from 'src/calendar/calendar-permissions/entity/calendarToken.entity';
 
 @Entity()
 export class Calendar {
@@ -27,6 +29,10 @@ export class Calendar {
   @ManyToOne(() => User, (user) => user.id, { nullable: false })
   @JoinColumn()
   owner!: User;
+
+  @OneToOne(() => CalendarToken, (token) => token.id, { nullable: false })
+  @JoinColumn()
+  calendarToken!: CalendarToken;
 
   @Column({
     type: 'enum',

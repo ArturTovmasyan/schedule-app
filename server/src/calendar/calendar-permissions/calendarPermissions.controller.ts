@@ -1,6 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
+  Param,
+  Post,
   Query,
   Req,
   Res,
@@ -44,10 +47,29 @@ export class CalendarPermissionsController {
     const { url, statusOfCalendars } =
       await this.calendarPermissionsService.toggleGoogleCalendar(req.user);
     if (url) {
-      return res.send({ data: { url: url } });
+      return { data: { url: url } };
     }
 
-    return res.send(statusOfCalendars);
+    return statusOfCalendars;
+  }
+
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Disconnect google calendar' })
+  @Post('google-calendar/revoke')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(UpdateAccessTokenInterceptor)
+  async disconnectGoogleCalendar(
+    @GetUser() user: User,
+    @Body() revokeCalendarDto: RevokeCalendarDto
+  ) {
+    const { url, statusOfCalendars } =
+    await this.calendarPermissionsService.disconnectGoogleCalendar(user, revokeCalendarDto.calendarId);
+
+    if (url) {
+      return { data: { url: url } };
+    }
+
+    return statusOfCalendars;
   }
 
   @ApiExcludeEndpoint()
@@ -75,10 +97,29 @@ export class CalendarPermissionsController {
     const { url, statusOfCalendars } =
       await this.calendarPermissionsService.toggleMS365Calendar(req.user);
     if (url) {
-      return res.send({ data: { url: url } });
+      return { data: { url: url } };
     }
 
-    return res.send(statusOfCalendars);
+    return statusOfCalendars;
+  }
+
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Disconnect microsoft calendar' })
+  @Post('ms-calendar/revoke')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(UpdateAccessTokenInterceptor)
+  async disconnectMS365Calendar(
+    @GetUser() user: User,
+    @Body() revokeCalendarDto: RevokeCalendarDto
+  ) {
+    const { url, statusOfCalendars } =
+    await this.calendarPermissionsService.disconnectOffice365Calendar(user, revokeCalendarDto.calendarId);
+
+    if (url) {
+      return { data: { url: url } };
+    }
+
+    return statusOfCalendars;
   }
 
   @ApiExcludeEndpoint()
