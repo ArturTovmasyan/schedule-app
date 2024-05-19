@@ -123,7 +123,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.userSubscription$ = this.authService.currentUser.subscribe((res: ApplicationUser | null) => {
       this.currentUser = res?.user || null;
       if(this.currentUser) {
-        console.log(this.currentUser)
         this.selectedUsers[0] = {
           id: this.currentUser.id,
           name: this.currentUser.fullName,
