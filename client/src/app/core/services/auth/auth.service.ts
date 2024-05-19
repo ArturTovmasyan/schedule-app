@@ -67,7 +67,7 @@ export class AuthService {
     return this.http.patch<boolean>('/api/auth/change-password', {
       password,
       token
-    }, {headers: this.setBearerHeader(token)}).pipe(
+    }, {headers: this.authorizationHeader}).pipe(
       map((response: boolean) => {
         return response;
       })
@@ -108,8 +108,8 @@ export class AuthService {
     );
   }
 
-  get authorizationHHeader(): { [header: string]: string } {
+  get authorizationHeader(): { [header: string]: string } {
     const token: string = this.currentUserValue?.accessToken ?? ''
-    return this.currentUserValue != null ? { 'Authorization': `Bearer ${token}` } : {}
+    return this.currentUserValue != null ? { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` } : {}
   }
 }

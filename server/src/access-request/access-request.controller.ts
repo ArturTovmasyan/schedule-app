@@ -20,7 +20,7 @@ import {
   CreateAccessRequestDto,
 } from './dto/create-access-request.dto';
 
-@Controller('calendar/access-request')
+@Controller('api/calendar/access-request')
 export class AccessRequestController {
   constructor(private readonly accessRequestService: AccessRequestService) {}
 

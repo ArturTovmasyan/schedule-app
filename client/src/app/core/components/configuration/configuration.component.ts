@@ -12,7 +12,6 @@ export class ConfigurationComponent implements OnInit {
 
   currentAccessibility: CalendarAccessibility | null = null
   error: any | null = null;
-  isChecked = false;
 
   constructor(private calendarAccessibilityService: AccessibilityService) {}
 

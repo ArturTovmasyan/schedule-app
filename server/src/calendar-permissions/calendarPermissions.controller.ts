@@ -14,7 +14,7 @@ import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { Response } from 'express';
 import { UpdateAccessTokenInterceptor } from '../components/helpers/updateAccessToken.interceptor';
 
-@Controller('calendar-permissions')
+@Controller('api/calendar-permissions')
 export class CalendarPermissionsController {
   constructor(
     private readonly calendarPermissionsService: CalendarPermissionsService,

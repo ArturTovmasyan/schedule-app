@@ -16,7 +16,7 @@ import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { CalendarAccessService } from './calendar-access.service';
 import { User } from '@user/entity/user.entity';
 
-@Controller('calendar-access')
+@Controller('api/calendar-access')
 export class CalendarAccessController {
   constructor(private readonly calendarAccessService: CalendarAccessService) {}
 
