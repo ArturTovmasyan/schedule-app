@@ -42,12 +42,100 @@ export class AvailabilityService {
      * @returns `{Created Availability data}`
      */
 
+<<<<<<< HEAD
     async create(
         user: User,
         createAvailabilityDto: CreateAvailabilityDto,
     ): Promise<IResponse<Availability>> {
         const checkUser = await this.availabilityRepo.findOne({
             where: { user: { id: user.id } },
+=======
+  async create(
+    user: User,
+    createAvailabilityDto: CreateAvailabilityDto,
+  ): Promise<IResponse<Availability>> {
+    const checkUser = await this.availabilityRepo.findOne({
+      where: { user: { id: user.id } },
+    });
+
+    if (checkUser) {
+      throw new BadRequestException({
+        message: ErrorMessages.availabilityExists,
+      });
+    }
+
+    const data = await this.availabilityRepo.save({
+      user: { id: user.id },
+      ...createAvailabilityDto,
+    });
+
+    return { data };
+  }
+
+  /**
+   * @description `Find calendar-availability of user`
+   * @param userId - `Authorized user data`
+   * @param convert - `Convert data ?`
+   * @returns `{calendar-availability entity data(Object)}`
+   */
+
+  async findOne(userId: string, convert = false): Promise<any> {
+    const data: Availability = await this.availabilityRepo.findOne({
+      user: { id: userId },
+    });
+
+    return { data };
+  }
+
+  /**
+   * @description `Find user calendar availability times`
+   * @param userIds
+   * @param currentUserId - `Current user id`
+   * @returns `{Event times data}`
+   */
+
+  async findUserAvailabilityTimes(
+    userIds: any[],
+    currentUserId: string,
+  ): Promise<any> {
+    let availabilityData = [];
+
+    if (userIds.length > 0) {
+      let availability: Availability = await this.availabilityRepo.findOne({
+        where: { user: currentUserId },
+      });
+
+      const availabilities: Availability[] = await this.availabilityRepo.find({
+        where: { user: In([...userIds]) },
+      });
+      if (availabilities) {
+        const currentFormat =
+          availability.clockType == ClockType.H24 ? 'HH:mm' : 'hh:mma';
+        availabilities.forEach((data) => {
+          const dataFormat =
+            data.clockType == ClockType.H24 ? 'HH:mm' : 'hh:mma';
+          availability = this.calculateAvailableDays(availability, data);
+          const currentStart = moment(
+            availability.from,
+            currentFormat,
+            availability.timezone,
+          );
+          const currentEnd = moment(
+            availability.to,
+            currentFormat,
+            availability.timezone,
+          );
+          const start = moment(data.from, dataFormat, data.timezone);
+          const end = moment(data.to, dataFormat, data.timezone);
+
+          if (currentStart.isSameOrBefore(start)) {
+            availability.from = start.format(currentFormat);
+          }
+
+          if (end.isSameOrBefore(currentEnd)) {
+            availability.to = end.format(currentFormat);
+          }
+>>>>>>> 3ae0f09 (remove timeslot selection constraint when no contacts)
         });
 
         if (checkUser) {

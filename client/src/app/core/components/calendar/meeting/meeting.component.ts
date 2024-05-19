@@ -254,7 +254,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   getContactAvailabilities() {
     this.availabilityService
-      .getByUserId([...this.selectedAttendees.map((user) => user.id!)])
+      .getByUserId([...this.selectedAttendees.map((user) => user.id!).filter((x) => x != null)])
       .pipe(first())
       .subscribe({
         next: (data: any) => {

@@ -98,7 +98,134 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
 >>>>>>> 831cabe (feat: allow user to cancel event)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+  calendarOptions: CalendarOptions = {
+    plugins: [
+      dayGridPlugin,
+      bootstrapPlugin,
+      interactionPlugin,
+      timeGridPlugin,
+      rrulePlugin,
+      interactionPlugin,
+    ],
+    initialView: 'timeGridWeek',
+    dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },
+    direction: 'ltr',
+    themeSystem: 'bootstrap',
+    dayHeaders: true,
+    editable: false,
+    allDaySlot: false,
+    eventTextColor: 'black',
+    eventBackgroundColor: '#E9F6FD',
+    eventOrderStrict: true,
+    stickyHeaderDates: true,
+    windowResizeDelay: 100,
+    dragRevertDuration: 500,
+    handleWindowResize: false,
+    expandRows: false,
+    showNonCurrentDates: false,
+    lazyFetching: false,
+    firstDay: 1,
+    unselectAuto: false,
+    windowResize: (view: any) => {
+      view.view.calendar.updateSize();
+    },
+    eventMouseEnter: (arg: any) => this.handleEventMouseEnter(arg),
+    eventMouseLeave: (arg: any) => this.handleEventMouseLeave(arg),
+    selectable: true,
+    slotLabelFormat: [
+      {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        meridiem: 'lowercase',
+        separator: '.',
+      },
+    ],
+    titleFormat: {
+      month: 'long',
+      day: 'numeric',
+    },
+    eventTimeFormat: {
+      hour: 'numeric',
+      minute: '2-digit',
+      meridiem: 'short',
+      hour12: true,
+    },
+    headerToolbar: {
+      left: '',
+      center: 'prev,title,next',
+      right: '',
+    },
+    eventClassNames: function (arg) {
+      return `event ${arg.event.extendedProps['event_class']}`;
+    },
+    select: (info: any) => {
+      // prevent multi-day event selection
+      var mEnd = moment(info.endStr);
+      var mStart = moment(info.startStr);
+      if (mEnd.isAfter(mStart, 'day')) {
+        this.calendarComponent?.getApi()?.unselect();
+        this.broadcaster.broadcast('meet_date_range', { start: '', end: ''});
+        return;
+      }
+
+      // check for shareable link
+      this.currentUrl = this.router.url;
+      if (this.currentUrl.indexOf('/calendar/sharable-link') != -1) {
+        this.runSharableLink(info);
+        return;
+      }
+
+      const data = { start: info.startStr, end: info.endStr };
+
+      if (this.selectedContactEmail) {
+        Object.assign(data, {
+          contact_email: this.selectedContactEmail,
+          contact_id: this.selectedContactId,
+        });
+      }
+
+      setTimeout(() => {
+        this.broadcaster.broadcast('meet_date_range', data);
+      }, 0);
+
+      if (
+        this.currentUrl !== '/calendar/meeting' &&
+        this.currentUrl != '/calendar/sharable-link'
+      ) {
+        this.router.navigate(['/calendar/meeting']);
+      }
+    },
+    selectOverlap: function (info: any) {
+      return (
+        info._def.ui.classNames[0] == AVAILABILITY_EVENT_CLASS ||
+        info._def.ui.classNames[0] == SUGGEST_EVENT_CLASS
+      );
+    },
+    eventClick: (info) => {
+      const { el, jsEvent, view } = info;
+      const elX = jsEvent.clientX - jsEvent.offsetX;
+      const elY = jsEvent.clientY - jsEvent.offsetY;
+      const xOffset = elX < this.screenWidth * 0.65 ? 10 : -420;
+      var yOffset = 0;
+      if (elY > this.screenHeight * 0.65) yOffset = -300;
+      else if (elY < this.screenHeight * 0.4) yOffset = 10;
+      else yOffset = -100;
+
+      this.eventDetailView.nativeElement.style.top = `${elY + yOffset}px`;
+      this.eventDetailView.nativeElement.style.left = `${
+        elX + el.clientWidth + xOffset
+      }px`;
+
+      this.currentEventSelection = info.event;
+      this.showDetail();
+    },
+  };
+
+>>>>>>> 3ae0f09 (remove timeslot selection constraint when no contacts)
   constructor(
     private calendarService: CalendarService,
     private broadcaster: BroadcasterService,
@@ -156,6 +283,13 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
             className: 'available-event'
           })
         }
+<<<<<<< HEAD
+=======
+        // init calendar options dynamically
+        if (availabilityDates && availabilityDates.length > 0) {
+          this.calendarOptions.slotDuration = '00:30:00';
+          this.calendarOptions.slotLabelInterval = 30;
+>>>>>>> 3ae0f09 (remove timeslot selection constraint when no contacts)
 
         this.contactAvailabilityDates = availabilityDates;
 
@@ -225,6 +359,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
       });
   }
 
+<<<<<<< HEAD
   calendarOptions: CalendarOptions = {
     plugins: [
       dayGridPlugin,
@@ -342,6 +477,8 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     },
   };
 
+=======
+>>>>>>> 3ae0f09 (remove timeslot selection constraint when no contacts)
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.screenWidth = window.innerWidth;
