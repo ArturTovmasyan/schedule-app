@@ -189,8 +189,14 @@ export class CalendarEventService {
 
       const calendar = await manager.getRepository(Calendar).findOne({
         owner: { id: user.id },
-        calendarId: In(eventBody.syncWith),
+        calendarId: eventBody.syncWith,
       });
+
+      if (!calendar) {
+        throw new BadRequestException({
+          message: ErrorMessages.calendarNotFound,
+        });
+      }
 
       if (calendar.calendarType === CalendarTypeEnum.GoogleCalendar) {
         const googleAccessToken = googleToken.accessToken;

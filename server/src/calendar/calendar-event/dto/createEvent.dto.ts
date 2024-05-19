@@ -34,9 +34,8 @@ export class CreateEventDto {
   @IsNotEmpty()
   end: string;
 
-  @IsString({ each: true })
-  @ArrayNotEmpty()
-  syncWith: string[];
+  @IsString()
+  syncWith: string;
 
   @IsArray()
   @IsEmail({}, { each: true })
