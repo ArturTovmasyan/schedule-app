@@ -1,6 +1,5 @@
-import { ViewportScroller } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import {ViewportScroller} from '@angular/common';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import * as moment from 'moment';
 
 @Component({
@@ -18,13 +17,14 @@ export class TimepickerComponent {
 
   showDropdown = false;
 
-  constructor(private scroller: ViewportScroller, private router: Router) {}
+  constructor(private scroller: ViewportScroller) {
+  }
 
   get timeSlots() {
     const startIndex = 0;
     const endIndex = this.meridian ? 12 : 24;
     const slots: string[] = [];
-    for(let i=startIndex; i<endIndex; i++) {
+    for (let i = startIndex; i < endIndex; i++) {
       slots.push(`${i}:00`.padStart(5, '0'));
     }
     return slots;
@@ -41,7 +41,7 @@ export class TimepickerComponent {
   }
 
   generateSlotId(slot: string) {
-    if(slot == "08:00") return "target";
+    if (slot == "08:00") return "target";
     return slot.replace(':', '-');
   }
 
@@ -50,16 +50,15 @@ export class TimepickerComponent {
     event.target.innerText = text;
     this.placeCaretAtEnd(event.target);
 
-    if(text.length == 5) {
+    if (text.length == 5) {
       this.timeChange.emit(text);
-    } 
+    }
   }
 
   toggleDropdown() {
     this.showDropdown = !this.showDropdown
-    if(this.showDropdown) {
+    if (this.showDropdown) {
       setTimeout(() => {
-        console.log(this.generateSlotId(this.time));
         this.scroller.scrollToAnchor(this.generateSlotId(this.time));
       }, 1000)
     }
@@ -73,20 +72,22 @@ export class TimepickerComponent {
   formatTime(text: string) {
     let cleanText = text.replace(/\D/g, "");
     const length = cleanText.length;
-    if(length > 4) {
-      cleanText = cleanText.slice(0,4);
+
+    if (length > 4) {
+      cleanText = cleanText.slice(0, 4);
     }
-    if(length == 2) {
+
+    if (length == 2) {
       cleanText = this.formatHours(cleanText)
-    } else if(length > 2) {
-      cleanText = `${this.formatHours(cleanText.slice(0,2))}${this.formatMins(cleanText.slice(2, cleanText.length))}`
+    } else if (length > 2) {
+      cleanText = `${this.formatHours(cleanText.slice(0, 2))}${this.formatMins(cleanText.slice(2, cleanText.length))}`
     }
 
     return cleanText;
   }
 
   formatMins(text: string) {
-    if(parseInt(text) > 59) {
+    if (parseInt(text) > 59) {
       text = `00`;
     }
     return text;
@@ -94,8 +95,8 @@ export class TimepickerComponent {
 
   formatHours(text: string) {
     const upperHourLimit = this.meridian ? 12 : 23;
-    if(parseInt(text) > upperHourLimit) {
-      text = `0${text.slice(0,1)}:${text.slice(1,2)}`;
+    if (parseInt(text) > upperHourLimit) {
+      text = `0${text.slice(0, 1)}:${text.slice(1, 2)}`;
     } else {
       text = `${text}:`
     }
@@ -105,19 +106,13 @@ export class TimepickerComponent {
   placeCaretAtEnd(el: any) {
     el.focus();
     if (typeof window.getSelection != "undefined"
-            && typeof document.createRange != "undefined") {
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        range.collapse(false);
-        const sel = window.getSelection();
-        sel?.removeAllRanges();
-        sel?.addRange(range);
+      && typeof document.createRange != "undefined") {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
     }
-    // else if (typeof document.body.createTextRange != "undefined") {
-    //     const textRange = document.body.createTextRange();
-    //     textRange.moveToElementText(el);
-    //     textRange.collapse(false);
-    //     textRange.select();
-    // }
   }
 }

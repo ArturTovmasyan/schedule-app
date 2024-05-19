@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { first } from 'rxjs/operators';
-import { CalendarAvailability } from '../../interfaces/calendar/availability.calendar.interface';
-import { AvailabilityService } from '../../services/calendar/availability.service';
+import {Component, OnInit} from '@angular/core';
+import {first} from 'rxjs/operators';
+import {CalendarAvailability} from '../../interfaces/calendar/availability.calendar.interface';
+import {AvailabilityService} from '../../services/calendar/availability.service';
 
 @Component({
   selector: 'app-availability',
@@ -25,7 +25,8 @@ export class AvailabilityComponent implements OnInit {
   }
   error: any | null = null;
 
-  constructor(private calendarAvailabilityService: AvailabilityService) {}
+  constructor(private calendarAvailabilityService: AvailabilityService) {
+  }
 
   ngOnInit(): void {
     this.fetchAvailability();
@@ -52,7 +53,7 @@ export class AvailabilityComponent implements OnInit {
 
   get fromText() {
     const from = this.tempAvailability.from
-    if(from.endsWith("am") || from.endsWith("pm")) {
+    if (from.endsWith("am") || from.endsWith("pm")) {
       return from.slice(0, from.length - 2);
     }
     return from;
@@ -65,7 +66,7 @@ export class AvailabilityComponent implements OnInit {
 
   get toText() {
     const to = this.tempAvailability.to
-    if(to.endsWith("am") || to.endsWith("pm")) {
+    if (to.endsWith("am") || to.endsWith("pm")) {
       return to.slice(0, to.length - 2);
     }
     return to;
@@ -81,7 +82,7 @@ export class AvailabilityComponent implements OnInit {
   }
 
   set isFromAM(value) {
-    if(this.meridian) {
+    if (this.meridian) {
       this.tempAvailability.from = `${this.fromText}${value ? 'am' : 'pm'}`;
       this.updateAccessibility();
     }
@@ -92,7 +93,7 @@ export class AvailabilityComponent implements OnInit {
   }
 
   set isToAM(value) {
-    if(this.meridian) {
+    if (this.meridian) {
       this.tempAvailability.to = `${this.toText}${value ? 'am' : 'pm'}`;
       this.updateAccessibility();
     }
@@ -113,9 +114,9 @@ export class AvailabilityComponent implements OnInit {
 
   updateAccessibility() {
     const data: CalendarAvailability = this.tempAvailability;
-    const observable = this.currentAvailability != null 
-      ? this.calendarAvailabilityService.update(data) 
-      : this.calendarAvailabilityService.create(data)
+    const observable = this.currentAvailability == null
+      ? this.calendarAvailabilityService.create(data)
+      : this.calendarAvailabilityService.update(data)
 
     observable.pipe(first())
       .subscribe({
@@ -129,12 +130,12 @@ export class AvailabilityComponent implements OnInit {
   }
 
   onClockTypeChanged(type: ClockType) {
-    if(this.tempAvailability.clockType === type) {
+    if (this.tempAvailability.clockType === type) {
       return;
     }
 
     this.tempAvailability.clockType = type;
-    
+
     this.fromText = this.parseTime(this.tempAvailability.from, this.meridian, this.isFromAM);
     this.toText = this.parseTime(this.tempAvailability.to, this.meridian, this.isToAM);
   }
@@ -148,10 +149,10 @@ export class AvailabilityComponent implements OnInit {
 
   parseHours(hours: string, inMeridian: boolean, isAM: boolean) {
     let hoursInt = parseInt(hours);
-    if(inMeridian) {
+    if (inMeridian) {
       hoursInt = (hoursInt > 12) ? hoursInt - 12 : hoursInt;
     } else {
-      hoursInt = (!isAM) ? hoursInt + 12 : hoursInt;
+      hoursInt = (isAM) ? hoursInt : hoursInt + 12;
     }
     return `${hoursInt}`.padStart(2, '0');
   }
@@ -184,7 +185,7 @@ export class AvailabilityComponent implements OnInit {
   }
 
   get meridian() {
-    return this.tempAvailability.clockType !== ClockType.MILLITARY.valueOf();
+    return this.tempAvailability.clockType !== ClockType.MILITARY.valueOf();
   }
 
   get Day(): typeof Day {
@@ -198,7 +199,7 @@ export class AvailabilityComponent implements OnInit {
 
 enum ClockType {
   NORMAL = "12h",
-  MILLITARY = "24h"
+  MILITARY = "24h"
 }
 
 enum Day {
