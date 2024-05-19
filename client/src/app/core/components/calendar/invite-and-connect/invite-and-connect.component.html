@@ -1,73 +1,85 @@
 <section class="invite-friends" id="inviteFriends">
-  <div class="header">
-    <h2 class="section-title text-center">
-      Invite and connect
-    </h2>
-    <button class="close-button" id="closeButton">
-      <img src="assets/close-icon.svg" alt="close button">
-    </button>
-  </div>
-  <div class="body">
-    <h6>
-      You frequently meet with this person, invite and connect with example@gmail.com for easier scheduling
-    </h6>
-    <form action="">
-      <div class="form-wrapper">
-        <div class="form-header">
-          <div class="avatar">
-            <img src="assets/user-icon.png" alt="avatar">
-          </div>
-          <h5>
-            example@gmail.com
-          </h5>
+  <ng-container *ngIf="!formSubmitted">
+    <div class="header">
+      <h2 class="section-title text-center">
+        Invite and connect
+      </h2>
+      <button class="close-button" id="closeButton">
+        <img src="assets/close-icon.svg" alt="close button">
+      </button>
+    </div>
+    <div class="body">
+      <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
+      <form action="" [formGroup]="inviteForm" (keydown.enter)="$event.preventDefault()">
+        <div class="form-group">
+          <h6 class="section-title-secondary">
+            Email
+          </h6>
+          <app-chip-email-input [emails]="emails" (emailUpdateEvent)="updateEmails($event)"></app-chip-email-input>
         </div>
-        <div class="form-body">
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="shareCalendar" name="shareCalendar" value="share calendar" checked/>
-            <label for="shareCalendar">Share your calendar availability with invitation</label>
+        <div class="form-group">
+          <h6 class="section-title-secondary">
+            Duration
+          </h6>
+          <div class="duration-radio">
+            <div class="duration-radio-wrapper">
+              <input type="radio" name="duration" id="threeWeek" value="2 Weeks" (change)="onDurationSelectionChanged(0)">
+              <label for="threeWeek">2 Weeks</label>
+            </div>
+            <div class="duration-radio-wrapper">
+              <input type="radio" name="duration" id="oneMonth" value="1 Month" (change)="onDurationSelectionChanged(1)">
+              <label for="oneMonth">1 Month</label>
+            </div>
+            <div class="duration-radio-wrapper">
+              <input type="radio" name="duration" id="forever" value="forever" (change)="onDurationSelectionChanged(2)" checked>
+              <label for="forever">Forever</label>
+            </div>
+            <div class="duration-radio-wrapper">
+              <input type="radio" name="duration" id="custom" value="custom" (change)="onDurationSelectionChanged(3)">
+              <label for="custom">Custom</label>
+            </div>
           </div>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="requestAvailability" name="requestAvailability" value="request availability"
-                   checked/>
-            <label for="shareCalendar">Request to see the invitee's calendar availability</label>
-          </div>
-          <div class="save-event">
-            <p>
-              Save this event in
-            </p>
-            <select name="saveIn">
-              <option value="google" id="googleCalendar">
-                <p>G calendar</p>
-              </option>
-              <option value="microsoft" id="microsoftCalendar">
-                <p>M calendar</p>
-              </option>
-            </select>
-
-
-          </div>
+          <input *ngIf="f['duration'].value == 3" class="form-control" (input)="onCustomDateUpdate($event)" type="date" name="duration" id="customDuration"/>
         </div>
-      </div>
-      <div class="d-flex justify-content-end">
-        <button class="invite-button">
-          Invite
-        </button>
-      </div>
-    </form>
-  </div>
 
-  <div class="invitation-success">
+        <div class="form-group">
+          <h6 class="section-title-secondary">
+            Custom message
+          </h6>
+          <textarea col="3" formControlName="message" class="form-control" id="customMessage" style="resize: none" placeholder="Your message...">
+
+          </textarea>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" formControlName="shareMyCalendar" name="shareMyCalendar" id="shareMyCalendar" value="1">
+          <label for="shareMyCalendar">Share my calendar with the request</label>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" formControlName="requestCalendarView" id="requestCalendarView" value="1">
+          <label for="requestCalendarView">Request to see the Invitee's calendar availibility</label>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button class="invite-button" (click)="submit()" type="button">
+            Invite
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+
+  <div *ngIf="formSubmitted" class="invitation-success">
     <div class="wrapper">
       <h6>
         Success! Invitation is sent. We will notify you once invitation is accepted..
       </h6>
     </div>
     <div class="d-flex justify-content-end">
-      <button class="invite-button">
+      <button class="invite-button" (click)="formSubmitted=false">
         Invite more contacts
       </button>
     </div>
   </div>
-
-
 </section>
