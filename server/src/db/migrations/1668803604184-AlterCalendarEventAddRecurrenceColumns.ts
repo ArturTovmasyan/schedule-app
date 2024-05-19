@@ -8,7 +8,7 @@ export class AlterCalendarEventAddRecurrenceColumns1668803604184
       `ALTER TABLE "calendar_event" DROP COLUMN "recurrence"`,
     );
     await queryRunner.query(`
-            CREATE TYPE "public"."calendar_event_recurrencetype_enum" AS ENUM('daily', 'weekly', 'absoluteMonthly', 'relativeMonthly', 'absoluteYearly', 'relativeYearly');
+            CREATE TYPE "public"."calendar_event_recurrencetype_enum" AS ENUM('daily', 'weekly', 'monthly', 'yearly');
             CREATE TYPE "public"."calendar_event_recurrencedaysofweek_enum" AS ENUM('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
             CREATE TYPE "public"."calendar_event_recurrenceindexofweek_enum" AS ENUM('first', 'second', 'third', 'fourth', 'last');
         `);

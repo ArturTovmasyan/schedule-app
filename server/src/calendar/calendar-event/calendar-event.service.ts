@@ -25,6 +25,8 @@ import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
 import { WeekDaysEnum } from './enums/weekDays.enum';
 import { GoogleWeekDaysEnum } from './enums/googleWeekDays.enum';
+import { GoogleIndexOfWeekEnum } from './enums/indexOfWeek.enum';
+import { EventRecurrenceTypeEnum } from './enums/eventRecurrenceType.enum';
 import moment = require('moment');
 
 @Injectable()
@@ -794,7 +796,20 @@ export class CalendarEventService {
   }
 
   private serializedOutlookEventRecurrence(event: CalendarEvent, item) {
-    event.recurrenceType = item.recurrence?.pattern.type || null;
+    const recurrenceType = item.recurrence?.pattern.type;
+    if (
+      recurrenceType === 'absoluteMonthly' ||
+      recurrenceType === 'relativeMonthly'
+    ) {
+      event.recurrenceType = EventRecurrenceTypeEnum.Monthly || null;
+    } else if (
+      recurrenceType === 'absoluteYearly' ||
+      recurrenceType === 'relativeYearly'
+    ) {
+      event.recurrenceType = EventRecurrenceTypeEnum.Yearly || null;
+    } else {
+      event.recurrenceType = recurrenceType || null;
+    }
     event.recurrenceInterval = item.recurrence?.pattern.interval || null;
     event.recurrenceDaysOfWeek = item.recurrence?.pattern.daysOfWeek
       ? item.recurrence?.pattern.daysOfWeek.map((weekDay) => {
@@ -820,14 +835,24 @@ export class CalendarEventService {
       item.recurrence?.range.numberOfOccurrences || null;
   }
 
-  private serializedGoogleEventRecurrence(event: CalendarEvent, item) {
-    console.log('item recurrence ', item);
-    const recurrence = item.recurrence[0].split(';');
-    console.log('recurrence ', recurrence);
+  private serializedGoogleEventRecurrence(
+    event: CalendarEvent,
+    eventFromGoogle,
+  ) {
+    const recurrence = eventFromGoogle.recurrence[0].split(';');
 
-    function serializer(event, recurrenceElementArr) {
+    function serializer(event, recurrenceElementArr, eventFromGoogle) {
+      event.recurrenceStartDate = eventFromGoogle.created
+        ? new Date(eventFromGoogle.created)
+        : null;
       switch (recurrenceElementArr[0]) {
         case 'RRULE:FREQ':
+          if (recurrenceElementArr[1] === 'YEARLY') {
+            event.recurrenceDayOfMonth =
+              new Date(eventFromGoogle.start?.dateTime).getDate() || null;
+            event.recurrenceMonth =
+              new Date(eventFromGoogle.start?.dateTime).getMonth() + 1 || null;
+          }
           event.recurrenceType = recurrenceElementArr[1].toLowerCase();
           break;
         case 'WKST':
@@ -836,49 +861,46 @@ export class CalendarEventService {
           break;
 
         case 'COUNT':
-          event.recurrenceInterval =
-            recurrenceElementArr[1] === Number(recurrenceElementArr[1]);
+          event.recurrenceNumberOfOccurrences = recurrenceElementArr[1]
+            ? Number(recurrenceElementArr[1])
+            : null;
           break;
 
         case 'BYDAY':
+          const byDay = recurrenceElementArr[1];
+
+          if (/\d/.test(byDay)) {
+            const index = Math.floor(byDay.length / 2);
+            const byDayArr = [byDay.slice(0, index), byDay.slice(index)];
+            const byDayIndex = Number(byDayArr[0]);
+            const byDayWeekDay = byDayArr[1];
+            const daysOfWeekArr = [GoogleWeekDaysEnum[byDayWeekDay]];
+
+            event.recurrenceDaysOfWeek = daysOfWeekArr;
+            event.recurrenceIndexOfWeek = GoogleIndexOfWeekEnum[byDayIndex];
+            break;
+          }
           const weekDays = recurrenceElementArr[1].split(',');
           event.recurrenceDaysOfWeek = weekDays.map((item) => {
             return GoogleWeekDaysEnum[item];
           });
           break;
-        default:
-        // code block
+        case 'UNTIL':
+          event.recurrenceEndDate = new Date(
+            +moment(recurrenceElementArr[1]).format('X'),
+          );
+          break;
+        case 'INTERVAL':
+          event.recurrenceInterval = recurrenceElementArr[1]
+            ? Number(recurrenceElementArr[1])
+            : null;
+          break;
       }
     }
 
     for (const recurrenceElement of recurrence) {
       const recurrenceElementArr = recurrenceElement.split('=');
-      serializer(event, recurrenceElementArr);
+      serializer(event, recurrenceElementArr, eventFromGoogle);
     }
-
-    // event.recurrenceType = item.recurrence?.pattern.type || null;
-    // event.recurrenceInterval = item.recurrence?.pattern.interval || null;
-    // event.recurrenceDaysOfWeek = item.recurrence?.pattern.daysOfWeek
-    //   ? item.recurrence?.pattern.daysOfWeek.map((weekDay) => {
-    //       const capitalizedWeekDay =
-    //         weekDay.charAt(0).toUpperCase() + weekDay.slice(1);
-    //       return WeekDaysEnum[capitalizedWeekDay];
-    //     })
-    //   : null;
-    // event.recurrenceIndexOfWeek = item.recurrence?.pattern.index || null;
-    // event.recurrenceDayOfMonth = item.recurrence?.pattern.dayOfMonth || null;
-    // event.recurrenceMonth = item.recurrence?.pattern.month || null;
-    // event.recurrenceFirstDayOfWeek =
-    //   item.recurrence?.pattern.firstDayOfWeek || null;
-    // event.recurrenceStartDate = item.recurrence?.range.startDate
-    //   ? this.convertDateToNegativeLocalTimeZone(
-    //       item.recurrence?.range.startDate,
-    //     )
-    //   : null;
-    // event.recurrenceEndDate = item.recurrence?.range.endDate
-    //   ? this.convertDateToNegativeLocalTimeZone(item.recurrence?.range.endDate)
-    //   : null;
-    // event.recurrenceNumberOfOccurrences =
-    //   item.recurrence?.range.numberOfOccurrences || null;
   }
 }
