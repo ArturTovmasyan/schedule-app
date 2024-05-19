@@ -9,6 +9,10 @@ export class CreateAvailabilityDto {
   @IsNotEmpty()
   to: string;
 
+  @ApiProperty({ required: true, type: 'string' })
+  @IsNotEmpty()
+  timezone: string;
+
   @ApiProperty({ required: true, enum: ClockType })
   @IsNotEmpty()
   @IsEnum(ClockType)
@@ -41,9 +45,4 @@ export class CreateAvailabilityDto {
   @ApiProperty({ required: false, type: 'boolean' })
   @IsOptional()
   saturday?: boolean;
-
-  @ApiProperty({ required: true, type: 'number'})
-  @IsNotEmpty()
-  timezoneOffset: number;
-
 }

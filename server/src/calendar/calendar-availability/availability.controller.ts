@@ -56,7 +56,10 @@ export class AvailabilityController {
   @Post('attendees')
   @UseGuards(AuthGuard())
   findOne(@Body() availabilityIds: any, @GetUser() user) {
-    return this.availabilityService.findUserAvailabilityTimes(availabilityIds.ids, user.id);
+    return this.availabilityService.findUserAvailabilityTimes(
+      availabilityIds.ids,
+      user.id,
+    );
   }
 
   @ApiExcludeEndpoint()

@@ -2,6 +2,8 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {first} from 'rxjs/operators';
 import {CalendarAvailability} from '../../interfaces/calendar/availability.calendar.interface';
 import {AvailabilityService} from '../../services/calendar/availability.service';
+import * as moment from 'moment-timezone';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-availability',
@@ -14,6 +16,7 @@ export class AvailabilityComponent implements OnInit {
   _availability: CalendarAvailability = {
     from: "09:00am",
     to: "05:00pm",
+    timezone: this.commonService.localTimezone,
     clockType: ClockType.NORMAL.valueOf(),
     sunday: false,
     monday: true,
@@ -27,7 +30,8 @@ export class AvailabilityComponent implements OnInit {
 
   constructor(
     private calendarAvailabilityService: AvailabilityService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private commonService: CommonService
   ) {}
 
   ngOnInit(): void {
@@ -117,6 +121,7 @@ export class AvailabilityComponent implements OnInit {
 
   updateAccessibility() {
     const data: CalendarAvailability = this.tempAvailability;
+    data.timezone = this.commonService.localTimezone;
     const observable = this.currentAvailability == null
       ? this.calendarAvailabilityService.create(data)
       : this.calendarAvailabilityService.update(data)
