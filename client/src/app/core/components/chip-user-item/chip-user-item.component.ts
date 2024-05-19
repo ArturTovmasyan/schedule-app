@@ -11,7 +11,7 @@ export class ChipUserItemComponent implements OnInit {
     name: "",
     email: "",
     avatar: null,
-    removable: true
+    removable: false
   };
 
   @Output() onRemove = new EventEmitter<void>();

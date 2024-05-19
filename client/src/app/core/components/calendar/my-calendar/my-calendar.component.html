@@ -1,9 +1,41 @@
-<full-calendar id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true">
+<div id="container">
+  <full-calendar id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true">
     <ng-template #eventContent let-arg>
+      <div class="my-event">
         <div>
-            <span>{{arg.event.title ?? ''}}</span>
-            <br/>
-            <span style="color: #047BDAFF; font-size: 8pt; text-wrap: avoid"> {{arg.timeText}}</span>
+          <span>{{arg.event.title ?? ''}}</span>
+          <br />
+          <span style="color: #047BDAFF; font-size: 8pt; text-wrap: avoid"> {{arg.timeText}}</span>
         </div>
+      </div>
     </ng-template>
-</full-calendar>
+  </full-calendar>
+
+  <div #eventDetailView class="event-detail hidden" id="event-detail">
+    <div class="close" (click)="closeDetail()"><img src="assets/ic_close.svg"></div>
+    <section class="content">
+      <label class="title">Test Event</label>
+      <span class="time">Friday, February 11 6:00 AM - 6:30 AM</span>
+      <label>Attendees</label>
+      <div class="chip-container">
+        <app-chip-user-item [user]="user"></app-chip-user-item>
+      </div>
+
+      <label>Optional</label>
+      <div class="chip-container">
+        <app-chip-user-item [user]="user"></app-chip-user-item>
+
+      </div>
+
+      <span class="calendar-info">
+        Event saved in
+        <img src="/assets/outlook-icon.svg">
+        <span class="calendr-name">example@outlook.com</span>
+      </span>
+    </section>
+    <section class="footer">
+      <span class="button">Edit</span>
+      <span class="action">Cancel this meeting</span>
+    </section>
+  </div>
+</div>
