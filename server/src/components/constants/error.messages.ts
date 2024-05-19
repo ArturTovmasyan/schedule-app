@@ -1,6 +1,8 @@
 import { IErrorMessages } from '../interfaces/error-messages.interface';
 
 export const ErrorMessages: Readonly<IErrorMessages> = {
+  slotNotFound: 'Slot Not found',
+  sharableLinkNotFound: 'Sharable link not found',
   phoneNumberNotSpecified: 'Phone number not specified',
   addressNumberNotSpecified: 'Address not specified',
   slotIsBusy: 'Slot(s) is/are busy',

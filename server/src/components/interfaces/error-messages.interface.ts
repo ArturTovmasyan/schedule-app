@@ -1,4 +1,6 @@
 export interface IErrorMessages {
+  slotNotFound: string;
+  sharableLinkNotFound: string;
   phoneNumberNotSpecified: string;
   addressNumberNotSpecified: string;
   cantChooseOwnSlot: string;

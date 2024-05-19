@@ -1,8 +1,12 @@
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import * as moment from 'moment';
 import { randomUUID } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Connection, Repository } from 'typeorm';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Between, Connection, In, Repository } from 'typeorm';
 
 import { CalendarEvent } from 'src/calendar/calendar-event/entities/calendarEvent.entity';
 import { CalendarEventService } from 'src/calendar/calendar-event/calendar-event.service';
@@ -10,17 +14,20 @@ import { SharableLinkAttendeesEntity } from './entities/sharable-link-attendees.
 import { SharableLinkSlotsEntity } from './entities/sharable-link-slots.entity';
 import { Calendar } from 'src/calendar/calendar-event/entities/calendar.entity';
 import { ErrorMessages } from 'src/components/constants/error.messages';
-import { CreateSharableLinkDto } from './dto/create-sharable-link.dto';
+import { UpdateSharableLinkDto } from './dto/update-sharable-link.dto';
 import { SharableLinkEntity } from './entities/sharable-link.entity';
 import { IPaginate } from './interfaces/sharable-links.interface';
 import { ZoomService } from 'src/integrations/zoom/zoom.service';
 import { MeetViaEnum } from './enums/sharable-links.enum';
+import { User } from '@user/entity/user.entity';
 import {
   IResponse,
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
-import { User } from '@user/entity/user.entity';
-import { UpdateSharableLinkDto } from './dto/update-sharable-link.dto';
+import {
+  SharableLinkSlot,
+  CreateSharableLinkDto,
+} from './dto/create-sharable-link.dto';
 
 @Injectable()
 export class SharableLinksService {
@@ -45,26 +52,7 @@ export class SharableLinksService {
     user: User,
     createSharableLinkDto: CreateSharableLinkDto,
   ): Promise<IResponseMessage> {
-    const checkAvailability = await this.calendarEventsRepo.count({
-      where: [
-        ...createSharableLinkDto.slots.map((slot) => {
-          return {
-            start: Between(slot.startDate, slot.endDate),
-            owner: { id: user.id },
-          };
-        }),
-        ...createSharableLinkDto.slots.map((slot) => {
-          return {
-            end: Between(slot.startDate, slot.endDate),
-            owner: { id: user.id },
-          };
-        }),
-      ],
-    });
-
-    if (checkAvailability) {
-      throw new BadRequestException({ message: ErrorMessages.slotIsBusy });
-    }
+    await this._checkSlotAvailability(user, createSharableLinkDto.slots);
 
     if (
       (createSharableLinkDto.meetVia === MeetViaEnum.InboundCall ||
@@ -135,67 +123,89 @@ export class SharableLinksService {
     }
   }
 
+  /**
+   * @description `Update sharable link`
+   * @README `Attendees array is not for new addable attendees,this is full modified list of attendees`
+   * @param sharableLinkId - `ID of sharable link`
+   * @param user - `Authorized user data`
+   * @param updateSharableLinkDto - `UpdateSharableLinkDto object`
+   *
+   * @returns `Updated`
+   */
+
   async update(
+    sharableLinkId: string,
     user: User,
     updateSharableLinkDto: UpdateSharableLinkDto,
   ): Promise<IResponseMessage> {
-    if (updateSharableLinkDto.slots) {
-      const checkAvailability = await this.calendarEventsRepo.count({
-        where: [
-          ...updateSharableLinkDto.slots.map((slot) => {
-            return {
-              start: Between(slot.startDate, slot.endDate),
-              owner: { id: user.id },
-            };
-          }),
-          ...updateSharableLinkDto.slots.map((slot) => {
-            return {
-              end: Between(slot.startDate, slot.endDate),
-              owner: { id: user.id },
-            };
-          }),
-        ],
-      });
+    const { deleteSlots, addSlots } = updateSharableLinkDto;
 
-      if (checkAvailability) {
-        throw new BadRequestException({ message: ErrorMessages.slotIsBusy });
-      }
-    }
-
-    const sharableLinkId = randomUUID();
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.manager.getRepository(SharableLinkEntity).insert({
-        id: sharableLinkId,
-        sharedBy: user.id,
-        title: updateSharableLinkDto.title,
-        link: process.env.WEB_HOST + 'sharable-links/' + sharableLinkId,
-      });
+      const sharableLink = (await this.findOne(sharableLinkId)).data;
 
-      if (updateSharableLinkDto.attendees?.length) {
-        await queryRunner.manager
-          .getRepository(SharableLinkAttendeesEntity)
-          .insert(
-            updateSharableLinkDto.attendees.map((attendee) => {
-              return {
-                linkId: sharableLinkId,
-                userId: attendee,
-              };
-            }),
-          );
+      if (!sharableLink || sharableLink.sharedBy !== user.id) {
+        throw new NotFoundException({
+          message: ErrorMessages.sharableLinkNotFound,
+        });
       }
 
-      await queryRunner.manager.getRepository(SharableLinkSlotsEntity).insert(
-        updateSharableLinkDto.slots.map((slot) => {
-          return {
-            linkId: sharableLinkId,
-            startDate: slot.startDate,
-            endDate: slot.endDate,
-          };
-        }),
+      if (addSlots && addSlots.length) {
+        await this._checkSlotAvailability(user, addSlots);
+
+        await queryRunner.manager.getRepository(SharableLinkSlotsEntity).insert(
+          addSlots.map((slot) => {
+            return {
+              linkId: sharableLinkId,
+              startDate: slot.startDate,
+              endDate: slot.endDate,
+            };
+          }),
+        );
+      }
+
+      if (deleteSlots && deleteSlots.length) {
+        if (
+          deleteSlots.some(
+            (id) =>
+              sharableLink.slots.map((slot) => slot.id).indexOf(id) === -1,
+          )
+        ) {
+          throw new NotFoundException({ message: ErrorMessages.slotNotFound });
+        }
+
+        await queryRunner.manager
+          .getRepository(SharableLinkSlotsEntity)
+          .delete({ id: In(deleteSlots) });
+      }
+
+      await queryRunner.manager
+        .getRepository(SharableLinkAttendeesEntity)
+        .delete({ linkId: sharableLinkId });
+
+      await queryRunner.manager
+        .getRepository(SharableLinkAttendeesEntity)
+        .insert(
+          updateSharableLinkDto.attendees.map((attendee) => {
+            return {
+              userId: attendee,
+              linkId: sharableLinkId,
+            };
+          }),
+        );
+
+      await queryRunner.manager.getRepository(SharableLinkEntity).update(
+        { id: sharableLinkId },
+        {
+          title: updateSharableLinkDto.title ?? sharableLink.title,
+          meetVia: updateSharableLinkDto.meetVia ?? sharableLink.meetVia,
+          phoneNumber:
+            updateSharableLinkDto.phoneNumber ?? sharableLink.phoneNumber,
+          address: updateSharableLinkDto.address ?? sharableLink.address,
+        },
       );
 
       await queryRunner.commitTransaction();
@@ -392,7 +402,61 @@ export class SharableLinksService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sharableLink`;
+  /**
+   * @description `Check slot Avaiability`
+   * @private `This is a private method`
+   * @param user - `Authorized user data`
+   * @param slots - `Array of SharableLinkSlot update`
+   */
+
+  private async _checkSlotAvailability(
+    user: User,
+    slots: SharableLinkSlot[],
+  ): Promise<void> {
+    const checkAvailability = await this.calendarEventsRepo.count({
+      where: [
+        ...slots.map((slot) => {
+          return {
+            start: Between(slot.startDate, slot.endDate),
+            owner: { id: user.id },
+          };
+        }),
+        ...slots.map((slot) => {
+          return {
+            end: Between(slot.startDate, slot.endDate),
+            owner: { id: user.id },
+          };
+        }),
+      ],
+    });
+
+    if (checkAvailability) {
+      throw new BadRequestException({ message: ErrorMessages.slotIsBusy });
+    }
+  }
+
+  /**
+   * @description `Delete sharable link by ID`
+   *
+   * @param user - `Authroized user data`
+   * @param sharableLinkId - `ID of sharable link`
+   *
+   * @returns `Deleted`
+   */
+
+  async remove(user: User, sharableLinkId: string): Promise<IResponseMessage> {
+    const sharableLink = (await this.findOne(sharableLinkId)).data;
+
+    if (!sharableLink || sharableLink.sharedBy !== user.id) {
+      throw new NotFoundException({
+        message: ErrorMessages.sharableLinkNotFound,
+      });
+    }
+
+    await this.connection
+      .getRepository(SharableLinkEntity)
+      .delete({ id: sharableLinkId });
+
+    return { message: `Deleted`, status: 1 };
   }
 }

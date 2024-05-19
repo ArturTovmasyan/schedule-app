@@ -2,21 +2,21 @@ import {
   IsUUID,
   IsEnum,
   IsArray,
+  IsNumber,
   IsString,
+  IsOptional,
   IsNotEmpty,
   ArrayNotEmpty,
   ValidateNested,
-  IsOptional,
-  IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 import {
   IPaginate,
   ISharableLinkSlot,
 } from '../interfaces/sharable-links.interface';
 import { MeetViaEnum } from '../enums/sharable-links.enum';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSharableLinkDto {
   @ApiProperty({ required: false })
@@ -63,7 +63,7 @@ export class PaginationDto implements IPaginate {
   @IsNumber()
   offset: number = 0;
 }
-class SharableLinkSlot implements ISharableLinkSlot {
+export class SharableLinkSlot implements ISharableLinkSlot {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   startDate: Date;
