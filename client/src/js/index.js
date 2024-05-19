@@ -17,7 +17,6 @@ function updateDateNumbers() {
   }
 }
 
-
 document.querySelectorAll('.fc-timeline-lane-frame')?.forEach((e) => {
   if (e) {
     const cellHoverElementsContainer = document.createElement('div');
