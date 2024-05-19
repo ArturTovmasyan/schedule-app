@@ -65,7 +65,6 @@ export class SignupComponent {
       })
   }
 
-  // TODO don't duplicate with login!!
   googleLogin() {
     window.location.href = environment.host+"api/auth/google";
   }
