@@ -47,16 +47,22 @@ export class AuthController {
     return result;
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Login user' })
   @Post('login')
   public async login(@Body() dto: SignInDto): Promise<LoginStatus> {
     return await this.authService.login(dto);
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Reset Password' })
   @Post('reset-password')
   public async resetPassword(@Body() dto: UserDto): Promise<void> {
     await this.authService.resetPassword(dto.email);
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Change password' })
   @Patch('change-password')
   @UseGuards(AuthGuard())
   public async changePassword(
@@ -68,6 +74,8 @@ export class AuthController {
     return await this.authService.changePassword(user.id, changePasswordDto);
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Confirm validation' })
   @Get('confirm')
   async confirm(
     @Query(new ValidationPipe()) query: ConfirmAccountDto,
@@ -75,10 +83,12 @@ export class AuthController {
     return await this.authService.confirmRegistration(query.token);
   }
 
+  @ApiExcludeEndpoint()
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
 
+  @ApiExcludeEndpoint()
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req, @Res() res) {
@@ -93,8 +103,9 @@ export class AuthController {
     }
   }
 
+  @ApiExcludeEndpoint()
   @Post('microsoft/callback')
-  async msLoginCallback(@Req() req, @Res() res,): Promise<any> {
+  async msLoginCallback(@Req() req, @Res() res): Promise<any> {
     const user: any = req.body;
 
     if (user && user.id) {

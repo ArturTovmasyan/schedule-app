@@ -15,13 +15,24 @@ import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { CalendarAccessService } from './calendar-access.service';
 import { User } from '@user/entity/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  IResponse,
+  IResponseMessage,
+} from 'src/components/interfaces/response.interface';
 
 @ApiTags('Calendar Access')
 @Controller('api/calendar-access')
 export class CalendarAccessController {
   constructor(private readonly calendarAccessService: CalendarAccessService) {}
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Give access to calendar' })
   @Post()
   @UseGuards(AuthGuard())
   create(
@@ -31,23 +42,29 @@ export class CalendarAccessController {
     return this.calendarAccessService.create(user, createCalendarAccessDto);
   }
 
+  @ApiResponse({ type: IResponse })
+  @ApiOperation({ summary: 'Get accessed calendars' })
   @UseGuards(AuthGuard())
   @Get('accessed')
   findAccessed(@GetUser() user: User) {
     return this.calendarAccessService.findAccessed(user);
   }
 
+  @ApiResponse({ type: IResponse })
+  @ApiOperation({ summary: 'Get shared calendars' })
   @UseGuards(AuthGuard())
   @Get('shared')
   findShared(@GetUser() user: User) {
     return this.calendarAccessService.findShared(user);
   }
 
+  @ApiExcludeEndpoint()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.calendarAccessService.findOne(+id);
   }
 
+  @ApiExcludeEndpoint()
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -56,6 +73,7 @@ export class CalendarAccessController {
     return this.calendarAccessService.update(+id, updateCalendarAccessDto);
   }
 
+  @ApiExcludeEndpoint()
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.calendarAccessService.remove(+id);

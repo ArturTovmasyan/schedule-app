@@ -20,7 +20,7 @@ export class CreateAccessRequestDto {
   @IsEmail()
   toEmail: string;
 
-  @ApiProperty({ required: false, enum: [TimeForAccessEnum] })
+  @ApiProperty({ required: false, enum: TimeForAccessEnum })
   @IsOptional()
   @IsEnum(TimeForAccessEnum)
   timeForAccess?: TimeForAccessEnum;
@@ -33,14 +33,14 @@ export class CreateAccessRequestDto {
 }
 
 export class AccessRequestQueryParams {
-  @ApiProperty({ required: false, enum: [RequestStatusEnum] })
+  @ApiProperty({ required: false, enum: RequestStatusEnum })
   @IsOptional()
   @IsEnum(RequestStatusEnum)
   status?: RequestStatusEnum;
 }
 
 export class AccessRequestStatus {
-  @ApiProperty({ required: false, enum: [RequestStatusEnum] })
+  @ApiProperty({ required: true, enum: RequestStatusEnum })
   @IsNotEmpty()
   @IsEnum(AccessRequestStatusEnum)
   status: AccessRequestStatusEnum;

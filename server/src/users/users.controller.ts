@@ -11,7 +11,17 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiHideProperty, ApiTags } from '@nestjs/swagger';
+import {
+  ApiExcludeEndpoint,
+  ApiHideProperty,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  IResponse,
+  IResponseMessage,
+} from 'src/components/interfaces/response.interface';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
@@ -21,18 +31,23 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiResponse({ type: IResponse })
+  @ApiOperation({ summary: 'Find all users' })
   @Get()
   @UseGuards(AuthGuard())
   async findAll(): Promise<UserDto[]> {
     return await this.usersService.findAll();
   }
 
+  @ApiResponse({ type: IResponse })
+  @ApiOperation({ summary: 'Find user by id' })
   @Get(':id')
   @UseGuards(AuthGuard())
   async findOneById(@Param('id') id: string) {
     return await this.usersService.findOneById(id);
   }
 
+  @ApiExcludeEndpoint()
   @Post()
   @UseGuards(AuthGuard())
   @UsePipes(new ValidationPipe())
@@ -40,6 +55,8 @@ export class UsersController {
     return await this.usersService.create(userDto);
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Update user data' })
   @Put(':id')
   @UseGuards(AuthGuard())
   @UsePipes(new ValidationPipe())
@@ -50,6 +67,8 @@ export class UsersController {
     return await this.usersService.update(id, userDto);
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Delete user' })
   @Delete(':id')
   @UseGuards(AuthGuard())
   async delete(@Param('id') id: string): Promise<UserDto> {

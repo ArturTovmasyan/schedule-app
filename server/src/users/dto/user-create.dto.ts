@@ -1,20 +1,28 @@
-import {IsNotEmpty, IsString, Matches} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class UserCreateDto {
+  @ApiProperty({ required: true, type: 'string' })
   @IsNotEmpty()
   @IsString()
   email: string;
+
+  @ApiProperty({ required: true, type: 'string' })
   @IsNotEmpty()
   @IsString()
   firstName: string;
+
+  @ApiProperty({ required: true, type: 'string' })
   @IsNotEmpty()
   @IsString()
   lastName: string;
+
+  @ApiProperty({ required: true, type: 'string' })
   @IsNotEmpty()
   @IsString()
   @Matches(
-      /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
-      { message: 'Invalid password' },
+    /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
+    { message: 'Invalid password' },
   )
   password: string;
 

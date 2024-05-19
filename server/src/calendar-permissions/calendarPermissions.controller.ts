@@ -21,6 +21,8 @@ export class CalendarPermissionsController {
     private readonly calendarPermissionsService: CalendarPermissionsService,
   ) {}
 
+  @ApiResponse({ type: IResponse })
+  @ApiOperation({ summary: 'Check status of calendars' })
   @Get('status-of-calendars')
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
@@ -32,6 +34,8 @@ export class CalendarPermissionsController {
     );
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Toggle google calendar' })
   @Get('google-calendar')
   @UseGuards(AuthGuard())
   async googleCalendar(@Req() req: { user: User }, @Res() res: Response) {
@@ -43,6 +47,7 @@ export class CalendarPermissionsController {
     return res.send(statusOfCalendars);
   }
 
+  @ApiExcludeEndpoint()
   @Get('google-calendar-callback')
   @UseGuards(AuthGuard())
   async googleCalendarCallback(
@@ -55,6 +60,8 @@ export class CalendarPermissionsController {
     );
   }
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Toggle microsoft calendar' })
   @Get('ms-calendar')
   @UseGuards(AuthGuard())
   async ms365Calendar(@Req() req: { user: User }, @Res() res: Response) {
@@ -66,6 +73,7 @@ export class CalendarPermissionsController {
     return res.send(statusOfCalendars);
   }
 
+  @ApiExcludeEndpoint()
   @Get('ms-calendar-callback')
   @UseGuards(AuthGuard())
   async ms365CalendarCallback(@Req() req: { user: User }, @Query() query: any) {
