@@ -15,9 +15,8 @@ import {
 
 export class CreateAccessRequestDto {
   @ApiProperty({ required: true })
-  @IsNotEmpty()
-  @IsEmail()
-  toEmail: string;
+  @IsEmail({}, { each: true })
+  toEmails: string[];
 
   @ApiProperty({ required: false })
   @IsOptional()

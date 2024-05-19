@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { NotificationTypeEnum } from 'src/notifications/enums/notifications.enum';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { UpdateCalendarAccessDto } from './dto/update-calendar-access.dto';
@@ -39,53 +40,79 @@ export class CalendarAccessService {
     user: User,
     createCalendarAccessDto: CreateCalendarAccessDto,
   ): Promise<{ message: string; status: number }> {
-    if (createCalendarAccessDto.toEmail === user.email) {
+    if (createCalendarAccessDto.toEmails.includes(user.email)) {
       throw new BadRequestException({
         message: ErrorMessages.cantSentYourself,
       });
     }
 
-    await this.checkAccess(user, [createCalendarAccessDto.toEmail]);
+    await this.checkAccess(user, createCalendarAccessDto.toEmails);
 
-    const findUserByEmail = await this.userRepo.findOne({
-      where: { email: createCalendarAccessDto.toEmail },
+    const findUsersByEmail = await this.userRepo.find({
+      where: { email: In(createCalendarAccessDto.toEmails) },
     });
 
-    await this.calendarAccessRepo.upsert(
-      {
-        accessedUser: { id: findUserByEmail ? findUserByEmail.id : null },
+    const bulkData: QueryDeepPartialEntity<CalendarAccess>[] = [];
+
+    createCalendarAccessDto.toEmails.forEach((email) => {
+      const currentUser = findUsersByEmail.filter(
+        (user) => user.email === email,
+      )[0];
+
+      bulkData.push({
         owner: { id: user.id },
-        toEmail: createCalendarAccessDto.toEmail,
-        comment: createCalendarAccessDto.comment,
+        toEmail: email,
+        accessedUser: { id: currentUser ? currentUser.id : null },
         timeForAccess: createCalendarAccessDto.timeForAccess,
-      },
-      {
-        conflictPaths: ['toEmail', 'owner'],
-        skipUpdateIfNoValuesChanged: true,
-      },
-    );
-
-    if (findUserByEmail) {
-      await this.notificationsService.create(user, {
-        type: NotificationTypeEnum.CalendarAccess,
-        receiverUserId: findUserByEmail.id,
+        comment: createCalendarAccessDto.comment,
       });
-    }
+    });
 
-    this.mailService.send({
-      from: this.configService.get<string>('NO_REPLY_EMAIL'),
-      to: createCalendarAccessDto.toEmail,
-      subject: `${user.firstName} ${user.lastName} shared their calendar with you`,
-      html: `
+    const updatedData = await this.calendarAccessRepo.upsert(bulkData, {
+      conflictPaths: ['toEmail', 'owner'],
+      skipUpdateIfNoValuesChanged: true,
+    });
+
+    const data = await this.calendarAccessRepo.find({
+      where: { id: In(updatedData.generatedMaps.map((current) => current.id)) },
+    });
+
+    const notificationBulk: {
+      type: NotificationTypeEnum;
+      receiverUserId: string;
+    }[] = [];
+
+    data.forEach((request) => {
+      if (request.accessedUserId) {
+        notificationBulk.push({
+          type: NotificationTypeEnum.CalendarAccess,
+          receiverUserId: request.accessedUserId,
+        });
+      }
+    });
+
+    await this.notificationsService.create(user, notificationBulk);
+
+    bulkData.forEach((current) => {
+      const currentUser = findUsersByEmail.filter(
+        (user) => user.email === current.toEmail,
+      )[0];
+
+      this.mailService.send({
+        from: this.configService.get<string>('NO_REPLY_EMAIL'),
+        to: current.toEmail as string,
+        subject: `${user.firstName} ${user.lastName} shared their calendar with you`,
+        html: `
         <h3>Hello!</h3>
         ${
-          findUserByEmail
+          currentUser
             ? `<p>${user.firstName} ${user.lastName} shared their calendar with you 
             Please go to <a href='${process.env.WEB_HOST}'>homepage</a> to access calendar.</p>`
             : `<p>${user.firstName} ${user.lastName} shared their calendar with you.
              Please <a href='${process.env.WEB_HOST}register'>Register</a> and access to calendar.</p>`
         }
     `,
+      });
     });
 
     return { message: 'shared successfully', status: HttpStatus.CREATED };

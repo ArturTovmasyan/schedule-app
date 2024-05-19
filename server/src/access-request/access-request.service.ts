@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
-import { Connection, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Connection, In, Repository } from 'typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
@@ -49,7 +49,7 @@ export class AccessRequestService {
     user: User,
     createAccessRequestDto: CreateAccessRequestDto,
   ): Promise<{ message: string; status: number }> {
-    if (createAccessRequestDto.toEmail === user.email) {
+    if (createAccessRequestDto.toEmails.includes(user.email)) {
       throw new BadRequestException({
         message: ErrorMessages.cantSentYourself,
       });
@@ -57,7 +57,7 @@ export class AccessRequestService {
 
     const checkExists = await this.accessRequestRepo.count({
       where: {
-        toEmail: createAccessRequestDto.toEmail,
+        toEmail: In(createAccessRequestDto.toEmails),
         applicant: { id: user.id },
       },
     });
@@ -68,43 +68,76 @@ export class AccessRequestService {
       });
     }
 
-    await this.calendarAccessService.checkAccess(user, [
-      createAccessRequestDto.toEmail,
-    ]);
+    await this.calendarAccessService.checkAccess(
+      user,
+      createAccessRequestDto.toEmails,
+    );
 
-    const findUserByEmail = await this.userRepo.findOne({
-      where: { email: createAccessRequestDto.toEmail },
+    const findUsersByEmail = await this.userRepo.find({
+      where: { email: In(createAccessRequestDto.toEmails) },
     });
 
-    const data = await this.accessRequestRepo.save({
-      applicant: { id: user.id },
-      toEmail: createAccessRequestDto.toEmail,
-      receiver: { id: findUserByEmail ? findUserByEmail.id : null },
-      timeForAccess: createAccessRequestDto.timeForAccess,
-      comment: createAccessRequestDto.comment,
-    });
+    const bulkData: QueryDeepPartialEntity<AccessRequest>[] = [];
 
-    if (findUserByEmail) {
-      await this.notificationsService.create(user, {
-        type: NotificationTypeEnum.AccessRequest,
-        receiverUserId: findUserByEmail.id,
-        accessRequestId: data.id,
+    createAccessRequestDto.toEmails.forEach((email) => {
+      const currentUser = findUsersByEmail.filter(
+        (user) => user.email === email,
+      )[0];
+
+      bulkData.push({
+        applicant: { id: user.id },
+        toEmail: email,
+        receiver: { id: currentUser ? currentUser.id : null },
+        timeForAccess: createAccessRequestDto.timeForAccess,
+        comment: createAccessRequestDto.comment,
       });
-    }
+    });
 
-    this.mailService.send({
-      from: this.configService.get<string>('NO_REPLY_EMAIL'),
-      to: createAccessRequestDto.toEmail,
-      subject: `Access request from ${user.firstName} ${user.lastName}`,
-      html: `
-      <h3>Hello!</h3>
-    ${
-      findUserByEmail
-        ? `<p>${user.firstName} ${user.lastName} wants to access your calendar.
-        Please go to <a href='${process.env.WEB_HOST}'>homepage</a> to accept or decline request.</p>`
-        : `<p><a href='${process.env.WEB_HOST}register'>Register</a> and approve the request from ${user.firstName} ${user.lastName}</p>`
-    }
-  `,
+    const data = await this.accessRequestRepo
+      .createQueryBuilder()
+      .insert()
+      .into(AccessRequest)
+      .values(bulkData)
+      .returning('*')
+      .execute();
+
+    const notifiacationBulk: {
+      type: NotificationTypeEnum;
+      receiverUserId: string;
+      accessRequestId: string;
+    }[] = [];
+
+    data.generatedMaps.forEach((request) => {
+      if (request.receiverUserId) {
+        notifiacationBulk.push({
+          type: NotificationTypeEnum.AccessRequest,
+          receiverUserId: request.receiverUserId,
+          accessRequestId: request.id,
+        });
+      }
+    });
+
+    await this.notificationsService.create(user, notifiacationBulk);
+
+    bulkData.forEach((current) => {
+      const currentUser = findUsersByEmail.filter(
+        (user) => user.email === current.toEmail,
+      )[0];
+
+      this.mailService.send({
+        from: this.configService.get<string>('NO_REPLY_EMAIL'),
+        to: current.toEmail as string,
+        subject: `Access request from ${user.firstName} ${user.lastName}`,
+        html: `
+        <h3>Hello!</h3>
+      ${
+        currentUser
+          ? `<p>${user.firstName} ${user.lastName} wants to access your calendar.
+          Please go to <a href='${process.env.WEB_HOST}'>homepage</a> to accept or decline request.</p>`
+          : `<p><a href='${process.env.WEB_HOST}register'>Register</a> and approve the request from ${user.firstName} ${user.lastName}</p>`
+      }
+    `,
+      });
     });
 
     return { message: 'Request is sent', status: HttpStatus.OK };
@@ -204,10 +237,12 @@ export class AccessRequestService {
 
       if (accessRequestStatus.status === AccessRequestStatusEnum.Accept) {
         await Promise.all([
-          this.notificationsService.create(user, {
-            type: NotificationTypeEnum.RequestApproved,
-            receiverUserId: data.applicant.id,
-          }),
+          this.notificationsService.create(user, [
+            {
+              type: NotificationTypeEnum.RequestApproved,
+              receiverUserId: data.applicant.id,
+            },
+          ]),
           this.calendarAccessRepo.upsert(
             {
               accessedUser: { id: data.applicant.id },
@@ -223,10 +258,12 @@ export class AccessRequestService {
           ),
         ]);
       } else {
-        await this.notificationsService.create(user, {
-          type: NotificationTypeEnum.RequestDenied,
-          receiverUserId: data.applicant.id,
-        });
+        await this.notificationsService.create(user, [
+          {
+            type: NotificationTypeEnum.RequestDenied,
+            receiverUserId: data.applicant.id,
+          },
+        ]);
       }
 
       await queryRunner.commitTransaction();

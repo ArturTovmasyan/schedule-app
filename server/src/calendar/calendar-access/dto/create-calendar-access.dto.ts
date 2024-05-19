@@ -1,17 +1,10 @@
-import {
-  IsEmail,
-  IsString,
-  MaxLength,
-  IsNotEmpty,
-  IsOptional,
-} from 'class-validator';
+import { IsEmail, IsString, MaxLength, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCalendarAccessDto {
-  @ApiProperty({ required: true, type: 'string' })
-  @IsNotEmpty()
-  @IsEmail()
-  toEmail: string;
+  @ApiProperty({ required: true })
+  @IsEmail({}, { each: true })
+  toEmails: string[];
 
   @ApiProperty({ required: false })
   @IsOptional()

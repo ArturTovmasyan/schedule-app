@@ -1,4 +1,4 @@
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
@@ -33,40 +33,56 @@ export class NotificationsService {
 
   async create(
     user: User,
-    createNotificationDto: CreateNotificationDto,
+    createNotificationsDto: CreateNotificationDto[],
   ): Promise<IResponseMessage> {
-    if (
-      createNotificationDto.type === NotificationTypeEnum.AccessRequest &&
-      !createNotificationDto.accessRequestId
-    ) {
-      throw new BadRequestException({
-        message: ErrorMessages.accessRequestIdNotProvided,
-      });
-    }
+    const accessRequestIds: string[] = [];
+    const BulkNotificationsData = [];
 
-    if (createNotificationDto.accessRequestId) {
-      const checkExist = await this.accessRequestRepo.findOne({
-        id: createNotificationDto.accessRequestId,
+    createNotificationsDto.forEach((notification) => {
+      if (
+        notification.type === NotificationTypeEnum.AccessRequest &&
+        !notification.accessRequestId
+      ) {
+        throw new BadRequestException({
+          message: ErrorMessages.accessRequestIdNotProvided,
+        });
+      }
+
+      if (notification.accessRequestId) {
+        accessRequestIds.push(notification.accessRequestId);
+      }
+
+      BulkNotificationsData.push({
+        sender: { id: user.id },
+        receiver: { id: notification.receiverUserId },
+        type: notification.type,
+        accessRequest: {
+          id:
+            notification.type === NotificationTypeEnum.AccessRequest
+              ? notification.accessRequestId
+              : undefined,
+        },
+      });
+    });
+
+    if (accessRequestIds.length) {
+      const checkExist = await this.accessRequestRepo.find({
+        id: In(accessRequestIds),
       });
 
-      if (!checkExist) {
+      if (checkExist.length !== createNotificationsDto.length) {
         throw new BadRequestException({
           message: ErrorMessages.accessRequestNotFound,
         });
       }
     }
 
-    await this.notificationsRepo.save({
-      sender: { id: user.id },
-      receiver: { id: createNotificationDto.receiverUserId },
-      type: createNotificationDto.type,
-      accessRequest: {
-        id:
-          createNotificationDto.type === NotificationTypeEnum.AccessRequest
-            ? createNotificationDto.accessRequestId
-            : undefined,
-      },
-    });
+    await this.notificationsRepo
+      .createQueryBuilder()
+      .insert()
+      .into(NotificationsEntity)
+      .values(BulkNotificationsData)
+      .execute();
 
     return { message: 'created', status: HttpStatus.CREATED };
   }

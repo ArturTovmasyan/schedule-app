@@ -40,7 +40,7 @@ export class NotificationsController {
     @Body() createNotificationDto: CreateNotificationDto,
     @GetUser() user: User,
   ) {
-    return this.notificationsService.create(user, createNotificationDto);
+    return this.notificationsService.create(user, [createNotificationDto]);
   }
 
   @ApiResponse({ type: IResponse })
