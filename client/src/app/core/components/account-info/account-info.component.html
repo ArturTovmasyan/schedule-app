@@ -1,16 +1,49 @@
-<div class="-align-center">
-  <span>User name: {{ userName }}</span> <br/>
-  <span>Email: {{ email }}</span><br/>
-
-  <img *ngIf="avatar" src="{{avatar}}" width="50px" >
-
-  <br/>
-  <br/>
-  <input #fileInput type="file" class="file-input" [accept]="acceptedFileExtensions" (change)="attachFile($event)" />
-  <div class="row document-type">
-    <div class="col-xs-12">
-      <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
-      allowed file types(JPG, PNG, GIF)
+<section class="upload-picture">
+  <div class="upload-picture-wrapper">
+    <div class="upload-picture-header">
+      <h2 class="section-title">
+        Upload profile picture
+      </h2>
     </div>
+    <div class="upload-picture-body">
+      <h2 class="section-title">
+        Profile Picture
+      </h2>
+      <div class="profile-picture">
+        <div class="profile-avatar">
+          <img *ngIf="avatar" src="{{avatar}}">
+        </div>
+        <div class="profile-picture-input">
+          <label for="profilePictureInput">
+            <img src="assets/upload-icon.png" alt="upload icon">
+            <h5>Upload your profile picture</h5>
+            <input #fileInput type="file" id="profilePictureInput" class="file-input" [accept]="acceptedFileExtensions"
+                   (change)="attachFile($event)"/>
+          </label>
+          <div class="document-type">
+            <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
+            <h6>allowed file types(JPG, PNG, GIF)</h6>
+          </div>
+        </div>
+      </div>
+      <div class="profile-user-name">
+        <h2 class="section-title">
+          Username
+        </h2>
+        <h5>
+          {{ userName }}
+        </h5>
+      </div>
+      <div class="profile-email">
+        <h2 class="section-title">
+          Email
+        </h2>
+        <h5>
+          {{ email }}
+        </h5>
+      </div>
+    </div>
+
+
   </div>
-</div>
+</section>

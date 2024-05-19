@@ -1,0 +1,101 @@
+section.upload-picture {
+  padding: 100px 0;
+
+  .upload-picture-wrapper {
+    box-shadow: 0px 0px 4px #0000004D;
+    border-radius: 15px;
+    width: 80%;
+    margin: 0 auto;
+
+    h2.section-title {
+      font-size: 22px;
+      font-family: 'Lexend Deca', sans-serif;
+      margin-bottom: 0;
+      font-weight: bold;
+    }
+
+    .upload-picture-header {
+      background-color: #E1F4FD;
+      padding: 15px 35px;
+      border-top-right-radius: 15px;
+      border-top-left-radius: 15px;
+    }
+
+    .upload-picture-body {
+      padding: 15px 45px 40px 45px;
+
+      h2.section-title {
+        margin-bottom: 20px;
+      }
+
+      .profile-picture {
+        display: flex;
+        align-items: center;
+
+        .profile-avatar {
+          margin-right: 20px;
+
+          img {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+          }
+        }
+
+        .profile-picture-input {
+          label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+
+            img {
+              margin-right: 15px;
+              height: 30px;
+            }
+
+            h5 {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 14px;
+              color: #646565;
+              margin-bottom: 0;
+            }
+
+            input {
+              display: none;
+            }
+          }
+
+          .document-type {
+            margin-top: 10px;
+
+            h6 {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 12px;
+              color: #646565;
+              font-weight: 300;
+            }
+          }
+
+        }
+
+      }
+      .profile-user-name, .profile-email{
+        border-top: 1px solid #64656524;
+        padding-top: 25px;
+        margin-top: 30px;
+        h5{
+          font-size: 15px;
+          font-family: 'Lexend Deca', sans-serif;
+          color: #6465659c;
+          border: 1px solid #6465659c;
+          font-weight: 400;
+          padding: 11px 16px;
+          border-radius: 16px;
+          width: fit-content;
+        }
+      }
+    }
+  }
+
+
+}
