@@ -53,10 +53,17 @@ export class AvailabilityController {
   }
 
   @ApiExcludeEndpoint()
-  @Get(':userId')
+  @Post('attendees')
   @UseGuards(AuthGuard())
-  findOne(@Param('userId') userId: string, @GetUser() user) {
-    return this.availabilityService.findUserAvailabilityTimes(userId, user.id);
+  findOne(@Body() availabilityIds: any, @GetUser() user) {
+    return this.availabilityService.findUserAvailabilityTimes(availabilityIds.ids, user.id);
+  }
+
+  @ApiExcludeEndpoint()
+  @Post('by-emails')
+  @UseGuards(AuthGuard())
+  findByEmails(@Body() emails: any, @GetUser() user) {
+    return this.availabilityService.findIdsByEmails(emails.emails, user.id);
   }
 
   @ApiResponse({ type: IResponseMessage })

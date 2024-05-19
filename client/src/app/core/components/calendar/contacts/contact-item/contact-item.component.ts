@@ -14,8 +14,7 @@ export class ContactItemComponent implements OnInit {
   @Input("contact")
   contact!: CalendarAccess;
 
-  constructor(private broadcaster: BroadcasterService, private availabilityService: AvailabilityService) {
-  }
+  constructor(private broadcaster: BroadcasterService, private availabilityService: AvailabilityService) {}
 
   ngOnInit(): void {
   }
@@ -43,15 +42,16 @@ export class ContactItemComponent implements OnInit {
 
   getContactAvailability() {
     const contactId = this.contact.owner.id;
-    this.availabilityService.getByUserId(contactId)
+    const contactEmail = this.contact.owner.email;
+
+    this.availabilityService.getByUserId([contactId])
       .pipe(first())
       .subscribe({
         next: (data: any | null) => {
-          debugger;
           const availabilityData = data?.availabilityData;
           const contactData = {
             ...availabilityData,
-            // contactId
+            contactEmail
           }
           this.broadcaster.broadcast('contact_calendar_data', contactData);
         },

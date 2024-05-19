@@ -13,10 +13,10 @@ export class ChipEmailInputComponent {
   emailInput!: ElementRef;
 
   add() {
+    //TODO add validation for email (Regex) --> Check our users email in DB
     const email = this.emailInput.nativeElement.value;
     this.emails.push(email);
     this.emailInput.nativeElement.value = "";
-
     this.emailUpdateEvent.emit(this.emails);
   }
 

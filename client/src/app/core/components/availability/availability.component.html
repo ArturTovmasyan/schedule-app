@@ -5,7 +5,7 @@
     <div id="clockType">
       <label class="section-header">Clock type</label>
       <div class="radio-group">
-        <button id="type-normal" [ngClass]="meridian ? 'checked' : ''"
+        <button disabled id="type-normal" [ngClass]="meridian ? 'checked' : ''"
                 (click)="onClockTypeChanged(ClockType.NORMAL)"><span>AM/PM</span> View
         </button>
         <button id="type-millitary" [ngClass]="!meridian ? 'checked' : ''"

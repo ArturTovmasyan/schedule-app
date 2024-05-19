@@ -92,9 +92,9 @@
               <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ parsedDate }}" readonly>
             </li>
             <li class="list-inline-item timeframe">
-              <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ parsedStartTime }}" readonly>
+              <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ parsedStartTime(this.data.start) }}" readonly>
               <p> - </p>
-              <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ parsedEndTime }}" readonly>
+              <input type="text" id="meetingEndTime" name="meetingEndTime"  placeholder="{{ parsedEndTime(this.data.end) }}" readonly>
             </li>
             <li class="list-inline-item timezone">
               <!-- <img src="assets/canada-flag.png" alt="timezone"> -->

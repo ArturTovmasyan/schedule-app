@@ -1,4 +1,4 @@
-import {Repository} from 'typeorm';
+import {In, Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {BadRequestException, HttpStatus, Injectable} from '@nestjs/common';
 import {ErrorMessages} from '../../components/constants/error.messages';
@@ -20,6 +20,10 @@ export class AvailabilityService {
     constructor(
         @InjectRepository(Availability)
         private readonly availabilityRepo: Repository<Availability>,
+
+        @InjectRepository(User)
+        private readonly userRepo: Repository<User>,
+
         private readonly eventService: CalendarEventService,
         private readonly initEventService: InitEventService,
     ) {
@@ -73,13 +77,14 @@ export class AvailabilityService {
 
     /**
      * @description `Find user calendar aval. times`
-     * @param userId
+     * @param userIds
      * @param currentUserId - `Current user id`
      * @returns `{Event times data}`
      */
 
-    async findUserAvailabilityTimes(userId: string, currentUserId: string): Promise<any> {
+    async findUserAvailabilityTimes(userIds: any[], currentUserId: string): Promise<any> {
         let availabilityData;
+<<<<<<< HEAD
         let data: Availability[] = await this.availabilityRepo.find({
             where: { user: In(userIds) },
         });
@@ -91,6 +96,52 @@ export class AvailabilityService {
             const contactEvents:any[] = await this.eventService.getEventsByUserIds(userIds, {startDate, dateEnd});
             availabilityDates = await this.convertAvailabilityToDate(data[0], contactEvents);
             availabilityDates.push(...contactEvents);
+=======
+        let availability:any = {
+            from: '09:00am',
+            to: '18:00pm',
+            monday: true,
+            tuesday: true,
+            wednesday: true,
+            thursday: true,
+            friday: true,
+            saturday: true,
+            sunday: true,
+            clockType: ClockType.H24
+        };
+
+        let availabilities: Availability[] = await this.availabilityRepo.find({where: {user: In(userIds)}});
+
+        if (availabilities) {
+            // for contact list click
+            if (availabilities.length == 1) {
+                availability = availabilities[0];
+            } else {
+                availabilities.map((data) => {
+                    availability = this.generateAttendeesAvailability(availability, data);
+
+                    let startFrom = moment(availability.from, 'h:mma');
+                    let endFrom = moment(data.from, 'h:mma');
+                    let startTo = moment(data.to, 'h:mma');
+                    let endTo = moment(availability.to, 'h:mma');
+
+                    if (startFrom.isBefore(endFrom)) {
+                        availability.from = data.from;
+                    }
+
+                    if (startTo.isBefore(endTo)) {
+                        availability.to = data.to;
+                    }
+                });
+            }
+
+            const startDate = moment().subtract(1, 'day').format('yyyy-MM-DD hh:mm:ss')
+            const dateEnd = moment().add(2, 'week').format('yyyy-MM-DD hh:mm:ss');
+
+            const eventUserIds = [...userIds, currentUserId];
+            const contactEvents: any[] = await this.eventService.getEventsByUserIds(eventUserIds, {startDate, dateEnd});
+            availabilityData = await this.convertAvailabilityToDate(availability, contactEvents);
+>>>>>>> 8af85e7 (Finish caklendar availability functionality)
         }
 
         return {availabilityData};
@@ -178,10 +229,45 @@ export class AvailabilityService {
                 dateEnd = date.set({hour: hourTo, minute: minuteTo}).toDate();
             }
 
+<<<<<<< HEAD
             dates.push({
                 start: dateStart,
                 end: dateEnd,
             });
+=======
+            for (let i = 0; i < contactEvents.length; i++) {
+                const eventDate = contactEvents[i];
+                let eventDateStart = eventDate.start;
+                let eventDateEnd = eventDate.end;
+                let newAvailabilityDate = [];
+
+                if (eventDateStart.getDate() == availabilityStart.getDate()) {
+
+                    eventData = this.initEventService.iniEvents(
+                        dates,
+                        splitEvents,
+                        newAvailabilityDate,
+                        eventDateStart,
+                        eventDateEnd,
+                        availabilityStart,
+                        availabilityEnd);
+
+                    dates = eventData.dates;
+                }
+
+                if (eventDateStart.getDate() == availabilityStart.getDate() ||
+                    eventDateEnd.getDate() == availabilityStart.getDate()) {
+                    notEventSplit = false;
+                }
+            }
+
+            if (notEventSplit) {
+                dates.push({
+                    start: availabilityStart,
+                    end: availabilityEnd
+                });
+            }
+>>>>>>> 8af85e7 (Finish caklendar availability functionality)
         });
 
         return dates;
@@ -244,6 +330,59 @@ export class AvailabilityService {
         }
 
         return weekDays;
+    }
+
+    /**
+     * @description `Generate availability data for attendees`
+     *
+     * @returns `{weekDays}`
+     * @param availability
+     * @param data
+     */
+    async generateAttendeesAvailability(availability: Availability, data: Availability): Promise<any> {
+        if (!data.monday) {
+            availability.monday = false;
+        }
+
+        if (!data.tuesday) {
+            availability.tuesday = false;
+        }
+
+        if (!data.wednesday) {
+            availability.wednesday = false;
+        }
+
+        if (!data.thursday) {
+            availability.thursday = false;
+        }
+
+        if (!data.friday) {
+            availability.friday = false;
+        }
+
+        if (!data.saturday) {
+            availability.saturday = false;
+        }
+
+        if (!data.sunday) {
+            availability.sunday = false;
+        }
+
+        return availability;
+    }
+
+    async findIdsByEmails(emails:string[], currentUserId: string):Promise<any> {
+        let contactIds = await this.userRepo
+            .createQueryBuilder('user')
+            .select('user.id')
+            .where({ email: In(emails) })
+            .getMany();
+
+        let ids = contactIds.map((item) => {
+            return item.id;
+        });
+
+       return await this.findUserAvailabilityTimes(ids, currentUserId);
     }
 }
 

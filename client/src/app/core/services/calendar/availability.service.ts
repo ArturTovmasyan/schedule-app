@@ -42,12 +42,20 @@ export class AvailabilityService {
     )
   }
 
-  getByUserId(id: string) {
-    return this.http.get<ApiResponse<any>>(this.url+'/'+id, {
-    }).pipe(
+  getByUserId(ids: string[]) {
+    return this.http.post<ApiResponse<any>>(this.url+'/attendees', {ids}).pipe(
       map((response: ApiResponse<any>) => {
         return response;
       })
     )
   }
+
+  getByEmails(emails: string[]) {
+    return this.http.post<ApiResponse<any>>(this.url+'/by-emails', {emails}).pipe(
+      map((response: ApiResponse<any>) => {
+        return response;
+      })
+    )
+  }
+
 }
