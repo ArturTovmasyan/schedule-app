@@ -19,11 +19,11 @@ export class Availability {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'from', type: 'timestamptz' })
-  from: Date;
+  @Column({ name: 'from', type: 'varchar', length: 7, nullable: false })
+  from: string;
 
-  @Column({ name: 'to', type: 'timestamptz' })
-  to: Date;
+  @Column({ name: 'to', type: 'varchar', length: 7, nullable: false })
+  to: string;
 
   @Column({ name: 'sunday', type: 'boolean', default: false })
   sunday?: Boolean;
