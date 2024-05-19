@@ -11,7 +11,7 @@ import {
 import { User } from '@user/entity/user.entity';
 import { ClockType } from '../enums/clockType.enum';
 
-@Entity('availability')
+@Entity('calendar_availability')
 export class Availability {
   @PrimaryGeneratedColumn('uuid') id: string;
 
