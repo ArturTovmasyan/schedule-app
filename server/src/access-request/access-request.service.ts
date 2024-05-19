@@ -132,7 +132,8 @@ export class AccessRequestService {
               dynamicTemplateData: {
                   ...this.mailService.defaultTemplateData,
                   name: `${user.firstName} ${user.lastName}`.trim(),
-                  invite_url: `${process.env.WEB_HOST}`
+                  invite_url: `${process.env.WEB_HOST}`,
+                  message: current.comment ?? ""
               }
           }]
       });

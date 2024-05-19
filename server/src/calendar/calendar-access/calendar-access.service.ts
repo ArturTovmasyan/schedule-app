@@ -106,7 +106,8 @@ export class CalendarAccessService {
             dynamicTemplateData: {
                 ...this.mailService.defaultTemplateData,
                 name: `${user.firstName} ${user.lastName}`.trim(),
-                notification_url: `${process.env.WEB_HOST}`
+                notification_url: `${process.env.WEB_HOST}`,
+                message: current.comment ?? ""
             }
         }]
       });
