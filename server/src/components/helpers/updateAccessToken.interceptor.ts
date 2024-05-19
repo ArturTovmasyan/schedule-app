@@ -34,16 +34,16 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
 
       for (const token of tokens) {
         if (token.calendarType === CalendarTypeEnum.GoogleCalendar) {
-
           await this.calendarPermissionsService.googleOAuth2Client.setCredentials(
             {
               refresh_token: token.refreshToken,
             },
           );
 
-          const refreshRes = await this.calendarPermissionsService.googleOAuth2Client.refreshAccessToken();
+          const refreshRes =
+            await this.calendarPermissionsService.googleOAuth2Client.refreshAccessToken();
 
-          if (refreshRes.res.headers.status !== 200) {
+          if (refreshRes.res.status !== 200) {
             throw new BadGatewayException();
           }
 
@@ -57,7 +57,6 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
           };
 
           await calendarTokenRepository.save(calendarTokenBody);
-
         } else if (token.calendarType === CalendarTypeEnum.Office365Calendar) {
           const updatedTokens =
             await this.calendarPermissionsService.msalInstance.acquireTokenByRefreshToken(

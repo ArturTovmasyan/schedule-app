@@ -9,7 +9,9 @@ describe('CalendarPermissionsController', () => {
       controllers: [CalendarPermissionsController],
     }).compile();
 
-    controller = module.get<CalendarPermissionsController>(CalendarPermissionsController);
+    controller = module.get<CalendarPermissionsController>(
+      CalendarPermissionsController,
+    );
   });
 
   it('should be defined', () => {

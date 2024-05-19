@@ -78,14 +78,13 @@ export class CalendarPermissionsService {
         });
       }
 
-      const statusOfCalendars = await this.getUserStatusOfCalendars(user.id);
-
-      statusOfCalendarsAndUrl.statusOfCalendars = statusOfCalendars;
+      statusOfCalendarsAndUrl.statusOfCalendars =
+        await this.getUserStatusOfCalendars(user.id);
 
       return statusOfCalendarsAndUrl;
     }
 
-    const url = this.googleOAuth2Client.generateAuthUrl({
+    statusOfCalendarsAndUrl.url = this.googleOAuth2Client.generateAuthUrl({
       access_type: 'offline',
       prompt: 'consent',
       scope: [
@@ -96,7 +95,6 @@ export class CalendarPermissionsService {
       ],
     });
 
-    statusOfCalendarsAndUrl.url = url;
     return statusOfCalendarsAndUrl;
   }
 
@@ -105,7 +103,7 @@ export class CalendarPermissionsService {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
       const getTokenResponse = await this.googleOAuth2Client.getToken(code);
 
-      if (getTokenResponse.res.headers.status !== 200) {
+      if (getTokenResponse.res.status !== 200) {
         throw new BadGatewayException();
       }
       const tokens = getTokenResponse.tokens;
@@ -148,13 +146,12 @@ export class CalendarPermissionsService {
         calendarType: CalendarTypeEnum.Office365Calendar,
       });
 
-      const statusOfCalendars = await this.getUserStatusOfCalendars(user.id);
-
-      statusOfCalendarsAndUrl.statusOfCalendars = statusOfCalendars;
+      statusOfCalendarsAndUrl.statusOfCalendars =
+        await this.getUserStatusOfCalendars(user.id);
 
       return statusOfCalendarsAndUrl;
     }
-    const url = await this.msalInstance.getAuthCodeUrl({
+    statusOfCalendarsAndUrl.url = await this.msalInstance.getAuthCodeUrl({
       scopes: [
         'offline_access',
         'Calendars.ReadWrite',
@@ -166,7 +163,7 @@ export class CalendarPermissionsService {
         'MICROSOFT_CALENDAR_CALLBACK_URL',
       ),
     });
-    statusOfCalendarsAndUrl.url = url;
+
     return statusOfCalendarsAndUrl;
   }
 

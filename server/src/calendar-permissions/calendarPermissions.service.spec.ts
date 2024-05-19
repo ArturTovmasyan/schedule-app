@@ -9,7 +9,9 @@ describe('CalendarPermissionsService', () => {
       providers: [CalendarPermissionsService],
     }).compile();
 
-    service = module.get<CalendarPermissionsService>(CalendarPermissionsService);
+    service = module.get<CalendarPermissionsService>(
+      CalendarPermissionsService,
+    );
   });
 
   it('should be defined', () => {
