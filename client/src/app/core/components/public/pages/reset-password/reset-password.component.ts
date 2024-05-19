@@ -27,8 +27,9 @@ export class ResetPasswordComponent implements OnInit {
   ) {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]]
-    }, {updateOn: 'blur'}
-      );
+    }, {
+      updateOn: 'submit'
+    });
   }
 
   ngOnInit(): void {
