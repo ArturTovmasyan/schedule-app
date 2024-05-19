@@ -126,7 +126,7 @@
                   placeholder="Add your message here..." [(ngModel)]="data.description"></textarea>
       </div>
       <div class="d-flex justify-content-end">
-        <button class="send-request" (click)="scheduleEvent()">
+        <button class="send-request" (click)="scheduleEvent()" [disabled]="!selectEvent" >
           Send
         </button>
       </div>

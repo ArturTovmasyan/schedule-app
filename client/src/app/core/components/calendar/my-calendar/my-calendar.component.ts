@@ -21,10 +21,13 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   contactEvents: any;
   contactAvailabilityDates: any;
   subscription: BehaviorSubject<boolean>;
+  selectedContactEmail: string = '';
+  currentUrl: string = '';
+  events: any = [];
+  myEvents: any;
 
   constructor(private calendarService: CalendarService, private broadcaster: BroadcasterService) {
     this.subscription = this.broadcaster.on('contact_calendar_data').subscribe((contactAvailabilities: any) => {
-      debugger;
       const availabilityDates: any[] = [];
       const contactId = contactAvailabilities.contactId;
 

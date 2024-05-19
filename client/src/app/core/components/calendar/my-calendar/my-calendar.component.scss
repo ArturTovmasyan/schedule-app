@@ -214,11 +214,7 @@ th.fc-day-today .fc-col-header-cell-cushion {
   }
 }
 
-.fc-day-today {
-  background: none !important;
-}
-
-.fc-non-business {
+.fc-day-today, .fc-day-disabled, .fc-non-business {
   background: none !important;
 }
 

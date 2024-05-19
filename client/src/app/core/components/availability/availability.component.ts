@@ -25,8 +25,7 @@ export class AvailabilityComponent implements OnInit {
   }
   error: any | null = null;
 
-  constructor(private calendarAvailabilityService: AvailabilityService) {
-  }
+  constructor(private calendarAvailabilityService: AvailabilityService) {}
 
   ngOnInit(): void {
     this.fetchAvailability();

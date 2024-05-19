@@ -30,8 +30,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
   };
   myCalendar: CalendarData | null = null;
   selectedCalendar: Calendar | null = null;
-  showCalendars = false;
   subscription: BehaviorSubject<boolean>;
+  showCalendars = false;
+  selectEvent = false;
 
   constructor(
     private readonly router: Router,
@@ -48,6 +49,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
       this.data.start = eventData.start;
       this.data.end = eventData.end;
+      this.selectEvent = true;
     });
   }
 
