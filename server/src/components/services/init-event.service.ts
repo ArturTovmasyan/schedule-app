@@ -36,8 +36,12 @@ export class InitEventService {
 
     let newAvalEndDate = moment(eventDateStart).set({
       hour: eventStartHour,
-      minute: eventStartMinute //TODO +- 5minute
+      minute: eventStartMinute
     }).toDate();
+
+    if (newAvalEndDate > avalDateEnd) {
+        newAvalEndDate = avalDateEnd;
+    }
 
     if (splitedEvents.length > 0) {
       let dateIndex = splitedEvents.length - 1;
@@ -150,6 +154,7 @@ export class InitEventService {
     }
     else {
 
+      debugger;
       if (avalDateStart <= newAvalEndDate) {//TODO fix this part
         newAvailabilityDate.push({
           start: avalDateStart,

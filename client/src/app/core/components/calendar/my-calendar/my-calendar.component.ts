@@ -32,6 +32,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
         for (const key in contactAvailabilities) {
 
           availabilityDates.push({
+            //TODO convert to local time zone
             // start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].start)),
             // end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].end)),
             start: contactAvailabilities[key].start,
