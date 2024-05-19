@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {ApiResponse} from '../../interfaces/response/api.response.interface';
 import {CalendarPermission} from "../../interfaces/calendar/permission.calendar.inteface";
-import {CalendarType} from "../../components/connect-calendar/connect-calendar.component";
+import {CalendarType} from "../../components/calendar/connect-calendar/connect-calendar.component";
 
 @Injectable({
   providedIn: 'root'

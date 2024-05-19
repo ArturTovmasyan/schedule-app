@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {first} from "rxjs/operators";
-import {CalendarPermissionService} from "../../services/calendar/permission.service";
-import {CalendarPermission} from "../../interfaces/calendar/permission.calendar.inteface";
+import {CalendarPermissionService} from "../../../services/calendar/permission.service";
+import {CalendarPermission} from "../../../interfaces/calendar/permission.calendar.inteface";
 
 export enum CalendarType {
   GOOGLE = "googleCalendar",
