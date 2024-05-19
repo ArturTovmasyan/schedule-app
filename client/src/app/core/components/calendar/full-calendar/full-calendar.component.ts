@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {CalendarOptions} from "@fullcalendar/angular";
+import {first} from "rxjs/operators";
+import {CalendarService} from "../../../services/calendar/calendar.service";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-full-calendar',
@@ -8,20 +11,58 @@ import {CalendarOptions} from "@fullcalendar/angular";
 })
 export class FullCalendarComponent implements OnInit {
 
-  constructor() {
+  events: any = [];
+  error: any = null;
+
+  constructor(private calendarService: CalendarService, public datePipe: DatePipe) {
   }
 
   ngOnInit(): void {
+    this.fetchMyEvents();
+  }
+
+  fetchMyEvents() {
+    this.calendarService.fetchEvents()
+      .pipe(first())
+      .subscribe({
+        next: (events: any) => {
+          const data: { start: any; end: any; title: any; }[] = [];
+
+          if (events.length > 0) {
+            events.forEach((el: any) => {
+              data.push({
+                start: this.datePipe.transform(new Date(el.start), 'yyyy-MM-ddThh:mm:ss'),
+                end: this.datePipe.transform(new Date(el.end), 'yyyy-MM-ddThh:mm:ss'),
+                title: el.description
+              })
+            })
+
+            this.calendarOptions.events = data;
+          }
+        },
+        error: (error) => {
+          this.error = error;
+        }
+      });
   }
 
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
-    dayHeaderFormat: { weekday: 'short', day: 'numeric', omitCommas: true },
+    dayHeaderFormat: {weekday: 'short', day: 'numeric', omitCommas: true},
     direction: 'ltr',
+    // themeSystem: 'bootstrap',
     selectable: true,
     allDaySlot: false,
     droppable: true,
     dateClick: this.handleDateClick.bind(this),
+    eventTextColor: 'black',   // an option!
+    eventBackgroundColor: '#E9F6FD',   // an option!
+    eventOrderStrict: true,
+    eventTimeFormat: {
+      hour: 'numeric',
+      minute: '2-digit',
+      meridiem: 'short'
+    },
     titleFormat: {
       year: 'numeric', month: 'long', day: 'numeric'
     },
@@ -30,21 +71,7 @@ export class FullCalendarComponent implements OnInit {
       center: 'prev,title,next',
       right: 'today'
     },
-    events: [
-      { title: 'event 1', start: '2022-09-25T05:45:00', end: '2022-09-25T06:45:00' },
-      { title: 'event 111', date: '2022-09-25T06:43:00' },
-      { title: 'event 1', date: '2022-09-26T08:22:00' },
-      { title: 'event 1', date: '2022-09-27T12:30:00' },
-      { title: 'event 2', date: '2022-09-22T12:30:00' }
-    ],
-    eventTextColor: 'black',   // an option!
-    eventBackgroundColor: '#E9F6FD',   // an option!
-    eventOrderStrict: true,
-    eventTimeFormat: {
-      hour: 'numeric',
-      minute: '2-digit',
-      meridiem: 'short'
-    }
+    events: [],
   };
 
   handleDateClick(arg: { dateStr: string; }) {

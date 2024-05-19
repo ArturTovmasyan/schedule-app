@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {FullCalendarModule} from "@fullcalendar/angular";
 import {RouterModule} from '@angular/router';
-import {CommonModule} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {CalendarComponent} from "./calendar.component";
 import {AccessRequestComponent} from "./access-request/access-request.component";
 import {ShareCalendarComponent} from './share-calendar/share-calendar.component';
@@ -16,7 +16,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
   interactionPlugin,
-  timeGridPlugin,
+  timeGridPlugin
 ]);
 
 @NgModule({
@@ -33,7 +33,8 @@ FullCalendarModule.registerPlugins([
     CommonModule,
     RouterModule,
     FullCalendarModule
-  ]
+  ],
+  providers: [DatePipe]
 })
 
 export class CalendarModule {
