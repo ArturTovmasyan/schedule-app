@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import * as basicAuth from 'express-basic-auth';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {

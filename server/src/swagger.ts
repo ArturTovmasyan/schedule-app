@@ -5,6 +5,7 @@ export default function setupSwagger(app: NestExpressApplication) {
     .setTitle('Handshake')
     .setDescription('The Handshake API description')
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('handshake')
     .build();
   const document = SwaggerModule.createDocument(app, config);
