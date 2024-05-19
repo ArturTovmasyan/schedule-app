@@ -149,15 +149,28 @@ export class AuthService {
         return true;
     }
 
+<<<<<<< HEAD
     async confirmRegistration(token: string): Promise<boolean> {
         const user: Pick<UserDto, 'id' | 'status'> = await this.verifyToken(token);
+=======
+    async confirmRegistration(token: string): Promise<LoginStatus> {
+        const {user} = await this.verifyToken(token);
+>>>>>>> d5dbaaa (auto login after email confirmation)
 
-        if (user && user.status === StatusEnum.pending) {
-            user.status = StatusEnum.active;
-            const data = await this.userRepo.update(user.id, user);
-            return data.affected > 0;
-        }
-
+		if(user) {
+			if (user.status === StatusEnum.pending) {
+				user.status = StatusEnum.active;
+				await this.userRepo.update(user.id, user);
+			}
+			
+			const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
+			const stripeCustomerId = user.stripeCustomerId;
+			return {
+				stripeCustomerId,
+				...token,
+			};
+		}
+        
         throw new BadRequestException({
             status: HttpStatus.BAD_REQUEST,
             message: ErrorMessages.confirmError,

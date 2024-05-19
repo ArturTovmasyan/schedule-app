@@ -63,8 +63,7 @@ const routes: Routes = [
       {
         path: 'confirm',
         component: ConfirmAccountComponent,
-        data: {title: 'Confirm Registration'},
-        canActivate: [RedirectGuard]
+        data: {title: 'Confirm Registration'}
       },
       {
         path: 'new-password',

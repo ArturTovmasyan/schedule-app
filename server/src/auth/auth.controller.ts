@@ -90,7 +90,7 @@ export class AuthController {
   @Get('confirm')
   async confirm(
     @Query(new ValidationPipe()) query: ConfirmAccountDto,
-  ): Promise<boolean> {
+  ): Promise<LoginStatus> {
     return await this.authService.confirmRegistration(query.token);
   }
 

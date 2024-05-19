@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {ApplicationUser} from "../../interfaces/user/app.user.interface";
 import {LoginUser} from "../../interfaces/user/login.user.interface";
 
@@ -56,8 +56,13 @@ export class AuthService {
 
   confirmAccount(token: string): Observable<boolean> {
     return this.http.get<boolean>('/api/auth/confirm?token=' + token).pipe(
-      map((response: boolean) => {
-        return response;
+      map((response: any) => {
+        if (response && response.accessToken) {
+          localStorage.setItem('cu', JSON.stringify(response));
+          this.currentUserSubject.next(response);
+          return true;
+        }
+        return false;
       })
     );
   }

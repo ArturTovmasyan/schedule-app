@@ -18,6 +18,8 @@ export class RedirectGuard implements CanActivate {
     | boolean
     | UrlTree {
     const currentUser = this.authService.currentUserValue;
+    console.log('rrrr', this.authService.currentUserValue);
+    console.log('aaaaaaa==>', !(currentUser && currentUser.accessToken));
     return !(currentUser && currentUser.accessToken);
   }
 }
