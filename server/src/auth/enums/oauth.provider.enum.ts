@@ -1,6 +1,5 @@
-export enum OauthProvider
-{
-    GOOGLE = 'google',
-    APPLE = 'apple',
-    MICROSOFT = 'microsoft'
+export enum OauthProvider {
+  GOOGLE = 'google',
+  APPLE = 'apple',
+  MICROSOFT = 'microsoft',
 }

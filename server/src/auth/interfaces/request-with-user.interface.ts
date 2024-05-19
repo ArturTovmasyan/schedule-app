@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import {User} from "@user/entity/user.entity";
+import { User } from '@user/entity/user.entity';
 
 interface RequestWithUser extends Request {
-    user: User;
+  user: User;
 }
 
 export default RequestWithUser;

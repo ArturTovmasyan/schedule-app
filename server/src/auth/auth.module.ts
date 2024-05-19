@@ -31,7 +31,7 @@ dotenv.config();
         expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, GoogleStrategy, AzureADStrategy, PaymentService],

@@ -5,12 +5,16 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { JwtPayload } from './interfaces/payload.interface';
 import * as dotenv from 'dotenv';
-import {ConfigService} from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
+
 dotenv.config();
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly authService: AuthService, readonly configService: ConfigService) {
+  constructor(
+    private readonly authService: AuthService,
+    readonly configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.get<string>('JWT_SECRET_KEY'),
