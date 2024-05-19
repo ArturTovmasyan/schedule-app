@@ -85,6 +85,75 @@ export class CalendarEventService {
                     .getRepository(Calendar)
                     .save(calendarSerializedList[0]);
             },
+<<<<<<< HEAD
+=======
+          },
+        },
+      };
+
+      const googleEvent = await eventManager.saveEvent(eventData, false, null);
+
+      return {
+        meetLink: googleEvent.hangoutLink ?? '',
+        meetingId: googleEvent.id,
+      };
+    });
+  }
+
+  /**
+   * @description `Delete Google meet link`
+   *
+   * @param user - `Authorized user data`
+   * @param meetingId - `ID of google meeting`
+   * @param calendarId - `ID of primary calendar`
+   *
+   * @returns `Deleted`
+   */
+
+  async deleteGoogleMeetLink(
+    user: User,
+    meetingId: string,
+    calendarId: string,
+  ): Promise<IResponseMessage> {
+    const tokens = await this.getTokens(user, this.connection.manager);
+
+    const eventManager = await this.calendarService.initManager(
+      tokens.googleToken.accessToken,
+    );
+    // TODO: check why deleteing event?
+    await eventManager.deleteEvent(calendarId, meetingId, '');
+
+    return { message: 'Deleted', status: HttpStatus.ACCEPTED };
+  }
+
+  async deleteUserCalendarEvent(
+    user: User,
+    eventId: string,
+    message: string | null = null,
+  ) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const calendarEventRepo = manager.getRepository(CalendarEvent);
+
+      const event = await calendarEventRepo
+        .createQueryBuilder('calendarEvent')
+        .leftJoinAndSelect('calendarEvent.calendar', 'calendar')
+        .where({ id: eventId, owner: { id: user.id } })
+        .getOne();
+
+      if (!event) {
+        throw new NotFoundException('Event not found');
+      }
+
+      const tokens = await this.getTokens(user, manager);
+      const googleToken = tokens.googleToken;
+      const outlookToken = tokens.outlookToken;
+
+      const eventDeleters = [];
+
+      if (event.calendar.calendarType == CalendarTypeEnum.GoogleCalendar) {
+        const eventManager = await this.calendarService.initManager(
+          googleToken.accessToken,
+>>>>>>> 831cabe (feat: allow user to cancel event)
         );
     }
 
@@ -129,6 +198,7 @@ export class CalendarEventService {
         );
     }
 
+<<<<<<< HEAD
     async syncGoogleCalendarEventList(
         user: User,
         calendar: Calendar,
@@ -148,11 +218,40 @@ export class CalendarEventService {
                         'You have not calendar-event access token',
                     );
                 }
+=======
+        if (gEvent) {
+          eventDeleters.push(async () => {
+            await eventManager.deleteEvent(
+              event.calendar.calendarId,
+              event.externalId,
+              message,
+            );
+          });
+        }
+      }
+>>>>>>> 831cabe (feat: allow user to cancel event)
 
                 const { accessToken } = token;
 
+<<<<<<< HEAD
                 return await manager.getRepository(CalendarEvent).save(delta.added);
             });
+=======
+        const oEvent = await eventManager.getEvent(
+          event.calendar.calendarId,
+          event.externalId,
+        );
+        if (oEvent) {
+          eventDeleters.push(async () => {
+            await eventManager.deleteEvent(
+              event.calendar.calendarId,
+              event.externalId,
+              message,
+            );
+          });
+        }
+      }
+>>>>>>> 831cabe (feat: allow user to cancel event)
 
         const cal = await calendar.calendarList.list();
 

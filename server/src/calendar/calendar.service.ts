@@ -47,7 +47,7 @@ interface EventManager {
   init(): void;
   getEvent(calendarId: string, eventId: string);
   saveEvent(data: any, isUpdate: boolean, metaData: object | null);
-  deleteEvent(calendarId: string, eventId: string);
+  deleteEvent(calendarId: string, eventId: string, message: string);
   getAllEvents(calendarId: string, fromDate: string, timezone: string);
   getAllCalendars();
   createWebhook(internalCalendarId: string, externalCalendarId: string);
@@ -148,7 +148,7 @@ class GogoleEventManager implements EventManager {
     });
   }
 
-  async deleteEvent(calendarId: string, eventId: string) {
+  async deleteEvent(calendarId: string, eventId: string, message: string) {
     return new Promise<void>(async (resolve) => {
       this.googleClient.events
         .delete({
@@ -341,17 +341,26 @@ class OfficeEventManager implements EventManager {
     });
   }
 
-  deleteEvent(calendarId: string, eventId: string) {
+  deleteEvent(calendarId: string, eventId: string, message: string) {
     return new Promise<void>((resolve) => {
       this.officeClient
-        .api(`/me/calendars/${calendarId}/events/${eventId}`)
-        .delete()
-        .then(() => {
-          resolve();
+        .api(`/me/calendars/${calendarId}/events/${eventId}/cancel`)
+        .post({
+          comment: message,
         })
-        .catch((e) => {
-          console.log('Failed to delete event in Office365Calendar', e);
-          resolve();
+        .finally(() => {
+          this.officeClient
+            .api(`/me/calendars/${calendarId}/events/${eventId}/cancel`)
+            .post({
+              comment: message,
+            })
+            .then(() => {
+              resolve();
+            })
+            .catch((e) => {
+              console.log('Failed to delete event in Office365Calendar', e);
+              resolve();
+            });
         });
     });
   }

@@ -1,5 +1,5 @@
 <div id="container">
-  <full-calendar id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true">
+  <full-calendar class="" id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true">
     <ng-template #eventContent let-arg>
       <div class="my-event">
         <div>
@@ -44,7 +44,21 @@
     </section>
     <section class="footer">
       <span class="button" (click)="navigateToDetail(currentEventSelection?.id)">Edit</span>
-      <span class="action" (click)="cancelMeeting(currentEventSelection?.id)">Cancel this meeting</span>
+      <span class="action" (click)="showCancellation()">Cancel this meeting</span>
     </section>
+  </div>
+
+  <div #eventCancellationView class="event-cancel hidden" id="event-cancel">
+    <div id="cancel-container">
+      <section class="content">
+        <label>Would you like to send cancellation emails to guest?</label>
+        <textarea [(ngModel)]="cancellationMessage" placeholder="Add an optional message here and click send"></textarea>
+      </section>
+      <section class="footer">
+        <span class="button" (click)="cancelMeeting()">Send</span>
+        <span class="action" (click)="cancelMeeting(false)">Cancel without message</span>
+        <span class="action back" (click)="closeCancellation()">Back</span>
+      </section>
+    </div>
   </div>
 </div>

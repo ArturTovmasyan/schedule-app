@@ -89,10 +89,12 @@ export class CalendarEventController {
   async deleteUserCalendarEvent(
     @Req() req: { user: User },
     @Param('id') eventId: string,
+    @Body() body: { message: string },
   ) {
     return await this.calendarEventService.deleteUserCalendarEvent(
       req.user,
       eventId,
+      body.message,
     );
   }
 
