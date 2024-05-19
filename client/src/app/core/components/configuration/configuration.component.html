@@ -1,31 +1,7 @@
 <section class="configuration-page">
-  <div class="setting-content-header">
-    <div class="text">
-      <h1>Configuration</h1>
-    </div>
-    <div class="account-info">
-      <div class="timezone">
-        <h4 id="userTimezone">
-          GMT -4/ET
-        </h4>
-      </div>
-      <a class="notifications" id="notifications">
-        <img src="assets/notification-icon.svg" alt="notifications">
-        <div class="counter">
-          <h6 id="notificationsCounter">
-            123
-          </h6>
-        </div>
-      </a>
-      <a class="user-profile" id="userProfile">
-        <img src="assets/user-icon.png" alt="profile image">
-      </a>
-    </div>
-  </div>
   <div id="configurationPageWrapper">
-    <div class="configuration-page-title">
-      Who can see your calendar?
-    </div>
+    <label class="header">Who can see your calendar?</label>
+
     <div class="configuration" *ngIf="isVisible(Section.PUBLIC)">
       <div class="content">
         <div class="info">
@@ -120,7 +96,6 @@
       </a>
     </div>
   </div>
-
 </section>
 
 
