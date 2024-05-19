@@ -6,11 +6,12 @@
         molestie.</span>
     </div>
     <label class="switch">
-      <input type="checkbox">
+      <input #public type="checkbox" [checked]="isAccessible(AccessibilityType.PUBLIC)"
+        (change)="updateAccessibility(AccessibilityType.PUBLIC, public.checked)">
       <span class="slider round"></span>
     </label>
   </section>
-  
+
   <section class="configuration">
     <div>
       <label>Anyone from a given domain</label>
@@ -18,7 +19,8 @@
         molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
     </div>
     <label class="switch">
-      <input type="checkbox">
+      <input #domain type="checkbox" [checked]="isAccessible(AccessibilityType.DOMAIN)"
+        (change)="updateAccessibility(AccessibilityType.DOMAIN, domain.checked)">
       <span class="slider round"></span>
     </label>
   </section>
@@ -30,7 +32,8 @@
         molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
     </div>
     <label class="switch">
-      <input type="checkbox">
+      <input #request type="checkbox" [checked]="isAccessible(AccessibilityType.REQUEST)"
+        (change)="updateAccessibility(AccessibilityType.REQUEST, request.checked)">
       <span class="slider round"></span>
     </label>
   </section>

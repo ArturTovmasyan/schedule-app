@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-onboarding-configuration',
@@ -7,9 +8,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OnboardingConfigurationComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
   }
 
+  next() {
+    this.router.navigate(['/onboarding/availability']);
+  }
+
+  back() {
+    this.router.navigate(['/onboarding/calendar']);
+  }
 }
+

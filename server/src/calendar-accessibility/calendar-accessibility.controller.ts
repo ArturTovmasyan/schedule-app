@@ -16,7 +16,7 @@ import { CalendarAccessibilityService } from './calendar-accessibility.service';
 import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { User } from '@user/entity/user.entity';
 
-@Controller('calendar-accessibility')
+@Controller('api/calendar-accessibility')
 export class CalendarAccessibilityController {
   constructor(
     private readonly calendarAccessibilityService: CalendarAccessibilityService,

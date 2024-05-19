@@ -241,6 +241,7 @@ input[type="checkbox"]:disabled {
   /* UI Properties */
   border-radius: 33px;
   border: none;
+  cursor: pointer;
 
   &.btn-primary {
     background: transparent linear-gradient(348deg, #CCD839 0%, #7B9666 100%) 0% 0% no-repeat padding-box;

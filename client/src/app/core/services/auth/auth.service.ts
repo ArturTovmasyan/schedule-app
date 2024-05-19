@@ -107,4 +107,9 @@ export class AuthService {
       })
     );
   }
+
+  get authorizationHHeader(): { [header: string]: string } {
+    const token: string = this.currentUserValue?.accessToken ?? ''
+    return this.currentUserValue != null ? { 'Authorization': `Bearer ${token}` } : {}
+  }
 }
