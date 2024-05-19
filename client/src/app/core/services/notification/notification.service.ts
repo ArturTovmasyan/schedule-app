@@ -21,8 +21,8 @@ export class NotificationService {
   fetch() {
     return this.http.get<ApiResponse<Notification[]>>(this.url, {
     }).pipe(
-      map((response: ApiResponse<Notification[]>) => {
-        return response.data
+      map((response: ApiResponse<Notification[]>): [Notification[] | null, number] => {
+        return [response.data, response.metadata?.['total'] ?? 0];
       })
     )
   }

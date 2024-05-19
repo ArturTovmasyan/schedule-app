@@ -1,14 +1,15 @@
 <div class="dropdown show notification-dropdown">
   <a class="notifications dropdown-toggle" id="notifications" href="#" data-bs-toggle="dropdown">
     <img src="assets/notification-icon.svg" alt="notifications">
-    <div class="counter">
+    <div *ngIf="data.total != 0" class="counter">
       <h6 id="notificationsCounter">
-        123
+        {{ data.total }}
       </h6>
     </div>
   </a>
   <!--Notification dropdown content would be here-->
   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <div *ngIf="data.total == 0" class="no-notification">You are all caught up!</div>
     <div *ngFor="let item of data.notifications | keyvalue" class="notification-content">
       <div class="timestamp">
         {{ item.key }} ago

@@ -30,8 +30,9 @@ export class NotificationComponent implements OnInit {
     this.notificationService.fetch()
     .pipe(first())
       .subscribe({
-        next: (data: Notification[] | null) => {
-          data?.forEach((notification) => {
+        next: ([array, total]: [Notification[] | null, number]) => {
+          this.data.total = total;
+          array?.forEach((notification) => {
             const [elapsedTime, unit] = this.commonService.getElapsedTime(notification.createdOn);
             const key = `${elapsedTime} ${unit}`;
             if(this.data.notifications[key] == null) {
