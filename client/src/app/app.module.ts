@@ -15,9 +15,10 @@ import {SignupComponent} from './core/components/signup/signup.component';
 import { ResetPasswordComponent } from './core/components/reset-password/reset-password.component';
 import {BroadcasterService, ValidationService} from "./shared/services";
 import {SharedModule} from "./shared/shared.module";
+import { ConfirmAccountComponent } from './core/components/confirm-account/confirm-account.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent, LoginComponent, FooterComponent, SignupComponent, ResetPasswordComponent],
+  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent, LoginComponent, FooterComponent, SignupComponent, ResetPasswordComponent, ConfirmAccountComponent],
   imports: [
     AppRoutingModule,
     BrowserModule,

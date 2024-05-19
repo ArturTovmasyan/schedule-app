@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import {ValidationService} from "../../../shared/services";
+import {ErrorResponse} from "../../interfaces/error-response.interface";
 
 @Component({
   selector: 'lib-login',
@@ -14,7 +15,7 @@ export class LoginComponent implements OnInit {
   form: FormGroup;
   returnUrl: string;
   errorMessage: string | undefined;
-  error: any;
+  error?: ErrorResponse;
 
   constructor(
     private formBuilder: FormBuilder,

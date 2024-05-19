@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth/auth.service";
 import {BroadcasterService, ValidationService} from "../../../shared/services";
+import {ErrorResponse} from "../../interfaces/error-response.interface";
 
 @Component({
   selector: 'app-reset-password',
@@ -14,7 +15,7 @@ export class ResetPasswordComponent implements OnInit {
   submitted = false;
   errorMessage: string | undefined;
   email: string |undefined;
-  error: any;
+  error?: ErrorResponse;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,7 +38,7 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     this.authService
-      .checkEmail(this.form.value.email)
+      .resetPassword(this.form.value.email)
       .subscribe({
         next: () => {
           this.submitted = true;

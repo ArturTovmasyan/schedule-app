@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
+import {ErrorResponse} from "../../interfaces/error-response.interface";
 
 @Component({
   selector: 'app-signup',
@@ -15,7 +16,8 @@ export class SignupComponent implements OnInit {
   firstName: string | undefined;
   email: string | undefined;
   password: string | undefined;
-  error: any;
+  register: boolean = false;
+  error?: ErrorResponse;
   errorMessage: undefined;
 
   constructor(private route: ActivatedRoute, private authService: AuthService, private router: Router, private formBuilder: FormBuilder) {
@@ -43,18 +45,20 @@ export class SignupComponent implements OnInit {
     const firstName = splitData[0];
     splitData.shift();
     const lastName = splitData.join(' ');
+    this.email = this.form.value.email;
 
     const data = {
       'firstName': firstName,// assume full name is 2 part
       'lastName': lastName,
-      'email': this.form.value.email,
+      'email': this.email,
       'password': this.form.value.password
     };
 
     this.authService.signup(data)
       .subscribe({
         next: () => {
-          this.router.navigate(['/']);
+          this.register = true;
+          this.form.reset();
         },
         error: (error) => {
           debugger;

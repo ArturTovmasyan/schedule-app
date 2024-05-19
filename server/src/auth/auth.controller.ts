@@ -4,21 +4,29 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  Post,
+  NotFoundException,
+  Post, Query, Redirect,
   Req,
-  UseGuards,
+  UseGuards, ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserCreateDto } from '@user/dto/user-create.dto';
-import { UserLoginDto } from '@user/dto/user-login.dto';
 import { AuthService } from './auth.service';
 import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload.interface';
 import { RegistrationStatus } from './interfaces/regisitration-status.interface';
+import { UsersService } from '@user/users.service';
+import { UserDto } from '@user/dto/user.dto';
+import { ErrorMessages } from '@shared/error.messages';
+import {SignInDto} from "./dto/signin.dto";
+import {ConfirmAccountDto} from "./dto/confirm-account.dto";
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) {}
 
   @Post('register')
   public async register(
@@ -32,7 +40,7 @@ export class AuthController {
   }
 
   @Post('login')
-  public async login(@Body() dto: UserLoginDto): Promise<LoginStatus> {
+  public async login(@Body() dto: SignInDto): Promise<LoginStatus> {
     return await this.authService.login(dto);
   }
 
@@ -40,5 +48,23 @@ export class AuthController {
   @UseGuards(AuthGuard())
   public async testAuth(@Req() req: any): Promise<JwtPayload> {
     return req.user;
+  }
+
+  @Post('reset-password')
+  public async resetPassword(@Body() dto: UserDto): Promise<UserDto> {
+    const user: UserDto = await this.userService.findOneByEmail(dto.email);
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
+    }
+
+    return user;
+  }
+
+  @Get('/confirm')
+  async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto): Promise<boolean> {
+    return await this.authService.confirm(query.token);
   }
 }

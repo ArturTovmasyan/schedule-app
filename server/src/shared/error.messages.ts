@@ -1,4 +1,5 @@
 export const ErrorMessages = {
-  existEmail: 'User already exists',
+  userExist: 'User already exists',
   userNotFound: 'User not found',
+  confirmError: 'Account confirmation error',
 };

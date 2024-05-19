@@ -16,6 +16,7 @@ export class User {
   @Column({ type: 'varchar', nullable: false }) firstName: string;
   @Column({ type: 'varchar', nullable: false }) lastName: string;
   @Column({ type: 'varchar', nullable: false }) password: string;
+  @Column({ type: 'smallint', nullable: true, default: 0 }) status: number;
   @CreateDateColumn() createdOn?: Date;
   @UpdateDateColumn() updatedOn?: Date;
   @DeleteDateColumn() deletedOn?: Date;

@@ -55,7 +55,7 @@ export class AuthService {
    * @param signupData
    * @returns {any}
    */
-  signup(signupData: Record<string, string>) {
+  signup(signupData: { firstName: any; lastName: any; password: any; email: string | undefined }) {
     debugger;
     return this.http.post('/api/auth/register', signupData).pipe(map(token_info => {
         if (token_info) { // && token_info.access_token
@@ -65,8 +65,8 @@ export class AuthService {
     )
   }
 
-  checkEmail(email: string) {
-    return this.http.post<any>('/api/users/check-email', {email}).pipe(
+  resetPassword(email: string) {
+    return this.http.post<any>('/api/auth/reset-password', {email}).pipe(
       map((response: any) => {
         debugger;
         if (response) {
@@ -75,4 +75,13 @@ export class AuthService {
       })
     );
   }
+
+  confirmAccount(token: string):Observable<boolean> {
+    return this.http.get<any>('/api/auth/confirm?token='+token).pipe(
+      map((response: boolean) => {
+          return response;
+      })
+    );
+  }
+
 }

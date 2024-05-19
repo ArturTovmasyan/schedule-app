@@ -1,4 +1,4 @@
-import { User } from '@user/user.entity';
+import { User } from '@user/entity/user.entity';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class SeedUserRecord1652254661781 implements MigrationInterface {

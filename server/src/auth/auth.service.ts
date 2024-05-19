@@ -1,19 +1,35 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import { UsersService } from '@user/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserCreateDto } from '@user/dto/user-create.dto';
 import { RegistrationStatus } from 'src/auth/interfaces/regisitration-status.interface';
-import { UserLoginDto } from '@user/dto/user-login.dto';
 import { JwtPayload } from 'src/auth/interfaces/payload.interface';
 import { UserDto } from '@user/dto/user.dto';
 import { LoginStatus } from './interfaces/login-status.interface';
+import {SignInDto} from "./dto/signin.dto";
+import {ConfigService} from "@nestjs/config";
+import {MailService} from "../mail/mail.service";
+import {ErrorMessages} from "@shared/error.messages";
+import {statusEnum} from "@user/enums/status.enum";
+import {InjectRepository} from "@nestjs/typeorm";
+import {User} from "@user/entity/user.entity";
+import {Repository} from "typeorm";
 
 @Injectable()
 export class AuthService {
+
+  private readonly appHost: string;
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {
+    this.appHost = this.configService.get<string>('WEB_HOST');
+  }
 
   async register(userDto: UserCreateDto): Promise<RegistrationStatus> {
     debugger;
@@ -23,17 +39,20 @@ export class AuthService {
     };
 
     try {
-      await this.usersService.create(userDto);
+      const user = await this.usersService.create(userDto);
+      await this.sendConfirmation(user);
     } catch (error) {
+      debugger;
       status = {
         success: false,
         message: error,
       };
     }
+
     return status;
   }
 
-  async login(dto: UserLoginDto): Promise<LoginStatus> {
+  async login(dto: SignInDto): Promise<LoginStatus> {
     debugger;
     const user = await this.usersService.findByLogin(dto);
     const token = this._createToken(user);
@@ -59,5 +78,56 @@ export class AuthService {
       expiresIn: process.env.JWT_EXPIRES_IN,
       accessToken,
     };
+  }
+
+  async sendConfirmation(user: UserDto) {
+    debugger;
+    const token = await this._createToken(user);
+    const confirmLink = `${this.appHost}/api/auth/confirm?token=${token.accessToken}`;
+
+    await this.mailService.send({
+      // from: this.configService.get<string>('NO_REPLY_EMAIL'),
+      from: 'no-reply@handshake.com',
+      // to: user.email,
+      to: 'ateptan777@gmail.com',
+      subject: 'Verify Handshake Account',
+      html: `
+                <h3>Hello ${user.firstName}!</h3>
+                <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
+            `,
+    });
+  }
+
+  async confirm(token: string): Promise<boolean> {
+    debugger;
+    const user:Pick<UserDto, 'id'|'status'> = await this.verifyToken(token);
+
+    if (user && user.status === statusEnum.pending) {
+      user.status = statusEnum.active;
+      const data = await this.userRepo.update(user.id, user);
+      return data.affected > 0;
+    }
+
+    throw new BadRequestException({
+      status: HttpStatus.BAD_REQUEST,
+      message: ErrorMessages.confirmError,
+    });
+  }
+
+  private async verifyToken(token): Promise<UserDto> {
+    debugger;
+    const data = this.jwtService.verify(token) as JwtPayload;
+    const {id, email} = data;
+    const user = await this.userRepo.findOne({where: { email: email, id: id }});
+
+    if (user) {
+      return user;
+    }
+
+    throw new UnauthorizedException({
+          status: HttpStatus.UNAUTHORIZED,
+          message: ErrorMessages.userNotFound,
+       }
+    );
   }
 }

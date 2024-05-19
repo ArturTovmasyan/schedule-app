@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {IsNotEmpty, IsNumber, IsString, MaxLength, MinLength} from 'class-validator';
 
 export class UserCreateDto {
   @IsNotEmpty()
@@ -17,4 +17,8 @@ export class UserCreateDto {
   @MaxLength(16)
   @MinLength(8)
   password: string;
+
+  @Expose({ name: 'status' })
+  @IsNumber()
+  status: number = 0;
 }

@@ -39,6 +39,7 @@
     "class-validator": "^0.13.2",
     "csurf": "^1.11.0",
     "dotenv": "^16.0.0",
+    "mailgun-js": "^0.22.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -73,7 +74,8 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.7.0",
     "tsconfig-paths": "^3.14.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "@types/mailgun-js": "^0.22.3"
   },
   "jest": {
     "moduleFileExtensions": [

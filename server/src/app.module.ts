@@ -5,15 +5,16 @@ import { ConnectionOptions } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import AppConfig from './config/app.config';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from '@user/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     UsersModule,
-    ConfigModule.forRoot({
-      isGlobal: false,
+    AuthModule,
+    ConfigModule.forRoot({ //TODO maybe will be separate for each module and not use as Global
+      isGlobal: true,
       load: [AppConfig],
     }),
     TypeOrmModule.forRootAsync({
@@ -22,8 +23,7 @@ import { AuthModule } from './auth/auth.module';
         return configService.get<ConnectionOptions>('database');
       },
       inject: [ConfigService],
-    }),
-    AuthModule,
+    })
   ],
   controllers: [AppController, AuthController],
   providers: [AppService],
