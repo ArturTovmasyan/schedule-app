@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { CalendarAccessibility } from '../../interfaces/calendar/accessibility.calendar.inteface';
 import { AccessibilityService } from '../../services/calendar/accessibility.service';
@@ -21,8 +21,7 @@ export class ConfigurationComponent implements OnInit {
   currentDisplaySection: Section = Section.NONE;
   error: any | null = null;
 
-  constructor(private calendarAccessibilityService: AccessibilityService,
-    private readonly changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private calendarAccessibilityService: AccessibilityService) {}
 
   ngOnInit(): void {
     this.fetchAccessibility();
@@ -91,7 +90,7 @@ export class ConfigurationComponent implements OnInit {
   }
 
   toggleSection(section: Section) {
-    this.currentDisplaySection = this.currentDisplaySection == section ? Section.NONE : section;    
+    this.currentDisplaySection = this.currentDisplaySection == section ? Section.NONE : section;
   }
 
   isVisible(section: Section): boolean {
