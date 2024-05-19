@@ -58,16 +58,15 @@ export class AuthController {
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Reset Password' })
   @Post('reset-password')
-  public async resetPassword(@Body() dto: UserDto): Promise<void> {
+  public async resetPassword(@Body() dto: UserUpdateDto): Promise<void> {
     await this.authService.resetPassword(dto.email);
   }
 
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Change password' })
   @Patch('change-password')
-  @UseGuards(AuthGuard())
   public async changePassword(
-    @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
+    @Body() changePasswordDto: ChangePasswordDto,
   ): Promise<boolean> {
     const user: UserDto = await this.authService.verifyToken(
       changePasswordDto.token,

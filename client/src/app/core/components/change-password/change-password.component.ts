@@ -33,7 +33,6 @@ export class ChangePasswordComponent {
   }
 
   changePassword() {
-
       this.authService
         .changePassword(this.confirmToken, this.form.value.newPassword)
         .subscribe({
