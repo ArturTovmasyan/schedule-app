@@ -33,9 +33,8 @@ export class AzureADStrategy extends PassportStrategy(Strategy, 'microsoft') {
         },
       });
 
-      const profile = await microsoftClient.api('/me').get();
-
-      done(null, profile);
+      const user = await microsoftClient.api('/me/').get();
+      done(null, user);
     } catch (err) {
       done(err, false);
     }
