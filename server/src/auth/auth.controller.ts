@@ -82,10 +82,10 @@ export class AuthController {
     const jwt = await this.authService.validateGoogleLogin(user);
     const webHost = this.configService.get<string>('WEB_HOST');
 
-    if (jwt) {
+    if (isString(jwt)) {
       res.redirect(webHost + 'oauth/success?token=' + jwt);
     } else {
-      res.redirect(webHost + '404');
+      res.redirect(webHost + 'login');
     }
   }
 
