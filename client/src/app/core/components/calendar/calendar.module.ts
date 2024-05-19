@@ -14,7 +14,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
 import rrulePlugin from '@fullcalendar/rrule';
-import { SharableLinkComponent } from './sharable-link/sharable-link.component'
+import { SharableLinkComponent } from './sharable-link/sharable-link.component';
+import { GroupAvailabilityComponent } from './group-availability/group-availability.component'
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,

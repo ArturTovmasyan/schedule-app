@@ -213,6 +213,10 @@ const routes: Routes = [
       {
         path: 'sharable-link',
         component: SharableLinkComponent
+      },
+      {
+        path: 'group-availability',
+        component: GroupAvailabilityComponent
       }
     ]
   },
