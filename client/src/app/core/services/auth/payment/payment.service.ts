@@ -26,7 +26,7 @@ export class PaymentService {
     );
   }
 
-   addSubscription(customerId: string, plan: string, paymentMethodId: string) {
+   addSubscription(customerId: string, plan: string, paymentMethodId: string, card:string) {
 
     debugger;
       if (plan === PROFESSIONAL_PLAN_NAME) {
@@ -36,27 +36,12 @@ export class PaymentService {
           })
         );
       } else {
-        return this.http.post<any>('/api/subscriptions/standard', {customerId, paymentMethodId}).pipe(
+        debugger;
+        return this.http.post<any>('/api/subscriptions/standard', {customerId, paymentMethodId, card}).pipe(
           map((response: any) => {
             return response;
           })
         );
       }
-  }
-
-  async addStandardSubscription(customerId: string) {
-    return this.http.post<any>('/api/subscriptions/standard', {customerId}).pipe(
-      map((response: any) => {
-        return response;
-      })
-    );
-  }
-
-  async addProfessionalSubscription(customerId: string) {
-    return this.http.post<any>('/api/subscriptions/professional', {customerId}).pipe(
-      map((response: any) => {
-        return response;
-      })
-    );
   }
 }

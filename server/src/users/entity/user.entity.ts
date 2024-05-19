@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import {Subscription} from "../../subscriptions/entity/subscription.entity";
+import {Subscription} from "../../payment/subscriptions/entity/subscription.entity";
 
 @Entity('user')
 export class User {

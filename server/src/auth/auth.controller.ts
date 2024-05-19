@@ -51,7 +51,7 @@ export class AuthController {
     @Body() dto: UserCreateDto,
     @Query('invitationId') invitationId: string,
   ): Promise<RegistrationStatus> {
-    const result: RegistrationStatus = await this.authService.register(dto,invitationId);
+    const result: RegistrationStatus = await this.authService.register(dto, invitationId);
     if (!result.success) {
       throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
     }

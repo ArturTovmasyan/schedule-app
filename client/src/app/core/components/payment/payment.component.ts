@@ -3,11 +3,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
 import {PaymentService} from "../../services/auth/payment/payment.service";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
-<<<<<<< HEAD
-=======
-import {environment} from "../../../../environments/environment";
-import {STANDARD_PLAN_NAME} from "../../interfaces/constant/payment.constant";
->>>>>>> f477641 (Cretae subs. table, add payment functionality)
 
 @Component({
   selector: 'app-payment',
