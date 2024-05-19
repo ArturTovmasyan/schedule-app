@@ -2,8 +2,8 @@
   <div class="wrapper">
   <div *ngIf="!register; else confirmRegister">
     <div class="title">
-      <span id="line1">Welcome to Entangles.io.</span>
-      <span id="line2">Start for free.</span>
+      <div id="line1">Welcome to Entangles.io.</div>
+      <div id="line2">Start for free.</div>
     </div>
     <form focusInvalidInput class="form" [formGroup]="form" (ngSubmit)="signup()" autocomplete="off">
       <div class="form-group">
