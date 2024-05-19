@@ -1,11 +1,11 @@
- <section class="login-register">
-   <div class="wrapper">
-     <div>
-       <div class="title">
-         <div id="line1">Welcome back</div>
-         <div id="line2">Please Sign In</div>
-       </div>
-       <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+<section class="login-register">
+  <div class="wrapper">
+    <div>
+      <div class="title">
+        <div id="line1">Welcome back</div>
+        <div id="line2">Please Sign In</div>
+      </div>
+      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
         <div class="form-group">
           <label for="email">Email</label>
           <div class="input-group">
@@ -20,9 +20,11 @@
             <img src="assets/lock.svg" alt="password">
             <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
               placeholder="Password" />
-            <i class="fa" [ngClass]="{'fa-eye-slash': !showPassword,'fa-eye': showPassword}" (click)="togglePasswordType()"></i>
+            <i class="fa" [ngClass]="{'fa-eye-slash': !showPassword,'fa-eye': showPassword}"
+              (click)="togglePasswordType()"></i>
           </div>
-          <app-control-messages [control]="f['password']" [showRequiredErrors]="showRequiredErrors"></app-control-messages>
+          <app-control-messages [control]="f['password']" [showRequiredErrors]="showRequiredErrors">
+          </app-control-messages>
           <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error.message }}</span>
         </div>
         <div id="actions">
@@ -34,21 +36,21 @@
             I forgot my password
           </a>
         </div>
-         <div class="text-center">
-           <button class="submit" type="submit">Login</button>
-         </div>
-       </form>
-       <div id="social">
-         <div id="header">
-           <hr/>
-           <span>Or continue with</span>
-           <hr/>
-         </div>
-         <div class="social-buttons">
+        <div class="text-center">
+          <button class="submit" type="submit">Login</button>
+        </div>
+      </form>
+      <div id="social">
+        <div id="header">
+          <hr />
+          <span>Or continue with</span>
+          <hr />
+        </div>
+        <div class="social-buttons">
           <button id="google" (click)="googleLogin()"><img src="assets/google-social.png"></button>
           <button id="outlook" (click)="microsoftLogin()"><img src="assets/outlook-social.png"></button>
-         </div>
-       </div>
-     </div>
-   </div>
- </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

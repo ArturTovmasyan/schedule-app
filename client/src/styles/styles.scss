@@ -128,7 +128,7 @@ input[type="checkbox"] {
   color: $accent-color;
   width: 32px;
   height: 32px;
-  border: 2px solid #7B9666;
+  border: 2px solid #433FE7;
   border-radius: 10px;
   transform: translateY(-1px);
 
@@ -236,7 +236,7 @@ input[type="checkbox"]:disabled {
   font-size: 22px;
   line-height: 28px;
   color: white;
-  background-color: #7B9666;
+  background-color: #433FE7;
   font-weight: medium;
   /* UI Properties */
   border-radius: 33px;
@@ -244,12 +244,12 @@ input[type="checkbox"]:disabled {
   cursor: pointer;
 
   &.btn1-primary {
-    background: transparent linear-gradient(348deg, #CCD839 0%, #7B9666 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(348deg, #CCD839 0%, #433FE7 100%) 0% 0% no-repeat padding-box;
   }
 
   &.btn1-secondary {
     background-color: white;
-    color: #7B9666;
+    color: #433FE7;
   }
 }
 

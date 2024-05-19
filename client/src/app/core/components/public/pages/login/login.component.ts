@@ -23,11 +23,11 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   errorMessage: string | undefined;
   error?: ErrorResponse;
-  showPassword: boolean = false;
+  showPassword = false;
   showRequiredErrors = false;
   private readonly _destroying$ = new Subject<void>();
 
-  @ViewChild("focusField") focusField:any;
+  @ViewChild("focusField") focusField: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,13 +37,10 @@ export class LoginComponent implements OnInit {
     private broadcaster: BroadcasterService
   ) {
     this.form = this.formBuilder.group({
-        email: ['', [ValidationService.emailValidator, Validators.required]],
-        password: ['', [Validators.required]],
-        remember: [false]
-      },
-      {updateOn: 'blur'}
-    );
-
+      email: ['', { validators: [ValidationService.emailValidator, Validators.required], updateOn: 'blur' }],
+      password: ['', { validators: [Validators.required], updateOn: 'change' }],
+      remember: [false]
+    });
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
