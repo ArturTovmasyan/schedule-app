@@ -17,6 +17,8 @@ import { ClientsCredentialsService } from '../clients-credentials/clients-creden
 import { google, oauth2_v2 } from 'googleapis';
 import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 import { CalendarData } from './types/calendar-data.type';
+import { CalendarEvent } from '../calendar-event/entities/calendarEvent.entity';
+import { EventTypeEnum } from '../calendar-event/enums/eventType.enum';
 
 @Injectable()
 export class CalendarPermissionsService {
@@ -56,23 +58,6 @@ export class CalendarPermissionsService {
       auth: msalConfig,
     });
     this.msalCryptoProvider = new msal.CryptoProvider();
-  }
-
-  /**
-   * @description `Get main unfo of Google user`
-   * @param accessToken - `Token of google access`
-   * @returns `Google user data`
-   */
-
-  private async getGoogleUsersInfo(
-    accessToken: string,
-  ): GaxiosPromise<oauth2_v2.Schema$Userinfo> {
-    await this.clientsCredentials.googleOAuth2Client.setCredentials({
-      access_token: accessToken,
-    });
-    return await google.oauth2('v2').userinfo.v2.me.get({
-      auth: this.clientsCredentials.googleOAuth2Client,
-    });
   }
 
   async connectGoogleCalendar() {
@@ -145,7 +130,7 @@ export class CalendarPermissionsService {
       where: {
         owner: user.id,
         calendarType: CalendarTypeEnum.GoogleCalendar,
-        ownerEmail: calendarId
+        ownerEmail: calendarId,
       },
     });
 
@@ -169,7 +154,7 @@ export class CalendarPermissionsService {
               calendarId: calendarId,
               calendarType: CalendarTypeEnum.GoogleCalendar,
             });
-            
+
             await manager.getRepository(CalendarToken).delete({
               owner: { id: user.id },
               ownerEmail: calendarId,
@@ -209,19 +194,31 @@ export class CalendarPermissionsService {
       const expiryDate = new Date(tokens.expiry_date).toISOString();
 
       const calendarTokenBody = {
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token ? tokens.refresh_token : null,
-            expiryDate,
-            calendarType: CalendarTypeEnum.GoogleCalendar,
-            owner: { id: user.id },
-            ownerEmail,
-          };
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token ? tokens.refresh_token : null,
+        expiryDate,
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+        owner: { id: user.id },
+        ownerEmail,
+      };
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
 
-      const calendar = await this.calendarEventService.getCalendarsFromGoogle(user, token, manager);
-      await this.calendarEventService.googleEventWatcher(user, calendar, manager);
-      await this.calendarEventService.syncGoogleCalendarEventList(user, calendar, manager);
+      const calendar = await this.calendarEventService.getCalendarsFromGoogle(
+        user,
+        token,
+        manager,
+      );
+      await this.calendarEventService.googleEventWatcher(
+        user,
+        calendar,
+        manager,
+      );
+      await this.calendarEventService.syncGoogleCalendarEventList(
+        user,
+        calendar,
+        manager,
+      );
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });
@@ -314,24 +311,36 @@ export class CalendarPermissionsService {
         refreshTokenObject[Object.keys(refreshTokenObject)[0]].secret;
 
       const calendarTokenBody = {
-            accessToken: tokenResponse.accessToken,
-            refreshToken,
-            expiryDate: tokenResponse.expiresOn,
-            extExpiryDate: tokenResponse.extExpiresOn,
-            calendarType: CalendarTypeEnum.Office365Calendar,
-            owner: { id: user.id },
-            ownerEmail: tokenResponse.account.username,
-          };
+        accessToken: tokenResponse.accessToken,
+        refreshToken,
+        expiryDate: tokenResponse.expiresOn,
+        extExpiryDate: tokenResponse.extExpiresOn,
+        calendarType: CalendarTypeEnum.Office365Calendar,
+        owner: { id: user.id },
+        ownerEmail: tokenResponse.account.username,
+      };
 
       await calendarTokenRepository.save(calendarTokenBody);
 
       this.msalInstance.clearCache();
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
-      const calendar = await this.calendarEventService.getCalendarsFromOutlook(user, token, manager);
+      const calendar = await this.calendarEventService.getCalendarsFromOutlook(
+        user,
+        token,
+        manager,
+      );
 
-      await this.calendarEventService.outlookEventWatcher(user, calendar, manager);
-      await this.calendarEventService.syncOutlookCalendarEventList(user, calendar, manager);
+      await this.calendarEventService.outlookEventWatcher(
+        user,
+        calendar,
+        manager,
+      );
+      await this.calendarEventService.syncOutlookCalendarEventList(
+        user,
+        calendar,
+        manager,
+      );
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });
@@ -344,20 +353,25 @@ export class CalendarPermissionsService {
       async (manager) => {
         const userCalendars: CalendarData = {
           googleCalendar: [],
-          office365Calendar: []
+          office365Calendar: [],
         };
 
         const calendars = await manager
           .getRepository(Calendar)
           .find({ where: { owner: user.id } });
-        
-          calendars.map((calendar) => {
-            if (calendar.calendarType === CalendarTypeEnum.GoogleCalendar.valueOf()) {
-              userCalendars.googleCalendar.push(calendar);
-            } else if (calendar.calendarType === CalendarTypeEnum.Office365Calendar.valueOf()) {
-              userCalendars.office365Calendar.push(calendar);
-            }
-          });
+
+        calendars.map((calendar) => {
+          if (
+            calendar.calendarType === CalendarTypeEnum.GoogleCalendar.valueOf()
+          ) {
+            userCalendars.googleCalendar.push(calendar);
+          } else if (
+            calendar.calendarType ===
+            CalendarTypeEnum.Office365Calendar.valueOf()
+          ) {
+            userCalendars.office365Calendar.push(calendar);
+          }
+        });
         return userCalendars;
       },
     );
@@ -401,5 +415,22 @@ export class CalendarPermissionsService {
         return tokensByCalendar;
       },
     );
+  }
+
+  /**
+   * @description `Get main unfo of Google user`
+   * @param accessToken - `Token of google access`
+   * @returns `Google user data`
+   */
+
+  private async getGoogleUsersInfo(
+    accessToken: string,
+  ): GaxiosPromise<oauth2_v2.Schema$Userinfo> {
+    await this.clientsCredentials.googleOAuth2Client.setCredentials({
+      access_token: accessToken,
+    });
+    return await google.oauth2('v2').userinfo.v2.me.get({
+      auth: this.clientsCredentials.googleOAuth2Client,
+    });
   }
 }
