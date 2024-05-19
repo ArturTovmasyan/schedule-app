@@ -1,7 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './core/components/auth/auth.component';
 import { HomeComponent } from './core/components/home/home.component';
-import { NgModule } from '@angular/core';
+import {  NgModule } from '@angular/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './core/components/login/login.component';
 import {SignupComponent} from "./core/components/signup/signup.component";
@@ -17,7 +17,23 @@ const routes: Routes = [
   {
     path: '',
     component: HomeComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'onboarding',
+        component: OnboardingComponent,
+        children: [
+          {
+            path: 'calendar',
+            component: OnboardingCalendarComponent
+          },
+          {
+            path: 'availability',
+            component: OnboardingAvailabilityComponent
+          }
+        ]
+      }
+    ]
   },
   {
     path: '',
