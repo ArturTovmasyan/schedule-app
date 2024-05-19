@@ -17,7 +17,6 @@ export class Subscription {
     @Column({type: 'timestamp without time zone', nullable: true}) billingPeriodEndsAt?: Date;
     @Column({type: 'varchar', length: 15, nullable: false}) status!:string
     @Column({type: 'varchar', length: 30, nullable: true}) lastInvoice?: string;
-
     @CreateDateColumn() createdOn?: Date;
     @UpdateDateColumn() updatedOn?: Date;
     @DeleteDateColumn() deletedOn?: Date;
