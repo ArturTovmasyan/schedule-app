@@ -6,7 +6,7 @@ import {
     HttpStatus,
     Patch,
     Post,
-    Query,
+    Query, Redirect,
     Req,
     Res,
     UseGuards,
@@ -21,7 +21,6 @@ import {UserDto} from '@user/dto/user.dto';
 import {SignInDto} from "./dto/signin.dto";
 import {ConfirmAccountDto} from "./dto/confirm-account.dto";
 import {ChangePasswordDto} from "./dto/change-password.dto";
-import {OauthProvider} from "./enums/oauth.provider.enum";
 import {ConfigService} from "@nestjs/config";
 
 @Controller('api/auth')
@@ -73,8 +72,9 @@ export class AuthController {
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
     async googleLoginCallback(@Req() req, @Res() res) {
+        debugger;
         const user: any = req.user._json;
-        const jwt = await this.authService.validateOAuthLogin(user, OauthProvider.GOOGLE);
+        const jwt = await this.authService.validateGoogleLogin(user);
         const webHost = this.configService.get<string>('WEB_HOST');
 
         if (jwt) {
@@ -82,6 +82,24 @@ export class AuthController {
         } else {
             res.redirect(webHost+'404');
         }
+    }
+
+    @Post('microsoft/callback')
+    // @UseGuards(AuthGuard('ms-azure'))
+    async msLoginCallback(@Req() req, @Res() res): Promise<any> {
+        debugger;
+        const user: any = req.body;
+        const webHost = this.configService.get<string>('WEB_HOST');
+
+        if (user && user.id) {
+            const jwt = await this.authService.validateMicrosoftLogin(user);
+            if (jwt) {
+                res.redirect(webHost+'oauth/success?token=' + jwt);
+            }
+        }
+
+        return null;
+
     }
 
     @Post('logged')

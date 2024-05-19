@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  ms_client_id: '8612bd9c-2d7d-48bb-84a5-55984f126de4',
-  ms_authority: 'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a',
-  ms_redirect_url: 'http://localhost:4200/api/auth/microsoft/callback'
+  host: 'http://localhost:4200/',
+  ms_client_id: '8e86c1a1-9dd3-4334-9b6a-e1da7ecbedc8',
+  ms_authority: 'https://login.microsoftonline.com/88d0f86a-6a15-4c30-9ad9-ded490a01b5f',
+  ms_graph_api: 'https://graph.microsoft.com/v1.0/me'
 };

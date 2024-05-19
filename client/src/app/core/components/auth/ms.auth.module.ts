@@ -4,24 +4,24 @@ import {environment} from "../../../../environments/environment";
 
 const storeCookie = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
 
-export const MsAuthModule = MsalModule.forRoot(new PublicClientApplication({
+export const MsAuthModule =   MsalModule.forRoot( new PublicClientApplication({
   auth: {
     clientId: environment.ms_client_id,
-    authority: environment.ms_authority,
-    redirectUri: environment.ms_redirect_url
+    authority:  environment.ms_authority,
+    redirectUri: environment.host
   },
   cache: {
-    cacheLocation: 'localStorage',
-    storeAuthStateInCookie: storeCookie// For Internet Explorer
+    cacheLocation: 'sessionStorage',
+    storeAuthStateInCookie: storeCookie
   }
 }), {
-  interactionType: InteractionType.Redirect,
+  interactionType: InteractionType.Popup,
   authRequest: {
     scopes: ['user.read']
   }
 }, {
-  interactionType: InteractionType.Redirect,
+  interactionType: InteractionType.Popup,
   protectedResourceMap: new Map([
-    ['https://graph.microsoft.com/v1.0/me', ['user.read']]
+    [environment.ms_graph_api, ['user.read']]
   ])
 })

@@ -12,6 +12,7 @@ import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
 import {RedirectGuard} from "./core/guards/redirect.guard";
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
+// import {MsalGuard} from "@azure/msal-angular";
 
 const routes: Routes = [
   {
@@ -62,8 +63,12 @@ const routes: Routes = [
   {path: '**', redirectTo: '/404'}
 ];
 
+const isIframe = window !== window.parent && !window.opener;
+
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    initialNavigation: !isIframe ? 'enabledNonBlocking' : 'disabled' // enabledNonBlocking
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

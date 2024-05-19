@@ -18,5 +18,4 @@ export class OauthUser1657550836839 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "status"`);
         await queryRunner.query(`ALTER TABLE "user" ADD "status" smallint DEFAULT '0'`);
     }
-
 }

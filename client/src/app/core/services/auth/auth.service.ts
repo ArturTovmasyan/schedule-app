@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ApplicationUser} from "../../interfaces/user/app.user.interface";
 import {LoginUser} from "../../interfaces/user/login.user.interface";
+import {MicrosoftUserType} from "../../interfaces/user/microsof.user.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +39,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.clear();
+    localStorage.removeItem('cu');
     this.currentUserSubject.next(null);
   }
 
@@ -86,5 +87,17 @@ export class AuthService {
           return response;
         })
       );
+  }
+
+  microsoftLogin(data: MicrosoftUserType) {
+    return this.http.post<any>('/api/auth/microsoft/callback', {...data}).pipe(
+      map((response: any) => {
+        if (response && response.accessToken) {
+          localStorage.setItem('cu', JSON.stringify(response));
+          this.currentUserSubject.next(response);
+        }
+        return response.accessToken;
+      })
+    );
   }
 }

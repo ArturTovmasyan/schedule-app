@@ -1,5 +1,6 @@
 import {
-    BadRequestException, ForbiddenException,
+    BadRequestException,
+    ForbiddenException,
     HttpException,
     HttpStatus,
     Injectable,
@@ -176,23 +177,59 @@ export class AuthService {
         return true;
     }
 
-    async validateOAuthLogin(data: any, provider: OauthProvider): Promise<string> {
+    async validateGoogleLogin(data: any): Promise<string> {
         try {
-            let {sub} = data;
+
+            debugger;
+            let {sub, email} = data;
             let oauthId = sub;
             let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
 
             if (!user) {
-                user = await this.userRepo.findOne({where: [{email: data.email}]});
+                user = await this.userRepo.findOne({where: [{email: email}]});
                 if (user) {
                      new ForbiddenException(
                         {
-                            message: "User already exists, but Social account was not connected to user's account",
+                            message: ErrorMessages.socialAccountExist,
                             status: HttpStatus.FORBIDDEN
                         }
                     );
                 }
-                user = await this.usersService.registerOAuthUser(data, provider);
+                data.provider = OauthProvider.GOOGLE;
+                user = await this.usersService.registerGoogleUser(data);
+            }
+
+            return this._createToken(user, '30d').accessToken;
+
+        } catch (err) {
+            throw new InternalServerErrorException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: err.message,
+            });
+        }
+    }
+
+    async validateMicrosoftLogin(data: any): Promise<string> {
+        try {
+
+            debugger;
+            let {id, mail} = data;
+            let oauthId = id;
+            let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
+
+            if (!user) {
+                user = await this.userRepo.findOne({where: [{email: mail}]});
+                if (user) {
+                     new ForbiddenException(
+                        {
+                            message: ErrorMessages.socialAccountExist,
+                            status: HttpStatus.FORBIDDEN
+                        }
+                    );
+                }
+
+                data.provider = OauthProvider.MICROSOFT;
+                user = await this.usersService.registerMicrosoftUser(data);
             }
 
             return this._createToken(user, '30d').accessToken;

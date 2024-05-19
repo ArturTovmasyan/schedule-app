@@ -6,7 +6,7 @@ import {AppComponent} from './app.component';
 import {HomeComponent} from './core/components/home/home.component';
 import {HeaderComponent} from './core/components/header/header.component';
 import {AuthComponent} from './core/components/auth/auth.component';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {LoginComponent} from './core/components/login/login.component';
 import {FooterComponent} from './core/components/footer/footer.component';
 import {SignupComponent} from './core/components/signup/signup.component';
@@ -53,15 +53,15 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     jwtInterceptorProvider,
     errorInterceptorProvider,
     ValidationService,
-    BroadcasterService
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: MsalInterceptor,
-    //   multi: true
-    // },
-    // MsalGuard
+    BroadcasterService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
+      multi: true
+    },
+    MsalGuard
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent, MsalRedirectComponent]
 })
 export class AppModule {
 }

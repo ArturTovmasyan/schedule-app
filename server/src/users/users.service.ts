@@ -16,7 +16,6 @@ import { UserUpdateDto } from './dto/user-update.dto';
 import {comparePasswords, generatePassword} from '@shared/utils';
 import { ErrorMessages } from '@shared/error.messages';
 import {OauthUserDto} from "@user/dto/user-oauth-create.dto";
-import {OauthProvider} from "../auth/enums/oauth.provider.enum";
 import {StatusEnum} from "@user/enums/status.enum";
 
 @Injectable()
@@ -57,22 +56,34 @@ export class UsersService {
     return toUserDto(user);
   }
 
-  async registerOAuthUser(userDto: any, provider: OauthProvider): Promise<OauthUserDto> {
-    const oauthData = userDto;
+  async registerGoogleUser(userDto: any): Promise<OauthUserDto> {
     const user = new User();
-    user.email = oauthData.email;
-    user.oauthId = oauthData.sub;
-    user.firstName = oauthData.given_name;
-    user.lastName = oauthData.family_name;
-    user.provider = provider;
+    user.email = userDto.email;
+    user.oauthId = userDto.sub;
+    user.firstName = userDto.given_name;
+    user.lastName = userDto.family_name;
+    user.provider = userDto.provider;
     user.password = generatePassword(10);
-    user.status = 1;
+    user.status = StatusEnum.active;
 
     await this.userRepo.save(user);
     return user;
   }
 
-  //TODO change for oauthId and provider
+  async registerMicrosoftUser(userDto: any): Promise<OauthUserDto> {
+    const user = new User();
+    user.email = userDto.mail;
+    user.oauthId = userDto.id;
+    user.firstName = userDto.givenName;
+    user.lastName = userDto.surname;
+    user.provider = userDto.provider;
+    user.password = generatePassword(10);
+    user.status = StatusEnum.active;
+
+    await this.userRepo.save(user);
+    return user;
+  }
+
   async update(id: string, userDto: UserUpdateDto): Promise<UserDto> {
 
     const { firstName, lastName, email } = userDto;
