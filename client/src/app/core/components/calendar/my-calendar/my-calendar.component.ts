@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {CalendarOptions, FullCalendarComponent} from "@fullcalendar/angular";
+import {Component, OnInit} from '@angular/core';
+import {CalendarOptions} from "@fullcalendar/angular";
 import {first} from "rxjs/operators";
 import {CalendarService} from "../../../services/calendar/calendar.service";
 import DateConverter from "../../helpers/date.converter";
@@ -9,30 +9,19 @@ import DateConverter from "../../helpers/date.converter";
   templateUrl: './my-calendar.component.html',
   styleUrls: ['./my-calendar.component.scss']
 })
-export class MyCalendarComponent implements OnInit, AfterViewInit {
+export class MyCalendarComponent implements OnInit {
   events: any = [];
   error: any = null;
   calendarApi: any;
 
-  @ViewChild('calendar')
-  calendarComponent!: FullCalendarComponent;
-
-  constructor(private calendarService: CalendarService) {}
-
-  ngOnInit(): void {
-    this.fetchMyEvents();
+  constructor(private calendarService: CalendarService) {
   }
 
-  ngAfterViewInit(): void {
-    debugger;
-    this.calendarApi = this.calendarComponent.getApi();
+  ngOnInit(): void {
+    // this.fetchMyEvents();
   }
 
   fetchMyEvents() {
-
-    debugger;
-    this.calendarApi.next();
-    this.calendarApi.preview();
 
     this.calendarService.fetchEvents()
       .pipe(first())
@@ -86,30 +75,30 @@ export class MyCalendarComponent implements OnInit, AfterViewInit {
       right: 'today'
     },
     events: [
-      { title: 'event 1', start: '2022-10-03T03:45:00', end: '2022-10-03T04:45:00', description: 'Event 1 description' },
-      { title: 'event 2', start: '2022-10-04T07:45:00', end: '2022-10-04T08:45:00', description: 'Event 2 description' },
-      { title: 'event 3', start: '2022-10-05T02:45:00', end: '2022-10-05T05:45:00', description: 'Event 3 description' },
-      { title: 'event 4', start: '2022-10-06T10:45:00', end: '2022-10-06T12:45:00', description: 'Event 4 description' },
+      {title: 'event 1', start: '2022-10-03T03:45:00', end: '2022-10-03T04:45:00', description: 'Event 1 description'},
+      {title: 'event 2', start: '2022-10-04T07:45:00', end: '2022-10-04T08:45:00', description: 'Event 2 description'},
+      {title: 'event 3', start: '2022-10-05T02:45:00', end: '2022-10-05T05:45:00', description: 'Event 3 description'},
+      {title: 'event 4', start: '2022-10-06T10:45:00', end: '2022-10-06T12:45:00', description: 'Event 4 description'},
     ],
   };
 
   eventContent(arg: any) {
-      let divEl = document.createElement('div');
-      // let description = arg.event._def.extendedProps['description'];
-      let title = arg.event.title;
-      let time = arg.timeText;
+    let divEl = document.createElement('div');
+    // let description = arg.event._def.extendedProps['description'];
+    let title = arg.event.title;
+    let time = arg.timeText;
 
     divEl.style.height = '200px';
     divEl.style.borderLeft = '10px solid #4AA3E1';
-    divEl.innerHTML ='<strong>' + title + '</strong><br/><span style="color: #4AA3E1">'+time+'</span>';//<br/><span>'+description+'</span>'
+    divEl.innerHTML = '<strong>' + title + '</strong><br/><span style="color: #4AA3E1">' + time + '</span>';//<br/><span>'+description+'</span>'
 
-      // if (description.length > 6) {
-      // 10px solid #4AA3E1
-      //   $('div.fc-timegrid-event-harness').css('width', '150');
-      // }
+    // if (description.length > 6) {
+    // 10px solid #4AA3E1
+    //   $('div.fc-timegrid-event-harness').css('width', '150');
+    // }
 
-      // let arrayOfDomNodes = [divEl];
-      return { html: divEl.innerHTML };
+    // let arrayOfDomNodes = [divEl];
+    return {html: divEl.innerHTML};
   }
 
   handleDateClick(arg: { dateStr: string; }) {
