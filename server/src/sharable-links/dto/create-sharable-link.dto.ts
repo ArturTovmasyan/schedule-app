@@ -9,6 +9,8 @@ import {
   ArrayNotEmpty,
   ValidateNested,
   IsEmail,
+  IsBoolean,
+  IsBooleanString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -104,6 +106,11 @@ export class PaginationDto implements IPaginate {
   @IsOptional()
   @IsNumber()
   offset: number = 0;
+
+  @ApiProperty({ required: false, default: false })
+  @IsOptional()
+  @IsBooleanString()
+  inAttendees?: string;
 }
 export class SharableLinkSlot implements ISharableLinkSlot {
   @ApiProperty({ required: true })

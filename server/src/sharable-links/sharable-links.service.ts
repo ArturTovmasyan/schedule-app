@@ -276,7 +276,11 @@ export class SharableLinksService {
       .innerJoin(`sharableLink.user`, 'user')
       .leftJoin(`sharableLink.slots`, 'slots')
       .where(`sharableLink.sharedBy = '${user.id}'`)
-      .orWhere(`attendees.userId IN('${user.id}')`)
+      .orWhere(
+        filters.inAttendees === 'true'
+          ? `attendees.userId IN('${user.id}')`
+          : 'sharableLink.id IS NULL',
+      )
       .limit(filters.limit)
       .offset(filters.offset)
       .getManyAndCount();
