@@ -5,7 +5,6 @@ import {ApiResponse} from '../../interfaces/response/api.response.interface';
 import {DatePipe} from "@angular/common";
 import * as moment from 'moment';
 import { CreateEventRequest } from '../../interfaces/calendar/create-event-request.interface';
-import { pipe } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -58,5 +57,13 @@ export class CalendarService {
 >>>>>>> 3424aad (refacor calendar-event model/controller/service)
       })
     )
+  }
+
+  updateEvent(id: string, data: CreateEventRequest) {
+    return this.http.put<ApiResponse<any>>(`${this.url}/${id}`, data).pipe(
+      map((response) => {
+        return response.data
+      })
+    );
   }
 }

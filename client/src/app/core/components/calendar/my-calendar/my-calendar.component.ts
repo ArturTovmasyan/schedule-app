@@ -21,6 +21,8 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   subscription: BehaviorSubject<boolean>;
   multiSelectSubscription!: BehaviorSubject<never>;
   initSharableLinkSubscription!: BehaviorSubject<any>;
+  reloadEventSubscription!: BehaviorSubject<any>;
+
   selectedContactEmail = '';
   selectedContactId = '';
   currentUrl = '';

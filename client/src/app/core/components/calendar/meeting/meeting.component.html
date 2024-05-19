@@ -126,7 +126,7 @@
                   </p>
                 </div>
               </span>
-              <span class="custom-option" *ngFor="let loc of locations" (click)="chooseLocation(loc)">
+              <span class="custom-option" *ngFor="let loc of filteredLocations" (click)="chooseLocation(loc)">
                 <span class="logo">
                   <img [src]="loc.image" alt="{{loc.title}}">
                 </span>
@@ -173,7 +173,7 @@
 
       <div class="d-flex justify-content-end">
         <button class="send-request">
-          Send
+          Send {{ currentEventId ? 'Update' : ''}}
         </button>
       </div>
       <div class="error  {{errorMessages.length ? 'animate' : ''}} d-flex flex-column">

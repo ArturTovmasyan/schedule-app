@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment-timezone';
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, Observable, first } from 'rxjs';
 import {
   Calendar,
   CalendarData,
@@ -13,14 +13,12 @@ import { CommonService } from 'src/app/core/services/common.service';
 import { CalendarType } from '../connect-calendar/connect-calendar.component';
 import { AvailabilityService } from '../../../services/calendar/availability.service';
 import { BroadcasterService } from '../../../../shared/services';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CalendarAccess } from '../../../interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from '../../../services/calendar/access.service';
 import { UserData } from '../../chip-user-input/chip-user-input.component';
 import { SharableLinkService } from 'src/app/core/services/calendar/sharable-link.service';
 import { MeetViaEnum } from '../enums/sharable-links.enum';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
-import { ApiResponse } from 'src/app/core/interfaces/response/api.response.interface';
 
 @Component({
   selector: 'app-meeting',
@@ -42,7 +40,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
   myCalendar: CalendarData | null = null;
   selectedCalendar: Calendar | null = null;
   subscription: BehaviorSubject<boolean>;
-  form: FormGroup;
   attendeesOptions: UserData[] = [];
   selectedAttendees: UserData[] = [];
   selectedOptionalAttendees: UserData[] = [];
@@ -72,20 +69,10 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private readonly broadcaster: BroadcasterService,
     private readonly service: CalendarAccessService,
     private readonly sharableLinkService: SharableLinkService,
-    private formBuilder: FormBuilder,
     private readonly calendarPermissionService: CalendarPermissionService,
     private readonly calendarService: CalendarService,
     private readonly route: ActivatedRoute
   ) {
-    this.form = this.formBuilder.group(
-      {
-        meetTitle: ['', [Validators.required, Validators.minLength(5)]],
-        attendees: ['', [Validators.required]],
-        duration: ['', [Validators.required]],
-        meetingLocation: [''],
-      },
-      { updateOn: 'blur' }
-    );
 
     this.dropdownSettings = {
       singleSelection: false,
@@ -111,19 +98,17 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.fetchMyAttendees();
-    this.getLocations();
-    this.permissionService
-      .fetchCalendars()
-      .pipe(first())
-      .subscribe({
-        next: (data: CalendarData | any) => {
-          this.myCalendar = data;
-          if (this.myCalendars.length > 0) {
-            this.selectCalendar(this.myCalendars[0]);
-          }
-        },
-      });
+    this.initialize();
+  }
+
+  async initialize() {
+    this.attendeesOptions = await this.fetchMyAttendees();
+    this.locations = await this.getLocations();
+    this.myCalendar = await this.fetchMyCalendars();
+    if (this.myCalendars.length > 0) {
+      this.selectCalendar(this.myCalendars[0]);
+    }
+
     this.route.paramMap.subscribe((paramMap) => {
       this.currentEventId = paramMap.get('id');
       if (this.currentEventId != null) this.fetchEventDetail(this.currentEventId);
@@ -134,6 +119,22 @@ export class MeetingComponent implements OnInit, OnDestroy {
     if (localStorage.getItem('meetingDatas')) {
       this.runAfterRedirect();
     }
+  }
+
+  get filteredLocations() {
+    return this.locations.filter((l) => {
+      if (
+        (l.value === MeetViaEnum.Teams &&
+          this.selectedCalendar?.calendarType ===
+            CalendarType.GoogleCalendar) ||
+        (l.value === MeetViaEnum.GMeet &&
+          this.selectedCalendar?.calendarType ===
+            CalendarType.Office365Calendar)
+      ) {
+        return false;
+      }
+      return true;
+    });
   }
 
   fetchEventDetail(id: string) {
@@ -158,14 +159,31 @@ export class MeetingComponent implements OnInit, OnDestroy {
         start: event.start,
         end: event.end,
         entanglesLocation: event.entanglesLocation,
-        calendarId: event.externalId,
+        calendarId: event.calendar.id,
         attendees: [],
         optionalAttendees: [],
         phoneNumber: event.phoneNumber,
         address: event.address,
         duration: 1,
       }
-      this.form.setValue(this.data);
+
+      this.selectedCalendar = this.myCalendars.find((item) => item.id == event.calendar.id) || this.myCalendars[0];
+      event.attendees.forEach((attendee: { email: any; optional: boolean; }) => {
+        const contact: UserData = {
+          email: attendee.email,
+          avatar: null,
+          removable: true
+        }
+        if (!attendee.optional) {
+          this.selectedAttendees.push(contact);
+          this.data.attendees?.push(contact.email);
+        } else {
+          this.selectedOptionalAttendees.push(contact);
+          this.data.optionalAttendees?.push(contact.email);
+        }
+      });
+      this.updateAttendees(this.selectedAttendees, false);
+      this.updateAttendees(this.selectedOptionalAttendees, true);
     }
   }
 
@@ -194,15 +212,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
         };
       }
     }
-  }
-
-  initFormValue(defaultValues: any = null) {
-    if (!defaultValues) {
-      defaultValues = {
-        duration: 1, // 1 hour
-      };
-    }
-    this.form.patchValue(defaultValues);
   }
 
   updateAttendees(users: UserData[], isOptional: boolean = false) {
@@ -312,21 +321,25 @@ export class MeetingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.calendarService
-      .scheduleEvent(this.data)
-      .pipe(first())
-      .subscribe({
-        next: () => {
-          this.resetData();
-          if (localStorage.getItem('meetingDatas')) {
-            localStorage.removeItem('meetingDatas');
-          }
-        },
-        error: (error: any) => {
-          this.errorMessages.push(error?.message);
-          this.autoHideErrorMessage();
-        },
-      });
+    let eventObservable: Observable<any>;
+    if (!this.currentEventId) {
+      eventObservable = this.calendarService.scheduleEvent(this.data);
+    } else {
+      eventObservable = this.calendarService.updateEvent(this.currentEventId!, this.data);
+    }
+    eventObservable.pipe(first()).subscribe({
+      next: () => {
+        this.resetData();
+        if (localStorage.getItem('meetingDatas')) {
+          localStorage.removeItem('meetingDatas');
+        }
+        this.broadcaster.broadcast('reload_events');
+      },
+      error: (error: any) => {
+        this.errorMessages.push(error?.message);
+        this.autoHideErrorMessage();
+      },
+    });
   }
 
   resetData() {
@@ -350,14 +363,15 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   fetchMyAttendees() {
-    this.service
+    return new Promise<UserData[]>((resolve, reject) => {
+      this.service
       .fetchAccessibleContacts()
       .pipe(first())
       .subscribe({
         next: (data: CalendarAccess[] | null) => {
           if (data) {
             const contacts = data ?? [];
-            this.attendeesOptions = contacts.map((contact) => {
+            resolve(contacts.map((contact) => {
               return {
                 id: contact.owner.id,
                 name: `${contact.owner.firstName} ${contact.owner.lastName}`,
@@ -365,13 +379,31 @@ export class MeetingComponent implements OnInit, OnDestroy {
                 avatar: contact.owner.avatar,
                 removable: true,
               };
-            });
+            }));
           }
         },
         error: (error) => {
           this.error = error;
+          reject(error);
         },
       });
+    }); 
+  }
+
+  fetchMyCalendars() {
+    return new Promise<CalendarData>((resolve, reject) => {
+      this.permissionService
+      .fetchCalendars()
+      .pipe(first())
+      .subscribe({
+        next: (data: CalendarData | any) => {
+          resolve(data)
+        },
+        error: (err) => {
+          reject(err);
+        },
+      });
+    });
   }
 
   broadcastContactData(availabilityData: any) {
@@ -381,10 +413,15 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   getLocations() {
-    this.sharableLinkService.getLocations().subscribe({
-      next: (res: any) => {
-        this.locations = res;
-      },
+    return new Promise<Location[]>((resolve, reject) => {
+      this.sharableLinkService.getLocations().subscribe({
+        next: (data: any) => {
+          resolve(data)
+        },
+        error: (error) => {
+          reject(error);
+        }
+      });
     });
   }
 
@@ -463,9 +500,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   onDurationSelectionChanged(index: number) {
-    this.form.patchValue({
-      duration: index,
-    });
     this.data.duration = index;
     if (index != 4) {
       const newIndex = index + 1;
@@ -488,10 +522,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
       startDate: '',
       endDate: '',
     });
-  }
-
-  get f() {
-    return this.form.controls;
   }
 
   get myCalendars() {
