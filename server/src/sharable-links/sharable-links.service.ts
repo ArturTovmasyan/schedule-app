@@ -17,9 +17,8 @@ import { Calendar } from 'src/calendar/calendar-event/entities/calendar.entity';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { UpdateSharableLinkDto } from './dto/update-sharable-link.dto';
 import { SharableLinkEntity } from './entities/sharable-link.entity';
-import { IPaginate } from './interfaces/sharable-links.interface';
 import { ZoomService } from 'src/integrations/zoom/zoom.service';
-import { MeetViaEnum } from './enums/sharable-links.enum';
+import { FindLinkByEnum, MeetViaEnum } from './enums/sharable-links.enum';
 import { User } from '@user/entity/user.entity';
 import {
   IResponse,
@@ -31,6 +30,7 @@ import {
   SelectSlotPublic,
   CancelMeetingDto,
   RescheduleMeetingDto,
+  PaginationDto,
 } from './dto/create-sharable-link.dto';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from 'src/mail/mail.service';
@@ -240,7 +240,7 @@ export class SharableLinksService {
 
   async findAll(
     user: User,
-    pagination: IPaginate,
+    filters: PaginationDto,
   ): Promise<IResponse<SharableLinkEntity[]>> {
     const [data, count] = await this.connection
       .getRepository(SharableLinkEntity)
@@ -271,9 +271,13 @@ export class SharableLinksService {
       .leftJoin(`attendees.user`, 'attuser')
       .innerJoin(`sharableLink.user`, 'user')
       .leftJoin(`sharableLink.slots`, 'slots')
-      .where({ sharedBy: user.id })
-      .limit(pagination.limit)
-      .offset(pagination.offset)
+      .where(
+        filters.findBy === FindLinkByEnum.SharedByMe
+          ? `sharableLink.sharedBy = '${user.id}'`
+          : `attendees.userId IN('${user.id}')`,
+      )
+      .limit(filters.limit)
+      .offset(filters.offset)
       .getManyAndCount();
     return { data, metadata: { count } };
   }

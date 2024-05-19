@@ -17,7 +17,7 @@ import {
   IPaginate,
   ISharableLinkSlot,
 } from '../interfaces/sharable-links.interface';
-import { MeetViaEnum } from '../enums/sharable-links.enum';
+import { FindLinkByEnum, MeetViaEnum } from '../enums/sharable-links.enum';
 
 export class CreateSharableLinkDto {
   @ApiProperty({ required: false })
@@ -104,6 +104,11 @@ export class PaginationDto implements IPaginate {
   @IsOptional()
   @IsNumber()
   offset: number = 0;
+
+  @ApiProperty({ required: false })
+  @IsNotEmpty()
+  @IsEnum(FindLinkByEnum)
+  findBy: FindLinkByEnum;
 }
 export class SharableLinkSlot implements ISharableLinkSlot {
   @ApiProperty({ required: true })

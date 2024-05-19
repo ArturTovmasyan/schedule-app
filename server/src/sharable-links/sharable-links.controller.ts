@@ -56,10 +56,7 @@ export class SharableLinksController {
   @UseGuards(AuthGuard())
   @Get()
   findAll(@GetUser() user: User, @Query() query: PaginationDto) {
-    return this.sharableLinksService.findAll(user, {
-      limit: query.limit,
-      offset: query.offset,
-    });
+    return this.sharableLinksService.findAll(user, query);
   }
 
   @ApiResponse({ type: IResponse<SharableLinkEntity> })

@@ -6,3 +6,8 @@ export enum MeetViaEnum {
   InboundCall = 'inbound_call',
   OutboundCall = 'outbound_call',
 }
+
+export enum FindLinkByEnum {
+  InAttendees = 'in_attendees',
+  SharedByMe = 'shared_by_me',
+}
