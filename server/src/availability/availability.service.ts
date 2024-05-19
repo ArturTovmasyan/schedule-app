@@ -2,7 +2,10 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
-import { IResponseMessage } from 'src/components/interfaces/response.interface';
+import {
+  IResponse,
+  IResponseMessage,
+} from 'src/components/interfaces/response.interface';
 import { ErrorMessages } from '../components/constants/error.messages';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
@@ -28,7 +31,7 @@ export class AvailabilityService {
   async create(
     user: User,
     createAvailabilityDto: CreateAvailabilityDto,
-  ): Promise<Availability> {
+  ): Promise<IResponse<Availability>> {
     const checkUser = await this.availabilityRepo.findOne({
       where: { user: { id: user.id } },
     });
@@ -39,10 +42,12 @@ export class AvailabilityService {
       });
     }
 
-    return await this.availabilityRepo.save({
+    const data = await this.availabilityRepo.save({
       user: { id: user.id },
       ...createAvailabilityDto,
     });
+
+    return { data };
   }
 
   /**
@@ -51,10 +56,12 @@ export class AvailabilityService {
    * @returns `{availability entity data(Object)}`
    */
 
-  async findAll(user: User): Promise<Availability> {
-    return await this.availabilityRepo.findOne({
+  async findAll(user: User): Promise<IResponse<Availability>> {
+    const data = await this.availabilityRepo.findOne({
       user: { id: user.id },
     });
+
+    return { data };
   }
 
   findOne(id: number) {

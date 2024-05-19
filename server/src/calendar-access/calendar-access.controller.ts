@@ -29,7 +29,7 @@ import {
 
 @ApiBearerAuth()
 @ApiTags('Calendar Access')
-@Controller('api/calendar-access')
+@Controller('api/calendar/access')
 export class CalendarAccessController {
   constructor(private readonly calendarAccessService: CalendarAccessService) {}
 

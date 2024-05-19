@@ -29,7 +29,7 @@ import {
 
 @ApiBearerAuth()
 @ApiTags('Calendar accessibility')
-@Controller('api/calendar-accessibility')
+@Controller('api/calendar/accessibility')
 export class CalendarAccessibilityController {
   constructor(
     private readonly calendarAccessibilityService: CalendarAccessibilityService,

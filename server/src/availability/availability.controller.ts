@@ -29,13 +29,13 @@ import {
 
 @ApiBearerAuth()
 @ApiTags('Calendar availability')
-@Controller('api/calendar')
+@Controller('api/calendar/availability')
 export class AvailabilityController {
   constructor(private readonly availabilityService: AvailabilityService) {}
 
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Create user availability' })
-  @Post('availability')
+  @Post()
   @UseGuards(AuthGuard())
   create(
     @Body() createAvailabilityDto: CreateAvailabilityDto,
@@ -46,21 +46,21 @@ export class AvailabilityController {
 
   @ApiResponse({ type: IResponse })
   @ApiOperation({ summary: 'Find user availability' })
-  @Get('availability')
+  @Get()
   @UseGuards(AuthGuard())
   findAll(@GetUser() user) {
     return this.availabilityService.findAll(user);
   }
 
   @ApiExcludeEndpoint()
-  @Get('availability/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.availabilityService.findOne(+id);
   }
 
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Update user avaliliability' })
-  @Patch('availability')
+  @Patch()
   @UseGuards(AuthGuard())
   update(
     @GetUser() user: User,
@@ -70,7 +70,7 @@ export class AvailabilityController {
   }
 
   @ApiExcludeEndpoint()
-  @Delete('availability/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.availabilityService.remove(+id);
   }
