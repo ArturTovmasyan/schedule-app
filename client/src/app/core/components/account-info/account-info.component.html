@@ -12,7 +12,7 @@
             <img src="assets/upload-icon-new.png" alt="upload icon">
             <h5>Upload your profile picture</h5>
             <input #fileInput type="file" id="profilePictureInput" class="file-input" [accept]="acceptedFileExtensions"
-                   (change)="attachFile($event)"/>
+              (change)="attachFile($event)"/>
             <div class="document-type">
               <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
               <h6>PNG or JPEG</h6>
