@@ -4,7 +4,6 @@ import {AuthService} from 'src/app/core/services/auth/auth.service';
 import {BroadcasterService} from "../../../shared/services";
 import {BehaviorSubject} from "rxjs";
 import {environment} from "../../../../environments/environment";
-import {MsalService} from "@azure/msal-angular";
 import {MICROSOFT_USER} from "../../interfaces/constant/user.constants";
 
 @Component({
@@ -20,7 +19,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private msService: MsalService,
     private broadcaster: BroadcasterService) {
     this.isLoginPage = window.location.pathname !== '/register';
 
@@ -70,16 +68,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     if (user && user.provider) {
       if (user.provider === MICROSOFT_USER) {
-        this.msLogout();
+        window.location.href = environment.ms_logout_url;
       }
     } else {
       this.router.navigate(['/login']);
     }
-  }
-
-  msLogout() {
-    this.msService.logoutRedirect({
-      postLogoutRedirectUri: environment.host
-    });
   }
 }

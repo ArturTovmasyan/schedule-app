@@ -46,7 +46,6 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     BrowserModule,
     BrowserAnimationsModule,
     SharedModule,
-    MsAuthModule,
     IMaskModule,
     HttpClientModule,
     CalendarModule,
@@ -65,7 +64,7 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     },
     MsalGuard
   ],
-  bootstrap: [AppComponent, MsalRedirectComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule {
 }

@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {first} from 'rxjs/operators';
@@ -11,8 +11,7 @@ import {AuthenticationResult, InteractionStatus} from '@azure/msal-browser';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {environment} from "../../../../environments/environment";
-
-const GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0/me';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'lib-login',
@@ -24,8 +23,6 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   errorMessage: string | undefined;
   error?: ErrorResponse;
-  isIframe = false;
-  loginDisplay = false;
   private readonly _destroying$ = new Subject<void>();
 
   constructor(
@@ -33,11 +30,7 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-    private broadcaster: BroadcasterService,
-    private broadcastService: MsalBroadcastService,
-    private msService: MsalService,
-    private http: HttpClient,
-    @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration
+    private broadcaster: BroadcasterService
   ) {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]],
@@ -51,16 +44,6 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.authService.logout();
     this.broadcaster.broadcast('isLoginPage', true);
-
-    this.isIframe = window !== window.parent && !window.opener;
-    this.broadcastService.inProgress$
-      .pipe(
-        filter((status: InteractionStatus) => status === InteractionStatus.None),
-        takeUntil(this._destroying$)
-      )
-      .subscribe(() => {
-        this.setLoginDisplay();
-      })
   }
 
   get f() {
