@@ -18,15 +18,32 @@ export class CalendarController {
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async getUserGoogleCalendar(@Req() req: { user: User }) {
-    req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
-    return await this.calendarService.getFromGoogle(req.user.id);
+    // req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
+    // req.user = { ...req.user, id: '526bcc4e-f73d-4c25-95e5-7f41053355e8' };
+    return await this.calendarService.getCalendarsFromGoogle(req.user);
+  }
+
+  @Get('google-events')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(UpdateAccessTokenInterceptor)
+  async getUserGoogleCalendarEvents(@Req() req: { user: User }) {
+    // req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
+    // req.user = { ...req.user, id: '526bcc4e-f73d-4c25-95e5-7f41053355e8' };
+    return await this.calendarService.syncGoogleCalendarList(req.user);
   }
 
   @Get('ms')
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async getUserMSCalendar(@Req() req: { user: User }) {
-    req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
-    return await this.calendarService.getFromMS(req.user.id);
+    // req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
+    return await this.calendarService.getCalendarsFromOutlook(req.user);
   }
+
+  // @Get('test')
+  // // @UseGuards(AuthGuard())
+  // // @UseInterceptors(UpdateAccessTokenInterceptor)
+  // async test() {
+  //   return await this.calendarService.testCompare();
+  // }
 }
