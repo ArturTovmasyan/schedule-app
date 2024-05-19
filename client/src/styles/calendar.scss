@@ -95,8 +95,43 @@ h2#fc-dom-1 {
 
 .event {
   text-align: center;
-  border-left: 10px solid #7fb8ff !important;
+  border-left: 10px solid #7fb8ff;
   border-radius: 9px !important;
+  overflow: hidden;
+
+  &.google-event {
+    background-color: #FFF8F8 !important;
+    border-color: #F4111138;
+    border-left-color: #F74B4B;
+  }
+
+  &.office365-event {
+    background-color: #E9F6FD !important;
+    border-color: #11A4F4;
+    border-left-color: #6ECCFF;
+  }
+
+  .my-event {
+    font-family: 'Open Sans', sans-serif;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    label {
+      font-size: 16px;
+      font-weight: 600;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    span {
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
 }
 
 .available-event {

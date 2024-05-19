@@ -190,6 +190,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
       center: 'prev,title,next',
       right: '',
     },
+<<<<<<< HEAD
     events: [],
     eventContent: this.eventContent.bind(this),
     eventClassNames: function () {
@@ -198,6 +199,10 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     }
   };
 =======
+=======
+    eventClassNames: function (arg) {
+      return `event ${arg.event.extendedProps['event_class']}`;
+>>>>>>> 418f4b0 (fix: style calenadar event adn add color code)
     },
     select: (info: any) => {
       this.currentUrl = this.router.url;
@@ -306,6 +311,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
                 attendees: users.filter((item: any) => !item.optional),
                 optional_attendees: users.filter((item: any) => item.optional),
                 link: el.meetLink,
+                event_class: el.calendar.calendarType == CalendarType.GoogleCalendar ? 'google-event' : 'office365-event',
                 calendar: el.calendar.summary,
                 calendarIcon: el.calendar.calendarType == CalendarType.GoogleCalendar ? 'google-icon.svg' : 'outlook-icon.svg',
               };
