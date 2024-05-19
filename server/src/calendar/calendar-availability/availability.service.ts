@@ -76,7 +76,7 @@ export class AvailabilityService {
     }
 
     /**
-     * @description `Find user calendar aval. times`
+     * @description `Find user calendar availability times`
      * @param userIds
      * @param currentUserId - `Current user id`
      * @returns `{Event times data}`
@@ -136,7 +136,7 @@ export class AvailabilityService {
             }
 
             const startDate = moment().subtract(1, 'day').format('yyyy-MM-DD hh:mm:ss')
-            const dateEnd = moment().add(2, 'week').format('yyyy-MM-DD hh:mm:ss');
+            const dateEnd = moment().add(1, 'month').format('yyyy-MM-DD hh:mm:ss');
 
             const eventUserIds = [...userIds, currentUserId];
             const contactEvents: any[] = await this.eventService.getEventsByUserIds(eventUserIds, {startDate, dateEnd});

@@ -70,17 +70,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  get myCalendars() {
-    const calendars: Calendar[] = []
-    this.myCalendar?.googleCalendar?.forEach((item) => {
-      calendars.push(item);
-    });
-    this.myCalendar?.office365Calendar?.forEach((item) => {
-      calendars.push(item);
-    });
-    return calendars;
-  }
-
   selectCalendar(calendar: Calendar) {
     this.data.syncWith = calendar.id;
     this.selectedCalendar = calendar;
@@ -110,26 +99,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     return "";
   }
 
-  get parsedDate(): string {
-    let currentDate = this.commonService.getFormattedDateString(moment()) ?? "";
-    if (this.data.start) {
-      currentDate = this.data.start;
-    }
-    return this.commonService.getFormattedDateString(moment.utc(currentDate).local(), 'ddd, MMM Do') ?? "";
-  }
-
-  get hasCalendars(): boolean {
-    return (this.myCalendar?.googleCalendar?.length ?? 0) > 0 || (this.myCalendar?.office365Calendar?.length ?? 0) > 0
-  }
-
-  get timezone(): string {
-    return this.commonService.localTimezone;
-  }
-
-  close() {
-    this.router.navigate(['/calendar/contacts'])
-  }
-
   updateAttendeeEmails(emails: string[]) {
     this.data.attendees = emails;
     this.getContactsAvailability();
@@ -140,6 +109,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   scheduleEvent() {
+    debugger;
     this.calendarService.scheduleEvent(this.data)
       .pipe(first())
       .subscribe({
@@ -182,5 +152,36 @@ export class MeetingComponent implements OnInit, OnDestroy {
     } else {
       this.broadcaster.broadcast('contact_calendar_data', []);
     }
+  }
+
+  close() {
+    this.router.navigate(['/calendar/contacts'])
+  }
+
+  get myCalendars() {
+    const calendars: Calendar[] = []
+    this.myCalendar?.googleCalendar?.forEach((item) => {
+      calendars.push(item);
+    });
+    this.myCalendar?.office365Calendar?.forEach((item) => {
+      calendars.push(item);
+    });
+    return calendars;
+  }
+
+  get parsedDate(): string {
+    let currentDate = this.commonService.getFormattedDateString(moment()) ?? "";
+    if (this.data.start) {
+      currentDate = this.data.start;
+    }
+    return this.commonService.getFormattedDateString(moment.utc(currentDate).local(), 'ddd, MMM Do') ?? "";
+  }
+
+  get hasCalendars(): boolean {
+    return (this.myCalendar?.googleCalendar?.length ?? 0) > 0 || (this.myCalendar?.office365Calendar?.length ?? 0) > 0
+  }
+
+  get timezone(): string {
+    return this.commonService.localTimezone;
   }
 }

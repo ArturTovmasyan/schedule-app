@@ -10,7 +10,6 @@ import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interfa
 @Component({
   selector: 'app-my-calendar',
   templateUrl: './my-calendar.component.html',
-  styleUrls: ['./my-calendar.component.scss']
 })
 export class MyCalendarComponent implements OnInit, OnDestroy {
   events: any = [];
