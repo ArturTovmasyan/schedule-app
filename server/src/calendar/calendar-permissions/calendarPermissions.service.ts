@@ -122,11 +122,13 @@ export class CalendarPermissionsService {
       };
 
       await calendarTokenRepository.save(calendarTokenBody);
+      await this.calendarService.googleEventWatcher(user, tokens, manager);
 
-      await this.calendarService.getCalendarsFromGoogle(user, manager);
-      await this.calendarService.syncGoogleCalendarEventList(user, manager);
-
-      return this.getUserStatusOfCalendars(user.id, manager);
+      //
+      // await this.calendarService.getCalendarsFromGoogle(user, manager);
+      // await this.calendarService.syncGoogleCalendarEventList(user, manager);
+      //
+      // return this.getUserStatusOfCalendars(user.id, manager);
     });
   }
 
@@ -216,9 +218,16 @@ export class CalendarPermissionsService {
       this.msalInstance.clearCache();
 
       await this.calendarService.getCalendarsFromOutlook(user, manager);
-      await this.calendarService.syncOutlookCalendarEventList(user, manager);
 
-      return this.getUserStatusOfCalendars(user.id, manager);
+      await this.calendarService.outlookEventWatcher(
+        user,
+        tokenResponse.accessToken,
+        manager,
+      );
+
+      // await this.calendarService.syncOutlookCalendarEventList(user, manager);
+      //
+      // return this.getUserStatusOfCalendars(user.id, manager);
     });
   }
 

@@ -14,6 +14,7 @@ import { EventTypeEnum } from './enums/eventType.enum';
 import CreateEventDto from './dto/createEvent.dto';
 import { transactionManagerWrapper } from '../../components/helpers/dbTransactionManager';
 import UpdateEventDto from './dto/updateEvent.dto';
+import * as localtunnel from 'localtunnel';
 
 @Injectable()
 export class CalendarEventService {
@@ -38,7 +39,9 @@ export class CalendarEventService {
         });
 
         if (!token) {
-          throw new NotFoundException('You have not calendar-event access token');
+          throw new NotFoundException(
+            'You have not calendar-event access token',
+          );
         }
 
         const { accessToken } = token;
@@ -79,7 +82,9 @@ export class CalendarEventService {
           calendarType: CalendarTypeEnum.Office365Calendar,
         });
         if (!token) {
-          throw new NotFoundException('You have not calendar-event access token');
+          throw new NotFoundException(
+            'You have not calendar-event access token',
+          );
         }
 
         const { accessToken } = token;
@@ -125,7 +130,9 @@ export class CalendarEventService {
         });
 
         if (!token) {
-          throw new NotFoundException('You have not calendar-event access token');
+          throw new NotFoundException(
+            'You have not calendar-event access token',
+          );
         }
 
         const { accessToken } = token;
@@ -406,6 +413,86 @@ export class CalendarEventService {
 
       return await manager.getRepository(CalendarEvent).save(eventToUpdate);
     });
+  }
+
+  async googleEventWatcher(user: User, token, manager?: EntityManager) {
+    const googleCalendarClient = await this.getGoogleCredentials(
+      token.access_token,
+    );
+
+    const googleLocalPrimaryCalendar = await manager
+      .getRepository(Calendar)
+      .findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+        isPrimary: true,
+      });
+
+    const tunnel = await localtunnel({
+      port: 3000,
+    });
+
+    // const stopResponse = await googleCalendarClient.channels.stop({
+    //   requestBody: {
+    //     id: googleLocalPrimaryCalendar.id,
+    //     token: token.access_token,
+    //     resourceId: 'IPWzhPFZbRBzkpi_EZaA_xZvAx8',
+    //   },
+    // });
+
+    // console.log('stopResponse.data ', stopResponse.data);
+
+    const watchResponse = await googleCalendarClient.events.watch({
+      requestBody: {
+        id: googleLocalPrimaryCalendar.id,
+        type: 'web_hook',
+        address: `${tunnel.url}/api/calendar/events/google-webhook`,
+        token: token.access_token,
+        expiration: null,
+      },
+      calendarId: googleLocalPrimaryCalendar.calendarId,
+    });
+
+    console.log('watchResponse.data ', watchResponse.data);
+  }
+
+  async outlookEventWatcher(user: User, token, manager?: EntityManager) {
+    const outlookCalendarClient = await this.getOutlookCredentials(token);
+
+    const outlookLocalPrimaryCalendar = await manager
+      .getRepository(Calendar)
+      .findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.Office365Calendar,
+        isPrimary: true,
+      });
+
+    const tunnel = await localtunnel({
+      port: 3000,
+    });
+
+    // const watchCloseResponse = await outlookCalendarClient
+    //   .api('/subscriptions/f48dac3f-04db-032a-1c1c-f10a6c40057e')
+    //   .delete();
+
+    const watchResponse = await outlookCalendarClient
+      .api('/subscriptions')
+      .post(
+        {
+          changeType: 'deleted,updated,created',
+          notificationUrl: `${tunnel.url}/api/calendar/events/outlook-webhook`,
+          resource: 'me/events',
+          expirationDateTime: '2022-09-12T18:23:45.9356913Z',
+        },
+        // ,
+        // (error, response, rawResponse) => {
+        //   console.log('error ', error);
+        //   console.log('response ', response);
+        //   console.log('rawResponse ', rawResponse);
+        // },
+      );
+
+    console.log('watchResponse ', watchResponse);
   }
 
   private compareEvents(eventsFromDb, remoteEvents, eventIdProperty) {

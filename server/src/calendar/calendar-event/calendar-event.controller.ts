@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -72,5 +73,28 @@ export class CalendarEventController {
       req.user,
       eventId,
     );
+  }
+
+  @Post('google-webhook')
+  // @UseGuards(AuthGuard())
+  // @UseInterceptors(UpdateAccessTokenInterceptor)
+  async forGoogleWebhook(@Req() req: Request) {
+    console.log('req headers', req.headers);
+    // console.log('req route stack', req.route.stack);
+  }
+
+  @Post('outlook-webhook')
+  // @UseGuards(AuthGuard())
+  // @UseInterceptors(UpdateAccessTokenInterceptor)
+  async forOutlookWebhook(
+    @Query() query,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    // console.log('req ', req);
+    // console.log('req route stack', req.route.stack);
+
+    res.status(200);
+    res.send(query.validationToken);
   }
 }
