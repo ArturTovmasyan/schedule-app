@@ -1,114 +1,204 @@
-<section class="meeting-title" id="requestAccess">
+<section class="meeting-title" id="meetingTitle">
   <div class="header">
     <h2 class="section-title text-center">
       Meeting title
     </h2>
     <button class="close-button" id="closeButton">
-      <img src="assets/close-icon.svg" alt="close buton">
+      <img src="assets/close-icon.svg" alt="close button">
     </button>
   </div>
   <form id="meetingTitle" action="">
-        <div class="form-group">
-          <h3 class="section-title-secondary">
-            Duration
-          </h3>
-          <div class="duration-radio">
-            <div class="duration-radio-wrapper">
-              <input type="radio" name="duration" id="15minutes" value="15 minutes">
-              <label for="15minutes">15m</label>
-            </div>
-            <div class="duration-radio-wrapper">
-              <input type="radio" name="duration" id="30minutes" value="30 minutes">
-              <label for="30minutes">30m</label>
-            </div>
-            <div class="duration-radio-wrapper">
-              <input type="radio" name="duration" id="45minutes" value="45 minutes">
-              <label for="45minutes">45m</label>
-            </div>
-            <div class="duration-radio-wrapper">
-              <input type="radio" name="duration" id="60minutes" value="60 minutes" checked>
-              <label for="60minutes">60m</label>
-            </div>
-            <div class="duration-radio-wrapper">
-              <input type="radio" name="duration" id="custom" value="custom">
-              <label for="custom">Custom</label>
-            </div>
-          </div>
-          <input class="form-control" type="text" name="duration" id="customDuration">
-
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Duration
+      </h3>
+      <div class="duration-radio">
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="15minutes" value="15 minutes">
+          <label for="15minutes">15m</label>
         </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="30minutes" value="30 minutes">
+          <label for="30minutes">30m</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="45minutes" value="45 minutes">
+          <label for="45minutes">45m</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="60minutes" value="60 minutes" checked>
+          <label for="60minutes">60m</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="custom" value="custom">
+          <label for="custom">Custom</label>
+        </div>
+      </div>
+      <input class="form-control" type="text" name="duration" id="customDuration">
 
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Attendees
+      </h3>
+      <div class="attendees-container">
+        <ul class="attendees-list list-unstyled list-inline" id="attendeesList">
+          <li class="attendee-info list-inline-item" id="attendeeInfo">
+            <div class="attendee-info-wrapper">
+              <div class="attendee-portrait">
+                <img src="assets/brianchesky.jpg" alt="attendee portrait">
+              </div>
+              <div class="attendee-bio">
+                <h5 class="full-name" id="fullName">
+                  Brian Chesky
+                </h5>
+                <h6 class="contact-company" id="contactCompany">
+                  AirBnb
+                </h6>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="attendee-info list-inline-item" id="attendeeInfo">
+            <div class="attendee-info-wrapper">
+              <div class="attendee-portrait">
+                <img src="assets/alexisohanian.jpeg" alt="attendee portrait">
+              </div>
+              <div class="attendee-bio">
+                <h5 class="full-name" id="fullName">
+                  Alexis Ohanian
+                </h5>
+                <h6 class="contact-company" id="contactCompany">
+                  Reddit
+                </h6>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="attendee-info list-inline-item" id="attendeeInfo">
+            <div class="attendee-info-wrapper">
+              <div class="attendee-portrait">
+                <img src="assets/patrickcollison.png" alt="attendee portrait">
+              </div>
+              <div class="attendee-bio">
+                <h5 class="full-name" id="fullName">
+                  Patrick Collison
+                </h5>
+                <h6 class="contact-company" id="contactCompany">
+                  Stripe
+                </h6>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="attendee-info list-inline-item" id="attendeeInfo">
+            <div class="attendee-info-wrapper">
+              <div class="attendee-portrait">
+                <img src="assets/wadefoster.jpeg" alt="attendee portrait">
+              </div>
+              <div class="attendee-bio">
+                <h5 class="full-name" id="fullName">
+                  Wade Foster
+                </h5>
+                <h6 class="contact-company" id="contactCompany">
+                  Zapier
+                </h6>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="list-inline-item attendee-email-input" id="attendeeEmailInput">
+            <input class="form-control" type="text" name="attendeeAccountInput" id="attendeeAccountInput">
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Optional
+      </h3>
+      <div class="optional-attendee-container">
+        <ul class="optional-attendees-list list-unstyled list-inline" id="optionalAttendeesList">
+          <li class="optional-attendee-info list-inline-item" id="optionalAttendeeInfo">
+            <div class="attendee-info-wrapper">
+              <div class="attendee-portrait">
+                <img src="assets/paulbuchheit.jpeg" alt="attendee portrait">
+              </div>
+              <div class="attendee-bio">
+                <h5 class="full-name" id="fullName">
+                  Paul Buchheit
+                </h5>
+                <h6 class="contact-company" id="contactCompany">
+                  YC
+                </h6>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="list-inline-item optional-attendee-email-input" id="optionalAttendeeEmailInput">
+            <input class="form-control" type="text" name="optionalAttendeeAccountInput"
+                   id="optionalAttendeeAccountInput">
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Date/Time
+      </h3>
+      <div class="date-time-container">
+        <ul class="list-unstyled list-inline">
+          <li class="list-inline-item date">
+            <p>Tue, Oct 08th</p>
+          </li>
+          <li class="list-inline-item timeframe">
+            <p>10:00AM - 11:00PM</p>
+          </li>
+          <li class="list-inline-item timezone">
+            <img src="assets/canada-flag.png" alt="timezone">
+            <p>Toronto, EST</p>
+          </li>
+        </ul>
+        <button class="remove-button" id="removeButton">
+          <img src="assets/close-icon.svg" alt="remove button">
+        </button>
+      </div>
+      <a href="" class="save-to-outlook">
+        <h6>Save this event in <img src="assets/outlook-icon.png" alt="outlook icon"> calendar</h6>
+      </a>
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Location
+      </h3>
+      <input class="form-control" type="text" name="meetingLocation"
+             id="meetingLocation" placeholder="Choose...">
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Text
+      </h3>
+      <textarea class="form-control" name="customMessage" id="customMessage" style="resize: none"
+                placeholder="Hey all,
+
+  Let's meet and sync on roles for upcoming podcast.
+
+  _Arthur"></textarea>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button class="send-request" type="submit">
+        Send
+      </button>
+    </div>
   </form>
-<!--  <form id="requestAccessForm" action="">-->
-<!--    <div class="form-group">-->
-<!--      <h3 class="section-title-secondary">-->
-<!--        Request from-->
-<!--      </h3>-->
-<!--      <div class="emails-container" id="emailsContainer">-->
-<!--        <ul class="emails-list list-unstyled list-inline" id="emailsList">-->
-<!--          <li class="user-email list-inline-item" id="userEmail">-->
-<!--            <div class="user-email-wrap">-->
-<!--              <img src="assets/user-icon.png" alt="user icon">-->
-<!--              <p class="email-address" id="emailAddress">-->
-<!--                markanthony@gmail.com-->
-<!--              </p>-->
-<!--              <button class="remove-button" id="removeButton">-->
-<!--                <img src="assets/close-icon.svg" alt="remove button">-->
-<!--              </button>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--          <li class="user-email list-inline-item" id="userEmail">-->
-<!--            <div class="user-email-wrap">-->
-<!--              <img src="assets/user-icon.png" alt="user icon">-->
-<!--              <p class="email-address" id="emailAddress">-->
-<!--                el@spacex.com-->
-<!--              </p>-->
-<!--              <button class="remove-button" id="removeButton">-->
-<!--                <img src="assets/close-icon.svg" alt="remove button">-->
-<!--              </button>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--          <li class="user-email list-inline-item" id="userEmail">-->
-<!--            <div class="user-email-wrap">-->
-<!--              <img src="assets/user-icon.png" alt="user icon">-->
-<!--              <p class="email-address" id="emailAddress">-->
-<!--                al@gmail.com-->
-<!--              </p>-->
-<!--              <button class="remove-button" id="removeButton">-->
-<!--                <img src="assets/close-icon.svg" alt="remove button">-->
-<!--              </button>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--          <li class="list-inline-item user-email-input" id="userEmailInput">-->
-<!--            <input class="form-control" type="text" name="requestFrom" id="requestFrom">-->
-<!--          </li>-->
-<!--        </ul>-->
-
-<!--      </div>-->
-
-
-<!--    </div>-->
-
-<!--    <div class="form-group">-->
-<!--      <h3 class="section-title-secondary">-->
-<!--        Custom message-->
-<!--      </h3>-->
-<!--      <textarea class="form-control" name="customMessage" id="customMessage" style="resize: none"-->
-<!--                placeholder="Hey all,-->
-
-<!--Please Share your calendars with me so I can schedule with ease.-->
-
-<!--_Arthur"></textarea>-->
-<!--    </div>-->
-<!--    <div class="form-group share-calendar-checkbox">-->
-<!--      <input type="checkbox" name="shareMyCalendar" id="shareMyCalendar">-->
-<!--      <label for="shareMyCalendar">Share my calendar with the request</label>-->
-<!--    </div>-->
-
-<!--    <div class="d-flex justify-content-end">-->
-<!--      <button class="request-button" type="submit">-->
-<!--        Request-->
-<!--      </button>-->
-<!--    </div>-->
-<!--  </form>-->
 </section>

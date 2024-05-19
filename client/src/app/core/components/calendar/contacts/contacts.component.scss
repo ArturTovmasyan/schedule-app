@@ -17,7 +17,7 @@ section.contacts {
 
   .contacts-wrapper {
     padding: 0 10px;
-    height: calc(100vh - 100px);
+    height: calc(100% - 100px);
 
     label {
       position: relative;
@@ -51,10 +51,9 @@ section.contacts {
     }
 
     ul.contacts-list {
-      overflow: hidden;
-      overflow-y: scroll;
-      height: calc(100vh - 250px);
-
+      height: calc(100% - 45px);
+      overflow: scroll;
+      margin-bottom: 0;
       li {
         display: flex;
         justify-content: space-between;
