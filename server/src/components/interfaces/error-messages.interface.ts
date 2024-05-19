@@ -1,4 +1,5 @@
 export interface IErrorMessages {
+  provideCustomDate: string;
   passwordDoesNotMatch: string;
   userExist: string;
   userNotFound: string;

@@ -64,6 +64,16 @@ export class CalendarAccessService {
       createCalendarAccessDto.timeForAccess === TimeForAccessEnum.quarter
     ) {
       timeForAccess = moment().add(3, 'month').toDate();
+    } else if (
+      createCalendarAccessDto.timeForAccess === TimeForAccessEnum.custom
+    ) {
+      if (!createCalendarAccessDto.customDate) {
+        throw new BadRequestException({
+          message: ErrorMessages.provideCustomDate,
+        });
+      }
+
+      timeForAccess = createCalendarAccessDto.customDate;
     }
 
     await this.calendarAccessRepo.upsert(

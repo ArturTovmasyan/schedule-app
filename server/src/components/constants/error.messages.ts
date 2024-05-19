@@ -1,6 +1,7 @@
 import { IErrorMessages } from '../interfaces/error-messages.interface';
 
 export const ErrorMessages: Readonly<IErrorMessages> = {
+  provideCustomDate: 'Please provide custom date',
   userExist: 'User already exists',
   userNotFound: 'User not found',
   incorrectPassword: 'Current password is not correct',

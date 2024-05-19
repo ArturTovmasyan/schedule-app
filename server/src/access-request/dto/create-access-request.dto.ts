@@ -27,6 +27,10 @@ export class CreateAccessRequestDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  customDate?: Date;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
   @MaxLength(2500)
   comment?: string;

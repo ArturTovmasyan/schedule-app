@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,
   IsEmail,
@@ -7,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { TimeForAccessEnum } from '../enums/access-time.enum';
 
 export class CreateCalendarAccessDto {
@@ -19,6 +19,10 @@ export class CreateCalendarAccessDto {
   @IsOptional()
   @IsEnum(TimeForAccessEnum)
   timeForAccess?: TimeForAccessEnum;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  customDate?: Date;
 
   @ApiProperty({ required: false, type: 'string', maxLength: 2500 })
   @IsOptional()

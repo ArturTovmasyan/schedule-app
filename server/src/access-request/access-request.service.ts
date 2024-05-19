@@ -89,6 +89,16 @@ export class AccessRequestService {
       createAccessRequestDto.timeForAccess === TimeForAccessEnum.quarter
     ) {
       timeForAccess = moment().add(3, 'month').toDate();
+    } else if (
+      createAccessRequestDto.timeForAccess === TimeForAccessEnum.custom
+    ) {
+      if (!createAccessRequestDto.customDate) {
+        throw new BadRequestException({
+          message: ErrorMessages.provideCustomDate,
+        });
+      }
+
+      timeForAccess = createAccessRequestDto.customDate;
     }
 
     const data = await this.accessRequestRepo.save({
