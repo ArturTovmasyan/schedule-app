@@ -14,7 +14,8 @@ import { EventTypeEnum } from './enums/eventType.enum';
 import CreateEventDto from './dto/createEvent.dto';
 import { transactionManagerWrapper } from '../../components/helpers/dbTransactionManager';
 import UpdateEventDto from './dto/updateEvent.dto';
-import * as localtunnel from 'localtunnel';
+import * as locaTunnel from 'localtunnel';
+import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity';
 
 @Injectable()
 export class CalendarEventService {
@@ -25,6 +26,8 @@ export class CalendarEventService {
     private readonly calendarRepository: Repository<Calendar>,
     @InjectRepository(CalendarEvent)
     private readonly calendarEventRepository: Repository<CalendarEvent>,
+    @InjectRepository(CalendarWebhookChannel)
+    private readonly calendarWebhookChannelRepository: Repository<CalendarWebhookChannel>,
     private readonly clientsCredentials: ClientsCredentialsService,
   ) {}
 
@@ -415,9 +418,55 @@ export class CalendarEventService {
     });
   }
 
+  async stopGoogleWebhookChannel(
+    user: User,
+    token: string,
+    manager: EntityManager,
+  ) {
+    const calendarWebhookChannelRepo = manager.getRepository(
+      CalendarWebhookChannel,
+    );
+    const googleCalendarClient = await this.getGoogleCredentials(token);
+    const googleLocalPrimaryCalendar = await manager
+      .getRepository(Calendar)
+      .findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+        isPrimary: true,
+      });
+    const existedGoogleWebhookChannel =
+      await calendarWebhookChannelRepo.findOne({
+        owner: { id: user.id },
+      });
+
+    if (existedGoogleWebhookChannel) {
+      const stopChannelResponse = await googleCalendarClient.channels.stop({
+        requestBody: {
+          id: googleLocalPrimaryCalendar.id,
+          token: token,
+          resourceId: existedGoogleWebhookChannel.channelId,
+        },
+      });
+
+      if (stopChannelResponse.status === 204) {
+        await calendarWebhookChannelRepo.delete({
+          owner: { id: user.id },
+        });
+      }
+    }
+  }
+
   async googleEventWatcher(user: User, token, manager?: EntityManager) {
     const googleCalendarClient = await this.getGoogleCredentials(
       token.access_token,
+    );
+
+    const tunnel = await locaTunnel({
+      port: 3000,
+    });
+
+    const calendarWebhookChannelRepo = manager.getRepository(
+      CalendarWebhookChannel,
     );
 
     const googleLocalPrimaryCalendar = await manager
@@ -427,20 +476,6 @@ export class CalendarEventService {
         calendarType: CalendarTypeEnum.GoogleCalendar,
         isPrimary: true,
       });
-
-    const tunnel = await localtunnel({
-      port: 3000,
-    });
-
-    // const stopResponse = await googleCalendarClient.channels.stop({
-    //   requestBody: {
-    //     id: googleLocalPrimaryCalendar.id,
-    //     token: token.access_token,
-    //     resourceId: 'IPWzhPFZbRBzkpi_EZaA_xZvAx8',
-    //   },
-    // });
-
-    // console.log('stopResponse.data ', stopResponse.data);
 
     const watchResponse = await googleCalendarClient.events.watch({
       requestBody: {
@@ -453,7 +488,16 @@ export class CalendarEventService {
       calendarId: googleLocalPrimaryCalendar.calendarId,
     });
 
-    console.log('watchResponse.data ', watchResponse.data);
+    const webhookResourceId = watchResponse.data.resourceId;
+    const webhookExpiration = +watchResponse.data.expiration;
+
+    const webhookChannel = new CalendarWebhookChannel();
+    webhookChannel.channelId = webhookResourceId;
+    webhookChannel.expirationDate = new Date(webhookExpiration);
+    webhookChannel.owner = user;
+    webhookChannel.eventType = CalendarTypeEnum.GoogleCalendar;
+
+    await calendarWebhookChannelRepo.save(webhookChannel);
   }
 
   async outlookEventWatcher(user: User, token, manager?: EntityManager) {
@@ -467,7 +511,7 @@ export class CalendarEventService {
         isPrimary: true,
       });
 
-    const tunnel = await localtunnel({
+    const tunnel = await locaTunnel({
       port: 3000,
     });
 
@@ -493,6 +537,13 @@ export class CalendarEventService {
       );
 
     console.log('watchResponse ', watchResponse);
+  }
+
+  async getWebhookByChannelId(channel: string | string[]) {
+    return this.calendarWebhookChannelRepository.findOne({
+      where: { channelId: channel },
+      relations: ['owner'],
+    });
   }
 
   private compareEvents(eventsFromDb, remoteEvents, eventIdProperty) {

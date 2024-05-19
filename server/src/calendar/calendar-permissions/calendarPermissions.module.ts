@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '@user/users.module';
 import { CalendarEventModule } from '../calendar-event/calendar-event.module';
+import { ClientsCredentialsModule } from '../clients-credentials/clients-credentials.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CalendarEventModule } from '../calendar-event/calendar-event.module';
     ConfigModule,
     UsersModule,
     forwardRef(() => CalendarEventModule),
+    ClientsCredentialsModule,
   ],
   controllers: [CalendarPermissionsController],
   providers: [CalendarPermissionsService],

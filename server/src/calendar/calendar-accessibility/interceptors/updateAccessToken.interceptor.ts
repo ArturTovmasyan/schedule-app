@@ -11,6 +11,7 @@ import { CalendarToken } from '../../calendar-permissions/entity/calendarToken.e
 import { Repository } from 'typeorm';
 import { CalendarPermissionsService } from '../../calendar-permissions/calendarPermissions.service';
 import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
+import { ClientsCredentialsService } from '../../clients-credentials/clients-credentials.service';
 
 @Injectable()
 export class UpdateAccessTokenInterceptor implements NestInterceptor {
@@ -18,6 +19,7 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
     @InjectRepository(CalendarToken)
     private readonly calendarTokenRepository: Repository<CalendarToken>,
     private readonly calendarPermissionsService: CalendarPermissionsService,
+    private readonly clientsCredentials: ClientsCredentialsService,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -34,14 +36,12 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
 
       for (const token of tokens) {
         if (token.calendarType === CalendarTypeEnum.GoogleCalendar) {
-          await this.calendarPermissionsService.googleOAuth2Client.setCredentials(
-            {
-              refresh_token: token.refreshToken,
-            },
-          );
+          await this.clientsCredentials.googleOAuth2Client.setCredentials({
+            refresh_token: token.refreshToken,
+          });
 
           const refreshRes =
-            await this.calendarPermissionsService.googleOAuth2Client.refreshAccessToken();
+            await this.clientsCredentials.googleOAuth2Client.refreshAccessToken();
 
           if (refreshRes.res.status !== 200) {
             throw new BadGatewayException();

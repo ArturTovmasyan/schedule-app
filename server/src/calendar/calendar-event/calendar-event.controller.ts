@@ -25,7 +25,7 @@ import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 @ApiTags('Calendar Event')
 @Controller('api/calendar/events')
 export class CalendarEventController {
-  constructor(private readonly calendarService: CalendarEventService) {}
+  constructor(private readonly calendarEventService: CalendarEventService) {}
 
   @Get()
   @UseGuards(AuthGuard())
@@ -34,7 +34,10 @@ export class CalendarEventController {
     @Req() req: { user: User },
     @Query() query: TimeIntervalDto,
   ) {
-    return await this.calendarService.getUserCalendarEvents(req.user, query);
+    return await this.calendarEventService.getUserCalendarEvents(
+      req.user,
+      query,
+    );
   }
 
   @Post()
@@ -44,7 +47,10 @@ export class CalendarEventController {
     @Req() req: { user: User },
     @Body() body: CreateEventDto,
   ) {
-    return await this.calendarService.createUserCalendarEvent(req.user, body);
+    return await this.calendarEventService.createUserCalendarEvent(
+      req.user,
+      body,
+    );
   }
 
   @Put(':id')
@@ -55,7 +61,7 @@ export class CalendarEventController {
     @Param('id') eventId: string,
     @Body() body: UpdateEventDto,
   ) {
-    return await this.calendarService.updateUserCalendarEvent(
+    return await this.calendarEventService.updateUserCalendarEvent(
       req.user,
       body,
       eventId,
@@ -69,7 +75,7 @@ export class CalendarEventController {
     @Req() req: { user: User },
     @Param('id') eventId: string,
   ) {
-    return await this.calendarService.deleteUserCalendarEvent(
+    return await this.calendarEventService.deleteUserCalendarEvent(
       req.user,
       eventId,
     );
@@ -78,9 +84,20 @@ export class CalendarEventController {
   @Post('google-webhook')
   // @UseGuards(AuthGuard())
   // @UseInterceptors(UpdateAccessTokenInterceptor)
-  async forGoogleWebhook(@Req() req: Request) {
-    console.log('req headers', req.headers);
-    // console.log('req route stack', req.route.stack);
+  async forGoogleWebhook(@Req() req: Request, @Res() res: Response) {
+    const resourceId = req.headers['x-goog-resource-id'];
+    const resourceState = req.headers['x-goog-resource-state'];
+
+    console.log('req.headers ', req.headers);
+
+    const webhook = await this.calendarEventService.getWebhookByChannelId(
+      resourceId,
+    );
+    await this.calendarEventService.syncGoogleCalendarEventList(webhook.owner);
+
+    if (resourceState === 'sync') {
+      return res.status(200).send();
+    }
   }
 
   @Post('outlook-webhook')
@@ -91,7 +108,7 @@ export class CalendarEventController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    // console.log('req ', req);
+    console.log('req ', req.body);
     // console.log('req route stack', req.route.stack);
 
     res.status(200);

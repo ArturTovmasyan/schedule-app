@@ -4,7 +4,6 @@ import { EntityManager, Repository } from 'typeorm';
 import { CalendarToken } from './entity/calendarToken.entity';
 import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { ConfigService } from '@nestjs/config';
-import { Auth, google } from 'googleapis';
 import * as msal from '@azure/msal-node';
 import { transactionManagerWrapper } from '../../components/helpers/dbTransactionManager';
 import { CalendarTypeEnum } from './enums/calendarType.enum';
@@ -13,10 +12,11 @@ import { ConfidentialClientApplication } from '@azure/msal-node/dist/client/Conf
 import { CryptoProvider } from '@azure/msal-node/dist/crypto/CryptoProvider';
 import { User } from '@user/entity/user.entity';
 import { CalendarEventService } from '../calendar-event/calendar-event.service';
+import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
 
 @Injectable()
 export class CalendarPermissionsService {
-  googleOAuth2Client: Auth.OAuth2Client;
+  // googleOAuth2Client: Auth.OAuth2Client;
   msalInstance: ConfidentialClientApplication;
   msalCryptoProvider: CryptoProvider;
 
@@ -24,20 +24,21 @@ export class CalendarPermissionsService {
     @InjectRepository(CalendarToken)
     private readonly calendarTokenRepository: Repository<CalendarToken>,
     private readonly configService: ConfigService,
-    private readonly calendarService: CalendarEventService,
+    private readonly calendarEventService: CalendarEventService,
+    private readonly clientsCredentials: ClientsCredentialsService,
   ) {
-    const googleClientID = this.configService.get<string>('GOOGLE_CLIENT_ID');
-    const googleClientSecret = this.configService.get<string>(
-      'GOOGLE_CLIENT_SECRET',
-    );
-    const googleClientURL = this.configService.get<string>(
-      'GOOGLE_CALENDAR_CALLBACK_URL',
-    );
-    this.googleOAuth2Client = new google.auth.OAuth2(
-      googleClientID,
-      googleClientSecret,
-      googleClientURL,
-    );
+    // const googleClientID = this.configService.get<string>('GOOGLE_CLIENT_ID');
+    // const googleClientSecret = this.configService.get<string>(
+    //   'GOOGLE_CLIENT_SECRET',
+    // );
+    // const googleClientURL = this.configService.get<string>(
+    //   'GOOGLE_CALENDAR_CALLBACK_URL',
+    // );
+    // this.googleOAuth2Client = new google.auth.OAuth2(
+    //   googleClientID,
+    //   googleClientSecret,
+    //   googleClientURL,
+    // );
 
     const msalConfig = {
       clientId: this.configService.get<string>('MICROSOFT_CLIENT_ID'),
@@ -69,16 +70,29 @@ export class CalendarPermissionsService {
       },
     });
 
+    console.log('existingTokens ', existingTokens);
+
     if (existingTokens?.refreshToken) {
-      const resRevokeToken = await this.googleOAuth2Client.revokeToken(
-        existingTokens.accessToken,
-      );
+      const resRevokeToken =
+        await this.clientsCredentials.googleOAuth2Client.revokeToken(
+          existingTokens.refreshToken,
+        );
 
       if (resRevokeToken.status === 200) {
-        await this.calendarTokenRepository.delete({
-          owner: { id: user.id },
-          calendarType: CalendarTypeEnum.GoogleCalendar,
-        });
+        await this.calendarTokenRepository.manager.transaction(
+          async (manager) => {
+            await manager.getRepository(CalendarToken).delete({
+              owner: { id: user.id },
+              calendarType: CalendarTypeEnum.GoogleCalendar,
+            });
+
+            await this.calendarEventService.stopGoogleWebhookChannel(
+              user,
+              existingTokens.accessToken,
+              manager,
+            );
+          },
+        );
       }
 
       statusOfCalendarsAndUrl.statusOfCalendars =
@@ -104,7 +118,8 @@ export class CalendarPermissionsService {
   async getTokensFromGoogleAndSave(user: User, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
-      const getTokenResponse = await this.googleOAuth2Client.getToken(code);
+      const getTokenResponse =
+        await this.clientsCredentials.googleOAuth2Client.getToken(code);
 
       if (getTokenResponse.res.status !== 200) {
         throw new BadGatewayException();
@@ -122,13 +137,12 @@ export class CalendarPermissionsService {
       };
 
       await calendarTokenRepository.save(calendarTokenBody);
-      await this.calendarService.googleEventWatcher(user, tokens, manager);
 
-      //
-      // await this.calendarService.getCalendarsFromGoogle(user, manager);
-      // await this.calendarService.syncGoogleCalendarEventList(user, manager);
-      //
-      // return this.getUserStatusOfCalendars(user.id, manager);
+      await this.calendarEventService.getCalendarsFromGoogle(user, manager);
+
+      await this.calendarEventService.googleEventWatcher(user, tokens, manager);
+
+      return this.getUserStatusOfCalendars(user.id, manager);
     });
   }
 
@@ -217,15 +231,15 @@ export class CalendarPermissionsService {
 
       this.msalInstance.clearCache();
 
-      await this.calendarService.getCalendarsFromOutlook(user, manager);
+      await this.calendarEventService.getCalendarsFromOutlook(user, manager);
 
-      await this.calendarService.outlookEventWatcher(
+      await this.calendarEventService.outlookEventWatcher(
         user,
         tokenResponse.accessToken,
         manager,
       );
 
-      // await this.calendarService.syncOutlookCalendarEventList(user, manager);
+      // await this.calendarEventService.syncOutlookCalendarEventList(user, manager);
       //
       // return this.getUserStatusOfCalendars(user.id, manager);
     });
