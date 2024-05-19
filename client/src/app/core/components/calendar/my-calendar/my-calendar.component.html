@@ -1,7 +1,4 @@
-<full-calendar id="calendar" #calendar [options]="calendarOptions"
-(eventMouseEnter)="handleEventMouseEnter($event)"
-      (eventMouseLeave)="handleEventMouseLeave($event)"
-[deepChangeDetection]="true">
+<full-calendar id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true">
     <ng-template #eventContent let-arg>
         <div>
             <span>{{arg.event.title ?? ''}}</span>
