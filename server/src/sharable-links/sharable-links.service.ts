@@ -326,6 +326,13 @@ export class SharableLinksService {
       .leftJoin(`sharableLink.slots`, 'slots')
       .where({ id })
       .getOne();
+
+    if (!data) {
+      throw new NotFoundException({
+        message: ErrorMessages.sharableLinkNotFound,
+      });
+    }
+
     return { data };
   }
 
