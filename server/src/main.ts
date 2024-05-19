@@ -5,6 +5,7 @@ import {ConfigService} from '@nestjs/config';
 import {ValidationPipe} from '@nestjs/common';
 import * as basicAuth from 'express-basic-auth';
 import {NestExpressApplication} from '@nestjs/platform-express';
+import * as morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
