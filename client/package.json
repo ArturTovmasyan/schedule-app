@@ -23,6 +23,7 @@
     "@azure/msal-angular": "^2.3.3",
     "@azure/msal-browser": "^2.27.0",
     "angular-imask": "^6.4.2",
+    "bootstrap": "^5.2.1",
     "font-awesome": "^4.7.0",
     "ng-http-loader": "^11.0.1",
     "rxjs": "~7.5.0",
