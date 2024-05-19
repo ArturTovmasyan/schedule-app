@@ -14,6 +14,7 @@
     border-radius: 20px;
     padding: 20px;
     position: relative;
+
     .calendar-header {
       a.invite-contacts {
         background-color: #FDFAB1;
@@ -27,6 +28,7 @@
         color: #000;
         border-radius: 30px;
         box-shadow: 0px 0px 4px #0000004D;
+
         &:hover {
           transition: 0.4s ease;
           background-color: #f1ec92;
@@ -70,23 +72,27 @@
           margin: 0 23px;
           position: relative;
           cursor: pointer;
+
           img {
             height: 32px;
           }
-          &:hover{
-            .counter{
+
+          &:hover {
+            .counter {
               transition: 0.4s ease;
               top: 1px;
               right: 1px;
               height: 18px;
               width: 18px;
               background-color: #b21313;
-              h6{
+
+              h6 {
                 font-size: 9px;
               }
             }
           }
-          .counter{
+
+          .counter {
             height: 17px;
             width: 17px;
             background-color: #FF3B3B;
@@ -97,7 +103,8 @@
             position: absolute;
             top: 0;
             right: 0;
-            h6{
+
+            h6 {
               color: #fff;
               font-size: 8px;
               font-family: 'Lexend Deca', sans-serif;
@@ -108,33 +115,100 @@
             }
           }
         }
-        a.user-profile{
-          cursor: pointer;
-          img{
-            height: 32px;
+        //Start Notification dropdown styles
+        .notification-dropdown {
+          .dropdown-toggle::after {
+            display: none;
+          }
+          .dropdown-menu{
+            border-radius: 10px;
+            --bs-dropdown-min-width: 300px;
+            --bs-dropdown-padding-y: 0;
+            height: 500px;
+            overflow: scroll;
+            padding: 15px;
+            border: 0;
+            box-shadow: 0px 0px 4px #0000004D;
           }
         }
+        //End of Start Notification dropdown styles
+
+        //Start Profile dropdown styles
+        .profile-dropdown {
+          .dropdown-toggle::after {
+            display: none;
+          }
+
+          .dropdown-menu {
+            border-radius: 5px;
+            --bs-dropdown-min-width: unset;
+            --bs-dropdown-padding-y: unset;
+            padding: 0;
+            box-shadow: 0px 0px 4px #0000004D;
+            border: 0;
+            .dropdown-item {
+              width: 90px;
+              text-align: left;
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 14px;
+              padding: 5px 10px;
+              text-align: left;
+
+              &:first-child {
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px;
+              }
+
+              &:nth-child(2) {
+                border-bottom-right-radius: 5px;
+                border-bottom-left-radius: 5px;
+              }
+
+              &:hover {
+                background-color: #E0F2FB;
+              }
+
+              & + .dropdown-item {
+                border-top: 1px solid #e3e3e3;
+              }
+            }
+          }
+
+          a.user-profile {
+            cursor: pointer;
+
+            img {
+              height: 32px;
+            }
+          }
+        }
+        //End of Profile dropdown styles
       }
     }
-    .calendar-footer{
+
+    .calendar-footer {
       width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
       bottom: 90px;
-      ul{
+
+      ul {
         display: flex;
         align-items: center;
         z-index: 2;
         position: relative;
-        li{
+
+        li {
           cursor: pointer;
           z-index: 2;
-          &+li{
+
+          & + li {
             margin-left: 20px;
           }
-          a{
+
+          a {
             min-height: 60px;
             padding: 15px;
             border-radius: 40px;
@@ -145,14 +219,17 @@
             align-items: center;
             text-decoration: none;
             box-shadow: 0px 0px 4px #0000004D;
-            &:active{
+
+            &:active {
               background-color: #E4F5FC;
             }
-            &:hover{
+
+            &:hover {
               transition: 0.4s ease;
               box-shadow: 0px 0px 9px #0000004D;
             }
-            span.text{
+
+            span.text {
               text-align: left;
               font-size: 12px;
               font-family: 'Lexend Deca', sans-serif;
@@ -163,23 +240,27 @@
               color: #000000;
               margin-right: 15px;
             }
-            span.icon{
+
+            span.icon {
               height: 100%;
               width: auto;
               display: flex;
               justify-content: center;
               align-items: center;
-              img{
+
+              img {
                 width: auto;
                 height: 30px;
               }
             }
           }
-          a.handshake{
+
+          a.handshake {
             width: 60px;
             padding: unset;
             justify-content: center;
-            img{
+
+            img {
 
               width: 44px !important;
 
