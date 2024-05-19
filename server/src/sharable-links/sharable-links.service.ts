@@ -281,6 +281,7 @@ export class SharableLinksService {
           ? `attendees.userId IN('${user.id}')`
           : 'sharableLink.id IS NULL',
       )
+      .orderBy('sharableLink.updatedOn', 'DESC')
       .limit(filters.limit)
       .offset(filters.offset)
       .getManyAndCount();
