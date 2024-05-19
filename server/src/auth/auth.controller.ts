@@ -113,13 +113,14 @@ export class AuthController {
   @Get('microsoft/callback')
   @UseGuards(AuthGuard('microsoft'))
   async msLoginCallback(@Req() req, @Res() res): Promise<any> {
-    const user: any = req.body;
+    const user: any = req.user;
+    const jwt = await this.authService.validateMicrosoftLogin(user);
+    const webHost = this.configService.get<string>('WEB_HOST');
 
-    if (user && user.id) {
-      const jwt = await this.authService.validateMicrosoftLogin(user);
-      if (jwt) {
-        return { accessToken: jwt };
-      }
+    if (isString(jwt)) {
+      res.redirect(webHost + 'oauth/success?token=' + jwt);
+    } else {
+      res.redirect(webHost + 'login');
     }
 
     @Post('register')
