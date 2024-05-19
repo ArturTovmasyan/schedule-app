@@ -6,6 +6,7 @@
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "build:prod": "ng build --configuration=production",
+    "build:staging": "ng build --configuration=staging",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "tsc --noEmit && eslint . --ext js,ts --quiet --fix"
