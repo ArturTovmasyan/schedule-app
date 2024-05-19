@@ -1,27 +1,37 @@
 .container {
+  height: 100%;
   display: flex;
-  padding: 50px 0px;
+  padding: 60px 170px 0px 0px;
 
   #left {
-    flex: 1;
+    width: 45%;
     display: flex;
     flex-direction: column;
 
     #message {
-      color: #0099BE;
+      color: #777777;
       max-width: 60%;
-      font-size: 1em;
-      line-height: 1.5em;
-      margin-left: 10px;
+      font-size: 19px;
+      line-height: 30px;
+      margin-left: 70px;
     }
 
     #image-container {
-      background-color: lightgrey;
-      height: 400px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column-reverse;
+
+      img {
+        object-fit: contain;
+        width: 100%;
+      }
     }
   }
 
+  #space {
+    flex-grow: 1;
+  }
+
   #right{
-    flex: 1;
   }
 }

@@ -7,13 +7,24 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 @Component({
   selector: 'lib-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   submitted = false;
   returnUrl: string;
   error = '';
+
+  emailError = ""
+  passwordError = ""
+
+  get hasPasswordError(): boolean {
+    return false
+  }
+
+  get hasEmailError(): boolean {
+    return false
+  }
 
   constructor(
     private formBuilder: FormBuilder,
