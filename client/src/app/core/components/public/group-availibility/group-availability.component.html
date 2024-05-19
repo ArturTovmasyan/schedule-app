@@ -35,7 +35,7 @@
         <div class="date-time-container">
           <ul class="list-unstyled list-inline">
             <li class="list-inline-item date">
-              <input formControlName="control" value="{{ componentData.selectedTimeSlot }}" style="display:none;"/>
+              <input value="{{ componentData.selectedTimeSlot }}" style="display:none;"/>
               <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}" readonly>
             </li>
             <li class="list-inline-item timeframe">
@@ -68,16 +68,29 @@
           <label for="yourPhoneNumber">Your phone number</label>
           <input type="text" class="form-control" id="yourPhoneNumber"
             placeholder="Please provide the phone number for the call" formControlName="phone">
+          <div *ngIf="f['phone'].invalid && (f['phone'].dirty || f['phone'].touched)">
+            <span class="error">
+              <i class="fa fa-exclamation-triangle"></i>Please add your phone
+            </span>
+          </div>
         </div>
         <div class="form-group mb-0">
           <label for="yourName">Your name</label>
           <input type="text" class="form-control" id="yourName" placeholder="Please type your name" formControlName="name">
-          <app-control-messages [control]="f['name']" [showRequiredErrors]="true"></app-control-messages>
+          <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)">
+            <span class="error">
+              <i class="fa fa-exclamation-triangle"></i>Please add your name
+            </span>
+          </div>
         </div>
         <div class="form-group mb-0">
           <label for="yourEmail">Your email</label>
           <input type="email" class="form-control" id="yourEmail" placeholder="Please provide your email and guest's emails" formControlName="email">
-          <app-control-messages [control]="f['email']" [showRequiredErrors]="true"></app-control-messages>
+          <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)">
+            <span class="error">
+              <i class="fa fa-exclamation-triangle"></i>Please add your email
+            </span>
+          </div>
         </div>
         <div class="form-group mb-0">
           <label for="optionalNotes">Optional notes</label>

@@ -225,7 +225,7 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'sharable-link',
+    path: 'share',
     loadChildren: () => import('./core/components/public/public.module').then(m => m.PublicCalendarModule)
   },
   {

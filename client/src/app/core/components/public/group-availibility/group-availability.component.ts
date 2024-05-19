@@ -115,6 +115,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   attendees: any;
   location: Location | undefined;
   form!: FormGroup;
+  selectedSlot: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -138,6 +139,9 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
         console.log(data, 'dataaaa');
         // location
         this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
+        if (data['meetVia'] == MeetViaEnum.InboundCall) {
+          this.addValidation('phone');
+        }
         const datas = [];
         for (const date of data.slots) {
           datas.push({
@@ -169,8 +173,22 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
 
   submit() {
     if (!this.form.valid){
+      this.form.markAllAsTouched();
       return;
     }
+    const formData = this.form.value;
+    formData['selectedTimeslot'] = this.componentData.selectedTimeSlot;
+    return;
+  }
+
+  addValidation(controlName: string) {
+    this.form.controls[controlName].setValidators(Validators.required);
+    this.form.controls[controlName].updateValueAndValidity();
+  }
+
+  removeValidation(controlName: string) {
+    this.form.controls[controlName].clearValidators();
+    this.form.controls[controlName].updateValueAndValidity();
   }
 
   ngOnDestroy(): void {

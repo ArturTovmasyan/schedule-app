@@ -12,7 +12,7 @@ import { MeetViaEnum } from '../enums/sharable-links.enum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarPermissionService } from 'src/app/core/services/calendar/permission.service';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
-
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-sharable-link',
   templateUrl: './sharable-link.component.html',
@@ -155,7 +155,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           this.choosedLocationObj = this.locations.find((loc) => loc.value == res.data.meetVia) as Location;
-          this.sharableLink = res.data.id;
+          this.sharableLink = `${environment.host}share/${res.data.id}`;
           for (const date of res.data.slots) {
             const startdate = moment.utc(date.startDate).local().format('ddd, MMM Do');
             if (this.selectedDates[startdate]) {
