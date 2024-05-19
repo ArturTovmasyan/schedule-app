@@ -1,9 +1,9 @@
 #container {
   height: 80px;
-  border: 1px solid rgba(229, 229, 229, 0.78);
   background-color: white;
   border-radius: 6px;
   display: flex;
+  align-items: center;
 
   button {
     cursor: pointer;
@@ -15,25 +15,27 @@
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    padding: 10px;
+    padding: 15px;
     box-sizing: border-box;
-    padding-left: 20px;
+    border: 1px solid #B7B7B7;
+    border-radius: 7px;
+    margin-right: 10px;
 
     span.input {
       flex-grow: 1;
-      font-size: 19px;
+      font-size: 26px;
       line-height: 28px;
       color: black;
       letter-spacing: -0.22px;
-      font-weight: 400;
-      font-family: 'Lexend Deca', sans-serif;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(229, 229, 229, 0.78);
-      &:active{
+      font-weight: 500;
+      font-family: 'Open Sans', sans-serif;
+
+      &:active {
         text-decoration: none;
         outline: none;
       }
-      &:focus{
+
+      &:focus {
         text-decoration: none;
         outline: none;
       }
@@ -105,25 +107,34 @@
   #meridian {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 10px;
+    justify-content: center;
     box-sizing: border-box;
-    padding-right: 20px;
+    border-radius: 7px;
+    border: 1px solid #79717124;
+    height: fit-content;
 
     button {
-      font-size: 13px;
-      line-height: 19px;
+      font-size: 16px;
+      line-height: 22px;
       color: #B7B7B7;
       font-weight: normal;
-      padding: 2px 7px;
+      padding: 6px 13px;
       background-color: white;
-      border-radius: 6px;
-      border: 1px solid rgba(229, 229, 229, 0.78);
+      border: 0;
+
+      &:first-child {
+        border-top-right-radius: 7px;
+        border-top-left-radius: 7px;
+      }
+
+      &:nth-child(2) {
+        border-bottom-right-radius: 7px;
+        border-bottom-left-radius: 7px;
+      }
 
       &.checked {
-        background-color: #E5F4FC;
-        border: 1px solid #E5F4FC;
-        color: #000;
+        background-color: #11A4F4;
+        color: #fff;
       }
     }
   }

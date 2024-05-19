@@ -1,16 +1,18 @@
 <section class="contacts" id="contacts">
   <div class="header">
-    <h2 class="section-title text-center">
-      Contacts
-    </h2>
-    <button class="close-button" (click)="close()">
-      <img src="assets/close-icon.svg" alt="close button">
-    </button>
+    <h3>ENTANGLES</h3>
+    <label id="title">Contacts</label>
   </div>
   <div class="contacts-wrapper">
     <label>
-      <input type="text" placeholder="Search by name, company, or email ..." id="searchContactInput" (input)="onSearchUpdate($event)">
+      <input type="text" placeholder="Search ..." id="searchContactInput" (input)="onSearchUpdate($event)">
     </label>
+    <a class="invite-contacts" id="inviteContacts" routerLink="/calendar/invite" >
+      <img src="assets/invite-contacts-icon.png" alt="invite friends">
+      <p>
+        Invite Contacts
+      </p>
+    </a>
     <ul class="list-unstyled contacts-list" id="contactsList">
       <li id="contactListItem" *ngFor="let item of filteredData">
         <app-contact-item [contact]="item"></app-contact-item>

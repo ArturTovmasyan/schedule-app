@@ -2,16 +2,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30px;
-  width: 30px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
+
 
   a.user-profile {
     text-decoration: none;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 56px;
+    width: 56px;
+    border-radius: 50%;
+    border: 1px solid #7070703B;
+    cursor: pointer;
   }
 
   span {

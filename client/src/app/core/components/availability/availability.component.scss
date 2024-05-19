@@ -1,16 +1,15 @@
 
 section.availability {
-  padding-top: 15%;
+  padding-top: 10%;
 
 
   #availabilityWrapper {
 
-    background-color: white;
-    border-radius: 20px;
-    width: 60%;
+
+
+    width: 90%;
     margin: 0 auto;
     position: relative;
-    box-shadow: 0px 0px 8px #00000029;
 
     label.header {
       font-family: 'Lexend Deca', sans-serif;
@@ -26,19 +25,17 @@ section.availability {
 
     #clockType, #hours, #days {
       padding: 20px 40px;
-
+      background-color: white;
+      border-radius: 10px;
       .section-header {
-        font-family: 'Lexend Deca', sans-serif;
-        font-size: 21px;
-        font-weight: bold;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
         color: #000;
-        margin-bottom: 15px;
+        margin-bottom: 22px;
       }
     }
 
-    #clockType, #hours {
-      border-bottom: 1px solid rgba(229, 229, 229, 0.78);
-    }
 
     #clockType {
       .radio-group {
@@ -55,7 +52,7 @@ section.availability {
       display: flex;
       flex-direction: column;
       padding-bottom: 30px;
-
+      margin: 20px 0;
       .picker {
         button {
           display: none;
@@ -67,28 +64,20 @@ section.availability {
         display: flex;
         gap: 40px;
 
-        label.header-small {
-          font-size: 13px;
-          font-family: 'Lexend Deca', sans-serif;
-          margin-bottom: 0;
-          font-weight: bold;
-        }
-
-
         #range {
           display: flex;
           gap: 10px;
           align-items: center;
 
-          .hours-middle-line {
-            width: 15px;
-            height: 2px;
-            background-color: #4f4d4d;
+          .hours-middle-text {;
+            font-family: 'Open Sans', sans-serif;
+            font-style: italic;
+            font-size: 21px;
+            color: #645F5F;
             margin: 0 20px;
-            margin-top: 30px;
           }
 
-          div.time {
+          .time {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -109,6 +98,30 @@ section.availability {
 
         button + button {
           margin-left: 10px;
+        }
+        button{
+          font-size: 25px;
+          font-family: 'Open Sans', sans-serif;
+          background-color: #D3D3D3;
+          border-radius: 4px;
+          padding: 7px 28px;
+          font-weight: 300;
+          border: 1px solid #D3D3D3;
+          color: #000000;
+          &.checked{
+            background-color: transparent;
+            border: 1px solid #11A4F4;
+          }
+        }
+      }
+      #message {
+        margin-top: 26px;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 16px;
+        color: #717171;
+        span {
+         color: #11A4F4;
+
         }
       }
     }
@@ -142,38 +155,27 @@ section.availability {
   }
 
   button {
-    font-size: 14px;
+    font-size: 16px;
     color: #000;
-    font-weight: 400;
+    font-weight: 600;
     padding: 8px 14px;
-    background-color: white;
-    border-radius: 7px;
-    border: 1px solid rgba(229, 229, 229, 0.78);
-
+    background-color: #D4D4D47F;
+    border-radius: 4px;
+    border: 1px solid #D4D4D47F;
+    font-family: 'Open Sans', sans-serif;
     span {
       font-weight: 700;
     }
 
     &.checked {
-      background-color: #E5F4FC;
-      border: 1px solid #E5F4FC;
+      background-color: #E9F6FD;
+      border: 1px solid #E9F6FD;
+      color: #11A4F4;
     }
 
   }
 
-  #message {
-    margin-top: 15px;
-    text-align: center;
-    padding-bottom: 20px;
 
-    span {
-      color: #717171;
-      font-size: 15px;
-      font-weight: 300;
-      font-family: 'Lexend Deca', sans-serif;
-
-    }
-  }
 }
 
 

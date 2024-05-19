@@ -1,10 +1,18 @@
 a.notifications {
-  margin: 0 23px;
+  margin: 0 29px 0 40px;
   position: relative;
   cursor: pointer;
-
+  min-height: 56px;
+  min-width: 56px;
+  background-color: #fff;
+  display: block;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #7070703B;
   img {
-    height: 26px;
+    height: 23px;
   }
 
   &:hover {

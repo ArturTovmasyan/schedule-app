@@ -1,8 +1,8 @@
 <section class="settings">
   <div class="container-fluid h-100">
     <div id="content">
-      <div class="row h-100">
-        <div class="col-12 col-sm-3 h-100" style="width: 20%">
+      <div class="row no-gutters h-100">
+        <div class="col-12 col-sm-3 p-0 h-100" style="width: 20%">
           <div class="aside-navbar">
             <div class="aside-navbar-header">
               <label id="title">{{ setting_title }}</label>
@@ -16,22 +16,19 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-sm-9 ps-0 h-100" style="width: 80%">
+        <div class="col-12 col-sm-9 p-0 h-100" style="width: 80%">
           <div class="setting-content">
             <div id="menu-content">
 
               <router-outlet></router-outlet>
               <div class="go-to-calendar-button">
                 <a routerLink="/calendar/contacts">
-                  Go to calendar <img src="assets/chevron-right.png" alt="chevron right">
+                 <img src="assets/chevron-right.png" alt="chevron right">
                 </a>
               </div>
             </div>
 
             <div class="settings-footer-component">
-              <div class="copyright">
-                Made with <img src="assets/heart.png" alt="heart"> by Entangles. All rights reserved.
-              </div>
               <div id="nav">
                 <div id="nav-social">
                   <a href="javascript:void(0)"><img src="assets/ic_footer_nav_facebook.svg" alt="facebook"></a>
@@ -46,6 +43,9 @@
                   <a href="javascript:void(0)">Contact</a>
                   <a routerLink="/terms-conditions">Terms of use</a>
                   <a routerLink="/privacy-policy">Privacy policy</a>
+                </div>
+                <div class="copyright">
+                  Made with <img src="assets/heart.png" alt="heart"> by Entangles. All rights reserved.
                 </div>
               </div>
             </div>

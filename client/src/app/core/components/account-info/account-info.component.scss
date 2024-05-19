@@ -1,68 +1,62 @@
 section.upload-picture {
-  padding-top: 15%;
+  padding-top: 10%;
 
 
   .upload-picture-wrapper {
     background-color: white;
-    border-radius: 20px;
-    width: 60%;
+    border-radius: 10px;
+    width: 90%;
     margin: 0 auto;
     position: relative;
-    box-shadow: 0px 0px 8px #00000029;
-
 
     label.header {
-      font-family: 'Lexend Deca', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 24px;
       color: #000;
-      padding: 10px 30px;
-      background-color: #E5F4FC;
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
+      padding: 37px 68px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
       width: 100%;
     }
 
-    .upload-picture-body {
-      padding: 15px 45px 40px 45px;
-
-      h2.section-title {
-        margin-bottom: 20px;
-        font-size: 21px;
-        font-family: 'Lexend Deca', sans-serif;
-        font-weight: bold;
-
-      }
+    .upload-picture-header {
+      padding: 15px 68px 60px 68px;
 
       .profile-picture {
         display: flex;
         align-items: center;
 
         .profile-avatar {
-          margin-right: 20px;
+          margin-right: 38px;
 
           img {
-            height: 100px;
-            width: 100px;
+            height: 92px;
+            width: 92px;
             border-radius: 50%;
           }
         }
 
         .profile-picture-input {
+          border: 1px dashed #70707040;
+          padding: 11px 38px 8px 38px;
+          text-align: center;
+
           label {
             cursor: pointer;
             display: flex;
+            flex-direction: column;
             align-items: center;
 
             img {
-              margin-right: 15px;
-              height: 30px;
+              margin-bottom: 5px;
+              height: 20px;
             }
 
             h5 {
-              font-family: 'Lexend Deca', sans-serif;
+              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
-              color: #646565;
+              color: #000000;
               margin-bottom: 0;
             }
 
@@ -75,10 +69,12 @@ section.upload-picture {
             margin-top: 10px;
 
             h6 {
-              font-family: 'Lexend Deca', sans-serif;
-              font-size: 12px;
-              color: #646565;
+              font-family: 'Open Sans', sans-serif;
+              font-style: italic;
+              font-size: 13px;
+              color: #000000;
               font-weight: 300;
+              margin-bottom: 0;
             }
           }
 
@@ -86,24 +82,43 @@ section.upload-picture {
 
       }
 
+      border-bottom: 2px dashed #eee;
+    }
+
+    .upload-picture-body {
+      padding: 0px 68px 170px 68px;
+
+      h2.section-title {
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 600;
+      }
+
+      .profile-user-name {
+        display: flex;
+        flex-direction: row;
+
+        .last-name{
+          margin-left: 29px;
+        }
+      }
+
       .profile-user-name, .profile-email {
-        border-top: 1px solid #64656524;
         padding-top: 25px;
-        margin-top: 30px;
 
         h5 {
-          font-size: 15px;
-          font-family: 'Lexend Deca', sans-serif;
+          font-size: 16px;
+          font-family: 'Open Sans', sans-serif;
           color: #747474;
-          border: 1px solid #6465659c;
-          font-weight: 400;
-          padding: 11px 16px;
-          border-radius: 16px;
-          width: fit-content;
+          border: 1px solid #70707024;
+          font-weight: 600;
+          padding: 19px;
+          border-radius: 4px;
+          width: 350px;
         }
       }
     }
-
   }
 
 

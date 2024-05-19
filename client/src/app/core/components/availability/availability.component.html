@@ -1,15 +1,15 @@
 <section class="availability">
 
   <div id="availabilityWrapper">
-    <label class="header">What are your working hours?</label>
+
     <div id="clockType">
       <label class="section-header">Clock type</label>
       <div class="radio-group">
         <button id="type-normal" [ngClass]="meridian ? 'checked' : ''"
-                (click)="onClockTypeChanged(ClockType.NORMAL)"><span>AM/PM</span> View
+                (click)="onClockTypeChanged(ClockType.NORMAL)"><span>AM/PM</span>
         </button>
         <button id="type-millitary" [ngClass]="!meridian ? 'checked' : ''"
-                (click)="onClockTypeChanged(ClockType.MILITARY)"><span>24 Hour</span> View
+                (click)="onClockTypeChanged(ClockType.MILITARY)"><span>24 Hour</span>
         </button>
       </div>
     </div>
@@ -20,12 +20,10 @@
       <div id="content">
         <div id="range">
           <div class="time">
-            <label class="header-small">From</label>
             <app-timepicker [meridian]="meridian" [(time)]="fromText" [(inAM)]="isFromAM"></app-timepicker>
           </div>
-          <div class="hours-middle-line"></div>
+          <div class="hours-middle-text">to</div>
           <div class="time">
-            <label class="header-small">To</label>
             <app-timepicker [meridian]="meridian" [(time)]="toText" [(inAM)]="isToAM"></app-timepicker>
           </div>
         </div>
@@ -51,7 +49,11 @@
         <button [ngClass]="tempAvailability.sunday ? 'checked' : ''"
                 (click)="toggleDaySelection(Day.SUN)">{{ Day.SUN }}</button>
       </div>
+      <div id="message">
+        Don’t worry. You can always adjust later in your<span> Settings.</span>
+      </div>
     </div>
+<<<<<<< HEAD
     <div id="message">
       <span>Don’t worry. You can always adjust later in your Settings.</span>
     </div>
@@ -63,6 +65,9 @@
 <!--        Next <img src="assets/chevron-right.png" alt="chevron right">-->
 <!--      </a>-->
 <!--    </div>-->
+=======
+
+>>>>>>> 159a92b (“redesign”)
   </div>
 </section>
 

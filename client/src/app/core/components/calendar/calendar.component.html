@@ -1,21 +1,21 @@
 <div class="container-fluid" id="container">
   <div class="row h-100">
-    <div class="h-100 text-center" [style.display]="displayStyle" [ngClass]="!calendarFullSize ? 'col-12 col-sm-3' : ''" id="calendarLeftSide">
+    <div class="h-100 text-center" [style.display]="displayStyle" [ngClass]="!calendarFullSize ? 'col-12 col-sm-3 p-0' : ''" id="calendarLeftSide">
       <div class="content" id="left-menu">
         <section style="height: 100%">
           <router-outlet></router-outlet>
         </section>
       </div>
     </div>
-    <div class="col-12 h-100 text-center" [ngClass]="!calendarFullSize ? 'col-sm-9 ps-0' : ''" id="calendarRightSide">
+    <div class="col-12 h-100 text-center" [ngClass]="!calendarFullSize ? 'col-sm-9 p-0' : ''" id="calendarRightSide">
       <div class="calendar" id="calendar">
         <div class="calendar-header d-flex justify-content-between">
-          <a class="invite-contacts" id="inviteContacts" routerLink="/calendar/invite" (click)="openLeftMenu()">
-            <img src="assets/invite-contacts-icon.svg" alt="invite friends">
-            <p>
-              Invite <br> Contacts
-            </p>
-          </a>
+<!--          <a class="invite-contacts" id="inviteContacts" routerLink="/calendar/invite" (click)="openLeftMenu()">-->
+<!--            <img src="assets/invite-contacts-icon.svg" alt="invite friends">-->
+<!--            <p>-->
+<!--              Invite <br> Contacts-->
+<!--            </p>-->
+<!--          </a>-->
 
           <div class="account-info">
             <div class="timezone">
