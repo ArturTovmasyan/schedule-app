@@ -43,15 +43,9 @@
           Attendees
         </h3>
 
-        <ng-multiselect-dropdown
-          formControlName="attendees"
-          [placeholder]="'Select Attendees'"
-          [settings]="dropdownSettings"
-          [data]="attendeesOptions"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onRemoveItem($event)"
-          [(ngModel)]="selectedAttendees"
-        >
+        <ng-multiselect-dropdown formControlName="attendees" [placeholder]="'Select Attendees'"
+          [settings]="dropdownSettings" [data]="attendeesOptions" (onSelect)="onItemSelect($event)"
+          (onDeSelect)="onRemoveItem($event)" [(ngModel)]="selectedAttendees">
         </ng-multiselect-dropdown>
 
       </div>
@@ -59,9 +53,7 @@
         <h3 class="section-title-secondary">
           Optional
         </h3>
-        <app-chip-email-input
-          [emails]="data.optionalAttendees ?? []"
-          (hasError)="updateFieldError($event)"
+        <app-chip-email-input [emails]="data.optionalAttendees ?? []" (hasError)="updateFieldError($event)"
           (emailUpdateEvent)="updateOptionalAttendeeEmails($event)">
         </app-chip-email-input>
       </div>
@@ -76,10 +68,10 @@
             </li>
             <li class="list-inline-item timeframe">
               <input type="text" id="meetingStartTime" name="meetingStartTime"
-                     placeholder="{{ this.data.start | parseTime:'hh:mmA' }}" readonly>
+                placeholder="{{ this.data.start | parseTime:'hh:mmA' }}" readonly>
               <p> - </p>
               <input type="text" id="meetingEndTime" name="meetingEndTime"
-                     placeholder="{{ this.data.end | parseTime:'hh:mmA' }}" readonly>
+                placeholder="{{ this.data.end | parseTime:'hh:mmA' }}" readonly>
             </li>
             <li class="list-inline-item timezone">
               <span id="timezoneText">{{ timezone }}</span>
@@ -88,8 +80,8 @@
         </div>
         <div class="save-to-calendar">
           <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img
-            [src]="getCalendarIcon(selectedCalendar?.calendarType ?? null)"
-            alt="calendar icon"> {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
+                [src]="getCalendarIcon(selectedCalendar?.calendarType ?? null)" alt="calendar icon">
+              {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
           <div id="calendar-dropdown" *ngIf="showCalendars">
             <span *ngFor="let calendar of myCalendars" (click)="selectCalendar(calendar)">
               <img [src]="getCalendarIcon(calendar?.calendarType ?? null)" alt="calendar icon"> {{ calendar.summary }}
@@ -102,15 +94,16 @@
           Location
         </h3>
         <input class="form-control" type="text" name="meetingLocation" formControlName="meetingLocation"
-               id="meetingLocation" placeholder="">
-        <app-control-messages [control]="f['meetingLocation']" [showRequiredErrors]="showRequiredErrors"></app-control-messages>
+          id="meetingLocation" placeholder="">
+        <app-control-messages [control]="f['meetingLocation']" [showRequiredErrors]="showRequiredErrors">
+        </app-control-messages>
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">
           Text
         </h3>
         <textarea class="form-control" name="customMessage" id="customMessage" style="resize: none"
-                  placeholder="Add your message here..."></textarea>
+          placeholder="Add your message here..."></textarea>
       </div>
       <div class="d-flex justify-content-end">
         <button class="send-request" [disabled]="!selectEvent">
@@ -119,7 +112,7 @@
       </div>
 
       <span class="error" *ngFor="let errorMessage of errorMessages">
-           <i class="fa fa-exclamation-triangle"></i>{{errorMessage}}
+        <i class="fa fa-exclamation-triangle"></i>{{errorMessage}}
       </span>
 
     </fieldset>
