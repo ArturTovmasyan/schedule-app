@@ -310,10 +310,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.sharableLinkService.createLink(requestParams)
       .subscribe({
         next: (res: any) => {
-          if (res.status) {
+          if (res.metadata.id) {
             if (localStorage.getItem('savedData')) localStorage.removeItem('savedData');
-
-            this.sharableLink = `https://entangles.io/share/${res.data.id}`;
+            this.sharableLink = `https://entangles.io/share/${res.metadata.id}`;
           }
         },
         error: (error) => {
