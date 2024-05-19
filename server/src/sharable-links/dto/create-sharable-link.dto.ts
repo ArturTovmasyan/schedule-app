@@ -19,7 +19,7 @@ import {
   IPaginate,
   ISharableLinkSlot,
 } from '../interfaces/sharable-links.interface';
-import { FindLinkByEnum, MeetViaEnum } from '../enums/sharable-links.enum';
+import { MeetViaEnum } from '../enums/sharable-links.enum';
 
 export class CreateSharableLinkDto {
   @ApiProperty({ required: false })

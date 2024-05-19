@@ -15,12 +15,11 @@ import { PaymentModule } from './payment/payment.module';
     AuthModule,
     AvailabilityModule,
     ConfigModule.forRoot({
-      isGlobal: false,
+      isGlobal: true,
       expandVariables: true,
       load: [AppConfig],
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         return configService.get<ConnectionOptions>('database');
       },

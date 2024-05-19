@@ -4,7 +4,6 @@ import { CalendarPermissionsService } from './calendarPermissions.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CalendarToken } from './entity/calendarToken.entity';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '@user/users.module';
 import { CalendarEventModule } from '../calendar-event/calendar-event.module';
 import { ClientsCredentialsModule } from '../clients-credentials/clients-credentials.module';
@@ -13,7 +12,6 @@ import { ClientsCredentialsModule } from '../clients-credentials/clients-credent
   imports: [
     TypeOrmModule.forFeature([CalendarToken]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    ConfigModule,
     UsersModule,
     forwardRef(() => CalendarEventModule),
     ClientsCredentialsModule,

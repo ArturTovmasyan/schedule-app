@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
@@ -14,7 +13,6 @@ import { User } from '@user/entity/user.entity';
   imports: [
     MailModule,
     NotificationsModule,
-    ConfigModule.forRoot(),
     TypeOrmModule.forFeature([CalendarAccess, User]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],

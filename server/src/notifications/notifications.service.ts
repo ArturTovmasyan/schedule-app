@@ -125,7 +125,7 @@ export class NotificationsService {
    * @returns `Array of NotificationsEntity data where viewed = false`
    */
 
-   async findAllPending(user: User): Promise<IResponse<NotificationsEntity[]>> {
+  async findAllPending(user: User): Promise<IResponse<NotificationsEntity[]>> {
     const [data, total] = await this.notificationsRepo
       .createQueryBuilder('notification')
       .select([
@@ -135,7 +135,12 @@ export class NotificationsService {
         'notification.createdOn',
       ])
       .leftJoin('notification.sender', 'sender')
-      .addSelect(['sender.id', 'sender.firstName', 'sender.lastName', 'sender.avatar'])
+      .addSelect([
+        'sender.id',
+        'sender.firstName',
+        'sender.lastName',
+        'sender.avatar',
+      ])
       .leftJoin('notification.accessRequest', 'accessRequest')
       .addSelect([
         'accessRequest.id',

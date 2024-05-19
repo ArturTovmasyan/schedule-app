@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
@@ -16,7 +15,6 @@ import { Invitation } from 'src/invitation/entities/invitation.entity';
     CalendarEventModule,
     TypeOrmModule.forFeature([User, CalendarEvent, Invitation]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    ConfigModule,
     ClientsCredentialsModule,
   ],
   controllers: [ContactsController],

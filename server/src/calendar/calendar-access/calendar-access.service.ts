@@ -45,11 +45,11 @@ export class CalendarAccessService {
       });
     }
 
+    await this.checkAccess(user, createCalendarAccessDto.toEmails);
+
     const findUsersByEmail = await this.userRepo.find({
       where: { email: In(createCalendarAccessDto.toEmails) },
     });
-
-    await this.checkAccess(user, createCalendarAccessDto.toEmails);
 
     const bulkData: DeepPartial<CalendarAccess>[] = [];
 
