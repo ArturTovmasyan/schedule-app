@@ -277,7 +277,7 @@
         }
 
         .users-container {
-          border-radius: 12px;
+          border-radius: 8px;
           border: 1px solid #d8d8d8;
           padding: 12px;
           text-align: left;
@@ -532,7 +532,7 @@
           .input-field {
             display: flex;
             justify-content: flex-start;
-            align-items: center;
+            align-items: start;
             flex-direction: column;
             gap: 0.5rem;
           }

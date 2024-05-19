@@ -1,12 +1,13 @@
 <section class="sidebar" id="groupAvailability">
   <div class="header">
-    <h2 class="section-title text-center">
-      Group availability
-    </h2>
+    <h3>
+      ENTANGLES
+    </h3>
+    <label id="title">Group Availabillity</label>
   </div>
   <div class="sidebar-content">
     <form action="" [formGroup]="form" (ngSubmit)="submit()">
-      <div class="users-container">
+      <div class="users-container mb-20">
         <ul class="users-list list-unstyled list-inline">
           <li class="list-inline-item user-info" *ngFor="let att of attendees">
             <div class="user-info-wrapper">
@@ -23,6 +24,10 @@
             </div>
           </li>
         </ul>
+      </div>
+      <div class="meeting-title-container mb-20">
+        <h3 class="section-title-secondary"> Meeting title </h3>
+        <div>{{ meetingTitle }}</div>
       </div>
       <div class="calendar-sidebar mb-20" [style.display]="componentData.isTimeslotSelected ? 'none' : ''">
         <h3 class="section-title-secondary">

@@ -1,8 +1,9 @@
 <section class="sidebar">
   <div class="header">
-    <h2 class="section-title text-center">
-      Group availability
-    </h2>
+    <h3>
+      ENTANGLES
+    </h3>
+    <label id="title">Group Availabillity</label>
   </div>
   <div class="sidebar-content">
     <form action="" [formGroup]="form" (ngSubmit)="cancelMeeting()">
@@ -21,6 +22,10 @@
             </div>
           </li>
         </ul>
+      </div>
+      <div class="meeting-title-container mb-20">
+        <h3 class="section-title-secondary"> Meeting title </h3>
+        <div>{{ meetingTitle }}</div>
       </div>
       <div class="calendar-sidebar mb-20">
         <h3 class="section-title-secondary">

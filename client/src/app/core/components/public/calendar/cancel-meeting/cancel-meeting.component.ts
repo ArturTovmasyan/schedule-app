@@ -37,6 +37,7 @@ export class CancelMeetingComponent extends PublicSidebarCalendarComponent imple
   form!: FormGroup;
   selectedSlot: any;
   errorMessage = '';
+  meetingTitle!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -104,7 +105,7 @@ export class CancelMeetingComponent extends PublicSidebarCalendarComponent imple
         }
         this.calendarApi.gotoDate(this.componentData.selectedTimeSlot.start);
         this.calendarService.selectedWeek.next(this.componentData.selectedTimeSlot.start);
-        
+        this.meetingTitle = data?.title;
       });
   }
 

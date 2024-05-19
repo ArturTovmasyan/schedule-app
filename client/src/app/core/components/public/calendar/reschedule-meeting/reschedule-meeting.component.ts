@@ -44,6 +44,7 @@ export class RescheduleMeetingComponent extends PublicSidebarCalendarComponent i
   location: Location | undefined;
   form!: FormGroup;
   selectedSlot: any;
+  meetingTitle!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -105,6 +106,7 @@ export class RescheduleMeetingComponent extends PublicSidebarCalendarComponent i
             user: data.user
           }];
         }
+        this.meetingTitle = data?.title;
       });
 
       this.onTimeSlotSelected();
