@@ -40,4 +40,175 @@ section.invite-friends {
     }
   }
 
+  .body {
+    margin-top: 30px;
+
+    h6 {
+      text-align: left;
+      font-family: 'Lexend Deca', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    form {
+
+
+      margin-top: 20px;
+
+      .form-wrapper {
+        border: 1px solid #e3dddd;
+        padding: 15px 15px 20px 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        .form-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 25px;
+
+          .avatar {
+            border-radius: 50%;
+            border: 1px solid #989898;
+            height: 40px;
+            width: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+
+            img {
+              height: 24px;
+            }
+          }
+
+          h5 {
+            font-family: 'Lexend Deca', sans-serif;
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 0;
+          }
+        }
+
+        .form-body {
+          .checkbox-wrapper {
+            display: flex;
+            align-items: start;
+
+            & + .checkbox-wrapper {
+              margin-top: 15px;
+            }
+
+            input {
+              margin-right: 10px;
+              border-radius: 2px;
+              height: 18px;
+              width: 18px;
+              border: 1px solid #989898;
+              margin-top: 2px;
+
+              &:checked {
+                background-color: transparent;
+              }
+            }
+
+            input[type=checkbox]::before {
+              width: 10px;
+              height: 10px;
+              box-shadow: inset 1em 1em #989898;
+            }
+
+            label {
+              font-size: 14px;
+              font-family: 'Lexend Deca', sans-serif;
+              text-align: left;
+              font-weight: 300;
+              color: #989898;
+            }
+          }
+
+          .save-event {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+
+            p {
+              font-size: 13px;
+              font-family: 'Lexend Deca', sans-serif;
+              margin-bottom: 0;
+              margin-right: 5px;
+            }
+
+            select {
+              border: 0;
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 13px;
+              margin-bottom: 1px;
+              cursor: pointer;
+
+              &:focus, &:active {
+                outline: none;
+                text-decoration: none;
+              }
+
+              option {
+                font-family: 'Lexend Deca', sans-serif;
+                font-size: 13px;
+
+                p {
+                  font-family: 'Lexend Deca', sans-serif;
+                  font-size: 13px;
+                }
+              }
+            }
+
+          }
+        }
+
+
+      }
+      button.invite-button {
+        background: #47B8F6;
+        border-radius: 33px;
+        padding: 5px 10px;
+        border: 0;
+        color: #fff;
+        font-size: 16px;
+        font-family: 'Lexend Deca', sans-serif;
+
+        &:hover {
+          background-color: #1d97dc;
+          transition: 0.4s ease;
+        }
+      }
+    }
+  }
+  .invitation-success{
+    margin-top: 50px;
+    .wrapper{
+      border: 1px solid #e3dddd;
+      padding: 25px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      h6 {
+        text-align: center;
+        font-family: 'Lexend Deca', sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+      }
+    }
+    button.invite-button {
+      background: #47B8F6;
+      border-radius: 33px;
+      padding: 5px 10px;
+      border: 0;
+      color: #fff;
+      font-size: 16px;
+      font-family: 'Lexend Deca', sans-serif;
+
+      &:hover {
+        background-color: #1d97dc;
+        transition: 0.4s ease;
+      }
+    }
+  }
 }

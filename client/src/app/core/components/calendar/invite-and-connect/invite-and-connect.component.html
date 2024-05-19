@@ -4,8 +4,70 @@
       Invite and connect
     </h2>
     <button class="close-button" id="closeButton">
-      <img src="assets/close-icon.svg" alt="close button" >
+      <img src="assets/close-icon.svg" alt="close button">
     </button>
   </div>
+  <div class="body">
+    <h6>
+      You frequently meet with this person, invite and connect with example@gmail.com for easier scheduling
+    </h6>
+    <form action="">
+      <div class="form-wrapper">
+        <div class="form-header">
+          <div class="avatar">
+            <img src="assets/user-icon.png" alt="avatar">
+          </div>
+          <h5>
+            example@gmail.com
+          </h5>
+        </div>
+        <div class="form-body">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="shareCalendar" name="shareCalendar" value="share calendar" checked/>
+            <label for="shareCalendar">Share your calendar availability with invitation</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="requestAvailability" name="requestAvailability" value="request availability"
+                   checked/>
+            <label for="shareCalendar">Request to see the invitee's calendar availability</label>
+          </div>
+          <div class="save-event">
+            <p>
+              Save this event in
+            </p>
+            <select name="saveIn">
+              <option value="google" id="googleCalendar">
+                <p>G calendar</p>
+              </option>
+              <option value="microsoft" id="microsoftCalendar">
+                <p>M calendar</p>
+              </option>
+            </select>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button class="invite-button">
+          Invite
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="invitation-success">
+    <div class="wrapper">
+      <h6>
+        Success! Invitation is sent. We will notify you once invitation is accepted..
+      </h6>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button class="invite-button">
+        Invite more contacts
+      </button>
+    </div>
+  </div>
+
 
 </section>
