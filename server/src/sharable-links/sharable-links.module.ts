@@ -10,9 +10,13 @@ import { IntegrationsModule } from 'src/integrations/integrations.module';
 import { SharableLinksController } from './sharable-links.controller';
 import { SharableLinkEntity } from './entities/sharable-link.entity';
 import { SharableLinksService } from './sharable-links.service';
+import { MailModule } from 'src/mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    MailModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([
       SharableLinkEntity,

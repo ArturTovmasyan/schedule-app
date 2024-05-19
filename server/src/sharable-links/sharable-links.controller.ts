@@ -22,6 +22,7 @@ import {
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
 import {
+  CancelMeetingDto,
   CreateSharableLinkDto,
   PaginationDto,
   SelectSlotPublic,
@@ -75,6 +76,13 @@ export class SharableLinksController {
     @Body() body: SelectSlotPublic,
   ) {
     return this.sharableLinksService.selectSlotPublic(slotId, body);
+  }
+
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Cancel Scheduled meeting' })
+  @Patch('cancel-slot/:slotId')
+  cancelSlot(@Param('slotId') slotId: string, @Body() body: CancelMeetingDto) {
+    return this.sharableLinksService.cancelMeeting(slotId, body);
   }
 
   @ApiResponse({ type: IResponseMessage })

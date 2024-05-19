@@ -193,6 +193,40 @@ export class ZoomService {
   }
 
   /**
+   * @description `Delete zoom meeting`
+   *
+   * @param user - `Authorized user`
+   * @param meetingId - `ID of meeting`
+   *
+   * @returns `Deleted`
+   */
+
+  async deleteMeeting(
+    user: User,
+    meetingId: string,
+  ): Promise<IResponse<IZoomMeetingResponse>> {
+    const token = (await this._getZoomTokenFromDb(user)).data;
+    if (!token) {
+      throw new BadRequestException({
+        message: ErrorMessages.zoomTokenNotFound,
+      });
+    }
+
+    const bearerAuth = 'Bearer ' + token.accessToken;
+
+    const data = await this.httpService
+      .delete(encodeURI(ZOOM_MEETING + `/${meetingId}`), {
+        headers: {
+          Authorization: bearerAuth,
+        },
+      })
+      .pipe(map((res) => res.data))
+      .toPromise();
+
+    return { data, metadata: {} };
+  }
+
+  /**
    * @description `Get access token using refresh token`
    * @param refreshToken  - `Refresh token from DB`
    * @returns `New granted token object`

@@ -75,6 +75,13 @@ export class SelectSlotPublic {
   phoneNumber?: string;
 }
 
+export class CancelMeetingDto {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsString()
+  reason: string;
+}
+
 export class PaginationDto implements IPaginate {
   @ApiProperty({ required: false, default: 20 })
   @IsOptional()

@@ -32,4 +32,5 @@ export interface IZoomMeeting {
 export interface IZoomMeetingResponse {
   join_url: string;
   host_email: string;
+  id: number;
 }

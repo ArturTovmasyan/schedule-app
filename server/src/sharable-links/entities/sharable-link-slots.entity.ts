@@ -24,6 +24,12 @@ export class SharableLinkSlotsEntity {
   @Column({ name: 'link_id' })
   linkId: string;
 
+  @Column({ name: 'meeting_id', default: null })
+  meetingId?: string;
+
+  @Column({ name: 'calendar_event_id', default: null })
+  calendarEventId?: string;
+
   @ManyToOne(() => SharableLinkEntity, (link) => link.id)
   @JoinColumn({ name: 'link_id' })
   link: SharableLinkEntity;

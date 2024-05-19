@@ -17,7 +17,7 @@ import { IndexOfWeekEnum } from '../enums/indexOfWeek.enum';
 @Entity()
 export class CalendarEvent {
   @PrimaryGeneratedColumn('uuid')
-  id!: number;
+  id!: string;
 
   @Column({ type: 'varchar', nullable: true, default: null })
   googleId!: string;
