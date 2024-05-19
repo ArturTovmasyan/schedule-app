@@ -16,7 +16,7 @@ import { transactionManagerWrapper } from '../components/helpers/dbTransactionMa
 import UpdateEventDto from './dto/updateEvent.dto';
 
 @Injectable()
-export class CalendarService {
+export class CalendarEventService {
   constructor(
     @InjectRepository(CalendarToken)
     private readonly calendarTokenRepository: Repository<CalendarToken>,
@@ -38,7 +38,7 @@ export class CalendarService {
         });
 
         if (!token) {
-          throw new NotFoundException('You have not calendar access token');
+          throw new NotFoundException('You have not calendar-event access token');
         }
 
         const { accessToken } = token;
@@ -79,7 +79,7 @@ export class CalendarService {
           calendarType: CalendarTypeEnum.Office365Calendar,
         });
         if (!token) {
-          throw new NotFoundException('You have not calendar access token');
+          throw new NotFoundException('You have not calendar-event access token');
         }
 
         const { accessToken } = token;
@@ -125,7 +125,7 @@ export class CalendarService {
         });
 
         if (!token) {
-          throw new NotFoundException('You have not calendar access token');
+          throw new NotFoundException('You have not calendar-event access token');
         }
 
         const { accessToken } = token;

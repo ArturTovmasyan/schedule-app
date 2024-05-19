@@ -16,7 +16,7 @@ import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { AvailabilityService } from './availability.service';
 import { User } from '@user/entity/user.entity';
 
-@Controller('api/calendar')
+@Controller('api/calendar-event')
 export class AvailabilityController {
   constructor(private readonly availabilityService: AvailabilityService) {}
 

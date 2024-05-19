@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { CalendarController } from './calendar.controller';
-import { CalendarService } from './calendar.service';
+import { CalendarEventController } from './calendar-event.controller';
+import { CalendarEventService } from './calendar-event.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
 import { PassportModule } from '@nestjs/passport';
@@ -16,8 +16,8 @@ import { CalendarPermissionsModule } from '../calendar-permissions/calendarPermi
     ClientsCredentialsModule,
     forwardRef(() => CalendarPermissionsModule),
   ],
-  controllers: [CalendarController],
-  providers: [CalendarService],
-  exports: [CalendarService],
+  controllers: [CalendarEventController],
+  providers: [CalendarEventService],
+  exports: [CalendarEventService],
 })
-export class CalendarModule {}
+export class CalendarEventModule {}

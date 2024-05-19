@@ -13,17 +13,17 @@ import {
 } from '@nestjs/common';
 import { UpdateAccessTokenInterceptor } from '../calendar-accessibility/interceptors/updateAccessToken.interceptor';
 import { User } from '@user/entity/user.entity';
-import { CalendarService } from './calendar.service';
+import { CalendarEventService } from './calendar-event.service';
 import { AuthGuard } from '@nestjs/passport';
 import TimeIntervalDto from './dto/timeInterval.dto';
 import CreateEventDto from './dto/createEvent.dto';
 import UpdateEventDto from './dto/updateEvent.dto';
 
-@Controller('api/calendar')
-export class CalendarController {
-  constructor(private readonly calendarService: CalendarService) {}
+@Controller('api/calendar/events')
+export class CalendarEventController {
+  constructor(private readonly calendarService: CalendarEventService) {}
 
-  @Get('events')
+  @Get()
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async getUserCalendarEvents(
@@ -33,7 +33,7 @@ export class CalendarController {
     return await this.calendarService.getUserCalendarEvents(req.user, query);
   }
 
-  @Post('events')
+  @Post()
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async createUserCalendarEvent(
@@ -43,7 +43,7 @@ export class CalendarController {
     return await this.calendarService.createUserCalendarEvent(req.user, body);
   }
 
-  @Put('events/:id')
+  @Put(':id')
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async updateUserCalendarEvent(
@@ -58,7 +58,7 @@ export class CalendarController {
     );
   }
 
-  @Delete('events/:id')
+  @Delete(':id')
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async deleteUserCalendarEvent(

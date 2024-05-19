@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 
-@Entity('calendar-access')
+@Entity('calendar-event-access')
 export class CalendarAccess {
   @PrimaryGeneratedColumn('uuid') id: string;
 

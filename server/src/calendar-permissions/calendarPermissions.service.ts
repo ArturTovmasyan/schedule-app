@@ -12,7 +12,7 @@ import { UserDto } from '@user/dto/user.dto';
 import { ConfidentialClientApplication } from '@azure/msal-node/dist/client/ConfidentialClientApplication';
 import { CryptoProvider } from '@azure/msal-node/dist/crypto/CryptoProvider';
 import { User } from '@user/entity/user.entity';
-import { CalendarService } from '../calendar/calendar.service';
+import { CalendarEventService } from '../calendar-event/calendar-event.service';
 
 @Injectable()
 export class CalendarPermissionsService {
@@ -24,7 +24,7 @@ export class CalendarPermissionsService {
     @InjectRepository(CalendarToken)
     private readonly calendarTokenRepository: Repository<CalendarToken>,
     private readonly configService: ConfigService,
-    private readonly calendarService: CalendarService,
+    private readonly calendarService: CalendarEventService,
   ) {
     const googleClientID = this.configService.get<string>('GOOGLE_CLIENT_ID');
     const googleClientSecret = this.configService.get<string>(
