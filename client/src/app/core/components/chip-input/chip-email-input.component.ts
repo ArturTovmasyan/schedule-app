@@ -38,8 +38,13 @@ export class ChipEmailInputComponent {
     this.emailUpdateEvent.emit(this.emails);
   }
 
-  updateError() {
+  updateError(ev:any) {
     const val = this.emailInput.nativeElement.value
+    if (ev.key == ',' || ev.key == " ") {
+      this.emailInput.nativeElement.value = val.trim().replace(/[, ]+$/, '');
+      this.add();
+      return;
+    }
 
     if (!val) {
       this.error = false;

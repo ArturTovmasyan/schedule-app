@@ -20,7 +20,7 @@
               required
               spellcheck="false"
               placeholder="+ Add email"
-             (keyup)="updateError()"
+             (keyup)="updateError($event)"
              (keyup.enter)="add()">
     </li>
   </ul>
