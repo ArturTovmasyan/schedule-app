@@ -28,19 +28,8 @@ export class SettingsComponent implements OnInit {
     id: 'password',
     title: 'Password',
     route: '/settings/password'
-  },{
-    id: 'support',
-    title: 'Support',
-    route: '/settings/support'
-  },{
-    id: 'privacy-policy',
-    title: 'Privacy Policy',
-    route: '/privacy-policy'
-  }, {
-    id: 'terms-conditions',
-    title: 'Terms & Conditions',
-    route: '/terms-conditions'
   }];
+
 
   setting_title = this.navOptions[0]['title'];
 
