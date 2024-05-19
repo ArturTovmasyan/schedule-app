@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
-import { EntityManager, In, IsNull, Not, Repository } from 'typeorm';
+import { EntityManager, IsNull, Not, Repository } from 'typeorm';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
 import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
 import { google } from 'googleapis';
@@ -22,8 +22,8 @@ import * as locaTunnel from 'localtunnel';
 import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity';
 import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
-import moment = require('moment');
 import { randomUUID } from 'crypto';
+import moment = require('moment');
 
 @Injectable()
 export class CalendarEventService {
