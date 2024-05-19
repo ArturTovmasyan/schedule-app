@@ -10,9 +10,13 @@ export class CommonService {
 
   getFormattedDateString(date: moment.Moment | null, format = `YYYY-MM-DDTHH:mm:ss.sssZ`): string | null {
     if (date != null) {
-      return date.utc().format(format);
+      return date.format(format);
     }
     return null
+  }
+
+  get localTimezone(): string {
+    return moment.tz.guess();
   }
 
   getElapsedTime(dateString: string): [number, string] {

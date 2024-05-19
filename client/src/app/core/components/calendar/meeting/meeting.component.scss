@@ -4,6 +4,13 @@ section.meeting-title {
   border-radius: 20px;
   height: 100%;
   overflow: hidden;
+
+  span#no-calendar {
+    font-size: 11px;
+    margin: 2px 10px 10px 10px;
+    color: #cc0000;
+    display: inline-block;
+  }
   .header {
     position: relative;
 
@@ -290,7 +297,7 @@ section.meeting-title {
 
       ul {
         display: flex;
-        align-items: center;
+        align-items: initial;
         justify-content: space-between;
         margin-bottom: 0;
 
@@ -306,7 +313,7 @@ section.meeting-title {
           p {
             margin-bottom: 0;
             font-family: 'Lexend Deca', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             color: #656565;
           }
         }
@@ -400,6 +407,11 @@ section.meeting-title {
       &:hover {
         background-color: #1d97dc;
         transition: 0.4s ease;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        background-color: gray;
       }
     }
 

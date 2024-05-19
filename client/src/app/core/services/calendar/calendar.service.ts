@@ -4,6 +4,7 @@ import {map} from 'rxjs/operators';
 import {ApiResponse} from '../../interfaces/response/api.response.interface';
 import {DatePipe} from "@angular/common";
 import * as moment from 'moment';
+import { CreateEventRequest } from '../../interfaces/calendar/create-event-request.interface';
 
 @Injectable({
   providedIn: 'root'
