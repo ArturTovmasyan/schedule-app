@@ -8,7 +8,6 @@ import { NotificationTypeEnum } from 'src/notifications/enums/notifications.enum
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { UpdateCalendarAccessDto } from './dto/update-calendar-access.dto';
-import { ErrorMessages } from '../../components/constants/error.messages';
 import { CalendarAccess } from './entities/calendar-access.entity';
 import { TimeForAccessEnum } from './enums/access-time.enum';
 import { ErrorMessages } from '@shared/error.messages';
@@ -52,37 +51,13 @@ export class CalendarAccessService {
       where: { email: createCalendarAccessDto.toEmail },
     });
 
-    let timeForAccess: Date | null = null;
-
-    if (createCalendarAccessDto.timeForAccess === TimeForAccessEnum.month) {
-      timeForAccess = moment().add(30, 'day').toDate();
-    } else if (
-      createCalendarAccessDto.timeForAccess === TimeForAccessEnum.week
-    ) {
-      timeForAccess = moment().add(7, 'day').toDate();
-    } else if (
-      createCalendarAccessDto.timeForAccess === TimeForAccessEnum.quarter
-    ) {
-      timeForAccess = moment().add(3, 'month').toDate();
-    } else if (
-      createCalendarAccessDto.timeForAccess === TimeForAccessEnum.custom
-    ) {
-      if (!createCalendarAccessDto.customDate) {
-        throw new BadRequestException({
-          message: ErrorMessages.provideCustomDate,
-        });
-      }
-
-      timeForAccess = createCalendarAccessDto.customDate;
-    }
-
     await this.calendarAccessRepo.upsert(
       {
         accessedUser: { id: findUserByEmail ? findUserByEmail.id : null },
         owner: { id: user.id },
         toEmail: createCalendarAccessDto.toEmail,
         comment: createCalendarAccessDto.comment,
-        timeForAccess,
+        timeForAccess: createCalendarAccessDto.timeForAccess,
       },
       {
         conflictPaths: ['toEmail', 'owner'],

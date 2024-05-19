@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import { ConfigService } from '@nestjs/config';
 import { Connection, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -77,35 +76,11 @@ export class AccessRequestService {
       where: { email: createAccessRequestDto.toEmail },
     });
 
-    let timeForAccess: Date | null = null;
-
-    if (createAccessRequestDto.timeForAccess === TimeForAccessEnum.month) {
-      timeForAccess = moment().add(30, 'day').toDate();
-    } else if (
-      createAccessRequestDto.timeForAccess === TimeForAccessEnum.week
-    ) {
-      timeForAccess = moment().add(7, 'day').toDate();
-    } else if (
-      createAccessRequestDto.timeForAccess === TimeForAccessEnum.quarter
-    ) {
-      timeForAccess = moment().add(3, 'month').toDate();
-    } else if (
-      createAccessRequestDto.timeForAccess === TimeForAccessEnum.custom
-    ) {
-      if (!createAccessRequestDto.customDate) {
-        throw new BadRequestException({
-          message: ErrorMessages.provideCustomDate,
-        });
-      }
-
-      timeForAccess = createAccessRequestDto.customDate;
-    }
-
     const data = await this.accessRequestRepo.save({
       applicant: { id: user.id },
       toEmail: createAccessRequestDto.toEmail,
       receiver: { id: findUserByEmail ? findUserByEmail.id : null },
-      timeForAccess,
+      timeForAccess: createAccessRequestDto.timeForAccess,
       comment: createAccessRequestDto.comment,
     });
 

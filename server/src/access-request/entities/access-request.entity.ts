@@ -26,7 +26,7 @@ export class AccessRequest {
   @Column({ name: 'receiver_id', type: 'uuid' })
   receiverUserId: string;
 
-  @Column({ name: 'time_for_access', type: 'timestamptz' })
+  @Column({ name: 'time_for_access', type: 'timestamptz', default: null })
   timeForAccess: Date;
 
   @Column({ name: 'to_email', type: 'varchar' })
