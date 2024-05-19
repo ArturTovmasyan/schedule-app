@@ -1,0 +1,153 @@
+<div class="container-fluid-landing p-0">
+  <section class="hero" id="top">
+    <h1>
+      Simplify Your Life with <br>
+      our <span>Global Calendar</span>
+    </h1>
+    <button class="primary-button">
+      Get started
+    </button>
+    <img class="img-fluid" src="assets/hero-calendar-image.png" alt="">
+  </section>
+  <section class="productive-features" id="features">
+    <h2 class="section-title">
+      Productive features
+    </h2>
+    <div class="row">
+      <div class="col-12 col-sm-8 offset-sm-2">
+        <div class="feature-wrapper">
+          <div class="row">
+            <div class="col-12 col-sm-6">
+              <img class="img-fluid" src="assets/feature-img-1.png" alt="feature img">
+            </div>
+            <div class="col-12 col-sm-6 d-flex justify-content-center align-items-center">
+              <div class="text">
+                <h3 class="section-title-secondary"><span>Manage one</span></h3>
+                <h3 class="section-title-secondary">calendar instead <br>of many</h3>
+                <p class="section-info">
+                  Our Global Calendar Web App allows you to sync all your calendars from different platforms into one
+                  centralized location. With this feature, you'll have a comprehensive
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-wrapper">
+          <div class="row">
+            <div class="col-12 col-sm-6 d-flex justify-content-center align-items-center">
+              <div class="text">
+                <h3 class="section-title-secondary"><span>Send a link</span> with a</h3>
+                <h3 class="section-title-secondary">group availability</h3>
+                <p class="section-info">
+                  Our Global Calendar Web App allows you to sync all your calendars from different platforms into one
+                  centralized location. With this feature, you'll have a comprehensive
+                </p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <img class="img-fluid" src="assets/feature-img-2.png" alt="feature img">
+            </div>
+
+          </div>
+        </div>
+        <div class="feature-wrapper">
+          <div class="row">
+            <div class="col-12 col-sm-6">
+              <img class="img-fluid" src="assets/feature-img-3.png" alt="feature img">
+            </div>
+            <div class="col-12 col-sm-6 d-flex justify-content-center align-items-center">
+              <div class="text">
+                <h3 class="section-title-secondary"><span>See everyone's <br>calendar</span></h3>
+                <h3 class="section-title-secondary"><span>availability</span> and<br>schedule across <br>companies in
+                  <br>under 1 minute</h3>
+                <p class="section-info">
+                  Our Global Calendar Web App allows you to sync all your calendars from different platforms into one
+                  centralized location.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+  <section class="partners" id="partners">
+    <div id="wrapper">
+      <div id="carousel">
+        <div id="content">
+          <div class="item">
+            <img src="assets/partner-logo-1.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-2.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-3.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-4.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-5.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-1.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-2.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-3.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-4.png" alt="Partner logo"/>
+          </div>
+          <div class="item">
+            <img src="assets/partner-logo-5.png" alt="Partner logo"/>
+          </div>
+        </div>
+      </div>
+      <button id="prev">
+        <img src="assets/partner-carousel-prev-button.png" style="margin-right: 2px;" alt="carousel-button">
+      </button>
+      <button id="next">
+        <img src="assets/partner-carousel-next-button.png" style="margin-left: 2px;" alt="carousel-button">
+      </button>
+    </div>
+  </section>
+  <section class="testimonials" id="testimonials">
+    <h2 class="section-title text-center">
+      Testimonials
+    </h2>
+    <div id="testimonialsWrapper">
+      <div id="testimonialsCarousel">
+        <div id="testimonialsContent">
+          <div class="testimonial-wrap" *ngFor="let testimonial of mockTestimonials">
+            <div class="item">
+              <div class="image">
+                <img src="{{testimonial.image}}" alt="testimonial">
+              </div>
+              <h4 class="name">
+                {{testimonial.name}}
+              </h4>
+              <h5 class="role">
+                {{testimonial.title}}
+              </h5>
+              <p class="text">
+                {{testimonial.description}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button id="testimonialsPrev">
+        <img src="assets/partner-carousel-prev-button.png" style="margin-right: 2px;" alt="carousel-button">
+      </button>
+      <button id="testimonialsNext">
+        <img src="assets/partner-carousel-next-button.png" style="margin-left: 2px;" alt="carousel-button">
+      </button>
+    </div>
+  </section>
+
+</div>

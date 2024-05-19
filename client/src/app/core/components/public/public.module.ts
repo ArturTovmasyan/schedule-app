@@ -4,37 +4,34 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { IMaskModule } from 'angular-imask';
 import { NgHttpLoaderModule } from 'ng-http-loader';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { CalendarModule } from '../calendar/calendar.module';
-import { PublicCalendarComponent } from './calendar/calendar.component';
-import { GroupAvailabilityComponent } from './group-availibility/group-availability.component';
-import { PublicRoutingModule } from './public-routing.module';
-import { PublicCalendarService } from './public.service';
-import { FullCalendarModule } from '@fullcalendar/angular';
-
-//PLUGINS
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from '@fullcalendar/timegrid';
-import bootstrapPlugin from '@fullcalendar/bootstrap';
-import rrulePlugin from '@fullcalendar/rrule';
 import { BroadcasterService } from 'src/app/shared/services';
-import { CancelMeetingComponent } from './cancel-meeting/cancel-meeting.component';
-import { RescheduleMeetingComponent } from './reschedule-meeting/reschedule-meeting.component';
-
-FullCalendarModule.registerPlugins([
-  dayGridPlugin,
-  bootstrapPlugin,
-  interactionPlugin,
-  timeGridPlugin,
-  rrulePlugin
-]);
+import { PublicRoutingModule } from './public-routing.module';
+import { PublicService } from './public.service';
+import { LayoutComponent } from './layout/layout.component';
+import { LandingPageComponent } from './pages/landing/landing.component';
+import { LoginComponent } from './pages/login/login.component';
+import { SignupComponent } from './pages/signup/signup.component';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { TermsConditionsComponent } from './pages/terms-conditions/terms-conditions.component';
+import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
+import { OauthLoginComponent } from './pages/oauth-login/oauth-login.component';
+import { ConfirmAccountComponent } from './pages/confirm-account/confirm-account.component';
 
 @NgModule({
   declarations: [
-    PublicCalendarComponent,
-    GroupAvailabilityComponent,
-    CancelMeetingComponent,
-    RescheduleMeetingComponent
+    HeaderComponent,
+    FooterComponent,
+    LayoutComponent,
+    LandingPageComponent,
+    LoginComponent,
+    SignupComponent,
+    ResetPasswordComponent,
+    TermsConditionsComponent,
+    PrivacyPolicyComponent,
+    OauthLoginComponent,
+    ConfirmAccountComponent
   ],
   imports: [
     PublicRoutingModule,
@@ -42,10 +39,8 @@ FullCalendarModule.registerPlugins([
     SharedModule,
     IMaskModule,
     HttpClientModule,
-    CalendarModule,
-    FullCalendarModule,
     NgHttpLoaderModule.forRoot()
   ],
-  providers: [PublicCalendarService, DatePipe, BroadcasterService]
+  providers: [PublicService, DatePipe, BroadcasterService]
 })
-export class PublicCalendarModule { }
+export class PublicModule { }

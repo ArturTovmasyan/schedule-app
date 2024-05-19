@@ -1,0 +1,71 @@
+<section class="login-register">
+  <div class="wrapper">
+  <div *ngIf="!register; else confirmRegister">
+    <div class="title">
+      <span id="line1">Welcome to Entangles.io.</span>
+      <span id="line2">Start for free.</span>
+    </div>
+    <form focusInvalidInput class="form" [formGroup]="form" (ngSubmit)="signup()" autocomplete="off">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <div class="input-group">
+          <img src="assets/user-icon.png" alt="user icon">
+          <input type="text" id="fullName" formControlName="fullName" placeholder="Full Name" />
+        </div>
+        <app-control-messages [control]="f['fullName']" [showRequiredErrors]="showRequiredErrors"></app-control-messages>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-group">
+          <img src="assets/envelope.png" alt="mail">
+          <input type="email" id="email" formControlName="email" placeholder="Email" />
+        </div>
+        <app-control-messages [control]="f['email']" [showRequiredErrors]="showRequiredErrors">></app-control-messages>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-group password-input-group">
+          <img src="assets/lock.svg" alt="password">
+          <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" placeholder="Password" />
+          <i class="fa" [ngClass]="{'fa-eye-slash': !showPassword,'fa-eye': showPassword}" (click)="togglePasswordType()"></i>
+        </div>
+        <app-control-messages [control]="f['password']" [showRequiredErrors]="showRequiredErrors"></app-control-messages>
+        <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error.message }}</span>
+      </div>
+
+      <span id="tos">
+        By creating an Entangles.io account, you agree to the
+        <a routerLink="/terms-conditions">Terms & Conditions</a>
+        and
+        <a routerLink="/privacy-policy">Privacy & Policy</a>
+      </span>
+
+      <div>
+        <button class="submit" type="submit">Register</button>
+      </div>
+    </form>
+    <div id="social">
+      <div id="header">
+        <hr /><span>Or continue with</span> <hr />
+      </div>
+      <div class="social-buttons">
+        <button id="google" (click)="googleLogin()"><img src="assets/google-social.png"></button>
+        <button id="outlook" (click)="microsoftLogin()"><img src="assets/outlook-social.png"></button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<ng-template #confirmRegister>
+  <div class="title">
+    <span id="welcome-back">Confirm Email Sent!</span>
+    <span class="login">Check your inbox.</span>
+    <span id="reset-password-note" [ngStyle]="{'line-height':'25px'}">An email has been sent to<br/><strong>{{email}}</strong><br/>
+          Follow the instruction for confirm your account.</span>
+  </div>
+
+  <div class="form">
+    <button class="submit" type="button" routerLink="/">Back to Sign in</button>
+  </div>
+</ng-template>
+</section>

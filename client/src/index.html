@@ -17,43 +17,49 @@
 <script>
   $(document).ready(function () {
     //Leading Page Partners Carousel start
-    const gap = 16;
+    setTimeout(function() {
+      const gap = 16;
 
-    const carousel = document.getElementById("carousel"),
-      content = document.getElementById("content"),
-      next = document.getElementById("next"),
-      prev = document.getElementById("prev");
+      const carousel = document.getElementById("carousel"),
+        content = document.getElementById("content"),
+        next = document.getElementById("next"),
+        prev = document.getElementById("prev");
+      console.log('caruouse', carousel);
+      next.addEventListener("click", e => {
+        carousel.scrollBy(width + gap, 0);
+      });
+      prev.addEventListener("click", e => {
+        carousel.scrollBy(-(width + gap), 0);
+      });
+      let width = carousel.offsetWidth;
+      window.addEventListener("resize", e => (width = carousel.offsetWidth));
+    }, 2000)
 
-    next.addEventListener("click", e => {
-      carousel.scrollBy(width + gap, 0);
-    });
-    prev.addEventListener("click", e => {
-      carousel.scrollBy(-(width + gap), 0);
-    });
 
-    let width = carousel.offsetWidth;
-    window.addEventListener("resize", e => (width = carousel.offsetWidth));
+
+
     //Leading Page Partners Carousel end
 
 
     //Leading Page Testimonials Carousel start
+    setTimeout(function () {
     const testimonialsGap = 16;
-
     const testimonialsCarousel = document.getElementById("testimonialsCarousel"),
       testimonialsContent = document.getElementById("testimonialsContent"),
       testimonialsNext = document.getElementById("testimonialsNext"),
       testimonialsPrev = document.getElementById("testimonialsPrev");
+      console.log('testimonial', testimonialsCarousel);
+        testimonialsNext.addEventListener("click", e => {
+        testimonialsCarousel.scrollBy(testimonialsWidth + testimonialsGap, 0);
+      });
+      testimonialsPrev.addEventListener("click", e => {
+        testimonialsCarousel.scrollBy(-(testimonialsWidth + testimonialsGap), 0);
+      });
 
-    testimonialsNext.addEventListener("click", e => {
-      testimonialsCarousel.scrollBy(width + testimonialsGap, 0);
-    });
-    testimonialsPrev.addEventListener("click", e => {
-      testimonialsCarousel.scrollBy(-(width + testimonialsGap), 0);
-    });
+      let testimonialsWidth = testimonialsCarousel.offsetWidth;
+      window.addEventListener("resize", e => (testimonialsWidth = testimonialsCarousel.offsetWidth));
 
-    let testimonialsWidth = testimonialsCarousel.offsetWidth;
-    window.addEventListener("resize", e => (testimonialsWidth = testimonialsCarousel.offsetWidth));
-    //Leading Page Testimonials Carousel end
+    }, 2000)
   })
 
 

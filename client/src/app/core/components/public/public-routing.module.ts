@@ -1,26 +1,61 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { PublicCalendarComponent } from './calendar/calendar.component';
-import { CancelMeetingComponent } from './cancel-meeting/cancel-meeting.component';
-import { GroupAvailabilityComponent } from './group-availibility/group-availability.component';
-import { RescheduleMeetingComponent } from './reschedule-meeting/reschedule-meeting.component';
+import { LandingPageComponent } from './pages/landing/landing.component';
+import { LayoutComponent } from './layout/layout.component';
+import { LoginComponent } from './pages/login/login.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { SignupComponent } from './pages/signup/signup.component';
+import { TermsConditionsComponent } from './pages/terms-conditions/terms-conditions.component';
+import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
+import { ConfirmAccountComponent } from './pages/confirm-account/confirm-account.component';
+import { OauthLoginComponent } from './pages/oauth-login/oauth-login.component';
+import { RedirectGuard } from '../../guards/redirect.guard';
 
 const routes: Routes = [
   {
-    path: ':id',
-    component: PublicCalendarComponent,
+    path: '',
+    component: LayoutComponent,
     children: [
       {
         path: '',
-        component: GroupAvailabilityComponent
+        component: LandingPageComponent
       },
       {
-        path: 'cancel/:scheduledId',
-        component: CancelMeetingComponent
+        path: 'login',
+        component: LoginComponent
       },
       {
-        path: 'reschedule/:scheduledId',
-        component: RescheduleMeetingComponent
+        path: 'register',
+        component: SignupComponent,
+        canActivate: [RedirectGuard]
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        canActivate: [RedirectGuard]
+      },
+      {
+        path: 'terms-conditions',
+        component: TermsConditionsComponent,
+        data: { title: 'Terms & Conditions' }
+      },
+      {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent,
+        data: { title: 'Privacy Policy' }
+      },
+      {
+        path: 'confirm',
+        component: ConfirmAccountComponent,
+        data: {title: 'Confirm Registration'}
+      },
+      {
+        path: 'logout',
+        redirectTo: 'login'
+      },
+      {
+        path: 'oauth/success',
+        component: OauthLoginComponent
       }
     ]
   }

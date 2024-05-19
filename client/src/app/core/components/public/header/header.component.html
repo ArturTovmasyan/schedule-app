@@ -1,0 +1,37 @@
+<div class="container-fluid">
+  <a class="logo" href="#">
+    <img src="assets/logo.png" alt="logo">
+    <span id="title">{{ title }}</span>
+  </a>
+
+  <ul class="list-unstyled list-inline mb-0" id="nav">
+    <ng-container *ngIf="!isAuthPage">
+      <li class="list-inline-item" (click)="goToSection('features')">
+        <a href="javascript:void(0)">Features</a>
+      </li>
+      <li class="list-inline-item" (click)="goToSection('partners')">
+        <a href="javascript:void(0)">Partners</a>
+      </li>
+      <li class="list-inline-item" (click)="goToSection('testimonials')">
+        <a href="javascript:void(0)">Testimonials</a>
+      </li>
+    </ng-container>
+
+    <li class="list-inline-item" *ngIf="(isLoggedIn$ | async); else notLoggedIn">
+      <span class="button" (click)="logout()">Log out</span>
+    </li>
+    <ng-template #notLoggedIn>
+      <li>
+        <div *ngIf="!isLoginPage || !isAuthPage">
+          <span>Have an account?</span>
+          <button (click)="login()">Log in</button>
+        </div>
+        <div *ngIf="isLoginPage && isAuthPage">
+          <span></span>
+          <button (click)="register()">Register</button>
+        </div>
+      </li>
+    </ng-template>
+
+  </ul>
+</div>

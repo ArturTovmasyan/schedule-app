@@ -14,80 +14,64 @@ import {RedirectGuard} from "./core/guards/redirect.guard";
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
 
 const routes: Routes = [
-  {path: '', redirectTo: 'calendar/access-request', pathMatch: 'full'},
+  // {path: '', redirectTo: 'calendar/access-request', pathMatch: 'full'},
   {path: 'calendar', redirectTo: 'calendar/suggest-contact', pathMatch: 'full'},
   {path: '404', component: P404Component, data: {title: 'Page 404'}},
   {path: '500', component: P500Component, data: {title: 'Page 500'}},
   {
-    path: 'privacy-policy',
-    component: PrivacyPolicyComponent,
-    data: {title: 'Privacy Policy'}
+    path: 'payment-success',
+    component: PaymentSuccessComponent,
+    canActivate: [AuthGuard]
   },
   {
-    path: 'terms-conditions',
-    component: TermsConditionsComponent,
-    data: {title: 'Terms & Conditions'}
+    path: 'google-calendar-callback',
+    component: GoogleCalendarComponent,
+    canActivate: [AuthGuard]
   },
   {
-    path: '',
-    children: [
-      {
-        path: 'payment-success',
-        component: PaymentSuccessComponent,
-        canActivate: [AuthGuard]
-      },
-      {
-        path: 'google-calendar-callback',
-        component: GoogleCalendarComponent,
-        canActivate: [AuthGuard]
-      },
-      {
-        path: 'ms-calendar-callback',
-        component: MsCalendarComponent,
-        canActivate: [AuthGuard]
-      }
-    ]
+    path: 'ms-calendar-callback',
+    component: MsCalendarComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'new-password',
+    component: RecoveryPasswordComponent,
+    data: {title: 'Change Password'},
+    canActivate: [RedirectGuard]
   },
   {
     path: '',
-    component: AuthComponent,
-    children: [
-      {
-        path: 'login',
-        component: LoginComponent
-      },
-      {
-        path: 'logout',
-        redirectTo: 'login'
-      },
-      {
-        path: 'confirm',
-        component: ConfirmAccountComponent,
-        data: {title: 'Confirm Registration'}
-      },
-      {
-        path: 'new-password',
-        component: RecoveryPasswordComponent,
-        data: {title: 'Change Password'},
-        canActivate: [RedirectGuard]
-      },
-      {
-        path: 'register',
-        component: SignupComponent,
-        data: {title: 'Sign Up'},
-        canActivate: [RedirectGuard]
-      },
-      {
-        path: 'reset-password',
-        component: ResetPasswordComponent,
-        data: {title: 'Reset Password'},
-        canActivate: [RedirectGuard]
-      },
-      {
-        path: 'oauth/success',
-        component: OauthLoginComponent
-      }
-    ]
+    loadChildren: () => import('./core/components/public/public.module').then(m => m.PublicModule),
+    // component: AuthComponent,
+    // children: [
+    //   {
+    //     path: 'login',
+    //     component: LoginComponent
+    //   },
+    //   {
+    //     path: 'logout',
+    //     redirectTo: 'login'
+    //   },
+    //   {
+    //     path: 'confirm',
+    //     component: ConfirmAccountComponent,
+    //     data: {title: 'Confirm Registration'}
+    //   },
+
+    //   {
+    //     path: 'register',
+    //     component: SignupComponent,
+    //     data: {title: 'Sign Up'},
+    //     canActivate: [RedirectGuard]
+    //   },
+    //   {
+    //     path: 'reset-password',
+    //     component: ResetPasswordComponent,
+    //     data: {title: 'Reset Password'},
+    //     canActivate: [RedirectGuard]
+    //   },
+
+    // ]
   },
   {
     path: 'onboarding',
@@ -144,16 +128,6 @@ const routes: Routes = [
       {
         path: 'account-info',
         component: AccountInfoComponent
-      },
-      {
-        path: 'terms-conditions',
-        component: TermsConditionsComponent,
-        data: {title: 'Terms & Conditions'}
-      },
-      {
-        path: 'privacy-policy',
-        component: PrivacyPolicyComponent,
-        data: {title: 'Privacy Policy'}
       },
       {
         path: '**',
@@ -229,7 +203,7 @@ const routes: Routes = [
   },
   {
     path: 'share',
-    loadChildren: () => import('./core/components/public/public.module').then(m => m.PublicCalendarModule)
+    loadChildren: () => import('./core/components/public/calendar/calendar.module').then(m => m.PublicCalendarModule)
   },
   {
     path: '**', redirectTo: '/404'
