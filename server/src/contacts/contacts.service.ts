@@ -9,6 +9,8 @@ import { ErrorMessages } from 'src/components/constants/error.messages';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { User } from '@user/entity/user.entity';
+import { Invitation } from 'src/invitation/entities/invitation.entity';
+import { InvitationStatusEnum } from 'src/invitation/enums/invitation-status.enum';
 
 @Injectable()
 export class ContactsService {
@@ -18,6 +20,8 @@ export class ContactsService {
     private readonly calendarEventRepository: Repository<CalendarEvent>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Invitation)
+    private readonly invitationRepository: Repository<Invitation>,
   ) {}
   create(createContactDto: CreateContactDto) {
     return 'This action adds a new contact';
@@ -54,11 +58,11 @@ export class ContactsService {
         .where(
           `${
             tokens.googleToken
-              ? 'event.creatorFromGoogle <>:googleEmail AND '
-              : 'event.creatorFromGoogle IS NULL AND'
+              ? `(event.creatorFromGoogle <>:googleEmail AND event.creatorFromGoogle <> '${user.email}') OR`
+              : 'event.creatorFromGoogle IS NULL OR'
           } ${
             tokens.outlookToken
-              ? 'event.creatorFromOutlook <>:outlookEmail'
+              ? `event.creatorFromOutlook <>:outlookEmail AND event.creatorFromOutlook <> '${user.email}'`
               : 'event.creatorFromOutlook IS NULL'
           }`,
           {
@@ -112,7 +116,7 @@ export class ContactsService {
         .leftJoin('user.accessTo', 'accessTo')
         .leftJoin('user.sharedWith', 'sharedWith')
         .andWhere(
-          `(accessTo.ownerId IS NULL) OR (sharedWith.accessedUserId IS NULL) OR (accessTo.ownerId <>:userId OR sharedWith.accessedUserId <>:userId)`,
+          `((accessTo.ownerId IS NULL) OR (sharedWith.accessedUserId IS NULL)) OR (accessTo.ownerId <>:userId OR sharedWith.accessedUserId <>:userId)`,
           {
             userIds: usersFromDb.map((user) => user.id),
             userId: user.id,

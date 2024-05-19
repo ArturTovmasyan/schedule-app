@@ -9,11 +9,12 @@ import { CalendarEventModule } from 'src/calendar/calendar-event/calendar-event.
 import { ContactsController } from './contacts.controller';
 import { ContactsService } from './contacts.service';
 import { User } from '@user/entity/user.entity';
+import { Invitation } from 'src/invitation/entities/invitation.entity';
 
 @Module({
   imports: [
     CalendarEventModule,
-    TypeOrmModule.forFeature([User, CalendarEvent]),
+    TypeOrmModule.forFeature([User, CalendarEvent, Invitation]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     ClientsCredentialsModule,
