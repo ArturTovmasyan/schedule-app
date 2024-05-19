@@ -20,6 +20,7 @@ export class SignupComponent {
   register = false;
   error?: ErrorResponse;
   errorMessage: undefined;
+  showPassword: boolean = false;
 
   constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
@@ -73,4 +74,7 @@ export class SignupComponent {
     window.location.href = environment.host+"api/auth/microsoft";
   }
 
+  togglePasswordType() {
+    this.showPassword = !this.showPassword;
+  }
 }

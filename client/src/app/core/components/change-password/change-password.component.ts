@@ -16,8 +16,11 @@ export class ChangePasswordComponent implements OnInit {
   form: FormGroup;
   error?: ErrorResponse|null;
   errorMessage: undefined;
-  showCurrentPassword = true;
+  changeCurrentPassword = true;
   currentPasswordOption = [];
+  showCurrentPassword: boolean = false;
+  showNewPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(private settingService: SettingService, private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
     this.form = this.formBuilder.group({
@@ -33,7 +36,7 @@ export class ChangePasswordComponent implements OnInit {
       next: ({ isActive, user }) => {
         if (user && isActive) {
           if (user.provider) {
-            this.showCurrentPassword = false;
+            this.changeCurrentPassword = false;
             this.currentPasswordOption = [];
           }
         }
@@ -61,6 +64,18 @@ export class ChangePasswordComponent implements OnInit {
           this.error = error;
         }
       });
+  }
+
+  toggleNewPasswordType() {
+    this.showNewPassword = !this.showNewPassword;
+  }
+
+  toggleConfirmPasswordType() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  toggleCurrentPasswordType() {
+    this.showCurrentPassword = !this.showCurrentPassword;
   }
 
   get f() {

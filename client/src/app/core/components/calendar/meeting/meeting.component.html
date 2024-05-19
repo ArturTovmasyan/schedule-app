@@ -81,9 +81,11 @@
               <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ parsedDate }}" readonly>
             </li>
             <li class="list-inline-item timeframe">
-              <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ parsedStartTime(this.data.start) }}" readonly>
+              <input type="text" id="meetingStartTime" name="meetingStartTime"
+                     placeholder="{{ parsedStartTime(this.data.start) }}" readonly>
               <p> - </p>
-              <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ parsedEndTime(this.data.end) }}" readonly>
+              <input type="text" id="meetingEndTime" name="meetingEndTime"
+                     placeholder="{{ parsedEndTime(this.data.end) }}" readonly>
             </li>
             <li class="list-inline-item timezone">
               <span id="timezoneText">{{ timezone }}</span>
@@ -91,7 +93,9 @@
           </ul>
         </div>
         <div class="save-to-calendar">
-          <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img [src]="getCalendarIcon(selectedCalendar?.type ?? null)" alt="calendar icon"> {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
+          <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img
+            [src]="getCalendarIcon(selectedCalendar?.type ?? null)"
+            alt="calendar icon"> {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
           <div id="calendar-dropdown" *ngIf="showCalendars">
             <span *ngFor="let calendar of myCalendars" (click)="selectCalendar(calendar)">
               <img [src]="getCalendarIcon(calendar.type)" alt="calendar icon"> {{ calendar.summary }}
@@ -104,7 +108,7 @@
           Location
         </h3>
         <input class="form-control" type="text" name="meetingLocation" formControlName="meetingLocation"
-              id="meetingLocation" placeholder="">
+               id="meetingLocation" placeholder="">
         <app-control-messages [control]="f['meetingLocation']"></app-control-messages>
       </div>
       <div class="form-group">
@@ -120,9 +124,9 @@
         </button>
       </div>
 
-        <span class="error" *ngFor="let errorMessage of errorMessages">
-           <i class="fa fa-exclamation-triangle"></i>{{errorMessage}} <br/>
-       </span>
+      <span class="error" *ngFor="let errorMessage of errorMessages">
+           <i class="fa fa-exclamation-triangle"></i>{{errorMessage}}
+      </span>
 
     </fieldset>
   </form>

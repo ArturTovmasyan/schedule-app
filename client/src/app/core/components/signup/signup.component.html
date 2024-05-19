@@ -25,7 +25,8 @@
         <label for="password">Password</label>
         <div class="input-group">
           <img src="assets/lock.svg" alt="password">
-          <input type="password" id="password" formControlName="password" placeholder="Password" />
+          <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" placeholder="Password" />
+          <i class="fa" [ngClass]="{'fa-eye-slash': !showPassword,'fa-eye': showPassword}" (click)="togglePasswordType()"></i>
         </div>
         <app-control-messages [control]="f['password']"></app-control-messages>
         <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error.message }}</span>
@@ -33,13 +34,13 @@
 
       <span id="tos">
         By creating an Handshake account, you agree to the
-        <a href="javascript:void(0)">Term & Conditions</a>
+        <a routerLink="/terms-conditions">Terms & Conditions</a>
         and
-        <a href="javascript:void(0)"> Privacy & Policy</a>
+        <a routerLink="/privacy-policy">Privacy & Policy</a>
       </span>
 
       <div>
-        <button id="submit" type="submit" [disabled]="!form.valid">Register</button>
+        <button id="submit" type="submit">Register</button>
       </div>
     </form>
     <div id="social">
@@ -48,7 +49,6 @@
       </div>
       <div class="social-buttons">
         <button id="google" (click)="googleLogin()"><img src="assets/google-social.png"></button>
-        <button id="apple"><img src="assets/apple-social.png"></button>
         <button id="outlook" (click)="microsoftLogin()"><img src="assets/outlook-social.png"></button>
       </div>
     </div>

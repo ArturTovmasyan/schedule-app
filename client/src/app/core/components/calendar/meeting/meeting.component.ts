@@ -58,7 +58,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       meetTitle: ['', [Validators.required, Validators.minLength(5)]],
       attendees: ['', [Validators.required]],
-      meetingLocation: ['', [Validators.required, ValidationService.urlValidator]],
+      meetingLocation: ['', [ValidationService.urlValidator]],
     });
 
     this.subscription = this.broadcaster.on('meet_date_range').subscribe((eventData: any) => {

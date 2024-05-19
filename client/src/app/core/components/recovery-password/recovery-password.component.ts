@@ -17,6 +17,8 @@ export class RecoveryPasswordComponent {
   error?: ErrorResponse;
   errorMessage: string | undefined;
   readonly confirmToken: string = '';
+  showNewPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -29,6 +31,14 @@ export class RecoveryPasswordComponent {
       'newPassword': ['', [ValidationService.passwordValidator, Validators.required]],
       'confirmPassword': ['', [Validators.required]]
     }, {validator: ValidationService.passwordsEqualValidator})
+  }
+
+  toggleNewPasswordType() {
+    this.showNewPassword = !this.showNewPassword;
+  }
+
+  toggleConfirmPasswordType() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   setNewPassword() {

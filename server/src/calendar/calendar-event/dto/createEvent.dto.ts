@@ -16,7 +16,6 @@ export class CreateEventDto {
   description: string;
 
   @IsString()
-  @IsOptional()
   meetLink: string;
 
   @IsString()
@@ -34,6 +33,7 @@ export class CreateEventDto {
 
   @IsArray()
   @IsEmail({}, { each: true })
+  @IsNotEmpty()
   attendees?: string[];
 
   @IsArray()

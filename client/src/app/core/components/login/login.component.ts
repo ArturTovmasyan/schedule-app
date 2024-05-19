@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   errorMessage: string | undefined;
   error?: ErrorResponse;
+  showPassword: boolean = false;
   private readonly _destroying$ = new Subject<void>();
 
   constructor(
@@ -111,5 +112,9 @@ export class LoginComponent implements OnInit {
   ngOnDestroy(): void {
     this._destroying$.next();
     this._destroying$.complete();
+  }
+
+  togglePasswordType() {
+    this.showPassword = !this.showPassword;
   }
 }
