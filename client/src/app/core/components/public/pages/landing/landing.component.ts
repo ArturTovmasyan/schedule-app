@@ -3,6 +3,7 @@ import { ViewportScroller } from "@angular/common";
 import { BroadcasterService } from 'src/app/shared/services';
 import { BehaviorSubject } from 'rxjs';
 import MockTestimonials  from '../../data/testimonials';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-landing',
