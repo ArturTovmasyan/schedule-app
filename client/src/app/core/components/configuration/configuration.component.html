@@ -1,40 +1,71 @@
 <div id="container">
-  <section class="configuration">
-    <div>
-      <label>Anyone On the internet</label>
-      <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
-        molestie.</span>
+  <section class="configuration" *ngIf="isVisible(Section.PUBLIC)">
+    <div class="content">
+      <div class="info">
+        <label>Anyone On the internet</label>
+        <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
+          molestie.</span>
+      </div>
+      <div class="action">
+        <label class="switch">
+          <input #public type="checkbox" [checked]="isAccessible(AccessibilityType.PUBLIC)"
+            (change)="updateAccessibility(AccessibilityType.PUBLIC, public.checked)">
+          <span class="slider round"></span>
+        </label>
+      </div>
     </div>
-    <label class="switch">
-      <input #public type="checkbox" [checked]="isAccessible(AccessibilityType.PUBLIC)"
-        (change)="updateAccessibility(AccessibilityType.PUBLIC, public.checked)">
-      <span class="slider round"></span>
-    </label>
   </section>
 
-  <section class="configuration">
-    <div>
-      <label>Anyone from a given domain</label>
-      <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
-        molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
+  <section class="configuration" *ngIf="isVisible(Section.DOMAIN)">
+    <div class="content">
+      <div class="info">
+        <label>Anyone from a given domain</label>
+        <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
+          molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
+      </div>
+      <div class="action">
+        <label class="switch">
+          <input #domain type="checkbox" [checked]="isAccessible(AccessibilityType.DOMAIN)"
+            (change)="updateAccessibility(AccessibilityType.DOMAIN, domain.checked)">
+          <span class="slider round"></span>
+        </label>
+
+        <span (click)="toggleSection(Section.DOMAIN)">Details <img src="assets/ic_close.svg"></span>
+      </div>
     </div>
-    <label class="switch">
-      <input #domain type="checkbox" [checked]="isAccessible(AccessibilityType.DOMAIN)"
-        (change)="updateAccessibility(AccessibilityType.DOMAIN, domain.checked)">
-      <span class="slider round"></span>
-    </label>
+    <div class="details" *ngIf="currentDisplaySection === Section.DOMAIN">
+      <label id="title">Domain</label>
+
+      <div class="item-container">
+        <div class="input">
+          <input #domainInput type="text" placeholder="Enter a domain" (keyup.enter)="addDomain()">
+          <img src="assets/ic_add.svg" fill="red" (click)="addDomain()">
+        </div>
+
+        <div class="item" *ngFor="let domain of domains; let i = index">
+          <span>@{{ domain }}</span>
+          <img src="assets/ic_delete.svg" (click)="removeDomain(i)">
+        </div>
+      </div>
+    </div>
   </section>
 
-  <section class="configuration">
-    <div>
-      <label>Allow access by request only</label>
-      <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
-        molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
+  <section class="configuration" *ngIf="isVisible(Section.REQUEST)">
+    <div class="content">
+      <div class="info">
+        <label>Allow access by request only</label>
+        <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
+          molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
+      </div>
+      <div class="action">
+        <label class="switch">
+          <input #request type="checkbox" [checked]="isAccessible(AccessibilityType.REQUEST)"
+            (change)="updateAccessibility(AccessibilityType.REQUEST, request.checked)">
+          <span class="slider round"></span>
+        </label>
+
+        <span (click)="toggleSection(Section.REQUEST)">Details <img src="assets/ic_close.svg"></span>
+      </div>
     </div>
-    <label class="switch">
-      <input #request type="checkbox" [checked]="isAccessible(AccessibilityType.REQUEST)"
-        (change)="updateAccessibility(AccessibilityType.REQUEST, request.checked)">
-      <span class="slider round"></span>
-    </label>
   </section>
 </div>
