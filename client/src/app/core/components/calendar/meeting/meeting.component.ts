@@ -79,6 +79,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       meetTitle: ['', [Validators.required, Validators.minLength(5)]],
       attendees: ['', [Validators.required]],
+      duration: ['', [Validators.required]],
       meetingLocation: [''],
     }, {updateOn: 'blur'});
 
@@ -118,6 +119,16 @@ export class MeetingComponent implements OnInit, OnDestroy {
       limitSelection: 10,
       allowSearchFilter: true,
     };
+    this.initFormValue();
+  }
+
+  initFormValue(defaultValues: any = null) {
+    if (!defaultValues) { 
+      defaultValues = {
+        'duration': 1 // 1 hour
+      }
+    }
+    this.form.patchValue(defaultValues);
   }
 
   onItemSelect(item: any) {
