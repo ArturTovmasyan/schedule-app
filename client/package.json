@@ -32,6 +32,7 @@
     "bootstrap": "^5.2.1",
     "font-awesome": "^4.7.0",
     "ng-http-loader": "^11.0.1",
+    "ng-multiselect-dropdown": "^0.3.9",
     "rxjs": "~7.5.0",
     "rxjs-compat": "^6.6.7",
     "tslib": "^2.3.0",

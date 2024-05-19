@@ -27,9 +27,16 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles/styles.scss", "src/styles/calendar.scss"],
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/styles/styles.scss",
+              "src/styles/calendar.scss"
+            ],
             "allowedCommonJsDependencies": ["moment"],
-            "scripts": ["src/js/index.js"]
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "src/js/index.js"
+            ]
           },
           "configurations": {
             "production": {

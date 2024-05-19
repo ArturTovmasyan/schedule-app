@@ -40,12 +40,6 @@ export class ContactsComponent implements OnInit {
         return true;
       }
 
-      //ignore duplicates
-      // if (this.lastOwnerId && this.lastOwnerId == item.owner.id) {
-      //   return false;
-      // }
-      // this.lastOwnerId = item.owner.id;
-
       return item.owner.firstName.toLowerCase().startsWith(query) ||
         item.owner.lastName.toLowerCase().startsWith(query) ||
         item.owner.email.toLowerCase().startsWith(query);

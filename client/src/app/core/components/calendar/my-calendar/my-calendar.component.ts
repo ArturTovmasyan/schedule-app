@@ -21,6 +21,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   contactAvailabilityDates: any;
   subscription: BehaviorSubject<boolean>;
   selectedContactEmail: string = '';
+  selectedContactId: string = '';
   currentUrl: string = '';
   myEvents: any;
 

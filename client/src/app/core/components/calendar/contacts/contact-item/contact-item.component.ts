@@ -53,7 +53,8 @@ export class ContactItemComponent implements OnInit {
           const availabilityData = data?.availabilityData;
           const contactData = {
             ...availabilityData,
-            contactEmail
+            contactEmail,
+            contactId
           }
           this.broadcaster.broadcast('contact_calendar_data', contactData);
         },

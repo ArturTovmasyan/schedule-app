@@ -11,6 +11,8 @@ import {CalendarType} from '../connect-calendar/connect-calendar.component';
 import {AvailabilityService} from "../../../services/calendar/availability.service";
 import {BroadcasterService, ValidationService} from "../../../../shared/services";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {CalendarAccess} from "../../../interfaces/calendar/calendar-access.interface";
+import {CalendarAccessService} from "../../../services/calendar/access.service";
 
 @Component({
   selector: 'app-meeting',
@@ -33,10 +35,13 @@ export class MeetingComponent implements OnInit, OnDestroy {
   selectedCalendar: Calendar | null = null;
   subscription: BehaviorSubject<boolean>;
   form: FormGroup;
+  attendeesOptions: { id: string, value: string }[] = [];
+  selectedAttendees: any = [];
+  dropdownSettings = {};
+  errorMessages: any = [];
   showCalendars = false;
   selectEvent = false;
   error = false;
-  errorMessages: any = [];
 
   constructor(
     private readonly router: Router,
@@ -45,21 +50,28 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private readonly commonService: CommonService,
     private readonly availabilityService: AvailabilityService,
     private readonly broadcaster: BroadcasterService,
-    private formBuilder: FormBuilder
+    private readonly service: CalendarAccessService,
+    private formBuilder: FormBuilder,
   ) {
+    this.fetchMyAttendees();
+
+    this.form = this.formBuilder.group({
+      meetTitle: ['', [Validators.required, Validators.minLength(5)]],
+      attendees: ['', [Validators.required]],
+      meetingLocation: ['', [Validators.required, ValidationService.urlValidator]],
+    });
+
     this.subscription = this.broadcaster.on('meet_date_range').subscribe((eventData: any) => {
       if (eventData.contact_email) {
-        this.data.attendees = [eventData.contact_email];
+        this.selectedAttendees = [
+          {id: eventData.contact_id, value: eventData.contact_email}
+        ]
+        this.data.attendees?.push(eventData.contact_email);
       }
 
       this.data.start = eventData.start;
       this.data.end = eventData.end;
       this.selectEvent = this.data.attendees?.length != 0;
-    });
-
-    this.form = this.formBuilder.group({
-      meetTitle: ['', [Validators.required, Validators.minLength(5)]],
-      meetingLocation: ['', [Validators.required, ValidationService.urlValidator]],
     });
   }
 
@@ -74,6 +86,31 @@ export class MeetingComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+    this.dropdownSettings = {
+      singleSelection: false,
+      enableCheckAll: false,
+      idField: 'id',
+      textField: 'value',
+      itemsShowLimit: 10,
+      limitSelection: 10,
+      allowSearchFilter: true,
+    };
+  }
+
+  onItemSelect(item: any) {
+    this.data.attendees?.push(item.value);
+    this.updateAttendeeEmails();
+  }
+
+  onRemoveItem($event: any) {
+    const index = this.data.attendees?.indexOf($event.value);
+    if (index !== -1) {
+      // @ts-ignore
+      this.data.attendees?.splice(index, 1);
+    }
+
+    this.updateAttendeeEmails();
   }
 
   ngOnDestroy() {
@@ -109,8 +146,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     return "";
   }
 
-  updateAttendeeEmails(emails: string[]) {
-    this.data.attendees = emails;
+  updateAttendeeEmails() {
     this.getContactsAvailability();
   }
 
@@ -176,6 +212,33 @@ export class MeetingComponent implements OnInit, OnDestroy {
     } else {
       this.broadcaster.broadcast('contact_calendar_data', []);
     }
+  }
+
+  fetchMyAttendees() {
+    this.service.fetchAccessibleContacts()
+      .pipe(first())
+      .subscribe({
+        next: (data: CalendarAccess[] | null) => {
+          if (data) {
+            data.map((item: any) => {
+              let email = item?.owner?.email;
+              let id = item?.owner?.id;
+
+              if (this.attendeesOptions.indexOf(email) === -1) {
+                this.attendeesOptions.push({
+                  id: id,
+                  value: email
+                });
+              }
+            });
+
+            this.attendeesOptions = [...this.attendeesOptions]
+          }
+        },
+        error: (error) => {
+          this.error = error;
+        }
+      });
   }
 
   close() {

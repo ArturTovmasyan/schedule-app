@@ -46,13 +46,30 @@
         <h3 class="section-title-secondary">
           Attendees
         </h3>
-        <app-chip-email-input [emails]="data.attendees ?? []" (hasError)="updateFieldError($event)" (emailUpdateEvent)="updateAttendeeEmails($event)"></app-chip-email-input>
+
+        <ng-multiselect-dropdown
+          formControlName="attendees"
+          [placeholder]="'Select Attendees'"
+          [settings]="dropdownSettings"
+          [data]="attendeesOptions"
+          (onSelect)="onItemSelect($event)"
+          (onDeSelect)="onRemoveItem($event)"
+          [(ngModel)]="selectedAttendees"
+        >
+        </ng-multiselect-dropdown>
+
+        <app-control-messages [control]="f['attendees']"></app-control-messages>
+
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">
           Optional
         </h3>
-        <app-chip-email-input [emails]="data.optionalAttendees ?? []" (hasError)="updateFieldError($event)" (emailUpdateEvent)="updateOptionalAttendeeEmails($event)"></app-chip-email-input>
+        <app-chip-email-input
+          [emails]="data.optionalAttendees ?? []"
+          (hasError)="updateFieldError($event)"
+          (emailUpdateEvent)="updateOptionalAttendeeEmails($event)">
+        </app-chip-email-input>
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">
