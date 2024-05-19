@@ -10,7 +10,7 @@ export class GetContactCompanyPipe implements PipeTransform {
   transform(item: CalendarAccess | string | null | undefined): string  {
     if (!item) return '';
     const email = typeof(item) == 'string' ? item : item.owner.email;
-    const personalEmailDomains = ['gmail', 'outlook', 'hotmail', 'live', 'yahoo', 'msn'];
+    const personalEmailDomains = ['gmail', 'outlook', 'hotmail', 'live', 'yahoo', 'msn', 'mailinator'];
     const domain = email.substring(email.lastIndexOf("@") + 1, email.lastIndexOf("."));
     if (personalEmailDomains.includes(domain.toLocaleLowerCase())) {
       return 'Personal';
