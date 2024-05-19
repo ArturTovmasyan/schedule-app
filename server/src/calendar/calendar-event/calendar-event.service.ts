@@ -187,17 +187,6 @@ export class CalendarEventService {
       const outlookToken = tokens.outlookToken;
       const eventSavers = [];
 
-      const [attendees, optionalAttendees] = await Promise.all([
-        manager.getRepository(User).find({
-          where: { id: In(eventBody.attendees) },
-          select: ['email', 'id'],
-        }),
-        manager.getRepository(User).find({
-          where: { id: In(eventBody.optionalAttendees) },
-          select: ['email', 'id'],
-        }),
-      ]);
-
       if (
         (eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar) &&
           !googleToken) ||
@@ -223,15 +212,15 @@ export class CalendarEventService {
           });
 
         async function saveEventGoogle() {
-          const attendeeData = attendees.map((attendee) => {
+          const attendeeData = eventBody.attendees.map((attendee) => {
             return {
-              email: attendee.email,
+              email: attendee,
               optional: false,
             };
           });
 
-          optionalAttendees.map((attendee) => {
-            attendeeData.push({ email: attendee.email, optional: false });
+          eventBody.optionalAttendees.map((attendee) => {
+            attendeeData.push({ email: attendee, optional: true });
           });
 
           const eventData = {
@@ -247,7 +236,7 @@ export class CalendarEventService {
               ${eventBody.description}`,
               start: { dateTime: eventBody.start, timeZone: 'GMT' },
               end: { dateTime: eventBody.end, timeZone: 'GMT' },
-              attendees,
+              attendees: attendeeData,
             },
           };
 
@@ -288,21 +277,19 @@ export class CalendarEventService {
           });
 
         async function saveEventOutlook() {
-          const attendeeData = attendees.map((attendee) => {
+          const attendeeData = eventBody.attendees.map((attendee) => {
             return {
               emailAddress: {
-                address: attendee.email,
-                name: attendee.firstName + ' ' + attendee.lastName,
+                address: attendee,
               },
               type: 'required',
             };
           });
 
-          optionalAttendees.map((attendee) => {
+          eventBody.optionalAttendees.map((attendee) => {
             attendeeData.push({
               emailAddress: {
-                address: attendee.email,
-                name: attendee.firstName + ' ' + attendee.lastName,
+                address: attendee,
               },
               type: 'optional',
             });

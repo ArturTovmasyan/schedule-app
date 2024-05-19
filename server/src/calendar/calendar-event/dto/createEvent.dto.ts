@@ -7,6 +7,7 @@ import {
   IsArray,
   IsUUID,
   IsOptional,
+  IsEmail,
 } from 'class-validator';
 import { CalendarTypeEnum } from 'src/calendar/calendar-permissions/enums/calendarType.enum';
 
@@ -38,11 +39,11 @@ export class CreateEventDto {
   syncWith: CalendarTypeEnum[];
 
   @IsArray()
-  @IsUUID(4, { each: true })
+  @IsEmail({}, { each: true })
   attendees?: string[];
 
   @IsArray()
-  @IsUUID(4, { each: true })
+  @IsEmail({}, { each: true })
   optionalAttendees?: string[];
 }
 
