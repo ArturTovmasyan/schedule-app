@@ -71,7 +71,7 @@
       </h3>
 
       <ul class="list-unstyled time-slots">
-        <li class="time-slot" id="timeSlot" *ngFor="let date of selectedDates$ | async | keyvalue">
+        <li class="time-slot" id="timeSlot" *ngFor="let date of selectedDates$ | async | keyvalue:sortTimeslots">
           <div class="date">
             <input type="text" id="availableDate" name="availableDate"
                    placeholder="{{ date.key }}" readonly>

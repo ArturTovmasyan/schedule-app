@@ -80,7 +80,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           this.locations = res;
           // load from api if link id is sent to parameters ie used for edit page
           if (this.linkId) {
+            this.broadcaster.broadcast('multiselect_calendar', false);
               this.loadSharableLinkDetails(this.linkId);
+          } else {
+            this.broadcaster.broadcast('multiselect_calendar', true);
           }
         }
       });
@@ -101,20 +104,25 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       } else {
         this.selectedDates[startdate] = [dates];
       }
-      console.log('addedtimeslot', dates);
       this.addedTimeSlots.push(dates);
-
       this.selectedDates[startdate].sort(function (left: any, right: any) {
         return moment.utc(left.start).diff(moment.utc(right.start))
       });
       const sortedObject = Object.fromEntries(
         Object.entries(this.selectedDates).sort(([a], [b]) => {
-          return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
+          return moment(a, "ddd, MMM Do").diff(moment(b, "ddd, MMM Do"));
         })
       )
+      this.selectedDates = sortedObject;
       this.selectedDates$.next(sortedObject);
     });
   }
+
+  // Order by descending date
+  sortTimeslots = (a: any, b: any) => {
+    return moment(a, "ddd, MMM Do").diff(moment(b, "ddd, MMM Do"));
+  }
+
 
 
   ngOnInit(): void {
@@ -134,10 +142,13 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.selectedDates$.next(this.selectedDates);
       this.selectedContacts = savedDataArr.selectedContacts;
       this.selectedContacts$.next(this.selectedContacts);
+      this.addedTimeSlots = savedDataArr.addedTimeSlots;
+      this.deletedTimeSlots = savedDataArr.deletedTimeSlots;
       if (this.selectedContacts.length > 0) this.showJointAvailibility = true;
       const selectedDatesNew: any = [];
       for (const key in this.selectedDates) {
         const value = this.selectedDates[key];
+
         for (const val of value) {
           selectedDatesNew.push({
             'startDate': val['start'],
@@ -161,10 +172,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   loadSharableLinkDetails(linkId: string | null) {
     if (!linkId) {
-      this.broadcaster.broadcast('multiselect_calendar', true);
       return;
     }
-    this.broadcaster.broadcast('multiselect_calendar', false);
+
     this.updateView = false;
 
     this.sharableLinkService.getDetails(linkId)
@@ -222,6 +232,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
             }
             this.selectedContacts$.next(this.selectedContacts);
             this.filteredContacts$.next([]);
+            this.broadcaster.broadcast('multiselect_calendar', false);
 
           }
 
@@ -242,7 +253,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   removeTime(date: any, i: any) {
     const selectedDate = this.selectedDates[date].splice(i, 1);
     // run if in update page
-    console.log(selectedDate);
     if (this.sharableLink && selectedDate?.[0]?.id) {
       this.deletedTimeSlots.push(selectedDate[0].id);
     } else {
@@ -289,7 +299,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     const savedData = {
       selectedContacts: this.selectedContacts,
       selectedDates: this.selectedDates$.value,
-      choosedLocationObj: this.choosedLocationObj
+      choosedLocationObj: this.choosedLocationObj,
+      addedTimeslots: this.addedTimeSlots,
+      deletedTimeSlots: this.deletedTimeSlots
     }
 
     localStorage.setItem('savedDatas', JSON.stringify(savedData));
@@ -525,16 +537,13 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       }, 3000);
       return;
     }
-
     const selectedDatesNew = [];
     for (const key in selectedDates) {
       const value = selectedDates[key];
-      for (const val of value) {
-        selectedDatesNew.push({
-          'startDate': val['start'],
-          'endDate': val['end']
-        });
-      }
+      selectedDatesNew.push({
+        'startDate': value['start'],
+        'endDate': value['end']
+      });
     }
 
     const requestParams = {

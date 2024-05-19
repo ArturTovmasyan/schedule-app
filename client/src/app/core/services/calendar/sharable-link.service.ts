@@ -13,7 +13,7 @@ export class SharableLinkService {
   }
 
   updateLink(id: string, formData: any) {
-    return this.http.post<ApiResponse<any>>(`/api/sharable-links/${id}`, { ...formData });
+    return this.http.patch<ApiResponse<any>>(`/api/sharable-links/${id}`, { ...formData });
   }
 
   getDetails(linkId: string) {
