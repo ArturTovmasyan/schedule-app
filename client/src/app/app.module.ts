@@ -17,9 +17,24 @@ import {BroadcasterService, ValidationService} from "./shared/services";
 import {SharedModule} from "./shared/shared.module";
 import { ConfirmAccountComponent } from './core/components/confirm-account/confirm-account.component';
 import { ChangePasswordComponent } from './core/components/change-password/change-password.component';
+import {P404Component} from "./core/components/error/404.component";
+import {P500Component} from "./core/components/error/500.component";
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent, LoginComponent, FooterComponent, SignupComponent, ResetPasswordComponent, ConfirmAccountComponent, ChangePasswordComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    HeaderComponent,
+    AuthComponent,
+    LoginComponent,
+    FooterComponent,
+    SignupComponent,
+    ResetPasswordComponent,
+    ConfirmAccountComponent,
+    ChangePasswordComponent,
+    P404Component,
+    P500Component
+  ],
   imports: [
     AppRoutingModule,
     BrowserModule,

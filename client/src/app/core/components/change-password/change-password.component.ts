@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {ErrorResponse} from "../../interfaces/error-response.interface";
+import { Component} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 import {BroadcasterService, ValidationService} from "../../../shared/services";
 import {AuthService} from "../../services/auth/auth.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-change-password',
@@ -22,8 +22,7 @@ export class ChangePasswordComponent {
     private formBuilder: FormBuilder,
     private broadcaster: BroadcasterService,
     private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) {
     this.confirmToken = this.route.snapshot.queryParams['token'];
 
@@ -39,7 +38,6 @@ export class ChangePasswordComponent {
         .changePassword(this.confirmToken, this.form.value.newPassword)
         .subscribe({
           next: () => {
-            debugger;
             this.form.clearValidators();
             this.form.reset();
             this.changed = true;

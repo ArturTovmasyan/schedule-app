@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import {ValidationService} from "../../../shared/services";
-import {ErrorResponse} from "../../interfaces/error-response.interface";
+import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 
 @Component({
   selector: 'lib-login',
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]],
       password: ['', [Validators.required]],
-      remember: [false]
+      remember: ['']
     });
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.authService
-      .login(this.form.value.email, this.form.value.password)
+      .login(this.form.value)
       .pipe(first())
       .subscribe({
         next: () => {

@@ -2,17 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-
-export interface ApplicationUser {
-  accessToken: string;
-  expiresIn: Date;
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-}
+import {ApplicationUser} from "../../interfaces/user/app.user.interface";
+import {LoginUser} from "../../interfaces/user/login.user.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -34,8 +25,9 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(email: string, password: string) {
-    return this.http.post<any>('/api/auth/login', {email, password}).pipe(
+  login(formData: LoginUser) {
+    debugger;
+    return this.http.post<any>('/api/auth/login', {...formData}).pipe(
       map((response: any) => {
         if (response && response.accessToken) {
           localStorage.setItem('cu', JSON.stringify(response));
@@ -47,7 +39,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('cu');
+    localStorage.clear();
     this.currentUserSubject.next(null);
   }
 
@@ -56,12 +48,7 @@ export class AuthService {
    * @returns {any}
    */
   signup(signupData: { firstName: any; lastName: any; password: any; email: string | undefined }) {
-    return this.http.post('/api/auth/register', signupData).pipe(map(token_info => {
-        if (token_info) { // && token_info.access_token
-          localStorage.setItem('token', JSON.stringify(token_info));
-        }
-      })
-    )
+    return this.http.post<void>('/api/auth/register', signupData);
   }
 
   resetPassword(email: string) {
@@ -69,7 +56,7 @@ export class AuthService {
   }
 
   confirmAccount(token: string): Observable<boolean> {
-    return this.http.get<any>('/api/auth/confirm?token=' + token).pipe(
+    return this.http.get<boolean>('/api/auth/confirm?token=' + token).pipe(
       map((response: boolean) => {
         return response;
       })
@@ -77,7 +64,7 @@ export class AuthService {
   }
 
   changePassword(token: string, password: string): Observable<boolean> {
-    return this.http.patch<any>('/api/auth/change-password', {
+    return this.http.patch<boolean>('/api/auth/change-password', {
       password,
       token
     }, {headers: this.setBearerHeader(token)}).pipe(

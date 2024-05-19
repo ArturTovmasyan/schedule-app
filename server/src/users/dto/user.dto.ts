@@ -16,7 +16,7 @@ export class UserDto {
   lastName: string;
 
   @Expose({ name: 'status' })
-  status?: number;
+  status: number;
 
   @Expose({ name: 'created_on' })
   createdOn?: Date;

@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
-import {ErrorResponse} from "../../interfaces/error-response.interface";
+import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 
 @Component({
   selector: 'app-signup',
@@ -62,7 +62,6 @@ export class SignupComponent implements OnInit {
           this.form.reset();
         },
         error: (error) => {
-          debugger;
           this.error = error;
         }
       })

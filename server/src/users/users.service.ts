@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { toUserDto } from 'src/shared/mapper';
+import {toUserDto, toUserInfoDto} from 'src/shared/mapper';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from '@user/entity/user.entity';
@@ -26,71 +26,6 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async findAll(): Promise<UserDto[]> {
-    const users = await this.userRepo.find();
-    return users.map((user) => toUserDto(user));
-  }
-
-  async findOneById(id: string): Promise<UserDto> {
-    const user = await this.userRepo.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!user) {
-      throw new NotFoundException();
-    }
-    return toUserDto(user);
-  }
-
-  async findOneByEmail(email): Promise<UserDto> {
-    const user = await this.userRepo.findOne({
-      where: { email },
-    });
-    if (!user) {
-      throw new NotFoundException({
-        status: HttpStatus.NOT_FOUND,
-        message: ErrorMessages.userNotFound,
-      });
-    }
-    return toUserDto(user);
-  }
-
-  async findOne(options?: object): Promise<UserDto> {
-    const user = await this.userRepo.findOne(options);
-    if (!user) {
-      throw new NotFoundException();
-    }
-    return toUserDto(user);
-  }
-
-  async findByLogin({ email, password }): Promise<UserDto> {
-    const user = await this.userRepo.findOne({
-      where: {
-        email,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException({
-        status: HttpStatus.NOT_FOUND,
-        message: ErrorMessages.userNotFound,
-      });
-    }
-
-    if (!(await comparePasswords(user.password, password))) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-    }
-
-    return toUserDto(user);
-  }
-
-  async findByPayload({ email }: any): Promise<UserDto> {
-    return await this.findOne({
-      where: { email },
-    });
-  }
-
   async create(userDto: UserCreateDto): Promise<UserDto> {
     const { email, firstName, lastName, password } = userDto;
     const userInDb = await this.userRepo.findOne({
@@ -100,11 +35,11 @@ export class UsersService {
     if (userInDb) {
       //TODO will be move to ExceptionFilter or Interceptor for global usage
       throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          message: ErrorMessages.userExist,
-        },
-        HttpStatus.FORBIDDEN,
+          {
+            status: HttpStatus.FORBIDDEN,
+            message: ErrorMessages.userExist,
+          },
+          HttpStatus.FORBIDDEN,
       );
     }
 
@@ -167,5 +102,73 @@ export class UsersService {
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(this.saltRounds);
     return await bcrypt.hash(password, salt);
+  }
+
+  async findAll(): Promise<UserDto[]> {
+    const users = await this.userRepo.find();
+    return users.map((user) => toUserDto(user));
+  }
+
+  async findOneById(id: string): Promise<UserDto> {
+    const user = await this.userRepo.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
+    }
+    return toUserDto(user);
+  }
+
+  async findOneByEmail(email): Promise<UserDto> {
+    const user = await this.userRepo.findOne({
+      where: { email },
+    });
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
+    }
+    return toUserDto(user);
+  }
+
+  async findOne(options?: object): Promise<UserDto> {
+    const user = await this.userRepo.findOne(options);
+    if (!user) {
+      throw new NotFoundException();
+    }
+    return toUserDto(user);
+  }
+
+  async findByLogin({ email, password }): Promise<UserUpdateDto> {
+    const user = await this.userRepo.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
+    }
+
+    if (!(await comparePasswords(user.password, password))) {
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
+
+    return toUserInfoDto(user);
+  }
+
+  async findByPayload({ email }: any): Promise<UserDto> {
+    return await this.findOne({
+      where: { email },
+    });
   }
 }

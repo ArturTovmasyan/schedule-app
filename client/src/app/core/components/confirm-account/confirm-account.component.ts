@@ -25,7 +25,7 @@ export class ConfirmAccountComponent {
             }
           },
           error: () => {
-            this.router.navigate(['/']);//TODO any info page about confirm error
+            this.router.navigate(['/404']);
           }
         });
     }

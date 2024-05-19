@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {ApplicationUser, AuthService} from 'src/app/core/services/auth/auth.service';
+import {AuthService} from 'src/app/core/services/auth/auth.service';
+import {ApplicationUser} from "../../interfaces/user/app.user.interface";
 import {BroadcasterService} from "../../../shared/services";
 
 @Component({

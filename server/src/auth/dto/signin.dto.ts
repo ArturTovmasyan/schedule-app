@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import {IsBoolean, IsEmail, IsNotEmpty} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SignInDto {
@@ -7,4 +7,6 @@ export class SignInDto {
   email: string;
   @IsNotEmpty()
   password: string;
+  @IsBoolean()
+  remember: boolean;
 }

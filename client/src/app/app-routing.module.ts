@@ -8,8 +8,9 @@ import {SignupComponent} from "./core/components/signup/signup.component";
 import {ResetPasswordComponent} from "./core/components/reset-password/reset-password.component";
 import {ConfirmAccountComponent} from "./core/components/confirm-account/confirm-account.component";
 import {ChangePasswordComponent} from "./core/components/change-password/change-password.component";
+import {P404Component} from "./core/components/error/404.component";
+import {P500Component} from "./core/components/error/500.component";
 
-//TODO In future will be change for use loadChildren (lazy load module)
 const routes: Routes = [
   {
     path: '',
@@ -42,10 +43,9 @@ const routes: Routes = [
       }
     ]
   },
-  {
-    path: '**',
-    redirectTo: '/'
-  }
+  {path: '404', component: P404Component, data: {title: 'Page 404'}},
+  {path: '500', component: P500Component, data: {title: 'Page 500'}},
+  {path: '**', redirectTo: '/404'}
 ];
 
 @NgModule({

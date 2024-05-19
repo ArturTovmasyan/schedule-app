@@ -14,7 +14,6 @@ import { JwtPayload } from 'src/auth/interfaces/payload.interface';
 import { UserDto } from '@user/dto/user.dto';
 import { LoginStatus } from './interfaces/login-status.interface';
 import {SignInDto} from "./dto/signin.dto";
-import {ConfigService} from "@nestjs/config";
 import {MailService} from "../mail/mail.service";
 import {ErrorMessages} from "@shared/error.messages";
 import {statusEnum} from "@user/enums/status.enum";
@@ -22,23 +21,24 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "@user/entity/user.entity";
 import {Repository} from "typeorm";
 import {ChangePasswordDto} from "./dto/change-password.dto";
+import {UserUpdateDto} from "@user/dto/user-update.dto";
 
 @Injectable()
 export class AuthService {
 
   private readonly appHost:string = process.env.WEB_HOST;
+  private readonly REMEMBER_ME_LIFETIME = '30d';
+  private readonly CONFIRMATION_TOKEN_TIME = '6h';
 
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly mailService: MailService,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
   ) {}
 
   async register(userDto: UserCreateDto): Promise<RegistrationStatus> {
-    debugger;
     let status: RegistrationStatus = {
       success: true,
       message: 'user registered',
@@ -48,7 +48,6 @@ export class AuthService {
       const user = await this.usersService.create(userDto);
       await this.sendConfirmation(user);
     } catch (error) {
-      debugger;
       status = {
         success: false,
         message: error,
@@ -59,9 +58,8 @@ export class AuthService {
   }
 
   async login(dto: SignInDto): Promise<LoginStatus> {
-    debugger;
     const user = await this.usersService.findByLogin(dto);
-    const token = this._createToken(user);
+    const token = this._createToken(user, null, dto.remember);
     return {
       user,
       ...token,
@@ -76,17 +74,24 @@ export class AuthService {
     return user;
   }
 
-  private _createToken({ id, email }: UserDto): any {
-    debugger;
+  private _createToken({ id, email }: UserUpdateDto, expiresTime:number|string|null = null, rememberMe: boolean = false): any {
     const user: JwtPayload = { id, email };
-    const accessToken = this.jwtService.sign(user);
+
+    if (!expiresTime) {
+       expiresTime = rememberMe ? this.REMEMBER_ME_LIFETIME : process.env.JWT_EXPIRES_IN;
+    }
+
+    const accessToken = this.jwtService.sign(user, {
+      expiresIn: expiresTime
+    });
+
     return {
-      expiresIn: process.env.JWT_EXPIRES_IN,
+      expiresIn: expiresTime,
       accessToken,
     };
   }
 
-  public async verifyToken(token): Promise<UserDto> {
+  public async verifyToken(token): Promise<any> {
     const data = this.jwtService.verify(token) as JwtPayload;
     const user = await this.userRepo.findOne({where: { id: data.id }});
 
@@ -102,8 +107,7 @@ export class AuthService {
   }
 
   async sendConfirmation(user: UserDto) {
-    debugger;
-    const token = await this._createToken(user);
+    const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
     const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
 
     await this.mailService.send({
@@ -117,9 +121,9 @@ export class AuthService {
     });
   }
 
-  async resetPassword(email: string) {
-    debugger;
-    const user: UserDto = await this.usersService.findOneByEmail(email);
+  async resetPassword(email: string):Promise<boolean> {
+    const user = await this.userRepo.findOne({where: { email }});
+
     if (!user) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -127,10 +131,10 @@ export class AuthService {
       });
     }
 
-    const token = await this._createToken(user);
+    const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
     const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
 
-    //TODO must be fetch from config .env
+    // TODO use microservice for send by queue
     await this.mailService.send({
       from: process.env.NO_REPLY_EMAIL,
       to: user.email,
@@ -140,6 +144,7 @@ export class AuthService {
                 <p>Please use this <a href="${changeLink}">link</a> to reset your password.</p>
             `,
     });
+    return true;
   }
 
   async confirmRegistration(token: string): Promise<boolean> {
