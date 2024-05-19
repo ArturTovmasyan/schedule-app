@@ -215,6 +215,10 @@ const routes: Routes = [
         component: SharableLinkComponent
       },
       {
+        path: 'sharable-link/list',
+        component: SharableLinkListComponent
+      },
+      {
         path: 'sharable-link/:id',
         component: SharableLinkComponent
       },

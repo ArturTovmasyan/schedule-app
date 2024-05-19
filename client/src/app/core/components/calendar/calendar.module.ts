@@ -17,6 +17,7 @@ import rrulePlugin from '@fullcalendar/rrule';
 import { SharableLinkComponent } from './sharable-link/sharable-link.component';
 import { GroupAvailabilityComponent } from './group-availability/group-availability.component'
 import { SharableLinkService } from '../../services/calendar/sharable-link.service';
+import { SharableLinkListComponent } from './sharable-link-list/sharable-link-list.component';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
