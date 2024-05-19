@@ -10,6 +10,7 @@ export interface IErrorMessages {
   availabilityExists: string;
   contactsNotFound: string;
   alreadyHaveAccess: string;
+  noCalendarAccess: string;
   accessRequestNotFound: string;
   accessRequestIdNotProvided: string;
   cantSentYourself: string;

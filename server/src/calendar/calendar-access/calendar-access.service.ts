@@ -132,13 +132,9 @@ export class CalendarAccessService {
       },
     });
 
-    if (
-      checkAccess &&
-      (moment().diff(checkAccess.timeForAccess) < 0 ||
-        !checkAccess.timeForAccess)
-    ) {
+    if (checkAccess && checkAccess.timeForAccess && moment().diff(checkAccess.timeForAccess) < 0) {
       throw new BadRequestException({
-        message: ErrorMessages.alreadyHaveAccess,
+        message: ErrorMessages.noCalendarAccess,
       });
     }
   }

@@ -47,7 +47,6 @@ export class SettingsComponent implements OnInit {
   }
 
   changeTitle(title: string) {
-    debugger;
     this.setting_title = title;
   }
 }

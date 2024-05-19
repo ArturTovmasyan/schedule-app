@@ -5,12 +5,14 @@ import {CommonModule} from '@angular/common';
 import {ControlMessageComponent} from "../core/components/control-message/control-message.component";
 import {NotificationComponent} from "../core/components/notification/notification.component";
 import { NotificationItemComponent } from '../core/components/notification/notification-item/notification-item.component';
+import {AvatarComponent} from "../core/components/avatar/avatar.component";
 
 @NgModule({
   declarations: [
     ControlMessageComponent,
     NotificationComponent,
-    NotificationItemComponent
+    NotificationItemComponent,
+    AvatarComponent
   ],
   imports: [
     CommonModule,
@@ -23,7 +25,8 @@ import { NotificationItemComponent } from '../core/components/notification/notif
     ReactiveFormsModule,
     ControlMessageComponent,
     NotificationComponent,
-    NotificationItemComponent
+    NotificationItemComponent,
+    AvatarComponent
   ]
 })
 

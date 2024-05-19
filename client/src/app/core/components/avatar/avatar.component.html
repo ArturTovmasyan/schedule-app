@@ -1,0 +1,17 @@
+<div class="avatar dropdown show">
+
+  <a class="user-profile dropdown-toggle" id="userProfile" href="#" data-bs-toggle="dropdown">
+    <div class="avatar">
+      <img *ngIf="avatar;else avatarAcronym" src="{{avatar}}" alt="avatar">
+    </div>
+  </a>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <a class="dropdown-item" routerLink="/settings/calendar">Settings</a>
+    <a class="dropdown-item" routerLink="/logout">Log out</a>
+  </div>
+</div>
+
+<ng-template #avatarAcronym>
+  <span>{{getAcronymName(fullName)}}</span>
+</ng-template>

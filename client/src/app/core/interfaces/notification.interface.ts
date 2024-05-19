@@ -7,8 +7,9 @@ export interface Notification {
   createdOn: string;
   accessRequest?: AccessRequest;
   sender: {
-    id: string;
-    firstName: string;
-    lastName: string;
+    id: string,
+    firstName: string,
+    lastName: string,
+    avatar: string
   };
 }

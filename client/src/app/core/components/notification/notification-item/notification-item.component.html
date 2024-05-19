@@ -1,7 +1,7 @@
 <div class="notification-body">
   <div class="notification-body-wrapper" [ngClass]="{ viewed: notification.viewed }">
     <div class="avatar">
-      <img src="assets/alexisohanian.jpeg" alt="avatar">
+      <img *ngIf="notification.sender.avatar;else avatarAcronym" src="{{notification.sender.avatar}}" alt="avatar">
     </div>
 
     <div class="notification-info">
@@ -20,3 +20,7 @@
     </div>
   </div>
 </div>
+
+<ng-template #avatarAcronym>
+  <span>{{getAcronymName(getSenderName(notification))}}</span>
+</ng-template>

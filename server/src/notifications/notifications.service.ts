@@ -26,7 +26,7 @@ export class NotificationsService {
    * @description `Create new notification`
    *
    * @param user - `Authorized user data`
-   * @param createNotificationDto - `id of reciever user,notification type,and access request id(optional)`
+   * @param createNotificationsDto
    *
    * @returns `Created`
    */
@@ -135,7 +135,7 @@ export class NotificationsService {
         'notification.createdOn',
       ])
       .leftJoin('notification.sender', 'sender')
-      .addSelect(['sender.id', 'sender.firstName', 'sender.lastName'])
+      .addSelect(['sender.id', 'sender.firstName', 'sender.lastName', 'sender.avatar'])
       .leftJoin('notification.accessRequest', 'accessRequest')
       .addSelect([
         'accessRequest.id',
