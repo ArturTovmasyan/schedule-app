@@ -1,4 +1,4 @@
-import { AccessibilityTypeEnum } from 'src/calendar-accessibility/enums/calendar-accessibility.enum';
+import { AccessibilityTypeEnum } from 'src/calendar/calendar-accessibility/enums/calendar-accessibility.enum';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class calendarAccessibility1661876358995 implements MigrationInterface {

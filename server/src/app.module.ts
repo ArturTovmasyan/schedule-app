@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConnectionOptions } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { AvailabilityModule } from './availability/availability.module';
 import { AuthController } from './auth/auth.controller';
 import { AppController } from './app.controller';

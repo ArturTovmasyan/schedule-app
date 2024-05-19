@@ -1,4 +1,4 @@
-import { ClockType } from 'src/availability/enums/clockType.enum';
+import { ClockType } from 'src/calendar/calendar-availability/enums/clockType.enum';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class calendarAvailability1661691632249 implements MigrationInterface {

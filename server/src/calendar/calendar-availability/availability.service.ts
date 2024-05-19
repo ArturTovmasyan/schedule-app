@@ -6,7 +6,7 @@ import {
   IResponse,
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
-import { ErrorMessages } from '../components/constants/error.messages';
+import { ErrorMessages } from '../../components/constants/error.messages';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { Availability } from './entities/availability.entity';
@@ -51,9 +51,9 @@ export class AvailabilityService {
   }
 
   /**
-   * @description `Find availability of user`
+   * @description `Find calendar-availability of user`
    * @param user - `Authorized user data`
-   * @returns `{availability entity data(Object)}`
+   * @returns `{calendar-availability entity data(Object)}`
    */
 
   async findAll(user: User): Promise<IResponse<Availability>> {

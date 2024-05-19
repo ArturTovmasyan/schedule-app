@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { TimeForAccessEnum } from 'src/calendar-access/enums/access-time.enum';
+import { TimeForAccessEnum } from 'src/calendar/calendar-access/enums/access-time.enum';
 import {
   AccessRequestStatusEnum,
   RequestStatusEnum,

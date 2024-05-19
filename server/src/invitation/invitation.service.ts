@@ -4,8 +4,8 @@ import { Connection, In, Repository } from 'typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
-import { CalendarAccess } from 'src/calendar-access/entities/calendar-access.entity';
-import { CalendarAccessService } from 'src/calendar-access/calendar-access.service';
+import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
+import { CalendarAccessService } from 'src/calendar/calendar-access/calendar-access.service';
 import { IResponseMessage } from 'src/components/interfaces/response.interface';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { InvitationStatusEnum } from './enums/invitation-status.enum';

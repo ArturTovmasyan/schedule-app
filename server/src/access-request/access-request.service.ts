@@ -4,9 +4,9 @@ import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
-import { CalendarAccess } from 'src/calendar-access/entities/calendar-access.entity';
-import { CalendarAccessService } from 'src/calendar-access/calendar-access.service';
-import { TimeForAccessEnum } from 'src/calendar-access/enums/access-time.enum';
+import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
+import { CalendarAccessService } from 'src/calendar/calendar-access/calendar-access.service';
+import { TimeForAccessEnum } from 'src/calendar/calendar-access/enums/access-time.enum';
 import { AccessRequest } from './entities/access-request.entity';
 import { ErrorMessages } from '@shared/error.messages';
 import { MailService } from '../mail/mail.service';

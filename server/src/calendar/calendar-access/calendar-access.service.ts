@@ -8,7 +8,11 @@ import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { UpdateCalendarAccessDto } from './dto/update-calendar-access.dto';
 import { CalendarAccess } from './entities/calendar-access.entity';
 import { TimeForAccessEnum } from './enums/access-time.enum';
+<<<<<<< HEAD:server/src/calendar-access/calendar-access.service.ts
 import { ErrorMessages } from '@shared/error.messages';
+=======
+import { ErrorMessages } from '../../components/constants/error.messages';
+>>>>>>> ace0afe (Made a code review):server/src/calendar/calendar-access/calendar-access.service.ts
 import { MailService } from 'src/mail/mail.service';
 import { User } from '@user/entity/user.entity';
 

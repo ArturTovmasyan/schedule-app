@@ -12,7 +12,7 @@ import { User } from '@user/entity/user.entity';
 import { CalendarEvent } from './entities/calendarEvent.entity';
 import { EventTypeEnum } from './enums/eventType.enum';
 import CreateEventDto from './dto/createEvent.dto';
-import { transactionManagerWrapper } from '../components/helpers/dbTransactionManager';
+import { transactionManagerWrapper } from '../../components/helpers/dbTransactionManager';
 import UpdateEventDto from './dto/updateEvent.dto';
 
 @Injectable()

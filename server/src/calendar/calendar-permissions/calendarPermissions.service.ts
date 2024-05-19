@@ -6,7 +6,7 @@ import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { ConfigService } from '@nestjs/config';
 import { Auth, google } from 'googleapis';
 import * as msal from '@azure/msal-node';
-import { transactionManagerWrapper } from '../components/helpers/dbTransactionManager';
+import { transactionManagerWrapper } from '../../components/helpers/dbTransactionManager';
 import { CalendarTypeEnum } from './enums/calendarType.enum';
 import { UserDto } from '@user/dto/user.dto';
 import { ConfidentialClientApplication } from '@azure/msal-node/dist/client/ConfidentialClientApplication';

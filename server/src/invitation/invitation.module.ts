@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
-import { CalendarAccess } from 'src/calendar-access/entities/calendar-access.entity';
-import { CalendarAccessModule } from 'src/calendar-access/calendar-access.module';
+import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
+import { CalendarAccessModule } from 'src/calendar/calendar-access/calendar-access.module';
 import { InvitationController } from './invitation.controller';
 import { Invitation } from './entities/invitation.entity';
 import { InvitationService } from './invitation.service';
