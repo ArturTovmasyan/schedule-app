@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
 import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
 import { google } from 'googleapis';
+import * as graph from '@microsoft/microsoft-graph-client';
+import 'isomorphic-fetch';
 
 @Injectable()
 export class CalendarService {
@@ -36,8 +38,39 @@ export class CalendarService {
 
     const events = await calendar.events.list({
       calendarId: cal.data.items[0].id,
+      timeZone: 'GMT',
     });
 
+    const tasks = await calendar.acl.list({
+      calendarId: cal.data.items[0].id,
+    });
+
+    console.log('tasks ', tasks.data.items);
+
     console.log('events ', events.data.items);
+  }
+
+  async getFromMS(userId: string) {
+    const { accessToken } = await this.calendarTokenRepository.findOne({
+      owner: { id: userId },
+      calendarType: CalendarTypeEnum.Office365Calendar,
+    });
+
+    // console.log('accessToken ', accessToken);
+
+    const client = graph.Client.init({
+      authProvider: (done) => {
+        done(null, accessToken);
+      },
+    });
+    const calendars = await client
+      .api('https://graph.microsoft.com/v1.0/me/calendars/')
+      .get();
+
+    const event = await client
+      .api(`https://graph.microsoft.com/v1.0/me/calendar/events`)
+      .get();
+
+    console.log('event ', event.value[0]);
   }
 }
