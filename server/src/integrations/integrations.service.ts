@@ -54,13 +54,13 @@ export class IntegrationsService {
         image: 'assets/ic_google_meet.svg',
         value: MeetViaEnum.GMeet,
       },
-      {
-        title: 'Microsoft Teams',
-        sub_title: 'Web Conference',
-        available: !!MSToken,
-        image: 'assets/ic_msteams.svg',
-        value: MeetViaEnum.Teams,
-      },
+      // {
+      //   title: 'Microsoft Teams',
+      //   sub_title: 'Web Conference',
+      //   available: !!MSToken,
+      //   image: 'assets/ic_msteams.svg',
+      //   value: MeetViaEnum.Teams,
+      // },
       {
         title: 'Inbound phone call',
         sub_title: 'You will receive a phone call',
