@@ -57,6 +57,13 @@ export class CalendarEvent {
   @CreateDateColumn({ nullable: true, precision: 3 })
   end!: Date;
 
+  @Column({
+    default: null,
+    name: 'recurrence',
+    type: 'jsonb',
+  })
+  recurrence: string[];
+
   @CreateDateColumn()
   createdOn!: Date;
 

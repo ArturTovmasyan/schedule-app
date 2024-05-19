@@ -145,8 +145,6 @@ export class CalendarEventService {
 
     const cal = await calendar.calendarList.list();
 
-    // console.log('cal ', cal.data.items);
-
     const events = await calendar.events.list({
       calendarId: cal.data.items[0].id,
       timeZone: 'GMT',
