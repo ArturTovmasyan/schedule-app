@@ -34,11 +34,11 @@ export class SettingsComponent implements OnInit {
   },{
     id: 'privacy-policy',
     title: 'Privacy Policy',
-    route: '/settings/privacy-policy'
+    route: '/privacy-policy'
   }, {
     id: 'terms-conditions',
     title: 'Terms & Conditions',
-    route: '/settings/terms-conditions'
+    route: '/terms-conditions'
   }];
 
   setting_title = this.navOptions[0]['title'];
