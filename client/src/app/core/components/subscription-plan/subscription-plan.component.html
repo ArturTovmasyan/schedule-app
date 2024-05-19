@@ -1,0 +1,24 @@
+<div id="container">
+
+  <section id="header">
+    <span>Start for free.</span> Scheduling should be easy.
+  </section>
+  <div id="body">
+    <div class="content" id="plans">
+      <label>1. Select a plan</label>
+      <section>
+        <app-subscription-plan-item *ngFor="let subscriptionPlan of subscriptionPlans; let i = index"
+        [subscription-plan]="subscriptionPlan" [isSelected]="i == 0"></app-subscription-plan-item>
+      </section>
+    </div>
+
+    <div id="divider"></div>
+
+    <div class="content" id="payment">
+      <label>2. Enter payment method</label>
+      <section>
+       
+      </section>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<div id="container" [ngClass]="{'selected': isSelected }"class="selected">
+  <label id="ribbon" *ngIf="subscriptionPlan.recommended">Recommended</label>
+  <img id="logo" src="{{ iconPath }} " alt="">
+
+  <label id="title">{{ subscriptionPlan.name }}</label>
+  <label id="price">
+    <span>$</span>
+    <span>{{ subscriptionPlan.price }}</span>
+    <span>/{{ subscriptionPlan.isMonthly ? 'mo' : 'yr' }}</span>
+  </label>
+  <section id="desc">
+    {{ subscriptionPlan.description }}
+  </section>
+  <ul id="features">
+    <li>Lorem ipsum dolor</li>
+    <li>Sit amet sapien porttitor</li>
+    <li>Posuere netus ullamcorper</li>
+    <li>Feugiat tristique eu magna urna augue ultrices nec dapibus</li>
+    <li>Proin mauris posuere rhoncus.</li>
+  </ul>
+</div>

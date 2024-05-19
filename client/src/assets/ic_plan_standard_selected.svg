@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="88.309" height="77.46"
+  viewBox="0 0 88.309 77.46">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_17306" data-name="Rectangle 17306" width="77.46" height="88.309" fill="none" stroke="#fff"
+        stroke-width="2" />
+    </clipPath>
+  </defs>
+  <g id="table_icons" data-name="table icons" transform="translate(0 77.46) rotate(-90)">
+    <g id="Group_345" data-name="Group 345" opacity="0.581" clip-path="url(#clip-path)">
+      <path id="Path_40640" data-name="Path 40640"
+        d="M0,0H1.652C5.788,0,6.645,5.2,6.645,9.885S5.788,19.77,1.652,19.77H0" transform="translate(67.621 15.32)"
+        fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+      <path id="Path_40641" data-name="Path 40641"
+        d="M0,12.929H6.476c2.886,0,3.543-2.009,3.543-4.489V4.489C10.018,2.009,9.362,0,6.476,0H0"
+        transform="translate(63.91 18.74)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="2" />
+      <rect id="Rectangle_17300" data-name="Rectangle 17300" width="22.378" height="46.337"
+        transform="translate(41.113 2.036)" fill="none" stroke="#fff" stroke-width="2" />
+      <path id="Path_40642" data-name="Path 40642" d="M19.77,0V1.652c0,4.137-5.2,4.994-9.885,4.994S0,5.788,0,1.652V0"
+        transform="translate(28.265 79.583)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="2" />
+      <path id="Path_40643" data-name="Path 40643"
+        d="M0,0V6.476c0,2.886,2.009,3.543,4.489,3.543H8.44c2.479,0,4.489-.656,4.489-3.543V0"
+        transform="translate(31.685 75.872)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="2" />
+      <rect id="Rectangle_17302" data-name="Rectangle 17302" width="50.957" height="22.378"
+        transform="translate(12.672 53.075)" fill="none" stroke="#fff" stroke-width="2" />
+      <path id="Path_40644" data-name="Path 40644"
+        d="M6.645,19.77H4.994C.857,19.77,0,14.572,0,9.886S.857,0,4.994,0H6.645" transform="translate(2.082 15.32)"
+        fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+      <path id="Path_40645" data-name="Path 40645"
+        d="M10.018,0H3.543C.656,0,0,2.009,0,4.489V8.44c0,2.479.656,4.489,3.543,4.489h6.476"
+        transform="translate(2.418 18.74)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="2" />
+      <rect id="Rectangle_17304" data-name="Rectangle 17304" width="22.378" height="46.337"
+        transform="translate(12.856 2.036)" fill="none" stroke="#fff" stroke-width="2" />
+    </g>
+  </g>
+</svg>

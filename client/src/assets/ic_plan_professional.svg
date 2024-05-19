@@ -1,0 +1,46 @@
+<svg id="Group_356" data-name="Group 356" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="68.587" height="61.322" viewBox="0 0 68.587 61.322">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_17315" data-name="Rectangle 17315" width="68.587" height="61.193" fill="none" stroke="#7b9666"
+        stroke-width="2" />
+    </clipPath>
+  </defs>
+  <g id="Group_353" data-name="Group 353">
+    <g id="Group_401" data-name="Group 401">
+      <rect id="Rectangle_17311" data-name="Rectangle 17311" width="44.838" height="55.331"
+        transform="translate(6.412 4.879)" fill="none" stroke="#7b9666" stroke-width="2" />
+      <rect id="Rectangle_17312" data-name="Rectangle 17312" width="19.678" height="11.311"
+        transform="translate(18.992 48.72)" fill="none" stroke="#7b9666" stroke-width="2" />
+      <line id="Line_926" data-name="Line 926" x2="67.413" transform="translate(0 60.322)" fill="none" stroke="#7b9666"
+        stroke-width="2" />
+    </g>
+  </g>
+  <line id="Line_927" data-name="Line 927" y2="45.477" transform="translate(12.621 8.204)" fill="none" stroke="#7b9666"
+    stroke-width="2" />
+  <line id="Line_928" data-name="Line 928" y2="45.477" transform="translate(45.099 8.204)" fill="none" stroke="#7b9666"
+    stroke-width="2" />
+  <line id="Line_929" data-name="Line 929" y2="35.861" transform="translate(19.116 8.204)" fill="none" stroke="#7b9666"
+    stroke-width="2" />
+  <line id="Line_930" data-name="Line 930" y2="35.861" transform="translate(38.603 8.204)" fill="none" stroke="#7b9666"
+    stroke-width="2" />
+  <line id="Line_931" data-name="Line 931" y2="35.861" transform="translate(32.107 8.204)" fill="none" stroke="#7b9666"
+    stroke-width="2" />
+  <line id="Line_932" data-name="Line 932" y2="35.861" transform="translate(25.612 8.204)" fill="none" stroke="#7b9666"
+    stroke-width="2" />
+  <g id="Group_355" data-name="Group 355">
+    <g id="Group_354" data-name="Group 354" clip-path="url(#clip-path)">
+      <line id="Line_933" data-name="Line 933" y2="11.137" transform="translate(25.612 48.652)" fill="none"
+        stroke="#7b9666" stroke-width="2" />
+      <line id="Line_934" data-name="Line 934" y2="11.137" transform="translate(32.107 48.652)" fill="none"
+        stroke="#7b9666" stroke-width="2" />
+      <path id="Path_40647" data-name="Path 40647"
+        d="M58.765,51.653c0,3.694-1.914,4.563-4.275,4.563s-4.274-.869-4.274-4.563,1.913-10.246,4.274-10.246S58.765,47.959,58.765,51.653Z"
+        transform="translate(6 0)" fill="none" stroke="#7b9666" stroke-width="2" />
+      <line id="Line_935" data-name="Line 935" y1="4.372" transform="translate(60.49 55.451)" fill="none"
+        stroke="#7b9666" stroke-width="2" />
+      <rect id="Rectangle_17314" data-name="Rectangle 17314" width="31.273" height="3.936"
+        transform="translate(12.918 0.943)" fill="none" stroke="#7b9666" stroke-width="2" />
+    </g>
+  </g>
+</svg>

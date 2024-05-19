@@ -1,0 +1,129 @@
+#container {
+  width: 275px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 15px 20px;
+  position: relative;
+  box-shadow: 0px 0px 15px #00000029;
+
+  #ribbon {
+    position: absolute;
+    min-width: 140px;
+    top: 50px;
+    right: 0px;
+    text-align: center;
+    background-color: #FFE031;
+    color: black;
+    font-size: 10px;
+    line-height: 26px;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  #ribbon:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-width: 13px 5px;
+    border-style: solid;
+    border-color: #FFE031 #FFE031 #FFE031 transparent;
+    position: absolute;
+    left: -10px;
+  }
+
+  img {
+    display: block;
+    width: auto;
+    height: 77px;
+  }
+
+  label {
+    display: block;
+    color: black;
+
+    &#title {
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 13px;
+      letter-spacing: 3px;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+
+    &#price {
+      display: flex;
+      color: #7B9666;
+
+      span:nth-child(1) {
+        font-size: 26px;
+        line-height: 33px;
+        font-weight: bold;
+        align-self: start;
+        margin-top: 5px;
+      }
+
+      span:nth-child(2) {
+        font-size: 46px;
+        line-height: 58px;
+        font-weight: bold;
+      }
+
+      span:nth-child(3) {
+        align-self: end;
+        font-size: 13px;
+        line-height: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #B7B7B7;
+      }
+    }
+  }
+
+  section#desc {
+    color: #7B9666;
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 21px;
+  }
+
+  ul {
+    color: #B7B7B7;
+    font-size: 14px;
+    line-height: 21px;
+    margin-top: 35px;
+    padding-inline-start: 20px;
+
+    li {
+      margin-bottom: 10px;
+    }
+  }
+
+  &.selected {
+    background-image: linear-gradient(to top right, #7BA258, #9F9F33);
+    border: 3px solid #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0px 25px 40px #0000009A;
+
+    label {
+      color: white;
+
+      &#price {
+        display: flex;
+        color: white;
+
+        span:nth-child(3) {
+          color: white;
+        }
+      }
+    }
+
+    section#desc {
+      color: white;
+    }
+
+    ul {
+      color: white;
+    }
+  }
+}
