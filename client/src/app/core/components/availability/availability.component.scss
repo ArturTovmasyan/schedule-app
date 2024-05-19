@@ -113,32 +113,32 @@ section.availability {
       }
     }
 
-    .back-next-buttons {
-      position: absolute;
-      bottom: -40px;
-      right: 10px;
-      display: flex;
-      flex-direction: row;
-
-      a + a {
-        margin-left: 20px;
-      }
-
-      a.next-button, a.back-button {
-        img {
-          height: 18px;
-        }
-
-        display: flex;
-        align-items: center;
-        font-family: 'Lexend Deca', sans-serif;
-        color: #000;
-        font-size: 17px;
-        text-decoration: none;
-        font-weight: 600;
-
-      }
-    }
+    //.back-next-buttons {
+    //  position: absolute;
+    //  bottom: -40px;
+    //  right: 10px;
+    //  display: flex;
+    //  flex-direction: row;
+    //
+    //  a + a {
+    //    margin-left: 20px;
+    //  }
+    //
+    //  a.next-button, a.back-button {
+    //    img {
+    //      height: 18px;
+    //    }
+    //
+    //    display: flex;
+    //    align-items: center;
+    //    font-family: 'Lexend Deca', sans-serif;
+    //    color: #000;
+    //    font-size: 17px;
+    //    text-decoration: none;
+    //    font-weight: 600;
+    //
+    //  }
+    //}
   }
 
   button {
