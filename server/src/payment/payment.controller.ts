@@ -1,4 +1,4 @@
-import {Controller, Post, Body, UseGuards, Req, HttpCode} from '@nestjs/common';
+import {Controller, Post, Body, UseGuards, Req, Get} from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import CreateChargeDto from "./dto/create-charge.dto";
 import {AuthGuard} from "@nestjs/passport";
@@ -26,11 +26,10 @@ export class PaymentController {
 
     switch (event.type) {
       case StripeWebhook.PAYMENT_FAILED:
-        // await this.subscriptionService.cancel(data.id);
+        await this.subscriptionService.cancel(data.id);
         break;
       case StripeWebhook.SUBSCRIPTION_DELETE:
-        await this.subscriptionService.cancel(data.id);
-        // await this.subscriptionService.fullyCancelSubscription(data.id);
+        await this.subscriptionService.fullyCancelSubscription(data.id);
         break;
       default:
         console.log(`Unhandled event type ${event.type}`);
@@ -47,5 +46,11 @@ export class PaymentController {
   @UseGuards(AuthGuard())
   async setDefaultCard(@Body() creditCard: AddCreditCardDto) {
     await this.paymentService.setDefaultCreditCard(creditCard.stripeToken, creditCard.customerId);
+  }
+
+  @Get('publish-key')
+  @UseGuards(AuthGuard())
+  async getPublishKey() {
+    return await this.paymentService.getPublishKey();
   }
 }

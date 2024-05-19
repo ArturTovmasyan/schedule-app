@@ -66,7 +66,7 @@ export class PaymentService {
       return await this.stripe.subscriptions.create({
         customer: stripeCustomerId,
         currency: this.configService.get('STRIPE_CURRENCY'),
-        cancel_at_period_end: false,
+        cancel_at_period_end: true,
         payment_settings: {
           payment_method_types: ['card']
         },
@@ -129,5 +129,13 @@ export class PaymentService {
         plan: price
       }]
     });
+  }
+
+  public async getPublishKey() {
+    return {
+      data: {
+        publishKey: this.configService.get('STRIPE_PUBLISH_KEY')
+      }
+    };
   }
 }

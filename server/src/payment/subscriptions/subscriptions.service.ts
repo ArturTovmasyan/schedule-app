@@ -77,7 +77,7 @@ export default class SubscriptionsService {
         });
 
         // @ts-ignore
-        await this.userRepo.update(user.id, {subscription: subscription.id});
+        await this.userRepo.update(user.id, {stripeSubscriptionId: subscription.id});
     }
 
     public async activateSubscription(id, stripeSubscription, periodEnd: Date) {
@@ -113,8 +113,7 @@ export default class SubscriptionsService {
         return subscription.endsAt !== null || subscription.status === SubscriptionStatusEnum.CANCEL;
     }
 
-    public async cancel(id):Promise<void> {
-        //TODO get where subId=id
+    public async cancel(id): Promise<void> {
         await this.subscriptionRepo.update(id, {
             endsAt: new Date(),
             billingPeriodEndsAt: null,
@@ -122,7 +121,7 @@ export default class SubscriptionsService {
         });
     }
 
-    public async fullyCancelSubscription(id):Promise<Subscription[]> {
+    public async fullyCancelSubscription(id): Promise<Subscription[]> {
         return this.subscriptionRepo.remove(id);
     }
 

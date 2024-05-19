@@ -15,8 +15,13 @@ export class PaymentComponent implements OnInit {
   cvvMask = {mask: "{000}"}
   dateMask = {mask: "{00}/{00}"};
   cardNumberMask = {mask: "0000 0000 0000 0000"};
+  stripePublishKey: string = "";
 
-  constructor(private formBuilder: FormBuilder, private paymentService: PaymentService, private router: Router) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private paymentService: PaymentService,
+    // private spinner: SpinnerVisibilityService,
+    private router: Router) {
     this.form = this.formBuilder.group({
       number: ['', [ValidationService.cardNumber, Validators.required]],
       name: ['', [ValidationService.fullNameValidator, Validators.required]],
@@ -26,6 +31,6 @@ export class PaymentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadStripe();
+    this.getStripePublishKey();
   }
 }

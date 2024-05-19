@@ -40,6 +40,5 @@ export class SubscriptionPlanItemComponent implements OnInit {
     const plan = this.subscriptionPlan.recommended ? STANDARD_PLAN : PROFESSIONAL_PLAN;
     this.broadcaster.broadcast('plan_type', plan);
     localStorage.setItem('plan', this.subscriptionPlan.name.toLowerCase());
-    console.log(this.subscriptionPlan);
   }
 }

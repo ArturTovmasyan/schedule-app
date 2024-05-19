@@ -24,6 +24,8 @@ export class User {
   @OneToOne(() => Subscription, {nullable: true})
   @JoinColumn({ name: "stripe_subscription_id" })
   subscription: Subscription
+  @Column({ name: 'stripe_subscription_id', type: 'uuid', nullable: true })
+  stripeSubscriptionId: string;
 
   @CreateDateColumn() createdOn?: Date;
   @UpdateDateColumn() updatedOn?: Date;

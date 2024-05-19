@@ -38,6 +38,10 @@ const routes: Routes = [
           {
             path: 'availability',
             component: OnboardingAvailabilityComponent
+          },
+          {
+            path: 'payment-success',
+            component: PaymentSuccessComponent
           }
         ]
       }

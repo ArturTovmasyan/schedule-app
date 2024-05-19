@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   CanActivate,
@@ -6,8 +6,8 @@ import {
   UrlTree,
   Router
 } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth/auth.service';
+import {Observable} from 'rxjs';
+import {AuthService} from '../services/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +25,20 @@ export class AuthGuard implements CanActivate {
     | UrlTree {
 
     const token = JSON.parse(localStorage.getItem('cu') || 'null');
+
     if (token && token.accessToken) {
+<<<<<<< HEAD
        return this.authService.isAuthenticated();
+=======
+      this.authService.hasAccess(token.accessToken).subscribe({
+        next: (user) => {
+          if (user && !user.stripeSubscriptionId) {
+            this.router.navigate(['/onboarding/subscription-plan'])
+          }
+        }
+      });
+      return true;
+>>>>>>> a6d9f60 (Finish payment functionality)
     }
 
     this.router.navigate(['/login']);

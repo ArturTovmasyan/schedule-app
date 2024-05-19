@@ -45,10 +45,11 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,
     SharedModule,
     MsAuthModule,
-    IMaskModule
+    IMaskModule,
+    HttpClientModule,
+    NgHttpLoaderModule.forRoot(),
   ],
   providers: [
     jwtInterceptorProvider,

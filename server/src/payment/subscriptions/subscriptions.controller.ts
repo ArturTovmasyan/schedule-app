@@ -24,7 +24,6 @@ export class SubscriptionsController {
             const subscriptionData = await this.subscriptionsService.createStandardSubscription(user.stripeCustomerId);
             await this.subscriptionsService.saveSubscriptionForUser(subscriptionData, user);
             return {data: {id: subscriptionData.id}, status: HttpStatus.OK};
-
         } catch (error) {
             throw new BadRequestException({ message: error.message });
         }

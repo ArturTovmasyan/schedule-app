@@ -42,4 +42,12 @@ export class PaymentService {
       );
     }
   }
+
+  getPublishKey() {
+    return this.http.get<any>('/api/payment/publish-key', ).pipe(
+      map((response: any) => {
+        return response;
+      })
+    );
+  }
 }

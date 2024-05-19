@@ -63,7 +63,7 @@ export class AuthService {
         };
     }
 
-    async register(userDto: UserCreateDto, invitationId?:string): Promise<RegistrationStatus> {
+    async register(userDto: UserCreateDto, invitationId?: string): Promise<RegistrationStatus> {
         let status: RegistrationStatus = {
             success: true,
             message: 'user registered',
@@ -105,10 +105,10 @@ export class AuthService {
 
     public async verifyToken(token): Promise<User>|null {
         const data = this.jwtService.verify(token) as JwtPayload;
-        const user = await this.userRepo.findOne({where: {id: data.id}});
+        const user = await this.userRepo.findOne(data.id);
 
         if (user) {
-            return user;
+            return user
         }
 
         return null;
