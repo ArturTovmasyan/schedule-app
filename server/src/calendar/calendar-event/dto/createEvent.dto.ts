@@ -34,7 +34,7 @@ export class CreateEventDto {
   @IsArray()
   @IsEmail({}, { each: true })
   @IsNotEmpty()
-  attendees?: string[];
+  attendees?: string[] = [];
 
   @IsArray()
   @IsEmail({}, { each: true })

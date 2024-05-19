@@ -9,26 +9,26 @@ import {
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 
-@Entity()
+@Entity({ name: 'zoom_oauth_token' })
 export class ZoomOAuthToken {
   @PrimaryGeneratedColumn('uuid')
-  id!: number;
+  id: number;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false })
   @JoinColumn()
-  user!: User;
+  user: User;
 
   @Column({ type: 'varchar', nullable: false })
-  accessToken!: string;
+  accessToken: string;
 
   @Column({ type: 'varchar', nullable: true })
-  refreshToken!: string;
+  refreshToken: string;
 
   @CreateDateColumn()
-  createdOn!: Date;
+  createdOn: Date;
 
   @UpdateDateColumn()
-  updatedOn!: Date;
+  updatedOn: Date;
 
   @CreateDateColumn({ nullable: false, precision: 3 })
   expiryDate!: Date;

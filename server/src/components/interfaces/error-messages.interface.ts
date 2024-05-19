@@ -1,4 +1,8 @@
 export interface IErrorMessages {
+  cantChooseOwnSlot: string;
+  slotIsBusy: string;
+  zoomTokenNotFound: string;
+  authCodeNotProvided: string;
   provideCustomDate: string;
   passwordDoesNotMatch: string;
   calendarNotFound: string;
