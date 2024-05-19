@@ -13,13 +13,14 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
-import {NgMultiSelectDropDownModule} from "ng-multiselect-dropdown";
+import rrulePlugin from '@fullcalendar/rrule'
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
   bootstrapPlugin,
   interactionPlugin,
-  timeGridPlugin
+  timeGridPlugin,
+  rrulePlugin
 ]);
 
 @NgModule({
