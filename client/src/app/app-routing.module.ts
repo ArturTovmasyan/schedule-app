@@ -26,12 +26,12 @@ const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: 'google-calendar',
+        path: 'google-calendar-callback',
         component: GoogleCalendarComponent,
         canActivate: [AuthGuard],
       },
       {
-        path: 'ms-calendar',
+        path: 'ms-calendar-callback',
         component: MsCalendarComponent,
         canActivate: [AuthGuard],
       },
