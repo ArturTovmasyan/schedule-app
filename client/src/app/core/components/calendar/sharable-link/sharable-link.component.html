@@ -1,1 +1,386 @@
-<p>sharable-link works!</p>
+<section class="sharable-link" id="sharableLink">
+  <div class="header">
+    <h2 class="section-title text-center">
+      Sharable link
+    </h2>
+    <button class="close-button" id="closeButton">
+      <img src="assets/close-icon.svg" alt="close button">
+    </button>
+  </div>
+  <form>
+    <div class="sharable-link-body">
+      <h3 class="section-title-secondary">
+        Selected time slots
+      </h3>
+
+      <ul class="list-unstyled time-slots">
+        <li class="time-slot" id="timeSlot">
+          <div class="date">
+            <input type="text" id="availableDate" name="availableDate"
+                   placeholder="Tue, Oct 08th" readonly>
+          </div>
+          <ul class="available-times list-unstyled" id="availableTimes">
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="09:30AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="10:00AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="10:30AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="11:00AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="11:00AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="11:30AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+          </ul>
+
+        </li>
+        <li class="time-slot" id="timeSlot">
+          <div class="date">
+            <input type="text" id="availableDate" name="availableDate"
+                   placeholder="Wed, Oct 09th" readonly>
+          </div>
+          <ul class="available-times list-unstyled" id="availableTimes">
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="10:00AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="10:30AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+          </ul>
+
+        </li>
+        <li class="time-slot" id="timeSlot">
+          <div class="date">
+            <input type="text" id="availableDate" name="availableDate"
+                   placeholder="Thu, Oct 10th" readonly>
+          </div>
+          <ul class="available-times list-unstyled" id="availableTimes">
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="10:15AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="10:45AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+
+          </ul>
+
+        </li>
+        <li class="time-slot" id="timeSlot">
+          <div class="date">
+            <input type="text" id="availableDate" name="availableDate"
+                   placeholder="Fri, Oct 11th" readonly>
+          </div>
+          <ul class="available-times list-unstyled" id="availableTimes">
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="11:00AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="11:30AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="12:00PM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="12:30PM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+
+          </ul>
+
+        </li>
+        <li class="time-slot" id="timeSlot">
+          <div class="date">
+            <input type="text" id="availableDate" name="availableDate"
+                   placeholder="Mon, Oct 14th" readonly>
+          </div>
+          <ul class="available-times list-unstyled" id="availableTimes">
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="10:00AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="10:30AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="10:30AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="11:00AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="11:00AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="11:30AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="11:30AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="12:00PM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+
+          </ul>
+
+        </li>
+        <li class="time-slot" id="timeSlot">
+          <div class="date">
+            <input type="text" id="availableDate" name="availableDate"
+                   placeholder="Fri, Oct 11th" readonly>
+          </div>
+          <ul class="available-times list-unstyled" id="availableTimes">
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="11:00AM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="11:30AM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+            <li class="available-timeframe" id="availableTimeframe">
+              <div class="list-inline-item timeframe">
+                <input type="text" id="availableStartTime" name="availableStartTime"
+                       placeholder="12:00PM" readonly>
+                <p> - </p>
+                <input type="text" id="availableEndTime" name="availableEndTime"
+                       placeholder="12:30PM" readonly>
+              </div>
+              <div class="timezone">
+                <img src="assets/canada-flag.png" alt="canada flag">
+                <span class="timezoneText">Toronto, EST</span>
+              </div>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </li>
+
+          </ul>
+
+        </li>
+      </ul>
+
+      <h3 class="section-title-secondary mt-4 mb-2">
+        Location
+      </h3>
+      <div class="select-wrapper">
+        <div class="select">
+          <div class="select__trigger">
+            <span>Choose...</span>
+          </div>
+          <div class="custom-options">
+          <span class="custom-option selected" data-value="zoom">
+            <span class="logo">
+              <img src="assets/zoom.png" alt="zoom">
+            </span>
+            <div class="text">
+              <span>
+                ZOOM
+              </span>
+              <p>
+                Web conference
+              </p>
+            </div>
+          </span>
+            <span class="custom-option" data-value="microsoft">
+            <span class="logo">
+              <img src="assets/microsoft-teams.png" alt="zoom">
+            </span>
+            <div class="text">
+              <span>
+                Microsoft Teams
+              </span>
+              <p>
+                Web conference
+              </p>
+            </div>
+          </span>
+            <span class="custom-option" data-value="google">
+            <span class="logo">
+              <img src="assets/google-meet.png" alt="google meet">
+            </span>
+            <div class="text">
+              <span>
+                Google Meet
+              </span>
+              <p>
+                Web conference
+              </p>
+            </div>
+          </span>
+            <span class="custom-option" data-value="incoming">
+            <span class="logo">
+              <img src="assets/incoming-call.png" alt="incoming">
+            </span>
+            <div class="text">
+              <span>
+                Inbound phone call
+              </span>
+              <p>
+                You will receive a phone call
+              </p>
+            </div>
+          </span>
+            <span class="custom-option" data-value="outgoing">
+            <span class="logo">
+              <img src="assets/outgoing-call.png" alt="outgoing call">
+            </span>
+            <div class="text">
+              <span>
+                Outbound phone call
+              </span>
+              <p>
+                You will be making a phone calling
+              </p>
+            </div>
+          </span>
+            <span class="custom-option" data-value="address">
+            <span class="logo">
+              <img src="assets/location.png" alt="location">
+            </span>
+            <div class="text">
+              <span>
+                Physical address
+              </span>
+              <p>
+               You will meet face to face
+              </p>
+            </div>
+          </span>
+
+          </div>
+        </div>
+      </div>
+      <div class="connect-message">Please <a href="">connect</a><span class=""> Microsoft Teams</span> to your account
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button class="request-button">
+        Create
+      </button>
+    </div>
+  </form>
+
+</section>

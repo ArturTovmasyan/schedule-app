@@ -308,7 +308,8 @@ section.meeting-title {
         li {
           margin-right: 0;
           width: 31%;
-overflow: hidden;
+          overflow: hidden;
+
           & + li {
             border-left: 1px solid #656565;
             margin-left: 7px;
