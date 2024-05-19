@@ -8,54 +8,12 @@
     </button>
   </div>
 
-  <form id="requestAccessForm" action="">
+  <div class="form" id="requestAccessForm" action="#">
     <div class="form-group">
       <h3 class="section-title-secondary">
         Request from
       </h3>
-      <div class="emails-container" id="emailsContainer">
-        <ul class="emails-list list-unstyled list-inline" id="emailsList">
-          <li class="user-email list-inline-item" id="userEmail">
-            <div class="user-email-wrap">
-              <img src="assets/user-icon.png" alt="user icon">
-              <p class="email-address" id="emailAddress">
-                markanthony@gmail.com
-              </p>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </div>
-          </li>
-          <li class="user-email list-inline-item" id="userEmail">
-            <div class="user-email-wrap">
-              <img src="assets/user-icon.png" alt="user icon">
-              <p class="email-address" id="emailAddress">
-                el@spacex.com
-              </p>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </div>
-          </li>
-          <li class="user-email list-inline-item" id="userEmail">
-            <div class="user-email-wrap">
-              <img src="assets/user-icon.png" alt="user icon">
-              <p class="email-address" id="emailAddress">
-                al@gmail.com
-              </p>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </div>
-          </li>
-          <li class="list-inline-item user-email-input" id="userEmailInput">
-            <input class="form-control" type="text" name="requestFrom" id="requestFrom">
-          </li>
-        </ul>
-
-      </div>
-
-
+      <app-chip-email-input (emailUpdateEvent)="updateEmails($event)"></app-chip-email-input>
     </div>
     <div class="form-group">
       <h3 class="section-title-secondary">
@@ -63,23 +21,24 @@
       </h3>
       <div class="duration-radio">
         <div class="duration-radio-wrapper">
-          <input type="radio" name="duration" id="threeWeek" value="3 Week">
+          <input type="radio" name="duration" id="threeWeek" value="2 Weeks" (change)="onDurationSelectionChanged(0)">
           <label for="threeWeek">3 Week</label>
         </div>
         <div class="duration-radio-wrapper">
-          <input type="radio" name="duration" id="oneMonth" value="1 Month">
+          <input type="radio" name="duration" id="oneMonth" value="1 Month"  (change)="onDurationSelectionChanged(1)">
           <label for="oneMonth">1 Month</label>
         </div>
         <div class="duration-radio-wrapper">
-          <input type="radio" name="duration" id="forever" value="forever" checked>
+          <input type="radio" name="duration" id="forever" value="forever"  (change)="onDurationSelectionChanged(2)" checked>
           <label for="forever">Forever</label>
         </div>
         <div class="duration-radio-wrapper">
-          <input type="radio" name="duration" id="custom" value="custom">
+          <input type="radio" name="duration" id="custom" value="custom"  (change)="onDurationSelectionChanged(3)">
           <label for="custom">Custom</label>
         </div>
       </div>
-      <input class="form-control" type="text" name="duration" id="customDuration">
+      <input *ngIf="currentDurationIndex == 3" class="form-control" type="date" name="duration" id="customDuration"
+            (input)="onCustomDateUpdate($event)">
 
     </div>
     <div class="form-group">
@@ -87,6 +46,8 @@
         Custom message
       </h3>
       <textarea class="form-control" name="customMessage" id="customMessage" style="resize: none"
+                [value]="message"
+                (input)="onMessageUpdate($event)"
                 placeholder="Hey all,
 
 Please Share your calendars with me so I can schedule with ease.
@@ -94,14 +55,15 @@ Please Share your calendars with me so I can schedule with ease.
 _Arthur"></textarea>
     </div>
     <div class="form-group share-calendar-checkbox">
-      <input type="checkbox" name="shareMyCalendar" id="shareMyCalendar">
+      <input type="checkbox" name="shareMyCalendar" id="shareMyCalendar" 
+              [checked]="shareCalendarAccess" (change)="onShareStatusUpdate($event)">
       <label for="shareMyCalendar">Share my calendar with the request</label>
     </div>
 
     <div class="d-flex justify-content-end">
-      <button class="request-button" type="submit">
+      <button class="request-button" (click)="submitRequest()">
         Request
       </button>
     </div>
-  </form>
+  </div>
 </section>

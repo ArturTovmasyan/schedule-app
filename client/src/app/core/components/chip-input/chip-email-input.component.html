@@ -1,0 +1,26 @@
+<div class="emails-container" id="emailsContainer">
+  <ul class="emails-list list-unstyled list-inline" id="emailsList">
+    <li *ngFor="let email of emails; let i = index" class="user-email list-inline-item" id="userEmail">
+      <div class="user-email-wrap">
+        <img src="assets/user-icon.png" alt="user icon">
+        <p class="email-address" id="emailAddress">
+          {{ email }}
+        </p>
+        <button class="remove-button" id="removeButton">
+          <img src="assets/close-icon.svg" alt="remove button" (click)="remove(i)">
+        </button>
+      </div>
+    </li>
+    <li class="list-inline-item user-email-input" id="userEmailInput">
+      <input #emailInput class="form-control" type="text" 
+              name="requestFrom" id="requestFrom"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              placeholder="+ Add email"
+              (keyup.enter)="add()">
+    </li>
+  </ul>
+
+</div>
