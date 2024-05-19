@@ -11,6 +11,8 @@ import { CalendarTypeEnum } from './enums/calendarType.enum';
 import { UserDto } from '@user/dto/user.dto';
 import { ConfidentialClientApplication } from '@azure/msal-node/dist/client/ConfidentialClientApplication';
 import { CryptoProvider } from '@azure/msal-node/dist/crypto/CryptoProvider';
+import { User } from '@user/entity/user.entity';
+import { CalendarService } from '../calendar/calendar.service';
 
 @Injectable()
 export class CalendarPermissionsService {
@@ -22,6 +24,7 @@ export class CalendarPermissionsService {
     @InjectRepository(CalendarToken)
     private readonly calendarTokenRepository: Repository<CalendarToken>,
     private readonly configService: ConfigService,
+    private readonly calendarService: CalendarService,
   ) {
     const googleClientID = this.configService.get<string>('GOOGLE_CLIENT_ID');
     const googleClientSecret = this.configService.get<string>(
@@ -50,7 +53,7 @@ export class CalendarPermissionsService {
     this.msalCryptoProvider = new msal.CryptoProvider();
   }
 
-  async toggleGoogleCalendar(user: UserDto) {
+  async toggleGoogleCalendar(user: User) {
     const statusOfCalendarsAndUrl: {
       url: null | string;
       statusOfCalendars: null | object;
@@ -98,7 +101,7 @@ export class CalendarPermissionsService {
     return statusOfCalendarsAndUrl;
   }
 
-  async getTokensFromGoogleAndSave(user: UserDto, code: string) {
+  async getTokensFromGoogleAndSave(user: User, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
       const getTokenResponse = await this.googleOAuth2Client.getToken(code);
@@ -120,11 +123,14 @@ export class CalendarPermissionsService {
 
       await calendarTokenRepository.save(calendarTokenBody);
 
+      await this.calendarService.getCalendarsFromGoogle(user, manager);
+      await this.calendarService.syncGoogleCalendarEventList(user, manager);
+
       return this.getUserStatusOfCalendars(user.id, manager);
     });
   }
 
-  async toggleMS365Calendar(user: UserDto) {
+  async toggleMS365Calendar(user: User) {
     const statusOfCalendarsAndUrl: {
       url: null | string;
       statusOfCalendars: null | object;
@@ -167,7 +173,7 @@ export class CalendarPermissionsService {
     return statusOfCalendarsAndUrl;
   }
 
-  async getTokensFromMS365AndSave(user: UserDto, code: string) {
+  async getTokensFromMS365AndSave(user: User, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
 
@@ -208,6 +214,9 @@ export class CalendarPermissionsService {
       await calendarTokenRepository.save(calendarTokenBody);
 
       this.msalInstance.clearCache();
+
+      await this.calendarService.getCalendarsFromOutlook(user, manager);
+      await this.calendarService.syncOutlookCalendarEventList(user, manager);
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });

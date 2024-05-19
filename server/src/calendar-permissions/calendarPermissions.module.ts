@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CalendarPermissionsController } from './calendarPermissions.controller';
 import { CalendarPermissionsService } from './calendarPermissions.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { CalendarToken } from './entity/calendarToken.entity';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '@user/users.module';
+import { CalendarModule } from '../calendar/calendar.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UsersModule } from '@user/users.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     UsersModule,
+    forwardRef(() => CalendarModule),
   ],
   controllers: [CalendarPermissionsController],
   providers: [CalendarPermissionsService],

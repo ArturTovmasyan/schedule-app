@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CalendarController } from './calendar.controller';
 import { CalendarService } from './calendar.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,9 +14,10 @@ import { CalendarPermissionsModule } from '../calendar-permissions/calendarPermi
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     ClientsCredentialsModule,
-    CalendarPermissionsModule,
+    forwardRef(() => CalendarPermissionsModule),
   ],
   controllers: [CalendarController],
   providers: [CalendarService],
+  exports: [CalendarService],
 })
 export class CalendarModule {}
