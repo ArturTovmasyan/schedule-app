@@ -11,8 +11,8 @@ import {User} from "@user/entity/user.entity";
 import {CalendarTypeEnum} from "../enums/calendarType.enum";
 
 @Entity()
-export class CalendarPermission {
-    @PrimaryGeneratedColumn()
+export class CalendarToken {
+    @PrimaryGeneratedColumn('uuid')
     id!: number;
 
     @ManyToOne(() => User, user => user.id, {nullable: false})
@@ -26,10 +26,10 @@ export class CalendarPermission {
     refreshToken!: string;
 
     @CreateDateColumn()
-    createdAt!: Date;
+    createdOn!: Date;
 
     @UpdateDateColumn()
-    updatedAt!: Date;
+    updatedOn!: Date;
 
     @CreateDateColumn({precision: 3})
     expiryDate!: Date;
