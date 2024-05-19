@@ -13,6 +13,7 @@ import { CalendarEvent } from './entities/calendarEvent.entity';
 import { EventTypeEnum } from './enums/eventType.enum';
 import CreateEventDto from './dto/createEvent.dto';
 import { transactionManagerWrapper } from '../components/helpers/dbTransactionManager';
+import UpdateEventDto from './dto/updateEvent.dto';
 
 @Injectable()
 export class CalendarService {
@@ -175,14 +176,9 @@ export class CalendarService {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       let outlookEventId = '';
       let googleEventId = '';
-      const googleToken = await manager.getRepository(CalendarToken).findOne({
-        owner: { id: user.id },
-        calendarType: CalendarTypeEnum.GoogleCalendar,
-      });
-      const outlookToken = await manager.getRepository(CalendarToken).findOne({
-        owner: { id: user.id },
-        calendarType: CalendarTypeEnum.Office365Calendar,
-      });
+      const tokens = await this.getTokens(user, manager);
+      const googleToken = tokens.googleToken;
+      const outlookToken = tokens.outlookToken;
 
       if (googleToken) {
         const googleAccessToken = googleToken.accessToken;
@@ -254,6 +250,164 @@ export class CalendarService {
     });
   }
 
+  async deleteUserCalendarEvent(user: User, eventId: string) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const calendarEventRepo = manager.getRepository(CalendarEvent);
+
+      const event = await calendarEventRepo.findOne({ where: { id: eventId } });
+
+      if (!event) {
+        throw new NotFoundException('Event not found');
+      }
+
+      const tokens = await this.getTokens(user, manager);
+      const googleToken = tokens.googleToken;
+      const outlookToken = tokens.outlookToken;
+
+      if (googleToken) {
+        const googleAccessToken = googleToken.accessToken;
+        const googleCalendarClient = await this.getGoogleCredentials(
+          googleAccessToken,
+        );
+        const googleLocalPrimaryCalendar = await manager
+          .getRepository(Calendar)
+          .findOne({
+            owner: { id: user.id },
+            calendarType: CalendarTypeEnum.GoogleCalendar,
+            isPrimary: true,
+          });
+
+        await googleCalendarClient.events.delete({
+          calendarId: googleLocalPrimaryCalendar.calendarId,
+          eventId: event.googleId,
+        });
+      }
+
+      if (outlookToken) {
+        const outlookAccessToken = outlookToken.accessToken;
+
+        const outlookCalendarClient = await this.getOutlookCredentials(
+          outlookAccessToken,
+        );
+
+        const outlookLocalPrimaryCalendar = await manager
+          .getRepository(Calendar)
+          .findOne({
+            owner: { id: user.id },
+            calendarType: CalendarTypeEnum.Office365Calendar,
+            isPrimary: true,
+          });
+
+        await outlookCalendarClient
+          .api(
+            `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events/${event.outlookId}`,
+          )
+          .delete();
+      }
+
+      return await manager
+        .getRepository(CalendarEvent)
+        .delete({ id: event.id });
+    });
+  }
+
+  async updateUserCalendarEvent(
+    user: User,
+    eventBody: UpdateEventDto,
+    eventId: string,
+  ) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const calendarEventRepo = manager.getRepository(CalendarEvent);
+
+      const eventOld = await calendarEventRepo.findOne({
+        where: { id: eventId },
+      });
+
+      if (!eventOld) {
+        throw new NotFoundException('Event not found');
+      }
+
+      const tokens = await this.getTokens(user, manager);
+      const googleToken = tokens.googleToken;
+      const outlookToken = tokens.outlookToken;
+
+      if (googleToken) {
+        const googleAccessToken = googleToken.accessToken;
+        const googleCalendarClient = await this.getGoogleCredentials(
+          googleAccessToken,
+        );
+        const googleLocalPrimaryCalendar = await manager
+          .getRepository(Calendar)
+          .findOne({
+            owner: { id: user.id },
+            calendarType: CalendarTypeEnum.GoogleCalendar,
+            isPrimary: true,
+          });
+
+        const resGoogle = await googleCalendarClient.events.update({
+          calendarId: googleLocalPrimaryCalendar.calendarId,
+          eventId: eventOld.googleId,
+          requestBody: {
+            summary: eventBody.title,
+            description: eventBody.description,
+            start: { dateTime: eventBody.start, timeZone: 'GMT' },
+            end: { dateTime: eventBody.end, timeZone: 'GMT' },
+          },
+        });
+      }
+
+      if (outlookToken) {
+        const outlookAccessToken = outlookToken.accessToken;
+
+        const outlookCalendarClient = await this.getOutlookCredentials(
+          outlookAccessToken,
+        );
+
+        const outlookLocalPrimaryCalendar = await manager
+          .getRepository(Calendar)
+          .findOne({
+            owner: { id: user.id },
+            calendarType: CalendarTypeEnum.Office365Calendar,
+            isPrimary: true,
+          });
+
+        await outlookCalendarClient
+          .api(
+            `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events/${eventOld.outlookId}`,
+          )
+          .update({
+            subject: eventBody.title,
+            bodyPreview: eventBody.description,
+            body: {
+              content: eventBody.description,
+            },
+            start: { dateTime: eventBody.start, timeZone: 'GMT' },
+            end: { dateTime: eventBody.end, timeZone: 'GMT' },
+          });
+      }
+
+      const eventToUpdate = new CalendarEvent();
+
+      eventToUpdate.id = eventOld.id;
+      eventToUpdate.googleId = eventOld.googleId || null;
+      eventToUpdate.outlookId = eventOld.outlookId || null;
+      eventToUpdate.eventType = EventTypeEnum.EntanglesCalendarEvent;
+      eventToUpdate.owner = user;
+      eventToUpdate.creator = user.email || null;
+      eventToUpdate.start = eventBody.start
+        ? new Date(eventBody.start)
+        : eventOld.start;
+      eventToUpdate.end = eventBody.end
+        ? new Date(eventBody.end)
+        : eventOld.end;
+      eventToUpdate.title = eventBody.title || eventOld.title;
+      eventToUpdate.meetLink = eventBody.meetLink || eventOld.meetLink;
+      eventToUpdate.description = eventBody.description || eventOld.description;
+
+      return await manager.getRepository(CalendarEvent).save(eventToUpdate);
+    });
+  }
+
   private compareEvents(eventsFromDb, remoteEvents, eventIdProperty) {
     function mapFromArray(
       array: Array<any>,
@@ -319,5 +473,17 @@ export class CalendarService {
         done(null, accessToken);
       },
     });
+  }
+
+  private async getTokens(user: User, manager) {
+    const googleToken = await manager.getRepository(CalendarToken).findOne({
+      owner: { id: user.id },
+      calendarType: CalendarTypeEnum.GoogleCalendar,
+    });
+    const outlookToken = await manager.getRepository(CalendarToken).findOne({
+      owner: { id: user.id },
+      calendarType: CalendarTypeEnum.Office365Calendar,
+    });
+    return { googleToken, outlookToken };
   }
 }
