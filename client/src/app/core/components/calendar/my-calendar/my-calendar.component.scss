@@ -211,3 +211,20 @@ th.fc-day-today .fc-col-header-cell-cushion {
 .fc-day-today {
   background: none !important;
 }
+
+.fc-non-business {
+  background: none !important;
+}
+
+.fc-day-grid-event {
+  pointer-events: none !important;
+}
+
+.fc-timegrid-col-events {
+  z-index: 0 !important;
+}
+
+.fc-highlight {
+  background: #b8c7e0 !important;
+  opacity: 0.5;
+}

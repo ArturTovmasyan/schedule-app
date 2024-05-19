@@ -2,10 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CalendarOptions} from "@fullcalendar/angular";
 import {first} from "rxjs/operators";
 import {CalendarService} from "../../../services/calendar/calendar.service";
-import DateConverter from "../../helpers/date.converter";
+// import DateConverter from "../../helpers/date.converter";
 import {BroadcasterService} from "../../../../shared/services";
 import {BehaviorSubject} from "rxjs";
-import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interface";
+// import * as moment from 'moment';
 
 @Component({
   selector: 'app-my-calendar',
@@ -27,17 +27,34 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
       const availabilityDates: any[] = [];
       const contactId = contactAvailabilities.contactId;
 
-      if (contactAvailabilities) {
-        // delete contactAvailabilities['contactId'];
-        for (const key in contactAvailabilities) {
+      if (dates) {
+      // if (dates) {
+      //   let weekDays = dates.weekDays;
+        // delete dates['contactId'];
+        for (const key in dates) {
 
+          avalEvents.push({
+            // start: DateConverter.convertToLocalDate(new Date(dates[key].start)),
+            // end: DateConverter.convertToLocalDate(new Date(dates[key].end)),
+            start: dates[key].start,
+            end: dates[key].end,
+            className: 'available-event',
+          })
+
+          //TODO check BusinessHour and Event date diff
+          const date1 = new Date(dates[key].start);
+          const date2 = new Date(dates[key].end);
+          const hoursAndMinutes1 = String(date1).padStart(2, '0') + ':' + String(date1.getMinutes()).padStart(2, '0');
+          const hoursAndMinutes2 = String(date2.getHours()).padStart(2, '0') + ':' + String(date2.getMinutes()).padStart(2, '0');
+
+          debugger;
+          const day = new Date(dates[key].start).getDay();
           availabilityDates.push({
-            //TODO convert to local time zone
-            // start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].start)),
-            // end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].end)),
-            start: contactAvailabilities[key].start,
-            end: contactAvailabilities[key].end,
-            className: 'available-event'
+            daysOfWeek: [day],
+            // startTime: moment(dates[key].start).utc().format('hh:mm'),
+            // endTime: moment(dates[key].end).utc().format('hh:mm'),
+            startTime: hoursAndMinutes1,
+            endTime: hoursAndMinutes2,
           })
         }
 
@@ -45,7 +62,6 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
 
         // this.fetchContactEvents(contactId);
         this.calendarOptions.events = this.myEvents.concat(availabilityDates);
-        //TODO compare with my events and availability
       }
     });
   }
@@ -67,12 +83,12 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
           if (events.length > 0) {
             events.forEach((el: any) => {
               data.push({
-                // start: DateConverter.convertUTCDateToLocalDate(new Date(el.start)),
-                // end: DateConverter.convertUTCDateToLocalDate(new Date(el.end)),
+                // start: DateConverter.convertToLocalDate(new Date(el.start)),
+                // end: DateConverter.convertToLocalDate(new Date(el.end)),
                 start: el.start,
                 end: el.end,
                 title: el.title,
-                description: el.description
+                description: el.description,
               })
             })
             this.myEvents = data;
@@ -111,10 +127,12 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
 
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
+    // timeZone: 'Asia/Yerevan',
     dayHeaderFormat: {weekday: 'short', day: '2-digit', omitCommas: true},
     direction: 'ltr',
     themeSystem: 'bootstrap',
     dayHeaders: true,
+    editable: false,
     allDaySlot: false,
     eventTextColor: 'black',
     eventBackgroundColor: '#E9F6FD',
@@ -126,6 +144,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     expandRows: false,
     showNonCurrentDates: false,
     lazyFetching: false,
+    selectable: false,
     slotLabelFormat: [
       {
         hour: 'numeric',
@@ -149,11 +168,17 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
       center: 'prev,title,next',
       right: 'today'
     },
-    events: [],
     eventContent: this.eventContent.bind(this),
     eventClassNames: function () {
       return 'event';
-    }
+    },
+    select: function(info) {
+      console.log(info.startStr);
+      console.log(info.endStr);
+    },
+    selectOverlap: function(event) {
+      return true;
+    },
   };
 
   eventContent(arg: any) {

@@ -1,7 +1,7 @@
 import * as moment from "moment/moment";
 
 export default class DateConverter {
-  static convertUTCDateToLocalDate(date:any) {
+  static convertToLocalDate(date:any) {
     let newDate = moment(date.getTime()+date.getTimezoneOffset()*60*1000);
     let offset = date.getTimezoneOffset() / 60;
     let hours = date.getHours();

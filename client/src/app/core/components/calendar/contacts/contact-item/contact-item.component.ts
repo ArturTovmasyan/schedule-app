@@ -47,9 +47,10 @@ export class ContactItemComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (data: any | null) => {
-          const dates = data?.availabilityDates;
+          debugger;
+          const availabilityData = data?.availabilityData;
           const contactData = {
-            ...dates,
+            ...availabilityData,
             // contactId
           }
           this.broadcaster.broadcast('contact_calendar_data', contactData);

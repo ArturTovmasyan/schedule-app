@@ -79,7 +79,7 @@ export class AvailabilityService {
      */
 
     async findUserAvailabilityTimes(userId: string, currentUserId: string): Promise<any> {
-        let availabilityDates;
+        let availabilityData;
         let data: Availability[] = await this.availabilityRepo.find({
             where: { user: In(userIds) },
         });
@@ -93,7 +93,7 @@ export class AvailabilityService {
             availabilityDates.push(...contactEvents);
         }
 
-        return {availabilityDates};
+        return {availabilityData};
     }
 
     async extractEmptyEventDates(availabilityDates, contactEvents) {
@@ -139,7 +139,6 @@ export class AvailabilityService {
         const contactEventDates = [];
         const weekDays = await this.generateWeekDays(data);
 
-
         // contactEvents.forEach((event) => {
         //     debugger;
         // });
@@ -147,7 +146,7 @@ export class AvailabilityService {
         const dateRange = moment().dateRangeToDates({
             rangeStart: moment().toDate(),
             rangeEnd: moment().add(2, 'week').format('yyyy-MM-DD hh:mm:ss'),
-            weekdays: await this.generateWeekDays(data),
+            weekdays: weekDays,
             exclusions: []
         });
 
