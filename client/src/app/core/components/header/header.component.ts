@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService} from 'src/app/core/services/auth/auth.service';
-import {ApplicationUser} from "../../interfaces/user/app.user.interface";
 import {BroadcasterService} from "../../../shared/services";
 import {BehaviorSubject} from "rxjs";
 
@@ -12,22 +11,27 @@ import {BehaviorSubject} from "rxjs";
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isLoginPage = true;
-  currentUser: ApplicationUser | null = null;
+  loggedUser = false;
   subscription: BehaviorSubject<string>;
 
   constructor(private authService: AuthService, private router: Router, private broadcaster: BroadcasterService) {
     this.isLoginPage = window.location.pathname !== '/register';
+
     this.subscription = this.broadcaster.on('isLoginPage').subscribe((data: boolean) => {
       this.isLoginPage = data;
     });
+
+    this.subscription = this.broadcaster.on('logged').subscribe((logged: boolean) => {
+      this.loggedUser = logged;
+    });
+
   }
 
   ngOnInit(): void {
-    this.authService.currentUser.subscribe({
-      next: (user) => {
-        this.currentUser = user;
-      }
-    });
+    const user = this.authService.currentUserValue;
+    if (user && user.accessToken) {
+      this.loggedUser = true;
+    }
   }
 
   ngOnDestroy() {
@@ -35,7 +39,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   get isAuthenticated(): boolean {
-    return !!this.currentUser;
+    return this.loggedUser;
   }
 
   get title() {

@@ -1,34 +1,33 @@
 import { Expose } from 'class-transformer';
-import {IsNotEmpty, IsNumber, IsString, Matches} from 'class-validator';
+import {IsNotEmpty, IsNumber, IsString} from 'class-validator';
 
-export class UserCreateDto {
+export class OauthUserDto {
+  @IsNotEmpty()
+  id: string;
+
   @IsNotEmpty()
   @IsString()
   email: string;
 
   @Expose({ name: 'first_name' })
+  @IsNotEmpty()
   firstName: string;
 
   @Expose({ name: 'last_name' })
-  lastName: string;
-
   @IsNotEmpty()
-  @IsString()
-  @Matches(
-      /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
-      { message: 'Invalid password' },
-  )
-  password: string;
+  lastName: string;
 
   @Expose({ name: 'status' })
   @IsNumber()
-  status: number = 0;
+  status: number = 1;
 
   @Expose({ name: 'oauth_id' })
   @IsNumber()
-  oauthId: number = 0;
+  @IsNotEmpty()
+  oauthId: number;
 
   @Expose({ name: 'provider' })
   @IsString()
+  @IsNotEmpty()
   provider: string;
 }

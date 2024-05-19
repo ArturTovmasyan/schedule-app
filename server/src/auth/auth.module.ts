@@ -29,11 +29,10 @@ dotenv.config();
         expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
-    ConfigModule.forRoot(),
-    GoogleStrategy
+    ConfigModule.forRoot()
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, GoogleStrategy],
   exports: [PassportModule, JwtModule, AuthService],
 })
 export class AuthModule {}

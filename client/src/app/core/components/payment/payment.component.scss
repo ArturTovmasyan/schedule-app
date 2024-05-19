@@ -1,5 +1,6 @@
 @import "../../../../styles/variables";
 
+<<<<<<< HEAD
 #container {
   background-color: white;
   border-radius: 20px;
@@ -80,4 +81,49 @@
       }
     }
   }
+=======
+#payment {
+  width: 100%;
+  display: flex;
+  //background: #7B9666;
+  flex-direction: column;
+}
+
+#header-light-text {
+  font-size: 45px;
+  line-height: 47px;
+  font-weight: 800;
+  color: #b7b7b7;
+}
+
+#header-text {
+  font-size: 45px;
+  line-height: 54px;
+  font-weight: 800;
+  color: $accent-color;
+}
+
+body {
+  background: #f5f5f5
+}
+
+.rounded {
+  border-radius: 1rem
+}
+
+.nav-pills .nav-link {
+  color: #555
+}
+
+.nav-pills .nav-link.active {
+  color: white
+}
+
+input[type="radio"] {
+  margin-right: 5px
+}
+
+.bold {
+  font-weight: bold
+>>>>>>> 6b35d68 (Create Goolge Login Functionality, Change in Auth systems)
 }

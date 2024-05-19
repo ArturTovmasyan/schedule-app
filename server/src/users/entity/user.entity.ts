@@ -17,6 +17,8 @@ export class User {
   @Column({ type: 'varchar', nullable: false }) lastName: string;
   @Column({ type: 'varchar', nullable: false }) password: string;
   @Column({ type: 'smallint', nullable: true, default: 0 }) status: number;
+  @Column({ type: 'varchar', length: 100, nullable: true, default: 0 }) oauthId: number;
+  @Column({ type: 'varchar', length: 10, nullable: true }) provider: string;
   @CreateDateColumn() createdOn?: Date;
   @UpdateDateColumn() updatedOn?: Date;
   @DeleteDateColumn() deletedOn?: Date;

@@ -79,4 +79,12 @@ export class AuthService {
       'Authorization': `Bearer ${token}`
     }
   }
+
+  isAuthenticated(token:string) {
+      return this.http.post<boolean>('/api/auth/logged', {token: token}).pipe(
+        map((response: boolean) => {
+          return response;
+        })
+      );
+  }
 }

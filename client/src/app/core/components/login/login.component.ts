@@ -5,6 +5,7 @@ import { first } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import {BroadcasterService, ValidationService} from "../../../shared/services";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'lib-login',
@@ -52,11 +53,21 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: () => {
           this.form.reset();
-          this.router.navigate([this.returnUrl]);
+          this.router.navigate(['/payment']);
         },
         error: (error) => {
           this.error = error;
         }
       });
+  }
+
+  googleLogin() {
+    window.location.href = environment.host+"api/auth/google";
+  }
+
+  appleLogin() {
+  }
+
+  outlookLogin() {
   }
 }

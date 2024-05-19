@@ -13,8 +13,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from './dto/user-update.dto';
-import { comparePasswords } from '@shared/utils';
+import {comparePasswords, generatePassword} from '@shared/utils';
 import { ErrorMessages } from '@shared/error.messages';
+import {OauthUserDto} from "@user/dto/user-oauth-create.dto";
+import {OauthProvider} from "../auth/enums/oauth.provider.enum";
+import {StatusEnum} from "@user/enums/status.enum";
 
 @Injectable()
 export class UsersService {
@@ -54,14 +57,27 @@ export class UsersService {
     return toUserDto(user);
   }
 
+  async registerOAuthUser(userDto: any, provider: OauthProvider): Promise<OauthUserDto> {
+    const oauthData = userDto;
+    const user = new User();
+    user.email = oauthData.email;
+    user.oauthId = oauthData.sub;
+    user.firstName = oauthData.given_name;
+    user.lastName = oauthData.family_name;
+    user.provider = provider;
+    user.password = generatePassword(10);
+    user.status = 1;
+
+    await this.userRepo.save(user);
+    return user;
+  }
+
+  //TODO change for oauthId and provider
   async update(id: string, userDto: UserUpdateDto): Promise<UserDto> {
+
     const { firstName, lastName, email } = userDto;
 
-    let user: User = await this.userRepo.findOne({
-      where: {
-        id,
-      },
-    });
+    let user: User = await this.userRepo.findOne({ where: {id} });
 
     if (!user) {
       throw new NotFoundException();
@@ -73,14 +89,13 @@ export class UsersService {
       lastName,
       email,
       status: 0,
-      password: user.password
+      password: user.password,
+      oauthId: 0,
+      provider: ""
     };
 
     await this.userRepo.update({ id }, user);
-
-    user = await this.userRepo.findOne({ where: { id } });
-    
-    return toUserDto(user);
+    return user;
   }
 
   async delete(id: string): Promise<UserDto> {
@@ -116,12 +131,14 @@ export class UsersService {
         id,
       },
     });
+
     if (!user) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         message: ErrorMessages.userNotFound,
       });
     }
+
     return toUserDto(user);
   }
 
@@ -138,18 +155,12 @@ export class UsersService {
     return toUserDto(user);
   }
 
-  async findOne(options?: object): Promise<UserDto> {
-    const user = await this.userRepo.findOne(options);
-    if (!user) {
-      throw new NotFoundException();
-    }
-    return toUserDto(user);
-  }
-
   async findByLogin({ email, password }): Promise<UserUpdateDto> {
     const user = await this.userRepo.findOne({
       where: {
-        email,
+        email: email,
+        status: StatusEnum.active,
+        oauthId: 0,
       },
     });
 
@@ -165,11 +176,5 @@ export class UsersService {
     }
 
     return toUserInfoDto(user);
-  }
-
-  async findByPayload({ email }: any): Promise<UserDto> {
-    return await this.findOne({
-      where: { email },
-    });
   }
 }

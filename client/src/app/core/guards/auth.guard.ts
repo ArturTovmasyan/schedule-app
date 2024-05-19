@@ -23,9 +23,10 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    const currentUser = this.authService.currentUserValue;
-    if (currentUser) {
-      return true;
+
+    const token = JSON.parse(localStorage.getItem('cu') || 'null');
+    if (token && token.accessToken) {
+       return this.authService.isAuthenticated(token.accessToken);
     }
 
     this.router.navigate(['/login']);

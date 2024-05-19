@@ -12,12 +12,12 @@ import {ControlMessageComponent} from "../core/components/control-message/contro
         CommonModule,
         RouterModule,
         FormsModule,
-        ReactiveFormsModule,
+        ReactiveFormsModule
     ],
     exports: [
         FormsModule,
         ReactiveFormsModule,
-        ControlMessageComponent,
+        ControlMessageComponent
     ]
 })
 

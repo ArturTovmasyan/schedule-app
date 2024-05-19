@@ -1,10 +1,10 @@
 import {
-    BadRequestException,
+    BadRequestException, ForbiddenException,
     HttpException,
     HttpStatus,
     Injectable,
     InternalServerErrorException,
-    NotFoundException,
+    NotFoundException, Provider,
     UnauthorizedException
 } from '@nestjs/common';
 import {UsersService} from '@user/users.service';
@@ -17,18 +17,15 @@ import {LoginStatus} from './interfaces/login-status.interface';
 import {SignInDto} from "./dto/signin.dto";
 import {MailService} from "../mail/mail.service";
 import {ErrorMessages} from "@shared/error.messages";
-import {statusEnum} from "@user/enums/status.enum";
+import {StatusEnum} from "@user/enums/status.enum";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "@user/entity/user.entity";
 import {Repository} from "typeorm";
 import {ChangePasswordDto} from "./dto/change-password.dto";
 import {UserUpdateDto} from "@user/dto/user-update.dto";
 import {ConfigService} from "@nestjs/config";
-
-enum Provider {
-    GOOGLE = 'google'
-}
-
+import {OauthUserDto} from "@user/dto/user-oauth-create.dto";
+import {OauthProvider} from "./enums/oauth.provider.enum";
 
 @Injectable()
 export class AuthService {
@@ -48,46 +45,7 @@ export class AuthService {
         this.appHost = configService.get<string>('WEB_HOST');
     }
 
-    async register(userDto: UserCreateDto): Promise<RegistrationStatus> {
-        let status: RegistrationStatus = {
-            success: true,
-            message: 'user registered',
-        };
-
-        try {
-            const user = await this.usersService.create(userDto);
-            await this.sendConfirmation(user);
-        } catch (error) {
-            status = {
-                success: false,
-                message: error,
-            };
-        }
-
-        return status;
-    }
-
-    async login(dto: SignInDto): Promise<LoginStatus> {
-        const user = await this.usersService.findByLogin(dto);
-        const token = this._createToken(user, null, dto.remember);
-        return {
-            user,
-            ...token,
-        };
-    }
-
-    async validateUser(payload: JwtPayload): Promise<UserDto> {
-        const user = await this.usersService.findByPayload(payload);
-        if (!user) {
-            throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
-        }
-        return user;
-    }
-
-    private _createToken({
-                             id,
-                             email
-                         }: UserUpdateDto, expiresTime: number | string | null = null, rememberMe: boolean = false): any {
+    private _createToken({id, email}: UserUpdateDto, expiresTime: number | string | null = null, rememberMe: boolean = false): any {
         const user: JwtPayload = {id, email};
 
         if (!expiresTime) {
@@ -104,7 +62,43 @@ export class AuthService {
         };
     }
 
-    public async verifyToken(token): Promise<any> {
+    async register(userDto: UserCreateDto): Promise<RegistrationStatus> {
+        let status: RegistrationStatus = {
+            success: true,
+            message: 'user registered',
+        };
+
+        try {
+            const user = await this.usersService.create(userDto);
+            this.sendConfirmation(user);
+        } catch (error) {
+            status = {
+                success: false,
+                message: error,
+            };
+        }
+
+        return status;
+    }
+
+    async login(dto: SignInDto): Promise<LoginStatus> {
+        const user = await this.usersService.findByLogin(dto);
+        const token = this._createToken(user, null, dto.remember);
+        return {
+            // user,
+            ...token,
+        };
+    }
+
+    async validateUser(payload: JwtPayload): Promise<UserDto> {
+        const user = await this.usersService.findOneByEmail(payload.email);
+        if (!user) {
+            throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+        }
+        return user;
+    }
+
+    public async verifyToken(token): Promise<User> {
         const data = this.jwtService.verify(token) as JwtPayload;
         const user = await this.userRepo.findOne({where: {id: data.id}});
 
@@ -119,11 +113,11 @@ export class AuthService {
         );
     }
 
-    async sendConfirmation(user: UserDto) {
-        const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
+     sendConfirmation(user: UserDto) {
+        const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
         const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
 
-        await this.mailService.send({
+         this.mailService.send({
             from: this.configService.get<string>('NO_REPLY_EMAIL'),
             to: user.email,
             subject: 'Verify Handshake Account',
@@ -163,8 +157,8 @@ export class AuthService {
     async confirmRegistration(token: string): Promise<boolean> {
         const user: Pick<UserDto, 'id' | 'status'> = await this.verifyToken(token);
 
-        if (user && user.status === statusEnum.pending) {
-            user.status = statusEnum.active;
+        if (user && user.status === StatusEnum.pending) {
+            user.status = StatusEnum.active;
             const data = await this.userRepo.update(user.id, user);
             return data.affected > 0;
         }
@@ -181,17 +175,27 @@ export class AuthService {
         return true;
     }
 
-    async validateOAuthLogin(googleId: string, provider: Provider): Promise<string> {
+    async validateOAuthLogin(data: any, provider: OauthProvider): Promise<string> {
         try {
-            // TODO create repo. method
-            // let user: User = await this.usersService.findOneByThirdPartyId(googleId, provider);
+            let {sub, email} = data;
+            let oauthId = sub;
+            let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
 
-            const payload = {
-                googleId,
-                provider
+            if (!user) {
+                user = await this.userRepo.findOne({where: [{email: data.email}]});
+                if (user) {
+                    throw new ForbiddenException(
+                        {
+                            message: "User already exists, but Social account was not connected to user's account",
+                            status: HttpStatus.FORBIDDEN
+                        }
+                    );
+                }
+                user = await this.usersService.registerOAuthUser(data, provider);
             }
 
-            return this.jwtService.sign(payload, {expiresIn: '30d'});
+            return this._createToken(user, '30d').accessToken;
+
         } catch (err) {
             throw new InternalServerErrorException({
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
