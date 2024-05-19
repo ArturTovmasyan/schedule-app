@@ -105,6 +105,11 @@ export class AuthController {
   }
 
   @ApiExcludeEndpoint()
+  @Get('microsoft')
+  @UseGuards(AuthGuard('microsoft'))
+  msLogin() {}
+
+  @ApiExcludeEndpoint()
   @Post('microsoft/callback')
   async msLoginCallback(@Req() req, @Res() res): Promise<any> {
     const user: any = req.body;
