@@ -69,11 +69,9 @@ export class AuthService {
             message: 'user registered',
         };
 
-        debugger;
         try {
             let fullName = userDto.firstName + ' ' + userDto.lastName;
             const stripeCustomer = await this.stripeService.createCustomer(fullName, userDto.email);
-
             userDto.stripeCustomerId = stripeCustomer.id;
             const user = await this.usersService.create(userDto);
             this.sendConfirmation(user);
@@ -88,7 +86,6 @@ export class AuthService {
     }
 
     async login(dto: SignInDto): Promise<LoginStatus> {
-        debugger;
         const user = await this.usersService.findByLogin(dto);
         const token = this._createToken(user, null, dto.remember);
         const stripeCustomerId = user.stripeCustomerId;
@@ -235,7 +232,6 @@ export class AuthService {
                     );
                 }
 
-                debugger;
                 const customerData = await this.stripeService.createCustomer(data.displayName, data.mail);
                 data.stripeCustomerId = customerData.id;
                 data.provider = OauthProvider.MICROSOFT;

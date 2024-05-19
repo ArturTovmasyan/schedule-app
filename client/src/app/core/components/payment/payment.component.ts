@@ -3,7 +3,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
 import {PaymentService} from "../../services/auth/payment/payment.service";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
-
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.component.html',
@@ -13,8 +12,11 @@ export class PaymentComponent implements OnInit {
 
   form: FormGroup;
   error?: ErrorResponse;
+  cvvMask = {mask: "{000}"}
+  dateMask = {mask: "{00}/{00}"};
+  cardNumberMask = {mask: "0000 0000 0000 0000"};
 
-  constructor(private formBuilder: FormBuilder, private paymentService: PaymentService) {
+  constructor(private formBuilder: FormBuilder, private paymentService: PaymentService, private router: Router) {
     this.form = this.formBuilder.group({
       number: ['', [ValidationService.cardNumber, Validators.required]],
       name: ['', [ValidationService.fullNameValidator, Validators.required]],
@@ -22,10 +24,6 @@ export class PaymentComponent implements OnInit {
       cvv: ['', [ValidationService.cardCvv, Validators.required, Validators.maxLength(3)]]
     });
   }
-
-  cvvMask = {mask: "{000}"}
-  dateMask = {mask: "{00}/{00}"};
-  cardNumberMask = {mask: "0000 0000 0000 0000"};
 
   ngOnInit(): void {
     this.loadStripe();

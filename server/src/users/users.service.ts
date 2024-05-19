@@ -128,7 +128,7 @@ export class UsersService {
   }
 
   async update(id: string, userDto: UserUpdateDto): Promise<UserDto> {
-    const { firstName, lastName, email } = userDto;
+    // const { firstName, lastName, email } = userDto;
 
     let user: User = await this.userRepo.findOne({ where: { id } });
 
@@ -136,18 +136,18 @@ export class UsersService {
       throw new NotFoundException();
     }
 
-    user = {
-      id,
-      firstName,
-      lastName,
-      email,
-      status: 0,
-      password: user.password,
-      oauthId: 0,
-      provider: "",
-      stripeCustomerId: "",
-      subscription: null
-    };
+    // user = {
+    //   id,
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   status: 0,
+    //   password: user.password,
+    //   oauthId: 0,
+    //   provider: "",
+    //   stripeCustomerId: "",
+    //   subscription: null
+    // };
 
     await this.userRepo.update({ id }, user);
     return user;

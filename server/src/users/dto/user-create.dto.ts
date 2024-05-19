@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import {IsNotEmpty, IsOptional, IsString, Matches} from 'class-validator';
+import {Expose} from "class-transformer";
 
 export class UserCreateDto {
   @ApiProperty({ required: true, type: 'string' })

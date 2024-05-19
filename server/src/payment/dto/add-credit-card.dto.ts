@@ -1,15 +1,13 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import {IsString, IsNotEmpty, IsOptional} from 'class-validator';
 
 export class AddCreditCardDto {
     @IsString()
     @IsNotEmpty()
-    paymentMethodId: string;
-
-    @IsString()
-    card: any;
+    stripeToken: string;
 
     @IsString()
     @IsNotEmpty()
+    @IsOptional()
     customerId: string;
 }
 

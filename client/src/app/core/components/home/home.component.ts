@@ -7,21 +7,13 @@ import {Router} from "@angular/router";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit
-{
-  public fullName = '';
-
+export class HomeComponent implements OnInit {
   constructor(private broadcaster: BroadcasterService, private router: Router) {
 
-    const userData = localStorage.getItem('cu');
+    const paymentSubscription = localStorage.getItem('subscribe');
 
-    if (userData) {
-      const user = JSON.parse(userData);
-      this.fullName = user.first
-
-      // if (user && !user.user.stripeCustomerId) {
-        this.router.navigate(['/onboarding/subscription-plan'])
-      // }
+    if (!paymentSubscription) {
+      this.router.navigate(['/onboarding/subscription-plan'])
     }
   }
 
