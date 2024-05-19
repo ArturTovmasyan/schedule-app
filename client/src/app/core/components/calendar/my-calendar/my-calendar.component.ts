@@ -153,7 +153,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     headerToolbar: {
       left: '',
       center: 'prev,title,next',
-      right: 'today'
+      right: ''
     },
     events: [],
     eventContent: this.eventContent.bind(this),

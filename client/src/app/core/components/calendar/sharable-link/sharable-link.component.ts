@@ -123,8 +123,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     return moment(a, "ddd, MMM Do").diff(moment(b, "ddd, MMM Do"));
   }
 
-
-
   ngOnInit(): void {
       // this.broadcaster.broadcast('multiselect_calendar', true);
   }
@@ -470,7 +468,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           const availabilityData = data?.availabilityData;
           this.emailsWithAvailabilityMap.set(contactEmail, availabilityData);
           this.broadcastContactData();
-
         },
         error: (error) => {
           console.error(error.message);
@@ -479,7 +476,14 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   broadcastContactData() {
+    this.selectedDates = [];
+    this.selectedDates$.next([]);
+    this.addedTimeSlots = [];
+    this.broadcaster.broadcast('reset_event');
     const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
+    if (contacts.length == 0) {
+      return;
+    }
     this.broadcaster.broadcast('contact_calendar_data', contacts);
   }
 
@@ -493,6 +497,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.selectedContacts$.next(this.selectedContacts);
     this.emailsWithAvailabilityMap.delete(contact.owner.email);
     this.broadcastContactData();
+    this.selectedDates = [];
+    this.selectedDates$.next([]);
   }
 
   copyLink(text: string) {
