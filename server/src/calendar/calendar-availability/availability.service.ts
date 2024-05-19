@@ -129,7 +129,6 @@ export class AvailabilityService {
             };
 
             let availabilities: Availability[] = await this.availabilityRepo.find({where: {user: In(userIds)}});
-
             if (availabilities) {
                 // for contact list click
                 if (availabilities.length == 1) {
@@ -225,7 +224,7 @@ export class AvailabilityService {
         //
         const dateRange = moment().dateRangeToDates({
             rangeStart: moment().toDate(),
-            rangeEnd: moment().add(2, 'week').format('yyyy-MM-DD hh:mm:ss'),
+            rangeEnd: moment().add(4, 'week').format('yyyy-MM-DD hh:mm:ss'),
             weekdays: weekDays,
             exclusions: []
         });

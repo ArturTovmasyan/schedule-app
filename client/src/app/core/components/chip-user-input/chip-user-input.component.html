@@ -2,9 +2,9 @@
   <div class="chip-container">
     <div *ngFor="let user of users; let i = index" class="chip-item">
       <img src="{{user.avatar}}" alt="user icon" *ngIf="user.avatar">
-      <span id="initials" *ngIf="!user.avatar">{{ user.email.charAt(0) }}</span>
+      <span id="initials" *ngIf="!user.avatar">{{ user?.name?.charAt(0) ?? '' }}</span>
       <span class="info">
-        <span>{{ user.email }}</span>
+        <span>{{ user.name }}</span>
         <span>{{ user.email | getContactCompany }}</span>
       </span>
       <span class="remove-button" id="remove-button" (click)="remove(i)" *ngIf="user.removable"></span>
