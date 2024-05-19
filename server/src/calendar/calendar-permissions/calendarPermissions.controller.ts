@@ -83,10 +83,9 @@ export class CalendarPermissionsController {
 
   @ApiExcludeEndpoint()
   @Get('ms-calendar-callback')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async ms365CalendarCallback(@Req() req: { user: User }, @Query() query: any) {
     req.user = { ...req.user, id: '4748fcf0-ac95-41f5-82f3-9d03fb1298f5' };
-
     return await this.calendarPermissionsService.getTokensFromMS365AndSave(
       req.user,
       query.code,
