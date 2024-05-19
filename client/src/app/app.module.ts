@@ -6,34 +6,30 @@ import {AppComponent} from './app.component';
 import {HomeComponent} from './core/components/home/home.component';
 import {HeaderComponent} from './core/components/header/header.component';
 import {AuthComponent} from './core/components/auth/auth.component';
-import {CommonModule} from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {RouterModule} from '@angular/router';
 import {jwtInterceptorProvider} from './core/interceptors/jwt.interceptor';
 import {errorInterceptorProvider} from './core/interceptors/error.interceptor';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 import {LoginComponent} from './core/components/login/login.component';
 import {FooterComponent} from './core/components/footer/footer.component';
 import {SignupComponent} from './core/components/signup/signup.component';
-import {ValidationService} from "./core/services/validation/validation.service";
-import {ControlMessageComponent} from "./core/components/control-message/control-message.component";
+import { ResetPasswordComponent } from './core/components/reset-password/reset-password.component';
+import {BroadcasterService, ValidationService} from "./shared/services";
+import {SharedModule} from "./shared/shared.module";
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent, LoginComponent, FooterComponent, SignupComponent, ControlMessageComponent],
+  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent, LoginComponent, FooterComponent, SignupComponent, ResetPasswordComponent],
   imports: [
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    CommonModule,
-    FormsModule,
     HttpClientModule,
-    ReactiveFormsModule,
-    RouterModule,
+    SharedModule
   ],
   providers: [
     jwtInterceptorProvider,
     errorInterceptorProvider,
-    ValidationService
+    ValidationService,
+    BroadcasterService
   ],
   bootstrap: [AppComponent]
 })

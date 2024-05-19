@@ -4,7 +4,7 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HTTP_INTERCEPTORS,
+  HTTP_INTERCEPTORS
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
@@ -21,8 +21,8 @@ export class JwtInterceptor implements HttpInterceptor {
     if (currentUser && currentUser.accessToken) {
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${currentUser.accessToken}`,
-        },
+          Authorization: `Bearer ${currentUser.accessToken}`
+        }
       });
     }
     return next.handle(request);
@@ -32,5 +32,5 @@ export class JwtInterceptor implements HttpInterceptor {
 export const jwtInterceptorProvider = {
   provide: HTTP_INTERCEPTORS,
   useClass: JwtInterceptor,
-  multi: true,
+  multi: true
 };

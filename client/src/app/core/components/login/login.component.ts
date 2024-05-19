@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import {ValidationService} from "../../services/validation/validation.service";
+import {ValidationService} from "../../../shared/services";
 
 @Component({
   selector: 'lib-login',
@@ -12,9 +12,8 @@ import {ValidationService} from "../../services/validation/validation.service";
 })
 export class LoginComponent implements OnInit {
   form: FormGroup;
-  submitted = false;
   returnUrl: string;
-  errorMessage: any;
+  errorMessage: string | undefined;
   error: any;
 
   constructor(
@@ -25,7 +24,7 @@ export class LoginComponent implements OnInit {
   ) {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]],
-      password: ['', [ValidationService.passwordValidator, Validators.required]],
+      password: ['', [Validators.required]],
       remember: [false]
     });
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
@@ -35,22 +34,20 @@ export class LoginComponent implements OnInit {
     this.authService.logout();
   }
 
-  get f(): any {
+  get f() {
     return this.form.controls;
   }
 
   onSubmit() {
-    this.submitted = true;
-
     if (this.form.invalid) {
       return;
     }
 
     this.authService
-      .login(this.f.email.value, this.f.password.value)
+      .login(this.form.value.email, this.form.value.password)
       .pipe(first())
       .subscribe({
-        next: (data) => {
+        next: () => {
           this.router.navigate([this.returnUrl]);
         },
         error: (error) => {

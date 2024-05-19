@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {ValidationService} from "../../services/validation/validation.service";
+import {ValidationService} from "../../../shared/services";
 
 @Component({
     selector: 'app-control-messages',
@@ -9,8 +9,6 @@ import {ValidationService} from "../../services/validation/validation.service";
 
 export class ControlMessageComponent {
     @Input() control: any;
-
-    constructor() {}
 
     get errorMessage() {
         for (const propertyName in this.control.errors) {

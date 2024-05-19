@@ -1,21 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ApplicationUser, AuthService } from 'src/app/core/services/auth/auth.service';
-
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {ApplicationUser, AuthService} from 'src/app/core/services/auth/auth.service';
+import {BroadcasterService} from "../../../shared/services";
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   isLoginPage: boolean = true;
   currentUser: ApplicationUser | null = null;
+  subscription: any;
 
-  constructor(private authService: AuthService, private router: Router) {
-    if (window.location.pathname === '/register') {
-      this.isLoginPage = false;
-    }
+  constructor(private authService: AuthService, private router: Router, private broadcaster: BroadcasterService) {
+    this.isLoginPage = window.location.pathname !== '/register';
+    this.subscription = this.broadcaster.on('isLoginPage').subscribe((data: boolean) => {
+      this.isLoginPage = data;
+    });
   }
 
   ngOnInit(): void {
@@ -24,6 +26,10 @@ export class HeaderComponent implements OnInit {
         this.currentUser = user;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   get isAuthenticated(): boolean {

@@ -7,12 +7,12 @@
     <div class="form-group">
       <label for="email">Email</label>
       <input type="email" id="email" formControlName="email" placeholder="Email" />
-      <app-control-messages [control]="f.email"></app-control-messages>
+      <app-control-messages [control]="f['email']"></app-control-messages>
     </div>
     <div class="form-group">
       <label for="password">Password</label>
       <input type="password" id="password" formControlName="password" placeholder="Password" />
-      <app-control-messages [control]="f.password"></app-control-messages>
+      <app-control-messages [control]="f['password']"></app-control-messages>
       <span *ngIf="error" class="error">{{ error?.message }}</span>
     </div>
     <div id="actions">
@@ -20,7 +20,9 @@
         <input id="remember-me" type="checkbox" formControlName="remember" title="Remember me" />
         Remember Me
       </label>
-      <a id="forgot-password" href="/#">I forgot my password</a>
+      <a id="forgot-password" [routerLink]="['/reset-password']">
+        I forgot my password
+      </a>
     </div>
     <div>
       <button id="submit" type="submit" [disabled]="!form.valid">Log in</button>

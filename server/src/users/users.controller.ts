@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, HttpStatus, NotFoundException,
   Param,
   Post,
   Put,
@@ -14,6 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
+import {ErrorMessages} from "@shared/error.messages";
 
 @Controller('api/users')
 export class UsersController {
@@ -52,5 +53,19 @@ export class UsersController {
   @UseGuards(AuthGuard())
   async delete(@Param('id') id: string): Promise<UserDto> {
     return await this.usersService.delete(id);
+  }
+
+  @Post('check-email')
+  public async checkUserByEmail(
+      @Body() dto: UserDto,
+  ): Promise<UserDto> {
+    const user: UserDto = await this.usersService.findOneByEmail(dto);
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
+    }
+    return user;
   }
 }

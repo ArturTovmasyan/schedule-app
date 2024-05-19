@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './core/components/login/login.component';
 import {SignupComponent} from "./core/components/signup/signup.component";
+import {ResetPasswordComponent} from "./core/components/reset-password/reset-password.component";
 
 //TODO In future will be change for use loadChildren (lazy load module)
 const routes: Routes = [
@@ -24,6 +25,9 @@ const routes: Routes = [
       {
         path: 'register', component: SignupComponent, data: {title: 'Sign Up'}
       },
+      {
+        path: 'reset-password', component: ResetPasswordComponent, data: {title: 'Reset Password'}
+      }
     ]
   },
   {

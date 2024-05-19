@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ValidationService} from "../../services/validation/validation.service";
+import {ValidationService} from "../../../shared/services";
 
 @Component({
   selector: 'app-signup',
@@ -10,21 +10,19 @@ import {ValidationService} from "../../services/validation/validation.service";
   styleUrls: ['./signup.component.scss']
 })
 export class SignupComponent implements OnInit {
-
   form: FormGroup;
-  fullName: string = '';
-  firstName: string = '';
-  email: string = '';
-  password: string = '';
-  error: string = '';
-  homePageUrl: string = '/';
-  errorMessage: any;
+  fullName: string | undefined;
+  firstName: string | undefined;
+  email: string | undefined;
+  password: string | undefined;
+  error: any;
+  errorMessage: undefined;
 
   constructor(private route: ActivatedRoute, private authService: AuthService, private router: Router, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
       fullName: ['', [ValidationService.fullNameValidator, Validators.required]],
       email: ['', [ValidationService.emailValidator, Validators.required]],
-      password: ['', [ValidationService.passwordValidator, Validators.required]],
+      password: ['', [ValidationService.passwordValidator, Validators.required]]
     });
   }
 
@@ -34,33 +32,34 @@ export class SignupComponent implements OnInit {
     }
   }
 
-  get f(): any {
+  get f() {
     return this.form.controls;
   }
 
   signup() {
 
-    let splitData = this.form.value.fullName.split(' ');
-    let firstName = splitData[0];
+    // generate first and last names
+    const splitData = this.form.value.fullName.split(' ');
+    const firstName = splitData[0];
     splitData.shift();
-    let lastName = splitData.join(' ');
+    const lastName = splitData.join(' ');
 
-    splitData.shift();
-
-    let data = {
+    const data = {
       'firstName': firstName,// assume full name is 2 part
       'lastName': lastName,
       'email': this.form.value.email,
-      'password': this.form.value.password,
+      'password': this.form.value.password
     };
 
-    this.authService.signup(data).subscribe(
-      res => {
-        this.router.navigate([this.homePageUrl]);
-      },
-      error => {
-        this.error = error.message;
-      }
-    );
+    this.authService.signup(data)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: (error) => {
+          debugger;
+          this.error = error;
+        }
+      })
   }
 }
