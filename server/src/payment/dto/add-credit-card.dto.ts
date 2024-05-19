@@ -6,6 +6,9 @@ export class AddCreditCardDto {
     paymentMethodId: string;
 
     @IsString()
+    card: any;
+
+    @IsString()
     @IsNotEmpty()
     customerId: string;
 }

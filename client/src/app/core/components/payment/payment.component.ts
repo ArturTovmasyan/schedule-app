@@ -3,6 +3,11 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
 import {PaymentService} from "../../services/auth/payment/payment.service";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
+<<<<<<< HEAD
+=======
+import {environment} from "../../../../environments/environment";
+import {STANDARD_PLAN_NAME} from "../../interfaces/constant/payment.constant";
+>>>>>>> f477641 (Cretae subs. table, add payment functionality)
 
 @Component({
   selector: 'app-payment',
@@ -23,9 +28,9 @@ export class PaymentComponent implements OnInit {
     });
   }
 
-  cvvMask = { mask: "{000}" }
-  dateMask = { mask: "{00}/{00}" };
-  cardNumberMask = { mask: "0000 0000 0000 0000" };
+  cvvMask = {mask: "{000}"}
+  dateMask = {mask: "{00}/{00}"};
+  cardNumberMask = {mask: "0000 0000 0000 0000"};
 
   ngOnInit(): void {
     this.loadStripe();

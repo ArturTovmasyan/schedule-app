@@ -72,11 +72,11 @@ export class AuthController {
     @UseGuards(AuthGuard('google'))
     async googleLoginCallback(@Req() req, @Res() res) {
         const user: any = req.user._json;
-        const jwt = await this.authService.validateGoogleLogin(user);
+        const userData = await this.authService.validateGoogleLogin(user);
         const webHost = this.configService.get<string>('WEB_HOST');
 
-        if (jwt) {
-            res.redirect(webHost + 'oauth/success?token=' + jwt);
+        if (userData) {
+            res.redirect(webHost + 'oauth/success?token=' + userData.accessToken + '&customerId='+userData.stripeCustomerId);
         } else {
             res.redirect(webHost+'404');
         }
@@ -87,11 +87,14 @@ export class AuthController {
     async msLoginCallback(@Req() req, @Res() res) {
         const user: any = req.body;
 
+        debugger;
         if (user && user.id) {
-            const jwt = await this.authService.validateMicrosoftLogin(user);
-            if (jwt) {
+            debugger;
+            const userData = await this.authService.validateMicrosoftLogin(user);
+            if (userData) {
                 return res.status(200).json({
-                    accessToken: jwt,
+                    accessToken: userData.accessToken,
+                    stripeCustomerId: userData.stripeCustomerId,
                     provider: OauthProvider.MICROSOFT
                 });
             }

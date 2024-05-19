@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {BroadcasterService} from "../../../shared/services";
-
-const STANDARD_PLAN = 0;
-const PROFESSIONAL_PLAN = 1;
+import {PROFESSIONAL_PLAN, STANDARD_PLAN} from "../../interfaces/constant/payment.constant";
 
 @Component({
   selector: 'app-subscription-plan-item',
@@ -39,7 +37,9 @@ export class SubscriptionPlanItemComponent implements OnInit {
 
   selectPlan() {
     this.isSelected = true;
-    this.broadcaster.broadcast('plan_type', this.subscriptionPlan.recommended ? STANDARD_PLAN : PROFESSIONAL_PLAN);
+    const plan = this.subscriptionPlan.recommended ? STANDARD_PLAN : PROFESSIONAL_PLAN;
+    this.broadcaster.broadcast('plan_type', plan);
+    localStorage.setItem('plan', this.subscriptionPlan.name.toLowerCase());
     console.log(this.subscriptionPlan);
   }
 }

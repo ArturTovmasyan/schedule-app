@@ -28,5 +28,6 @@ export class UserDto {
   deletedOn?: Date;
 
   @Expose({ name: 'stripe_customer_id' })
+  @IsString()
   stripeCustomerId?: string;
 }

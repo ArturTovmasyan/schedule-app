@@ -14,11 +14,10 @@ export class PaymentService {
   }
 
   public async createCustomer(name: string, email: string) {
-    debugger;
     return this.stripe.customers.create({
-      name,
-      email
-    });
+     name,
+     email
+   });
   }
 
   public async charge(amount: number, paymentMethodId: string) {
@@ -53,10 +52,10 @@ export class PaymentService {
     })
   }
 
-  public async setDefaultCreditCard(paymentMethodId: string, customerId: string) {
+  public async setDefaultCreditCard(paymentMethodId: string, stripeCustomerId: string) {
     try {
       debugger;
-      return await this.stripe.customers.update(customerId, {
+      return await this.stripe.customers.update(stripeCustomerId, {
         invoice_settings: {
           default_payment_method: paymentMethodId
         }
@@ -65,21 +64,41 @@ export class PaymentService {
       if (error?.type === StripeError.InvalidRequest) {
         throw new BadRequestException('Wrong credit card chosen');
       }
+      throw new InternalServerErrorException('Server Error');
+    }
+  }
+
+  public async createPaymentMethod(card: any, stripeCustomerId: string) {
+    try {
+      return await this.stripe.paymentMethods.create({
+        card: card,
+        customer: stripeCustomerId
+      })
+    } catch (error) {
+      debugger;
+      if (error?.code === StripeError.ResourceMissing) {
+        throw new BadRequestException('Payment method invalid');
+      }
       throw new InternalServerErrorException();
     }
   }
 
-  public async createSubscription(priceId: string, customerId: string,) {
+  public async createSubscription(priceId: string, stripeCustomerId: string, paymentMethod: string) {
+    debugger;
     try {
       return await this.stripe.subscriptions.create({
-        customer: customerId,
+        customer: stripeCustomerId,
+        currency: this.configService.get('STRIPE_CURRENCY'),
+        // default_payment_method: paymentMethod,
+        // cancel_at_period_end: true,
         items: [
           {
             price: priceId
           }
-        ]
+        ],
       })
     } catch (error) {
+      debugger;
       if (error?.code === StripeError.ResourceMissing) {
         throw new BadRequestException('Credit card not set up');
       }
@@ -87,9 +106,9 @@ export class PaymentService {
     }
   }
 
-  public async listSubscriptions(priceId: string, customerId: string,) {
+  public async listSubscriptions(priceId: string, stripeCustomerId: string,) {
     return this.stripe.subscriptions.list({
-      customer: customerId,
+      customer: stripeCustomerId,
       price: priceId
     })
   }

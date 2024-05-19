@@ -46,7 +46,7 @@ export class AuthService {
         this.appHost = configService.get<string>('WEB_HOST');
     }
 
-    private _createToken({id, email}: UserUpdateDto, expiresTime: number | string | null = null, rememberMe: boolean = false): any {
+    private _createToken({id, email, stripeCustomerId}: UserUpdateDto, expiresTime: number | string | null = null, rememberMe: boolean = false): any {
         const user: JwtPayload = {id, email};
 
         if (!expiresTime) {
@@ -59,6 +59,7 @@ export class AuthService {
 
         return {
             expiresIn: expiresTime,
+            stripeCustomerId,
             accessToken,
         };
     }
@@ -87,10 +88,12 @@ export class AuthService {
     }
 
     async login(dto: SignInDto): Promise<LoginStatus> {
+        debugger;
         const user = await this.usersService.findByLogin(dto);
         const token = this._createToken(user, null, dto.remember);
+        const stripeCustomerId = user.stripeCustomerId;
         return {
-            user,
+            stripeCustomerId,
             ...token,
         };
     }
@@ -183,7 +186,7 @@ export class AuthService {
         return true;
     }
 
-    async validateGoogleLogin(data: any): Promise<string> {
+    async validateGoogleLogin(data: any): Promise<any> {
         let {sub, email} = data;
         let oauthId = sub;
         let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
@@ -198,16 +201,20 @@ export class AuthService {
                     }
                 );
             }
+
+            debugger;
+            let fullName = data.given_name + ' ' + data.family_name;
+            const customerData = await this.stripeService.createCustomer(fullName, data.email);
+            data.stripeCustomerId = customerData.id;
             data.provider = OauthProvider.GOOGLE;
             user = await this.usersService.registerGoogleUser(data);
         }
 
-        return this._createToken(user, '30d').accessToken;
+        return this._createToken(user, '30d');
     }
 
-    async validateMicrosoftLogin(data: any): Promise<string> {
+    async validateMicrosoftLogin(data: any): Promise<any> {
         try {
-
             let {id, mail} = data;
             let oauthId = id;
             let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
@@ -223,11 +230,14 @@ export class AuthService {
                     );
                 }
 
+                debugger;
+                const customerData = await this.stripeService.createCustomer(data.displayName, data.mail);
+                data.stripeCustomerId = customerData.id;
                 data.provider = OauthProvider.MICROSOFT;
                 user = await this.usersService.registerMicrosoftUser(data);
             }
 
-            return this._createToken(user, '30d').accessToken;
+            return this._createToken(user, '30d');
 
         } catch (err) {
             throw new InternalServerErrorException({

@@ -14,4 +14,8 @@ export class UserUpdateDto {
 
   @Expose({ name: 'last_name' })
   lastName: string;
+
+  @Expose({ name: 'stripe_customer_id' })
+  @IsString()
+  stripeCustomerId?: string;
 }

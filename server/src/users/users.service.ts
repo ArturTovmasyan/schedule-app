@@ -28,14 +28,13 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async create(userDto: UserCreateDto): Promise<UserDto> { // TODO add customerId to userDTo
+  async create(userDto: UserCreateDto): Promise<UserDto> { // TODO add stripeCustomerId to userDTo
     const { email, firstName, lastName, password, stripeCustomerId } = userDto;
     const userInDb = await this.userRepo.findOne({
       where: { email }, withDeleted: true
     });
 
     if (userInDb) {
-      //TODO will be move to ExceptionFilter or Interceptor for global usage
       throw new HttpException(
           {
             status: HttpStatus.FORBIDDEN,
@@ -66,7 +65,7 @@ export class UsersService {
     user.provider = userDto.provider;
     user.password = generatePassword(10);
     user.status = StatusEnum.active;
-
+    user.stripeCustomerId = userDto.stripeCustomerId;
     await this.userRepo.save(user);
     return user;
   }
@@ -80,6 +79,7 @@ export class UsersService {
     user.provider = userDto.provider;
     user.password = generatePassword(10);
     user.status = StatusEnum.active;
+    user.stripeCustomerId = userDto.stripeCustomerId;
 
     await this.userRepo.save(user);
     return user;
@@ -105,6 +105,7 @@ export class UsersService {
       oauthId: 0,
       provider: "",
       stripeCustomerId: "",
+      subscription: null
     };
 
     await this.userRepo.update({ id }, user);

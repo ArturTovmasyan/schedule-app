@@ -9,20 +9,20 @@ export default class SubscriptionsService {
         private readonly configService: ConfigService
     ) {}
 
-    public async createStandardSubscription(customerId: string) {
+    public async createStandardSubscription(stripeCustomerId: string, paymentMethodId: string) {
         debugger;
         const priceId = this.configService.get('STANDARD_SUBSCRIPTION_PRICE_ID');
+        const subscriptions = await this.stripeService.listSubscriptions(priceId, stripeCustomerId);
 
-        const subscriptions = await this.stripeService.listSubscriptions(priceId, customerId);
         if (subscriptions.data.length) {
             throw new BadRequestException('Customer already subscribed');
         }
-        return this.stripeService.createSubscription(priceId, customerId);
+        return await this.stripeService.createSubscription(priceId, stripeCustomerId, paymentMethodId);
     }
 
-    public async getStandardSubscription(customerId: string) {
+    public async getStandardSubscription(stripeCustomerId: string) {
         const priceId = this.configService.get('STANDARD_SUBSCRIPTION_PRICE_ID');
-        const subscriptions = await this.stripeService.listSubscriptions(priceId, customerId);
+        const subscriptions = await this.stripeService.listSubscriptions(priceId, stripeCustomerId);
 
         if (!subscriptions.data.length) {
             return new NotFoundException('Customer not subscribed');
@@ -30,19 +30,26 @@ export default class SubscriptionsService {
         return subscriptions.data[0];
     }
 
-    public async createProfessionalSubscription(customerId: string) {
+    public async createProfessionalSubscription(stripeCustomerId: string, paymentMethodId: string) {
         const priceId = this.configService.get('PROFESSIONAL_SUBSCRIPTION_PRICE_ID');
 
-        const subscriptions = await this.stripeService.listSubscriptions(priceId, customerId);
+        debugger;
+        const subscriptions = await this.stripeService.listSubscriptions(priceId, stripeCustomerId);
         if (subscriptions.data.length) {
             throw new BadRequestException('Customer already subscribed');
         }
-        return this.stripeService.createSubscription(priceId, customerId);
+         const subData = await this.stripeService.createSubscription(priceId, stripeCustomerId, paymentMethodId);
+
+        if (subData) {
+            //TODO create subscription
+        }
+
+        return subData;
     }
 
-    public async getProfessionalSubscription(customerId: string) {
+    public async getProfessionalSubscription(stripeCustomerId: string) {
         const priceId = this.configService.get('PROFESSIONAL_SUBSCRIPTION_PRICE_ID');
-        const subscriptions = await this.stripeService.listSubscriptions(priceId, customerId);
+        const subscriptions = await this.stripeService.listSubscriptions(priceId, stripeCustomerId);
 
         if (!subscriptions.data.length) {
             return new NotFoundException('Customer not subscribed');

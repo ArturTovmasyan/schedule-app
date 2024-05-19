@@ -18,8 +18,10 @@ export class OauthLoginComponent implements OnInit {
   }
 
   loginOauthUser() {
+    debugger;
     const token = this.route.snapshot.queryParams['token'];
-    localStorage.setItem('cu', JSON.stringify({accessToken: token}));
+    const customerId = this.route.snapshot.queryParams['customerId'];
+    localStorage.setItem('cu', JSON.stringify({accessToken: token, customerId}));
     this.router.navigate(['/']);
   }
 }

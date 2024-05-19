@@ -7,7 +7,7 @@ export class CreateChargeDto {
 
     @IsString()
     @IsNotEmpty()
-    customerId: string;
+    stripeCustomerId: string;
 
     @IsNumber()
     amount: number;

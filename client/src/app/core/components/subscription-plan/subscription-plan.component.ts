@@ -1,6 +1,7 @@
 import {Component, OnDestroy} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {BroadcasterService} from "../../../shared/services";
+import {STANDARD_PLAN_NAME} from "../../interfaces/constant/payment.constant";
 
 @Component({
   selector: 'app-subscription-plan',
@@ -16,6 +17,8 @@ export class SubscriptionPlanComponent implements OnDestroy{
     this.subscription = this.broadcaster.on('plan_type').subscribe((planItem: number) => {
       this.selectedPlan = planItem;
     });
+
+    localStorage.setItem('plan', STANDARD_PLAN_NAME);
   }
 
   ngOnDestroy() {
