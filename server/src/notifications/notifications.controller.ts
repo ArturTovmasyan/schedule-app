@@ -52,6 +52,14 @@ export class NotificationsController {
   }
 
   @ApiResponse({ type: IResponse })
+  @ApiOperation({ summary: 'Find all unread notifications' })
+  @UseGuards(AuthGuard())
+  @Get('pending')
+  findAllPending(@GetUser() user: User) {
+    return this.notificationsService.findAllPending(user);
+  }
+
+  @ApiResponse({ type: IResponse })
   @ApiOperation({ summary: 'Find count of unread notifications' })
   @UseGuards(AuthGuard())
   @Get('count')

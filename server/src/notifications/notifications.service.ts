@@ -120,6 +120,39 @@ export class NotificationsService {
   }
 
   /**
+   * @description `Find list of user's notifications`
+   * @param user - `Authorized user data`
+   * @returns `Array of NotificationsEntity data where viewed = false`
+   */
+
+   async findAllPending(user: User): Promise<IResponse<NotificationsEntity[]>> {
+    const [data, total] = await this.notificationsRepo
+      .createQueryBuilder('notification')
+      .select([
+        'notification.id',
+        'notification.viewed',
+        'notification.type',
+        'notification.createdOn',
+      ])
+      .leftJoin('notification.sender', 'sender')
+      .addSelect(['sender.id', 'sender.firstName', 'sender.lastName'])
+      .leftJoin('notification.accessRequest', 'accessRequest')
+      .addSelect([
+        'accessRequest.id',
+        'accessRequest.timeForAccess',
+        'accessRequest.status',
+        'accessRequest.createdOn',
+      ])
+      .where('notification.receiverUserId =:userId', { userId: user.id })
+      .andWhere('notification.viewed =:viewed', { viewed: false })
+      .orderBy('notification.viewed', 'ASC')
+      .addOrderBy('notification.createdOn', 'DESC')
+      .getManyAndCount();
+
+    return { data, metadata: { total } };
+  }
+
+  /**
    * @description `Find count of unread notifications`
    * @param user - `Authorized user's data`
    * @returns `Count`
