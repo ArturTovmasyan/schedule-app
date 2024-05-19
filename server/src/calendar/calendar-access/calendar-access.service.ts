@@ -132,9 +132,9 @@ export class CalendarAccessService {
       },
     });
 
-    if (checkAccess && checkAccess.timeForAccess && moment().diff(checkAccess.timeForAccess) < 0) {
+    if ( checkAccess && (moment().diff(checkAccess.timeForAccess) < 0 || !checkAccess.timeForAccess) ) {
       throw new BadRequestException({
-        message: ErrorMessages.noCalendarAccess,
+        message: ErrorMessages.alreadyHaveAccess,
       });
     }
   }
@@ -148,6 +148,7 @@ export class CalendarAccessService {
   async findAccessed(
     user: User,
   ): Promise<{ data: CalendarAccess[]; count: number }> {
+
     const [data, count] = await this.calendarAccessRepo
       .createQueryBuilder('calendarAccess')
       .innerJoin('calendarAccess.owner', 'owner')
@@ -156,6 +157,7 @@ export class CalendarAccessService {
         'owner.email',
         'owner.firstName',
         'owner.lastName',
+        'owner.avatar',
       ])
       .where({ accessedUserId: user.id })
       .getManyAndCount();

@@ -22,5 +22,5 @@
 </div>
 
 <ng-template #avatarAcronym>
-  <span>{{getAcronymName(getSenderName(notification))}}</span>
+  <span>{{getSenderName(notification)|acronymName}}</span>
 </ng-template>

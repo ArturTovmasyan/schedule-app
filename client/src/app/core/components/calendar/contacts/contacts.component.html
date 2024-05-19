@@ -9,39 +9,8 @@
       <input type="text" placeholder="Search by name, company, or email ..." id="searchContactInput" (input)="onSearchUpdate($event)">
     </label>
     <ul class="list-unstyled contacts-list" id="contactsList">
-      <li id="contactListItem" *ngFor="let item of data">
-        <div class="contact-info">
-          <div class="contact-portrait" id="contactPortrait">
-            <img src="assets/brianchesky.jpg" alt="user portrait">
-          </div>
-          <div class="contact-bio" id="contactBio">
-            <h5 class="full-name" id="fullName">
-              {{ getContactName(item) }}
-            </h5>
-            <h6 class="contact-company" id="contactCompany">
-              {{ getContactCompany(item) }}
-            </h6>
-          </div>
-          <div class="contact-border-line"></div>
-        </div>
-        <div class="more-dots">
-          <div class="dropdown" style="float:left;">
-            <button class="dropbtn">
-              <img src="assets/more-dots.png" alt="dots">
-            </button>
-            <div class="dropdown-content" style="left:0;">
-              <ul class="list-unstyled">
-                <li class="d-flex justify-content-between align-items-center">
-                  <a href="" id="contactHistory">History</a>
-                  <button class="close-button">
-                    <img src="assets/close-icon.svg" alt="close button">
-                  </button>
-                </li>
-                <li><a id="revokeAccess" (click)="revokeAccess(item)">Revoke Access</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
+      <li id="contactListItem" *ngFor="let item of filteredData">
+      <app-contact-item [contact]="item"></app-contact-item>
       </li>
     </ul>
   </div>

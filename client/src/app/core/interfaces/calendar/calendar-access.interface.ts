@@ -6,6 +6,7 @@ export interface CalendarAccess {
     id: string,
     email: string,
     firstName: string,
-    lastName: string
+    lastName: string,
+    avatar: string,
   }
 }

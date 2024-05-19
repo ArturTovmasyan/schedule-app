@@ -1,0 +1,36 @@
+<div class="contact-info">
+  <div class="contact-portrait" id="contactPortrait">
+    <img *ngIf="contact.owner.avatar; else avatarAcronym" src="{{contact.owner.avatar}}" alt="user portrait">
+  </div>
+  <div class="contact-bio" id="contactBio">
+    <h5 class="full-name" id="fullName">
+      {{ getContactName(contact) }}
+    </h5>
+    <h6 class="contact-company" id="contactCompany">
+      {{ getContactCompany(contact) }}
+    </h6>
+  </div>
+  <div class="contact-border-line"></div>
+</div>
+<div class="more-dots">
+  <div class="dropdown" style="float:left;">
+    <button class="dropbtn">
+      <img src="../../../../../../assets/more-dots.png" alt="dots">
+    </button>
+    <div class="dropdown-content" style="left:0;">
+      <ul class="list-unstyled">
+        <li class="d-flex justify-content-between align-items-center">
+          <a href="" id="contactHistory">History</a>
+          <button class="close-button">
+            <img src="../../../../../../assets/close-icon.svg" alt="close button">
+          </button>
+        </li>
+        <li><a id="revokeAccess" (click)="revokeAccess(contact)">Revoke Access</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<ng-template #avatarAcronym>
+  <span>{{getContactName(contact)|acronymName}}</span>
+</ng-template>

@@ -220,7 +220,7 @@ export class AccessRequestService {
         });
       }
 
-      await this.calendarAccessService.checkAccess(user, [data.toEmail]);
+      // await this.calendarAccessService.checkAccess(user, [data.toEmail]);
 
       await queryRunner.manager
         .createQueryBuilder()
@@ -232,7 +232,7 @@ export class AccessRequestService {
               ? RequestStatusEnum.Accepted
               : RequestStatusEnum.Declined,
         })
-        .where([{ receiver: { id: user.id } }, { toEmail: user.email }])
+        .where([{id: id}])
         .execute();
 
       if (accessRequestStatus.status === AccessRequestStatusEnum.Accept) {

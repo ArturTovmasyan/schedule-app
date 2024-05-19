@@ -32,10 +32,6 @@ export class NotificationItemComponent implements OnInit {
     return notification.sender.firstName + " " + notification.sender.lastName;
   }
 
-  getAcronymName(fullName: string): string {
-    return fullName.split(' ').map(n => n[0]).join('');
-  }
-
   getNotificationMessage(notification: Notification): string {
     if (notification.type == 'access_request') {
       const timeForAccess = notification.accessRequest?.timeForAccess

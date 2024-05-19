@@ -6,13 +6,15 @@ import {ControlMessageComponent} from "../core/components/control-message/contro
 import {NotificationComponent} from "../core/components/notification/notification.component";
 import { NotificationItemComponent } from '../core/components/notification/notification-item/notification-item.component';
 import {AvatarComponent} from "../core/components/avatar/avatar.component";
+import {AcronymNamePipe} from "../core/pipes/acronym-name.pipe";
 
 @NgModule({
   declarations: [
     ControlMessageComponent,
     NotificationComponent,
     NotificationItemComponent,
-    AvatarComponent
+    AvatarComponent,
+    AcronymNamePipe
   ],
   imports: [
     CommonModule,
@@ -26,7 +28,8 @@ import {AvatarComponent} from "../core/components/avatar/avatar.component";
     ControlMessageComponent,
     NotificationComponent,
     NotificationItemComponent,
-    AvatarComponent
+    AvatarComponent,
+    AcronymNamePipe
   ]
 })
 

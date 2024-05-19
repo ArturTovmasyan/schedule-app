@@ -23,8 +23,4 @@ export class AvatarComponent implements OnInit {
       }
     });
   }
-
-  getAcronymName(fullName: string): string {
-    return fullName.split(' ').map(n => n[0]).join('');
-  }
 }
