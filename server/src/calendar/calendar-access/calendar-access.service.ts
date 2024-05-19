@@ -161,7 +161,7 @@ export class CalendarAccessService {
         'owner.firstName',
         'owner.lastName',
       ])
-      .where({ toEmail: user.email })
+      .where({ accessedUserId: user.id })
       .getManyAndCount();
 
     return { data, count };
