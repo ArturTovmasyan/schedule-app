@@ -103,9 +103,14 @@
             <img src="assets/close-icon.svg" alt="remove button">
           </button> -->
         </div>
-        <a href="" class="save-to-outlook">
-          <h6>Save this event in <img src="assets/outlook-icon.png" alt="outlook icon"> calendar</h6>
-        </a>
+        <div class="save-to-calendar">
+          <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img [src]="getCalendarIcon(selectedCalendar?.type ?? null)" alt="calendar icon"> {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
+          <div id="calendar-dropdown" *ngIf="showCalendars">
+            <span *ngFor="let calendar of myCalendars" (click)="selectCalendar(calendar)">
+              <img [src]="getCalendarIcon(calendar.type)" alt="calendar icon"> {{ calendar.summary }}
+            </span>
+          </div>
+        </div>
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">

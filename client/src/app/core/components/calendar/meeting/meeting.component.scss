@@ -358,7 +358,8 @@ section.meeting-title {
       }
     }
 
-    a.save-to-outlook {
+    div.save-to-calendar {
+      position: relative;
       text-decoration: none;
       text-align: left;
       padding: 4px 8px;
@@ -368,11 +369,6 @@ section.meeting-title {
       background-color: #fff;
       width: fit-content;
 
-      &:hover {
-        transition: 0.4s ease;
-        background-color: #E9F6FD;
-      }
-
       h6 {
         margin-bottom: 0;
         color: #656565;
@@ -380,8 +376,50 @@ section.meeting-title {
         font-weight: 400;
         font-size: 15px;
 
+        span {
+          cursor: pointer;
+        }
+
         img {
-          height: 25px;
+          padding: 3px;
+          background-color: #EDEDED;
+          border-radius: 12px;
+          height: 24px;
+          margin: 0 3px;
+        }
+      }
+
+      #calendar-dropdown {
+        position: absolute;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        margin-top: 4px;
+        gap: 2px;
+        right: 0;
+        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        border-radius: 10px;
+        overflow: hidden;
+
+        span {
+          padding: 5px 10px;
+          font-size: 12px;
+          max-width: 220px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          cursor: pointer;
+
+          &:hover {
+            transition: 0.4s ease;
+            background-color: #E9F6FD;
+          }
+        }
+        img {
+          padding: 3px;
+          background-color: #EDEDED;
+          border-radius: 10px;
+          height: 20px;
           margin: 0 3px;
         }
       }

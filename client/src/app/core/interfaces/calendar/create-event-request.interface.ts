@@ -6,7 +6,7 @@ export interface CreateEventRequest {
   meetLink: string,
   start: string,
   end: string,
-  syncWith: CalendarType,
+  syncWith: string,
   attendees?: string[],
   optionalAttendees?: string[]
 }

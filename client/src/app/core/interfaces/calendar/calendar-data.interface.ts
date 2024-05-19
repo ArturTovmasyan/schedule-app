@@ -1,3 +1,5 @@
+import { CalendarType } from "../../components/calendar/connect-calendar/connect-calendar.component"
+
 export interface CalendarData {
   "googleCalendar": Calendar[],
   "office365Calendar": Calendar[],
@@ -9,5 +11,6 @@ export interface CalendarData {
 export interface Calendar {
   id: string,
   calendarId: string,
-  summary: string
+  summary: string,
+  type: CalendarType
 }
