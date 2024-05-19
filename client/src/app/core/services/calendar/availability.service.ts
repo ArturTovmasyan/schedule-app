@@ -37,10 +37,10 @@ export class AvailabilityService {
   }
 
   fetch() {
-    return this.http.get<CalendarAvailability>(this.url, {
+    return this.http.get<ApiResponse<CalendarAvailability>>(this.url, {
     }).pipe(
-      map((response: CalendarAvailability) => {
-        return response
+      map((response: ApiResponse<CalendarAvailability>) => {
+        return response.data
       })
     )
   }
