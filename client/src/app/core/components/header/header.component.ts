@@ -49,7 +49,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   get title() {
-    return 'Handshake';
+    return 'Entangles.io';
   }
 
   register() {

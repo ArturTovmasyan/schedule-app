@@ -1,7 +1,7 @@
 <div id="container">
   <div *ngIf="!register; else confirmRegister">
     <div class="title">
-      <span id="line1">Welcome to Handshake.</span>
+      <span id="line1">Welcome to Entangles.io.</span>
       <span id="line2">Start for free.</span>
     </div>
     <form class="form" [formGroup]="form" (ngSubmit)="signup()" autocomplete="off">
@@ -33,7 +33,7 @@
       </div>
 
       <span id="tos">
-        By creating an Handshake account, you agree to the
+        By creating an Entangles.io account, you agree to the
         <a routerLink="/terms-conditions">Terms & Conditions</a>
         and
         <a routerLink="/privacy-policy">Privacy & Policy</a>
