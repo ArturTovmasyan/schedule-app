@@ -20,9 +20,11 @@ export class AccountInfoComponent implements OnInit {
   constructor(private authService:AuthService, private readonly http: HttpClient) { }
 
   ngOnInit(): void {
+    debugger;
     this.authService.hasAccess().subscribe({
-      next: ({ isActive, user }) => {
-        if (user && isActive) {
+      next: ({ user }) => {
+        if (user) {
+          debugger;
             this.userName = user.firstName+ ' ' + user.lastName;
             this.email = user.email;
             this.avatar = user.avatar;
