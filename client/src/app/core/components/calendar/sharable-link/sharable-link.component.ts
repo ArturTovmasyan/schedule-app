@@ -1,7 +1,7 @@
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import { DOCUMENT } from '@angular/common';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, tap } from 'rxjs';
+import { BehaviorSubject, Subscription, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, tap } from 'rxjs';
 import { CalendarAccess } from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
 import { AvailabilityService } from 'src/app/core/services/calendar/availability.service';
@@ -13,6 +13,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarPermissionService } from 'src/app/core/services/calendar/permission.service';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
 import { environment } from 'src/environments/environment';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { ApplicationUser, User } from 'src/app/core/interfaces/user/app.user.interface';
+import { UserData } from '../../chip-user-input/chip-user-input.component';
 @Component({
   selector: 'app-sharable-link',
   templateUrl: './sharable-link.component.html',
@@ -22,8 +25,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   linkId = '';
   readonly MeetViaEnum = MeetViaEnum;
-  @ViewChild('contactInput') input!: ElementRef;
-  subscription$: BehaviorSubject<boolean>;
+
+  userSubscription$!: Subscription;
+  slotsUpdateEventsubscription$: BehaviorSubject<boolean>;
   selectedDates$: BehaviorSubject<any> = new BehaviorSubject({});
   selectedDates:any = []
 
@@ -40,21 +44,18 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   errorMessage = '';
   // for contacts or attendees
-  contacts: CalendarAccess[] = [];
-  filteredContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
-  selectedContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
-  selectedContacts: CalendarAccess[] = [];
-  // used only to show on UI in joint Availibility
-  selectedEmails: string[] = [];
-  // MAP<email, availability_data>
+  selectedUsers: UserData[] = [];
+  contactOptions: UserData[] = [];
   emailsWithAvailabilityMap = new Map();
   sharableLink = '';
   showCopiedText = false;
-  showJointAvailibility = false;
+  showJointAvailability = true;
   updateView = true;
   private readonly _document: Document;
 
   locations: Location[] = [];
+
+  currentUser: User | null = null;
 
   get timezone(): string {
     return this.commonService.localTimezone;
@@ -69,6 +70,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     private readonly availabilityService: AvailabilityService,
     private readonly sharableLinkService: SharableLinkService,
     private readonly calendarPermissionService: CalendarPermissionService,
+    private readonly authService: AuthService,
     @Inject(DOCUMENT) document: any
   ) {
     this.broadcaster.broadcast('reset_event');
@@ -97,7 +99,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     }
 
     this._document = document;
-    this.subscription$ = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
+    this.slotsUpdateEventsubscription$ = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
       const startdate = moment.utc(dates.start).local().format('ddd, MMM Do');
       if (this.selectedDates[startdate]) {
         this.selectedDates[startdate].push(dates);
@@ -116,6 +118,18 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.selectedDates = sortedObject;
       this.selectedDates$.next(sortedObject);
     });
+
+    this.userSubscription$ = this.authService.currentUser.subscribe((res: ApplicationUser | null) => {
+      this.currentUser = res?.user || null;
+      if(this.currentUser) {
+        this.selectedUsers[0] = {
+          name: this.currentUser.fullName,
+          email: this.currentUser.email,
+          avatar: this.currentUser.avatar ?? null,
+          removable: false
+        }
+      }
+    });
   }
 
   // Order by descending date
@@ -128,7 +142,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.initFilterContact();
   }
 
   runAfterRedirect() {
@@ -138,11 +151,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.choosedLocationObj = savedDataArr.choosedLocationObj;
       this.selectedDates = savedDataArr.selectedDates;
       this.selectedDates$.next(this.selectedDates);
-      this.selectedContacts = savedDataArr.selectedContacts;
-      this.selectedContacts$.next(this.selectedContacts);
+      this.selectedUsers = savedDataArr.selectedUsers ?? [];
       this.addedTimeSlots = savedDataArr.addedTimeSlots ?? [];
       this.deletedTimeSlots = savedDataArr.deletedTimeSlots;
-      if (this.selectedContacts.length > 0) this.showJointAvailibility = true;
+      if (this.selectedUsers.length > 0) this.showJointAvailability = true;
       const selectedDatesNew: any = [];
       for (const key in this.selectedDates) {
         const value = this.selectedDates[key];
@@ -209,31 +221,20 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           // for attendees
           const attendees = res.data.attendees;
           if (attendees.length > 0) {
-            this.showJointAvailibility = true;
+            this.showJointAvailability = true;
             for (const attendee of attendees) {
-              const cc: CalendarAccess = {
-                id: '',
-                comment: '',
-                timeForAccess: null,
-                owner: {
+              const user: UserData = {
                   id: attendee.user.id,
+                  name: attendee.user.fullName,
                   email: attendee.user.email,
-                  firstName: attendee.user.firstName,
-                  lastName: attendee.user.lastName,
-                  avatar: attendee.user.avatar
-                }
+                  avatar: attendee.user.avatar,
+                  removable: true
               }
-              // const cc = this.contacts.find((cont) => cont.owner.id == attendee.user.id) as CalendarAccess;
-              this.selectedContacts.push(cc);
-              this.selectedEmails.push(cc.owner.email);
-              this.getContactAvailability(cc);
+              this.selectedUsers.push(user);
+              this.getContactAvailability(user);
             }
-            this.selectedContacts$.next(this.selectedContacts);
-            this.filteredContacts$.next([]);
             this.broadcaster.broadcast('multiselect_calendar', false);
-
           }
-
         }
       });
   }
@@ -245,6 +246,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           this.locations = res;
         }
       })
+  }
+
+  updateUsers(users: UserData[]) {
+    this.selectedUsers = users;
   }
 
   // remove from selected timeslots
@@ -299,7 +304,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   // type could be zoom, teams or gmeet used MeetViaEnum
   connect(type: string) {
     const savedData = {
-      selectedContacts: this.selectedContacts,
+      selectedUsers: this.selectedUsers,
       selectedDates: this.selectedDates$.value,
       choosedLocationObj: this.choosedLocationObj,
       addedTimeslots: this.addedTimeSlots,
@@ -374,8 +379,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       'address': null
     }
 
-    if (this.selectedContacts.length > 0) {
-      requestParams['attendees'] = this.selectedContacts.map(x => x.owner.id);
+    if (this.selectedUsers.length > 0) {
+      requestParams['attendees'] = this.selectedUsers.map(user => user.id);
     }
 
     if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
@@ -405,16 +410,30 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
   }
 
+  toggleJointAvailability() {
+    this.showJointAvailability = !this.showJointAvailability;
+    if(!this.showJointAvailability) {
+      const removedUsers = this.selectedUsers.splice(1, this.selectedUsers.length - 1);
+      this.removeUsers(removedUsers);
+    }
+  }
+
   // load contacts when clicked on Joint availability "plus" sign
   loadContacts() {
-    if (this.contacts.length > 0){
-      return;
-    }
     this.calendarAccessService.fetchAccessibleContacts()
       .pipe(first())
       .subscribe({
         next: (data: CalendarAccess[] | null) => {
-          this.contacts = data ?? [];
+          const contacts = data ?? [];
+          this.contactOptions = contacts.map((contact) => {
+            return {
+              id: contact.owner.id,
+              name: `${contact.owner.firstName} ${contact.owner.lastName}`,
+              email: contact.owner.email,
+              avatar: contact.owner.avatar,
+              removable: true
+            }
+          });
         },
         error: (error) => {
           console.log(error);
@@ -422,44 +441,29 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
   }
 
-  initFilterContact() {
-    // initializze keyup event to get filtered contacts
-    fromEvent(this.input.nativeElement, 'keyup')
-      .pipe(
-        map((event: any) => {
-          return event.target.value;
-        }),
-        filter(res => res.length >= 1),
-        debounceTime(500),
-        distinctUntilChanged(),
-        tap((searchedString) => {
-          const filteredContact = this.contacts.filter(contact => this.filterContact(contact, searchedString));
-          this.filteredContacts$.next(filteredContact);
-        })
-      )
-      .subscribe();
-  }
-
-  filterContact(item: any, query: any) {
-    return (item.owner.firstName.toLowerCase().startsWith(query) ||
-      item.owner.lastName.toLowerCase().startsWith(query) ||
-      item.owner.email.toLowerCase().startsWith(query));
-  }
-
   // select contact after search in joint availability
-  selectContact(contact: CalendarAccess) {
-    this.selectedContacts.push(contact);
-    this.selectedEmails.push(contact.owner.email);
-    this.selectedContacts$.next(this.selectedContacts);
-    this.input.nativeElement.value = '';
-    this.filteredContacts$.next([]);
-    this.getContactAvailability(contact);
+  addUser(user: UserData) {
+    this.getContactAvailability(user);
+  }
+
+  removeUsers(users: UserData[]) {
+    for(let user of users) {
+      this.removeUser(user);
+    }
+  }
+  removeUser(user: UserData) {
+    this.emailsWithAvailabilityMap.delete(user.email);
+    this.broadcastContactData();
+    this.selectedDates = [];
+    this.selectedDates$.next([]);
   }
 
   // add availability to the calendar
-  getContactAvailability(contact: CalendarAccess) {
-    const contactId = contact.owner.id;
-    const contactEmail = contact.owner.email;
+  getContactAvailability(contact: UserData) {
+    const contactId = contact.id;
+    const contactEmail = contact.email;
+
+    if(!contactId) return;
 
     this.availabilityService.getByUserId([contactId])
       .pipe(first())
@@ -481,24 +485,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.addedTimeSlots = [];
     this.broadcaster.broadcast('reset_event');
     const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
-    if (contacts.length == 0) {
-      return;
+    if (contacts.length != 0) {
+      this.broadcaster.broadcast('contact_calendar_data', contacts);
     }
-    this.broadcaster.broadcast('contact_calendar_data', contacts);
-  }
-
-  removeSingleContact(contact: CalendarAccess) {
-    this.selectedContacts = this.selectedContacts.filter((res: CalendarAccess) => {
-      return res.owner.email != contact.owner.email
-    });
-    this.selectedEmails = this.selectedEmails.filter((res) => {
-      return res != contact.owner.email
-    });
-    this.selectedContacts$.next(this.selectedContacts);
-    this.emailsWithAvailabilityMap.delete(contact.owner.email);
-    this.broadcastContactData();
-    this.selectedDates = [];
-    this.selectedDates$.next([]);
   }
 
   copyLink(text: string) {
@@ -541,12 +530,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Please enter Address';
     }
 
-    if (this.errorMessage) {
-      setTimeout(() => {
-        this.errorMessage = '';
-      }, 3000);
-      return;
-    }
+    this.showError(this.errorMessage);
     const selectedDatesNew = [];
     for (const key in selectedDates) {
       const value = selectedDates[key];
@@ -566,8 +550,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       'address': null
     }
 
-    if (this.selectedContacts.length > 0) {
-      requestParams['attendees'] = this.selectedContacts.map(x => x.owner.id);
+    if (this.selectedUsers.length > 0) {
+      requestParams['attendees'] = this.selectedUsers.map(x => x.id);
     }
 
     if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
@@ -594,8 +578,19 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
         error: (error) => {
           // show error from server here
           console.log(error);
+          this.showError(error);
         }
       });
+  }
+
+  showError(error: string): void {
+    if (error) {
+      this.errorMessage = error;
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000);
+      return;
+    }
   }
 
   close() {
@@ -605,7 +600,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.broadcaster.broadcast('reset_event');
     this.selectedDates$.unsubscribe();
-    this.subscription$.unsubscribe();
+    this.userSubscription$.unsubscribe();
+    this.slotsUpdateEventsubscription$.unsubscribe();
   }
-
 }

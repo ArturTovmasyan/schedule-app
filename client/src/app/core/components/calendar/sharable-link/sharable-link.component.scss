@@ -28,7 +28,7 @@ section.sharable-link {
     }
   }
 
-  form {
+  div#form {
     height: 88%;
     overflow: auto;
     padding: 0 0 20px 0;
@@ -64,111 +64,78 @@ section.sharable-link {
       }
 
       //accordion start
-      .accordion > input[type="checkbox"] {
-        position: absolute;
-        left: -100vw;
-      }
-
-      .accordion .content {
-        overflow-y: hidden;
-        height: 0;
-        transition: height 0.5s ease;
-        width: 100%;
-      }
-
-      .accordion > input[type="checkbox"]:checked ~ .content {
-        height: auto;
-        overflow: visible;
-        transition: 0.5s ease;
-      }
-
-      .accordion label {
-        display: block;
-        transition: 0.5s ease;
-
-      }
-
-      /*
-       Styling
-      */
-
       .accordion {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
         margin-bottom: 1em;
         background-color: #F5F5F5;
         border-radius: 10px;
         padding: 10px;
-      }
 
-      .accordion > input[type="checkbox"]:checked ~ .content {
-        padding: 15px 0;
-        border-top: 0;
-      }
-
-      .accordion .handle {
-        margin: 0;
-        font-size: 1.125em;
-        line-height: 1.2em;
-        transition: 0.5s;
-      }
-
-      .accordion label {
-        font-size: 18px;
-        text-align: left;
-        font-family: 'Open Sans', sans-serif;
-        line-height: 23px;
-        font-weight: bold;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: 0.5s;
-
-        .avatar {
-          display: block;
+        span#joint-availability {
+          width: 28px;
+          height: 28px;
+          margin-top: 10px;
+          border-radius: 50%;
+          border: none;
+          background-image: url('/assets/ic_plus_circle.svg');
         }
 
-        .no-avatar {
+        .accordian-header {
+          flex-grow: 1;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          
+          .user-label {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+
+            img {
+              width: 46px;
+              height: 46px;
+              border: 2px solid white;
+              object-fit: contain;
+              border-radius: 50%;
+            }
+
+            span {
+              max-width: 90px;
+              text-overflow: ellipsis;
+              font-weight: 600;
+              color: black;
+              font-size: 16px;
+            }
+          }
+        }
+
+        .accordian-content {
           display: none;
-        }
-      }
-
-
-      .accordion .handle label::before {
-        display: none;
-      }
-
-      .accordion .handle label::after {
-        height: 28px;
-        width: 28px;
-        border-radius: 50%;
-        border: 1px solid #11A4F4;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        content: "+";
-        color: #11A4F4;
-        font-size: 20px;
-        transition: 0.5s;
-        cursor: pointer;
-        padding-bottom: 1px;
-      }
-
-      .accordion > input[type="checkbox"]:checked ~ .handle label:after {
-        content: "-";
-        font-size: 20px;
-        transition: 0.5s;
-        padding-bottom: 3px;
-      }
-
-      .accordion > input[type="checkbox"]:checked ~ .handle label {
-        .avatar {
-          display: none;
+          overflow-y: hidden;
+          flex-grow: 1;
+          opacity: 0;
+          transition: opacity 1s ease-out;
         }
 
-        .no-avatar {
-          display: block;
+        &.open {
+          span#joint-availability {
+            background-image: url('/assets/ic_minus_circle.svg');
+          }
+
+          .accordian-header {
+            display: none;
+          }
+
+          .accordian-content {
+            display: block;
+            overflow: auto;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+          }
         }
       }
-
       //accordion end
 
       //users input container start

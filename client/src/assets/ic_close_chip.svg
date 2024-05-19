@@ -1,0 +1,7 @@
+<svg id="ic_close_chip" xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23">
+  <circle id="Ellipse_616" data-name="Ellipse 616" cx="11.5" cy="11.5" r="11.5" fill="#f1f1f1"/>
+  <g id="Group_727" data-name="Group 727" transform="translate(11.753 5.963) rotate(45)">
+    <path id="Path_40793" data-name="Path 40793" d="M0,0V8.189" transform="translate(4.095)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="1.5"/>
+    <path id="Path_40794" data-name="Path 40794" d="M0,0V8.189" transform="translate(8.189 4.095) rotate(90)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="1.5"/>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="chip-container">
+    <div *ngFor="let user of users; let i = index" class="chip-item">
+      <img src="{{user.avatar}}" alt="user icon" *ngIf="user.avatar">
+      <span id="initials" *ngIf="!user.avatar">{{ user.email.charAt(0) }}</span>
+      <span class="info">
+        <span>{{ user.email }}</span>
+        <span>{{ user.email | getContactCompany }}</span>
+      </span>
+      <span class="remove-button" id="remove-button" (click)="remove(i)" *ngIf="user.removable"></span>
+    </div>
+    <div class="list-inline-item user-email-input" id="userEmailInput">
+      <input #emailInput class="form-control" type="text" name="requestFrom" id="requestFrom" autocomplete="off"
+        autocapitalize="off" autocorrect="off" required spellcheck="false" placeholder="+ Add email"
+        (keyup)="updateError()" (keyup.enter)="add()" (focusout)="add()"
+        [(ngModel)]="email" (ngModelChange)="onChange()"
+        list="contact-list">
+      <datalist id="contact-list">
+        <option *ngFor="let contact of contacts" [value]="contact.email">{{ contact.name }}</option>
+      </datalist>
+    </div>
+  </div>
+</div>
+
+<span class="error" *ngIf="error">
+    <i class="fa fa-exclamation-triangle"></i>{{errorMessage}}
+</span>
