@@ -22,7 +22,6 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   subscription: BehaviorSubject<boolean>;
   selectedContactEmail: string = '';
   currentUrl: string = '';
-  events: any = [];
   myEvents: any;
 
   constructor(private calendarService: CalendarService, private broadcaster: BroadcasterService) {

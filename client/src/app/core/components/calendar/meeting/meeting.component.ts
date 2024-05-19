@@ -109,7 +109,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   scheduleEvent() {
-    debugger;
     this.calendarService.scheduleEvent(this.data)
       .pipe(first())
       .subscribe({

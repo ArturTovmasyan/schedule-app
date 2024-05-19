@@ -14,7 +14,9 @@ export class ContactItemComponent implements OnInit {
   @Input("contact")
   contact!: CalendarAccess;
 
-  constructor(private broadcaster: BroadcasterService, private availabilityService: AvailabilityService) {}
+  constructor(private broadcaster: BroadcasterService, private availabilityService: AvailabilityService) {
+    this.broadcaster.broadcast('reset_event', true);
+  }
 
   ngOnInit(): void {
   }
