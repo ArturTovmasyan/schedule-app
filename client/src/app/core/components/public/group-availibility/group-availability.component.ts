@@ -1,9 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import * as moment from 'moment';
+import { Calendar, FullCalendarComponent } from '@fullcalendar/angular';
 import { Subject } from 'rxjs';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
 import { AVAILABILITY_EVENT_CLASS } from 'src/app/core/interfaces/constant/calendar.constant';
@@ -11,6 +9,7 @@ import { BroadcasterService } from 'src/app/shared/services';
 import { MeetViaEnum } from '../../calendar/enums/sharable-links.enum';
 import { SelectedTimeSlotData } from '../interfaces/selected-timeslot.interface';
 import { PublicCalendarService } from '../public.service';
+import { PublicSidebarCalendarComponent } from '../sidebar-calendar/sidebar-calendar.component';
 
 
 @Component({
@@ -18,7 +17,7 @@ import { PublicCalendarService } from '../public.service';
   templateUrl: './group-availability.component.html',
   styleUrls: ['./group-availability.component.scss']
 })
-export class GroupAvailabilityComponent implements OnInit, OnDestroy {
+export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent implements OnInit, OnDestroy {
 
   errorMessage = null;
   componentData: SelectedTimeSlotData = {
@@ -30,86 +29,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   destroy$ = new Subject();
   @ViewChild("calendar") calendar!: FullCalendarComponent;
   calendarApi!: Calendar;
-  calendarOptions: CalendarOptions = {
-    initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin],
-    height: 'auto',
-    nowIndicator: true,
-    direction: 'ltr',
-    themeSystem: 'bootstrap',
-    dayHeaders: true,
-    editable: false,
-    eventOrderStrict: true,
-    stickyHeaderDates: true,
-    windowResizeDelay: 100,
-    dragRevertDuration: 500,
-    handleWindowResize: false,
-    expandRows: false,
-    showNonCurrentDates: true,
-    lazyFetching: false,
-    firstDay: 1,
-    eventDisplay: 'block',
-    eventStartEditable: false,
-    slotMinWidth: 1,
-    eventDurationEditable: false,
-    dayHeaderFormat: { weekday: 'narrow' },
-    windowResize: (view) => {
-      view.view.calendar.updateSize();
-    },
-    eventClick: function (eventInfo: any) {
-      const calendar = eventInfo.view.calendar;
-      calendar.updateSize();
-    },
-    eventDidMount: function (info) {
-      if (info.el.closest('.fc-daygrid-day')) {
-        const hh = moment(info.event.start).isSame(new Date(), 'isoWeek');
-        info.el.closest('.fc-daygrid-day')?.classList.add('fc-event-div');
-        if (hh) {
-          info.el.closest('.fc-daygrid-day')?.classList.add('current-week');
-        } else {
-          info.el.closest('.fc-daygrid-day')?.classList.add('na-week');
-        }
-      }
-    },
-    selectable: true,
-    slotLabelFormat: [
-      {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-        meridiem: 'lowercase',
-        separator: '.'
-      }
-    ],
-    views: {
-      month: {
-        columnHeaderFormat: 'dd'
-      },
-    },
-    titleFormat: {
-      month: 'short', day: 'numeric'
-    },
-    eventTimeFormat: {
-      hour: 'numeric',
-      minute: '2-digit',
-      meridiem: 'short',
-      hour12: true
-    },
-    headerToolbar: {
-      left: '',
-      center: 'prev,title,next',
-      right: ''
-    },
-    eventClassNames: function (args) {
-      return 'eventooo';
-    },
-    select: (info) => {
-      this.changeWeek(info.start);
-    },
-    selectOverlap: function (info) {
-      return true;
-    }
-  }
+
   linkId: string;
   attendees: any;
   location: Location | undefined;
@@ -120,9 +40,10 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private calendarService: PublicCalendarService,
+    calendarService: PublicCalendarService,
     private broadcaster: BroadcasterService
   ) {
+    super(calendarService);
     this.linkId = route.snapshot.params['id'];
     this.initForm();
   }
@@ -170,6 +91,11 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
         }
         if (data?.attendees?.length > 0) {
           this.attendees = data.attendees;
+        } else {
+          this.attendees = [{
+            id: data.user.id,
+            user: data.user
+          }];
         }
       });
 
@@ -194,10 +120,6 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
       note: [''],
       phoneNumber: ['']
     }, { updateOn: 'blur' });
-  }
-
-  changeWeek(date:any) {
-    this.calendarService.selectedWeek.next(date);
   }
 
   submit() {

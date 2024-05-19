@@ -1,21 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CalendarOptions } from '@fullcalendar/angular';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import * as moment from 'moment';
+import { Calendar, FullCalendarComponent } from '@fullcalendar/angular';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
 import { AVAILABILITY_EVENT_CLASS } from 'src/app/core/interfaces/constant/calendar.constant';
 import { BroadcasterService } from 'src/app/shared/services';
 import { MeetViaEnum } from '../../calendar/enums/sharable-links.enum';
+import { SelectedTimeSlotData } from '../interfaces/selected-timeslot.interface';
 import { PublicCalendarService } from '../public.service';
+import { PublicSidebarCalendarComponent } from '../sidebar-calendar/sidebar-calendar.component';
 
-type ComponentData = {
-  isTimeslotSelected: boolean,
-  selectedTimeSlot: any,
-  oldTimeslot: any,
-  timezone: any
+type OldTimeSlotData = {
+  timeslot: any,
+  timeslotId: string
 };
 
 @Component({
@@ -23,102 +22,21 @@ type ComponentData = {
   templateUrl: './reschedule-meeting.component.html',
   styleUrls: ['./reschedule-meeting.component.scss']
 })
-export class RescheduleMeetingComponent implements OnInit, OnDestroy {
+export class RescheduleMeetingComponent extends PublicSidebarCalendarComponent implements OnInit, OnDestroy {
 
-  componentData: ComponentData = {
-    isTimeslotSelected: false,
-    selectedTimeSlot: null,
-    oldTimeslot: null,
-    timezone: ''
+  oldTimeSlotData: OldTimeSlotData = {
+    timeslot: null,
+    timeslotId: ''
   };
+  componentData: SelectedTimeSlotData = {
+    selectedTimeSlot: null,
+    selectedTimeSlotId: null
+  };
+  calendarApi!: Calendar;
+  @ViewChild("calendar") calendar!: FullCalendarComponent;
   readonly MeetViaEnum = MeetViaEnum;
   destroy$ = new Subject();
-  calendarOptions: CalendarOptions = {
-    initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin],
-    height: '400px',
-    nowIndicator: true,
-    direction: 'ltr',
-    themeSystem: 'bootstrap',
-    dayHeaders: true,
-    editable: false,
-    eventOrderStrict: true,
-    stickyHeaderDates: true,
-    windowResizeDelay: 100,
-    dragRevertDuration: 500,
-    handleWindowResize: false,
-    expandRows: false,
-    showNonCurrentDates: true,
-    lazyFetching: false,
-    firstDay: 1,
-    eventDisplay: 'block',
-    eventStartEditable: false,
-    slotMinWidth: 1,
-    eventDurationEditable: false,
-    dayHeaderFormat: { weekday: 'narrow' },
-    windowResize: (view) => {
-      view.view.calendar.updateSize();
-    },
-    eventClick: function (eventInfo: any) {
-      const calendar = eventInfo.view.calendar;
-      calendar.updateSize();
-    },
-    eventDidMount: function (info) {
-      if (info.el.closest('.fc-daygrid-day')) {
-        const sameWeek = moment(info.event.start).isSame(new Date(), 'isoWeek');
-        info.el.closest('.fc-daygrid-day')?.classList.add('fc-event-div');
-        if (sameWeek) {
-          info.el.closest('.fc-daygrid-day')?.classList.add('current-week');
-        } else {
-          info.el.closest('.fc-daygrid-day')?.classList.add('na-week');
-        }
-        console.log('llllll', info.event._def.groupId);
-        if (info.event._def.groupId == 'defaultSelectedSlot') {
-          console.log('lllllkkkkk', info.event._def.groupId);
-          console.log('ff', info.el.closest('.fc-daygrid-day')?.classList);
-          info.el.closest('.fc-daygrid-day')?.classList.add('default-selected-date');
-        }
-      }
-    },
-    selectable: true,
-    slotLabelFormat: [
-      {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-        meridiem: 'lowercase',
-        separator: '.'
-      }
-    ],
-    views: {
-      month: {
-        columnHeaderFormat: 'dd'
-      },
-    },
-    titleFormat: {
-      month: 'short', day: 'numeric'
-    },
-    eventTimeFormat: {
-      hour: 'numeric',
-      minute: '2-digit',
-      meridiem: 'short',
-      hour12: true
-    },
-    headerToolbar: {
-      left: '',
-      center: 'prev,title,next',
-      right: ''
-    },
-    eventClassNames: function (args) {
-      return 'eventooo';
-    },
-    select: (info) => {
-      this.changeWeek(info.start);
-    },
-    selectOverlap: function (info) {
-      return true;
-    }
-  }
+
   linkId: string;
   scheduledId: string;
   attendees: any;
@@ -126,13 +44,15 @@ export class RescheduleMeetingComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   selectedSlot: any;
 
-
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private formBuilder: FormBuilder,
-    private calendarService: PublicCalendarService,
-    private broadcaster: BroadcasterService
+    calendarService: PublicCalendarService,
+    private broadcaster: BroadcasterService,
+    private toastrService: ToastrService
   ) {
+    super(calendarService);
     this.linkId = route.snapshot.parent?.params['id'];
     this.scheduledId = route.snapshot.params['scheduledId'];
     this.initForm();
@@ -142,62 +62,68 @@ export class RescheduleMeetingComponent implements OnInit, OnDestroy {
     return this.form.controls;
   }
 
+  get timezone() {
+    return this.calendarService.timezone;
+  }
+
   ngOnInit(): void {
     this.calendarService.getDetails(this.linkId)
       .subscribe((data: any) => {
-        console.log('data12345', data);
-        if (data?.slots) {
-          // load available timeslots on calendar
-          const datas = [];
-          for (const date of data.slots) {
+        const datas = [];
+        for (const date of data.slots) {
+          if (date.choosedByEmail && date.id == this.scheduledId) {
             datas.push({
+              id: date.id,
+              groupId: 'defaultSelectedSlot',
+              start: date.startDate,
+              end: date.endDate
+            });
+            this.oldTimeSlotData.timeslot = {
+              start: date.startDate,
+              end: date.endDate
+            }
+            this.oldTimeSlotData.timeslotId = date.id;
+          } else {
+            datas.push({
+              id: date.id,
               groupId: 'availableSlot',
               start: date.startDate,
               end: date.endDate,
               className: AVAILABILITY_EVENT_CLASS
             });
           }
-          this.broadcaster.broadcast('loadAvailableTimeslots', datas);
-          // location
-          this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
-          // TODO: already scheduled date from API
-          const oldSlot = {
-            groupId: 'defaultSelectedSlot',
-            start: '2023-01-24T09:45:00.000Z',
-            end: '2023-01-24T10:15:00.000Z'
-          };
-          datas.push(oldSlot);
-          const timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
-          this.componentData.oldTimeslot = oldSlot
-          this.componentData.timezone = timezone;
-          // upto here
-
-          this.calendarOptions.events = datas;
         }
+        this.broadcaster.broadcast('loadAvailableTimeslots', datas);
+        this.calendarOptions.events = datas;
 
         if (data?.attendees?.length > 0) {
           this.attendees = data.attendees;
+        } else {
+          this.attendees = [{
+            id: data.user.id,
+            user: data.user
+          }];
         }
       });
 
       this.onTimeSlotSelected();
   }
 
+  ngAfterViewChecked() {
+    this.calendarApi = this.calendar.getApi();
+  }
+
   onTimeSlotSelected() {
     this.destroy$ = this.broadcaster.on('timeSlotSelected')
-      .subscribe((data: any) => {
+      .subscribe((data: SelectedTimeSlotData) => {
         this.componentData = data;
       });
   }
 
   initForm() {
     this.form = this.formBuilder.group({
-      notes: ['', [Validators.required]]
+      reason: ['', [Validators.required]]
     }, { updateOn: 'blur' });
-  }
-
-  changeWeek(date:any) {
-    this.calendarService.selectedWeek.next(date);
   }
 
   submit() {
@@ -205,9 +131,28 @@ export class RescheduleMeetingComponent implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
+    if (!this.componentData.selectedTimeSlotId) {
+      this.toastrService.error('Please select timeslot first', 'Error', {
+        timeOut: 3000
+      });
+    }
     const formData = this.form.value;
-    formData['selectedTimeslot'] = this.componentData.selectedTimeSlot;
-    return;
+    formData['newSlotId'] = this.componentData.selectedTimeSlotId;
+    this.calendarService.reScheduleMeeting(this.oldTimeSlotData.timeslotId, formData)
+      .subscribe({
+        next: () => {
+          this.toastrService.success('Successfully Rescheduled', 'Success', {
+            timeOut: 3000
+          });
+          this.calendarApi.gotoDate(new Date());
+          this.router.navigate([`/share/${this.linkId}`]);
+        },
+        error: (err) => {
+          this.toastrService.error(err.error.message, 'Error', {
+            timeOut: 3000
+          });
+        }
+      });
   }
 
   ngOnDestroy(): void {

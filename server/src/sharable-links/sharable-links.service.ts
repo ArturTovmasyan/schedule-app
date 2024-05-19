@@ -663,10 +663,12 @@ export class SharableLinksService {
       await this.zoomService.deleteMeeting(user, slot.meetingId);
     }
 
-    await this.calendarEventService.deleteUserCalendarEvent(
-      user,
-      slot.calendarEventId,
-    );
+    if (slot.calendarEventId) {
+      await this.calendarEventService.deleteUserCalendarEvent(
+        user,
+        slot.calendarEventId,
+      );
+    }
 
     return { message: 'Deleted', status: HttpStatus.ACCEPTED };
   }

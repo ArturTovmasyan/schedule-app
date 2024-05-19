@@ -485,6 +485,7 @@
 
 
       .calendar-sidebar {
+        height: 370px;
         .fc-daygrid-day-events {
           display: none;
         }
@@ -518,6 +519,10 @@
             border-radius: 50%;
             padding: 3px 6px;
             color: #ffffff !important;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
           }
         }
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -10,6 +11,21 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {LoginComponent} from './core/components/login/login.component';
 import {FooterComponent} from './core/components/footer/footer.component';
 import {SignupComponent} from './core/components/signup/signup.component';
+=======
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule} from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './core/components/home/home.component';
+import { HeaderComponent } from './core/components/header/header.component';
+import { AuthComponent } from './core/components/auth/auth.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ToastrModule } from 'ngx-toastr';
+import { LoginComponent } from './core/components/login/login.component';
+import { FooterComponent } from './core/components/footer/footer.component';
+import { SignupComponent } from './core/components/signup/signup.component';
+>>>>>>> eea3aa3 (SHAKE-79 reschedule meeting)
 import { ResetPasswordComponent } from './core/components/reset-password/reset-password.component';
 import {BroadcasterService, ValidationService} from "./shared/services";
 import {SharedModule} from "./shared/shared.module";
@@ -49,7 +65,8 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     IMaskModule,
     HttpClientModule,
     CalendarModule,
-    NgHttpLoaderModule.forRoot()
+    NgHttpLoaderModule.forRoot(),
+    ToastrModule.forRoot()
   ],
   providers: [
     jwtInterceptorProvider,

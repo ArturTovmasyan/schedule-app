@@ -94,4 +94,8 @@ export class PublicCalendarService {
     return this.http.patch<ApiResponse<any>>(`/api/sharable-links/cancel-slot/${slotId}`, { ...formData });
   }
 
+  reScheduleMeeting(slotId: string, formData: any) {
+    return this.http.patch<ApiResponse<any>>(`/api/sharable-links/reschedule-slot/${slotId}`, { ...formData });
+  }
+
 }

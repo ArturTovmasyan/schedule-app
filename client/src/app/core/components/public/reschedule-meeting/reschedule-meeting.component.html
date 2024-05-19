@@ -24,7 +24,7 @@
           </li>
         </ul>
       </div>
-      <div class="calendar w-100" *ngIf="!componentData.isTimeslotSelected">
+      <div class="calendar w-100">
         <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
         </full-calendar>
       </div>
@@ -34,15 +34,15 @@
       <div class="date-time-container">
         <ul class="list-unstyled list-inline">
           <li class="list-inline-item date d-flex align-items-center text-decoration-line-through">
-            {{ componentData.oldTimeslot?.start | parseTime:'ddd, MMM Do' }}
+            {{ oldTimeSlotData.timeslot?.start | parseTime:'ddd, MMM Do' }}
           </li>
           <li class="list-inline-item timeframe text-decoration-line-through">
-            {{ componentData.oldTimeslot?.start | parseTime:'hh:mmA'}}
+            {{ oldTimeSlotData.timeslot?.start | parseTime:'hh:mmA'}}
             <p> - </p>
-            {{ componentData.oldTimeslot?.end | parseTime:'hh:mmA'}}
+            {{ oldTimeSlotData.timeslot?.end | parseTime:'hh:mmA'}}
           </li>
           <li class="list-inline-item timezone">
-            <span id="timezoneText">{{ componentData.timezone }}</span>
+            <span id="timezoneText">{{ timezone }}</span>
           </li>
         </ul>
       </div>
@@ -60,14 +60,14 @@
             <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}" readonly>
           </li>
           <li class="list-inline-item timezone">
-            <span id="timezoneText">{{ componentData.timezone }}</span>
+            <span id="timezoneText">{{ timezone }}</span>
           </li>
         </ul>
       </div>
       <div class="form-group mb-0">
         <label for="optionalNotes">Reason for rescheduling</label>
-        <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add reason for rescheduling" formControlName="notes"></textarea>
-        <div *ngIf="f['notes'].invalid && (f['notes'].dirty || f['notes'].touched)">
+        <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add reason for rescheduling" formControlName="reason"></textarea>
+        <div *ngIf="f['reason'].invalid && (f['reason'].dirty || f['reason'].touched)">
           <span class="error">
             <i class="fa fa-exclamation-triangle"></i>Please add the reasons for rescheduling
           </span>
