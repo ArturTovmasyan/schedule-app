@@ -85,7 +85,7 @@ export class PublicCalendarComponent implements OnDestroy {
       return 'event';
     },
     select: (info: any) => {
-      this.componentData['selectedTimeSlot'] = info as any;
+      this.componentData['selectedTimeSlot'] = info;
       this.componentData['isTimeslotSelected'] = true;
       this.broadcaster.broadcast('timeSlotSelected', this.componentData);
     },

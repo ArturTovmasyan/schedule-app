@@ -169,18 +169,11 @@
       
           }
   
-          .fc-toolbar {
-            margin-left: 0px;
-          }
-          .fc-header-toolbar {
-            width: 100%;
-          }
-  
           .fc-toolbar-title {
             font-size: 16px;
           }
           .fc-toolbar-chunk{
-            width: 100%;;
+            width: 100%;
           }
           .fc-view-harness {
             height: auto!important;
@@ -214,6 +207,7 @@
           }
           .fc-toolbar {
             top: 0px!important;
+            margin-left: 0px;
           }
     
           .fc-header-toolbar {
@@ -221,6 +215,7 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 0px!important;
+            width: 100%;
     
             h2 {
               font-size: 16px!important;
@@ -306,9 +301,7 @@
                 padding: 2px 5px 2px 8px;
                 width: fit-content;
                 height: 45px;
-                width: 100%;
-                background-color: #fff;;
-
+                background-color: #fff;
 
                 .user-portrait {
                   img {
