@@ -147,6 +147,11 @@ export class CalendarPermissionsService {
             );
 
           if (resRevokeToken.status === 200) {
+            await manager.getRepository(CalendarEvent).delete({
+              owner: { id: user.id },
+              eventType: EventTypeEnum.GoogleCalendarEvent,
+            });
+
             await manager.getRepository(Calendar).delete({
               owner: { id: user.id },
               calendarId: calendarId,
