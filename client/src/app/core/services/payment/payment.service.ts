@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map} from "rxjs/operators";
-import {PROFESSIONAL_PLAN_NAME} from "../../../interfaces/constant/payment.constant";
+import {PROFESSIONAL_PLAN_NAME} from "../../interfaces/constant/payment.constant";
 
 @Injectable({
   providedIn: 'root'

@@ -7,7 +7,7 @@ import { LoginComponent } from './core/components/login/login.component';
 import {SignupComponent} from "./core/components/signup/signup.component";
 import {ResetPasswordComponent} from "./core/components/reset-password/reset-password.component";
 import {ConfirmAccountComponent} from "./core/components/confirm-account/confirm-account.component";
-import {ChangePasswordComponent} from "./core/components/change-password/change-password.component";
+import {RecoveryPasswordComponent} from "./core/components/recovery-password/recovery-password.component";
 import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
 import {RedirectGuard} from "./core/guards/redirect.guard";
@@ -80,8 +80,8 @@ const routes: Routes = [
               canActivate: [RedirectGuard]
             },
             {
-              path: 'change-password',
-              component: ChangePasswordComponent,
+              path: 'recovery-password',
+              component: RecoveryPasswordComponent,
               data: {title: 'Change Password'},
               canActivate: [RedirectGuard]
             },
@@ -120,8 +120,8 @@ const routes: Routes = [
           canActivate: [RedirectGuard]
         },
         {
-          path: 'change-password',
-          component: ChangePasswordComponent,
+          path: 'recovery-password',
+          component: RecoveryPasswordComponent,
           data: {title: 'Change Password'},
           canActivate: [RedirectGuard]
         },

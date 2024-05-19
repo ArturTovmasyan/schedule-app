@@ -65,7 +65,7 @@ export class AuthController {
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Set new password' })
   @UseGuards(AuthGuard())
-  @Post('set-new-password')
+  @Post('recovery-password')
   public async setNewPassword(
     @Body() dto: ResetPasswordDto,
     @GetUser() user: User,
@@ -75,7 +75,7 @@ export class AuthController {
 
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Change password' })
-  @Patch('change-password')
+  @Patch('set-new-password')
   public async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
   ): Promise<boolean> {

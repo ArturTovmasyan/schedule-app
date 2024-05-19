@@ -4,7 +4,6 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ApplicationUser} from "../../interfaces/user/app.user.interface";
 import {LoginUser} from "../../interfaces/user/login.user.interface";
-import {MicrosoftUserType} from "../../interfaces/user/microsof.user.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -63,8 +62,8 @@ export class AuthService {
     );
   }
 
-  changePassword(token: string, password: string): Observable<boolean> {
-    return this.http.patch<boolean>('/api/auth/change-password', {
+  setNewPassword(token: string, password: string): Observable<boolean> {
+    return this.http.patch<boolean>('/api/auth/set-new-password', {
       password,
       token
     }, {headers: this.authorizationHeader}).pipe(

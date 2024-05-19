@@ -34,7 +34,7 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     SignupComponent,
     ResetPasswordComponent,
     ConfirmAccountComponent,
-    ChangePasswordComponent,
+    RecoveryPasswordComponent,
     P404Component,
     P500Component,
     SubscriptionPlanItemComponent,

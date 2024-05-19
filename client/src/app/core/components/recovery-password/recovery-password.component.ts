@@ -6,11 +6,11 @@ import {AuthService} from "../../services/auth/auth.service";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({
-  selector: 'app-change-password',
-  templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.scss']
+  selector: 'app-recovery-password',
+  templateUrl: './recovery-password.component.html',
+  styleUrls: ['./recovery-password.component.scss']
 })
-export class ChangePasswordComponent {
+export class RecoveryPasswordComponent {
 
   form: FormGroup;
   changed = false;
@@ -32,9 +32,9 @@ export class ChangePasswordComponent {
     },  {validator: ValidationService.passwordsEqualValidator})
   }
 
-  changePassword() {
+  setNewPassword() {
       this.authService
-        .changePassword(this.confirmToken, this.form.value.newPassword)
+        .setNewPassword(this.confirmToken, this.form.value.newPassword)
         .subscribe({
           next: () => {
             this.form.clearValidators();

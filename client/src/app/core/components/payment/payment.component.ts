@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
-import {PaymentService} from "../../services/auth/payment/payment.service";
+import {PaymentService} from "../../services/payment/payment.service";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 @Component({
   selector: 'app-payment',
