@@ -1,0 +1,30 @@
+<div id="container">
+  <form class="form" autocomplete="off">
+    <div class="form-group">
+      <label for="number">Card number</label>
+      <input type="number" id="number" formControlName="number" placeholder="0000 0000 0000 0000" />
+      <app-control-messages></app-control-messages>
+    </div>
+    <div class="form-group">
+      <label for="name">Cardholder's Name</label>
+      <input type="name" id="name" formControlName="name" placeholder="" />
+      <app-control-messages></app-control-messages>
+    </div>
+
+    <div id="date-code">
+      <div class="form-group">
+        <label for="expiration_date">Expiration Date</label>
+        <input type="expiration_date" id="expiration_date" formControlName="expiration_date" placeholder="MM / YYYY" />
+        <app-control-messages></app-control-messages>
+      </div>
+
+      <div class="form-group">
+        <label for="cvv">CVV</label>
+        <input type="cvv" id="cvv" formControlName="cvv" placeholder="&#x2022;&#x2022;&#x2022;" />
+        <app-control-messages></app-control-messages>
+      </div>
+    </div>
+
+    <input type="submit" value="Make Payment" />
+  </form>
+</div>

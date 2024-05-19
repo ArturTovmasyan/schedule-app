@@ -21,6 +21,7 @@ import {jwtInterceptorProvider} from './core/interceptors/jwt.interceptor';
 import {errorInterceptorProvider} from './core/interceptors/error.interceptor';
 import { SubscriptionPlanItemComponent } from './core/components/subscription-plan-item/subscription-plan-item.component';
 import { SubscriptionPlanComponent } from './core/components/subscription-plan/subscription-plan.component';
+import { PaymentComponent } from './core/components/payment/payment.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { SubscriptionPlanComponent } from './core/components/subscription-plan/s
     P404Component,
     P500Component,
     SubscriptionPlanItemComponent,
-    SubscriptionPlanComponent
+    SubscriptionPlanComponent,
+    PaymentComponent
   ],
   imports: [
     AppRoutingModule,
