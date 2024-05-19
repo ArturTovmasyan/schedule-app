@@ -71,7 +71,6 @@ export class PaymentService {
 
   public async createSubscription(priceId: string, customerId: string,) {
     try {
-      debugger;
       return await this.stripe.subscriptions.create({
         customer: customerId,
         items: [
