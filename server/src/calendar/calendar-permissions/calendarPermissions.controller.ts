@@ -44,7 +44,7 @@ export class CalendarPermissionsController {
     const { url, statusOfCalendars } =
       await this.calendarPermissionsService.toggleGoogleCalendar(req.user);
     if (url) {
-      return res.send({data: {url: url}});
+      return res.send({ data: { url: url } });
     }
 
     return res.send(statusOfCalendars);
@@ -75,7 +75,7 @@ export class CalendarPermissionsController {
     const { url, statusOfCalendars } =
       await this.calendarPermissionsService.toggleMS365Calendar(req.user);
     if (url) {
-      return res.send({data: {url: url}});
+      return res.send({ data: { url: url } });
     }
 
     return res.send(statusOfCalendars);
