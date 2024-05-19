@@ -1,15 +1,10 @@
 @import "_variables.scss";
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;300;400;500;600;700;800;900&display=swap');
-<<<<<<< HEAD
-//@import "~bootstrap/scss/bootstrap.scss";
-=======
-@import "~font-awesome/scss/font-awesome.scss";
->>>>>>> d371b4f (Create Payment Fun ctionality PART 1)
 
 /* You can add global styles to this file, and also import other style files */
 html,
 body {
-  height: calc(100% - 8px);
+  height: 100%;
   font-family: 'Lexend Deca', sans-serif;
 }
 
