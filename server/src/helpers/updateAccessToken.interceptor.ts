@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CalendarToken } from '../../calendar-permissions/entity/calendarToken.entity';
+import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
 import { Repository } from 'typeorm';
-import { CalendarPermissionsService } from '../../calendar-permissions/calendarPermissions.service';
-import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
+import { CalendarPermissionsService } from '../calendar-permissions/calendarPermissions.service';
+import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
 
 @Injectable()
 export class UpdateAccessTokenInterceptor implements NestInterceptor {
