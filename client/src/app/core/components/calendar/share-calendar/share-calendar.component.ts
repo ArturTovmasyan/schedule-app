@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import * as moment from 'moment';
+import { Moment } from 'moment';
 import { first } from 'rxjs';
 import { AccessRequest } from 'src/app/core/interfaces/calendar/access-request.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
+import { CommonService } from 'src/app/core/services/common.service';
 
 @Component({
   selector: 'app-share-calendar',
@@ -13,16 +15,18 @@ export class ShareCalendarComponent {
 
   emails: string[] = [];
   currentDurationIndex = 2;
-  endDate: Date | null = null;
-  message = 'asdasdasd';
+  endDate: Moment | null = null;
+  message = '';
   requestCalendarAccess = true;
   error: any | null = null;
 
-  constructor(private accessService: CalendarAccessService) { }
+  constructor(
+    private readonly accessService: CalendarAccessService,
+    private readonly commonService: CommonService
+  ) { }
 
   updateEmails(emails: string[]) {
     this.emails = emails;
-    console.log(this.emails)
   }
 
   onMessageUpdate(event: Event) {
@@ -32,17 +36,17 @@ export class ShareCalendarComponent {
 
   onCustomDateUpdate(event: Event) {
     const value = (event.target as any).value;
-    this.endDate = moment(value, 'YYYY-MM-DD').add(1, 'day').toDate();
+    this.endDate = moment(value, 'YYYY-MM-DD').add(1, 'day');
   }
 
   onDurationSelectionChanged(index: number) {
     this.currentDurationIndex = index;
     switch (index) {
       case 0:
-        this.endDate = moment(new Date()).add(2, 'weeks').toDate();
+        this.endDate = moment(new Date()).add(2, 'weeks');
         break;
       case 1:
-        this.endDate = moment(new Date()).add(1, 'month').toDate();
+        this.endDate = moment(new Date()).add(1, 'month');
         break;
       default:
         this.endDate = null
@@ -56,9 +60,9 @@ export class ShareCalendarComponent {
 
   submitRequest() {
     this.accessService.shareCalendarAccess({
-      toEmail: this.emails,
+      toEmail: this.emails[0],
       comment: this.message,
-      timeForAccess: this.endDate?.toDateString() ?? null
+      timeForAccess: this.commonService.getFormattedDateString(this.endDate)
     }).pipe(first())
       .subscribe({
         next: (data: AccessRequest) => {

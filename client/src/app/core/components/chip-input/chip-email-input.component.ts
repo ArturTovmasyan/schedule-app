@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-chip-email-input',
@@ -7,11 +7,10 @@ import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '
 })
 export class ChipEmailInputComponent {
 
+  @Input() emails: string[] = [];
   @Output() emailUpdateEvent = new EventEmitter<string[]>();
   @ViewChild('emailInput')
   emailInput!: ElementRef;
-  
-  emails: string[] = []
 
   add() {
     const email = this.emailInput.nativeElement.value;

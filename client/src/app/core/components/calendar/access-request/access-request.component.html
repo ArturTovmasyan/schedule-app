@@ -13,7 +13,7 @@
       <h3 class="section-title-secondary">
         Request from
       </h3>
-      <app-chip-email-input (emailUpdateEvent)="updateEmails($event)"></app-chip-email-input>
+      <app-chip-email-input [emails]="emails" (emailUpdateEvent)="updateEmails($event)"></app-chip-email-input>
     </div>
     <div class="form-group">
       <h3 class="section-title-secondary">
