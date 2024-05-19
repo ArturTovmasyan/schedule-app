@@ -107,8 +107,7 @@ export class AuthService {
     const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
 
     await this.mailService.send({
-      // from: process.env.NO_REPLY_EMAIL,
-      from: 'no-reply@handshake.com',
+      from: process.env.NO_REPLY_EMAIL,
       to: user.email,
       subject: 'Verify Handshake Account',
       html: `
@@ -133,8 +132,7 @@ export class AuthService {
 
     //TODO must be fetch from config .env
     await this.mailService.send({
-      // from: process.env.NO_REPLY_EMAIL,
-      from: 'no-reply@handshake.com',
+      from: process.env.NO_REPLY_EMAIL,
       to: user.email,
       subject: 'Reset Handshake Account Password',
       html: `
