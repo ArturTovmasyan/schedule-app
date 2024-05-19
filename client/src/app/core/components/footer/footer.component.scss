@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: transparent linear-gradient(102deg, #E6F0E9 0%, #DAE6D2 100%) 0% 0% no-repeat padding-box;
+  background-color: #E5F4FC;
   padding: 20px 120px;
 
   section#testimonials {
@@ -28,7 +28,7 @@
     #nav-links {
       display: flex;
       gap: 20px;
-      
+
       a {
         text-decoration: none;
         cursor: pointer;

@@ -11,15 +11,15 @@
     #line1 {
       font-size: 35px;
       line-height: 38px;
-      font-weight: 800;
+      font-weight: 400;
       color: #b7b7b7;
     }
 
     #line2 {
       font-size: 35px;
       line-height: 42px;
-      font-weight: 800;
-      color: $accent-color;
+      font-weight: 400;
+      color: #32AEF1;
     }
   }
 
@@ -38,6 +38,17 @@
       input{
         border-top-left-radius: 20px;
         border-bottom-left-radius: 20px;
+        border: 1px solid #b7b7b7;
+        &::placeholder{
+          font-family: 'Lexend Deca', sans-serif;
+          font-size: 15px;
+          font-weight: 300;
+          color: #b7b7b7;
+          letter-spacing: 1px;
+        }
+        &:focus-visible{
+          outline-color: #32AEF1;
+        }
       }
     }
 
@@ -61,11 +72,15 @@
       height: 40px;
       font-size: 18px;
       line-height: 22px;
-      background: transparent linear-gradient(337deg, #CCD839 0%, #7B9666 100%) 0% 0% no-repeat padding-box;
+      background-color: #32AEF1;
       border-radius: 20px;
       border: none;
       margin-top: 20px;
-      cursor: pointer
+      cursor: pointer;
+      &:hover{
+        transition: 0.4s ease;
+        background-color: #1d97dc;
+      }
     }
   }
 

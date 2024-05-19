@@ -1,45 +1,52 @@
 .container-fluid {
-    padding: 20px 120px;
-    border-radius: 10px;
-    background-color: white;
+  padding: 20px 120px;
+  border-radius: 10px;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+
+  #title {
+    font-size: 19px;
+    line-height: 23px;
+    font-weight: bold;
+    color: #000;
+  }
+
+  #slogan {
+    font-size: 1em;
+    font-weight: 400;
+    color: #0099BE;
+    margin-left: 20px;
+  }
+
+  #nav {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    line-height: 19px;
+    font-weight: 500;
 
-    #title {
-        font-size: 19px;
-        line-height: 23px;
-        font-weight: bold;
-        color: #000;
+    span {
+      color: #959595;
+      padding: 2px 8px;
+      margin-left: 10px;
+      font-family: 'Lexend Deca', sans-serif;
+      font-weight: 400;
     }
 
-    #slogan {
-        font-size: 1em;
-        font-weight: 400;
-        color: #0099BE;
-        margin-left: 20px;
+    button {
+      padding: 8px 30px;
+      color: #fff;
+      background-color: #32AEF1;
+      font-family: 'Lexend Deca', sans-serif;
+      border-radius: 100px;
+      border: 0px;
+      cursor: pointer;
+      &:hover{
+        transition: 0.4s ease;
+        background-color: #1d97dc;
+      }
     }
-
-    #nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 15px;
-        line-height: 19px;
-        font-weight: 500;
-
-        span {
-            color: #959595;
-            padding: 2px 8px;
-            margin-left: 10px;
-        }
-
-        button {
-            padding: 8px 30px;
-            color: #7B9666;
-            background-color: #EBF0E7;
-            border-radius: 100px;
-            border: 0px;
-            cursor: pointer;
-        }
-    }
+  }
 }
