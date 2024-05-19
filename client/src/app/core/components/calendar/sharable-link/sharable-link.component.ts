@@ -482,7 +482,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   broadcastContactData() {
     this.selectedDates = [];
-    this.selectedDates$.next([]);
+    this.selectedDates$.next({});
     this.addedTimeSlots = [];
     this.broadcaster.broadcast('reset_event');
     const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
