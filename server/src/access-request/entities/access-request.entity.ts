@@ -1,12 +1,12 @@
 import {
   Column,
-  Entity,
-  ManyToOne,
-  JoinColumn,
-  DeleteDateColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { RequestStatusEnum } from '../enums/requestStatus.enum';
@@ -38,7 +38,7 @@ export class AccessRequest {
   @Column({
     name: 'status',
     type: 'enum',
-    enumName: 'request_status',
+    enum: RequestStatusEnum,
     default: RequestStatusEnum.Pending,
   })
   status?: RequestStatusEnum;
