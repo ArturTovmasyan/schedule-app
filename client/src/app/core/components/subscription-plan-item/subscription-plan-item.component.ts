@@ -28,8 +28,7 @@ export class SubscriptionPlanItemComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  constructor(private broadcaster: BroadcasterService) {
-  }
+  constructor(private broadcaster: BroadcasterService) {}
 
   get iconPath(): string {
     return `/assets/${this.isSelected ? this.subscriptionPlan.icons.selected : this.subscriptionPlan.icons.normal}`;

@@ -5,6 +5,7 @@ import {Notification} from 'src/app/core/interfaces/notification.interface';
 import {CalendarAccessService} from 'src/app/core/services/calendar/access.service';
 import {CommonService} from 'src/app/core/services/common.service';
 import {NotificationService} from 'src/app/core/services/notification/notification.service';
+import {BroadcasterService} from "../../../../shared/services";
 
 @Component({
   selector: 'app-notification-item',
@@ -21,7 +22,8 @@ export class NotificationItemComponent implements OnInit {
   constructor(
     private readonly notificationService: NotificationService,
     private readonly calendarAccessService: CalendarAccessService,
-    private readonly commonService: CommonService
+    private readonly commonService: CommonService,
+    private broadcaster: BroadcasterService
   ) {
   }
 
@@ -86,7 +88,8 @@ export class NotificationItemComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: () => {
-          this.notification.viewed = true
+          this.notification.viewed = true;
+          this.broadcaster.broadcast('notification_count_update', true);
         },
         error: (error) => {
           this.error = error;
