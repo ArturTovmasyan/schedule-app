@@ -16,6 +16,7 @@ import { CalendarAccessibilityService } from './calendar-accessibility.service';
 import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { User } from '@user/entity/user.entity';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOperation,
   ApiResponse,
@@ -26,6 +27,7 @@ import {
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
 
+@ApiBearerAuth()
 @ApiTags('Calendar accessibility')
 @Controller('api/calendar-accessibility')
 export class CalendarAccessibilityController {

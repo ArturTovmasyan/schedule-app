@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
-  ApiHideProperty,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -26,6 +26,7 @@ import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 
+@ApiBearerAuth()
 @ApiTags('Users')
 @Controller('api/users')
 export class UsersController {

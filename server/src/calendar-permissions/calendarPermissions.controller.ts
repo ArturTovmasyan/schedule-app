@@ -14,6 +14,7 @@ import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { Response } from 'express';
 import { UpdateAccessTokenInterceptor } from '../calendar-accessibility/interceptors/updateAccessToken.interceptor';
 
+@ApiBearerAuth()
 @ApiTags('Calendar permissions')
 @Controller('api/calendar-permissions')
 export class CalendarPermissionsController {

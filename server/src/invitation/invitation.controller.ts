@@ -15,12 +15,14 @@ import { IResponseMessage } from 'src/components/interfaces/response.interface';
 import { User } from '@user/entity/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags('Invitation API')
 @Controller('api/invitation')
 export class InvitationController {

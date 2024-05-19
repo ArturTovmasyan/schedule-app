@@ -25,6 +25,7 @@ import {ConfigService} from "@nestjs/config";
 import {ErrorMessages} from "@shared/error.messages";
 import {OauthProvider} from "./enums/oauth.provider.enum";
 
+@ApiBearerAuth()
 @ApiTags('Authentication')
 @Controller('api/auth')
 export class AuthController {

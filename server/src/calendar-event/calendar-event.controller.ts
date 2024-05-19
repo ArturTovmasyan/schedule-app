@@ -18,7 +18,10 @@ import { AuthGuard } from '@nestjs/passport';
 import TimeIntervalDto from './dto/timeInterval.dto';
 import CreateEventDto from './dto/createEvent.dto';
 import UpdateEventDto from './dto/updateEvent.dto';
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 
+@ApiBearerAuth()
+@ApiTags('Calendar Event')
 @Controller('api/calendar/events')
 export class CalendarEventController {
   constructor(private readonly calendarService: CalendarEventService) {}

@@ -16,6 +16,7 @@ import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { CalendarAccessService } from './calendar-access.service';
 import { User } from '@user/entity/user.entity';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOperation,
   ApiResponse,
@@ -26,6 +27,7 @@ import {
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
 
+@ApiBearerAuth()
 @ApiTags('Calendar Access')
 @Controller('api/calendar-access')
 export class CalendarAccessController {

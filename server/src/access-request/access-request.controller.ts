@@ -13,7 +13,7 @@ import {
   ApiTags,
   ApiResponse,
   ApiOperation,
-  ApiExcludeEndpoint,
+  ApiExcludeEndpoint, ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -31,6 +31,7 @@ import {
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
 
+@ApiBearerAuth()
 @ApiTags('Access Request')
 @Controller('api/calendar/access-request')
 export class AccessRequestController {

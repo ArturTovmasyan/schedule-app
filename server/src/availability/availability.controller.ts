@@ -16,8 +16,8 @@ import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { AvailabilityService } from './availability.service';
 import { User } from '@user/entity/user.entity';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
-  ApiHideProperty,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -27,7 +27,8 @@ import {
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
 
-@ApiTags('Calendar availablity')
+@ApiBearerAuth()
+@ApiTags('Calendar availability')
 @Controller('api/calendar')
 export class AvailabilityController {
   constructor(private readonly availabilityService: AvailabilityService) {}
