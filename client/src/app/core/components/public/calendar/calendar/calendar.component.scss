@@ -6,7 +6,7 @@
     height: 100%;
   }
 
-  .calendar {
+  .calendar-main {
     height: 100%;
     width: 100%;
     background-color: #F6F8FA;
@@ -52,7 +52,6 @@
 
 :host ::ng-deep {
 
-
   #calendarRightSide {
     h2.fc-toolbar-title {
       width: unset;
@@ -63,578 +62,548 @@
     }
   }
 
-  .section-title-secondary{
-    font-size: 16px;
-    text-align: left;
-    font-family: "Open Sans", sans-serif;
-    color: #747474;
-    margin-bottom: 0.5rem;
-  }
-  .current-meeting {
-    margin-bottom: 20px;
-  }
-  .date-time-container {
-    margin-bottom: 20px;
-  }
-
-  .meeting-title{
-    margin-bottom: 20px;
-    .meeting-title-secondary{
-      font-family: "Open Sans", sans-serif;
-      font-size: 16px;
-      color: #747474;
+  .sidebar {
+    padding: 37px 16px 0 14px;
+    background-color: white;
+    height: 100%;
+    .header {
+      position: relative;
       text-align: left;
-    }
-    div {
-      text-align: left;
-    }
 
-  }
-
-  
-  
-  section.group-availability {
-      padding: 37px 16px 0 14px;
-      background-color: white;
-      height: 100%;
-
-      .header {
-        position: relative;
-        text-align: left;
-
-        h3 {
-          font-family: "Lexend Deca", sans-serif;
-          color: #0C105A;
-          font-size: 20px;
-          letter-spacing: 1.64px;
-          margin-bottom: 19px;
-        }
-        
-
-        #title { 
-          font-family: "Open Sans", sans-serif;
-          font-size: 16px;
-          letter-spacing: 1.23px;
-          line-height: 22px;
-          color: #747474;
-          text-transform: uppercase;
-          width: 100%;
-        }
+      h3 {
+        font-family: "Lexend Deca", sans-serif;
+        color: #0C105A;
+        font-size: 20px;
+        letter-spacing: 1.64px;
+        margin-bottom: 19px;
       }
+      
 
-      //Start of: external user: Clicking and opening the sharable link
+      #title { 
+        font-family: "Open Sans", sans-serif;
+        font-size: 16px;
+        letter-spacing: 1.23px;
+        line-height: 22px;
+        color: #747474;
+        text-transform: uppercase;
+        width: 100%;
+      }
+    }
 
+    .sidebar-content {
+      padding: 15px 10px 35px;
+      border-radius: 10px;
+      
 
-      //End of: external user: Clicking and opening the sharable link
+      form {
+        position: relative;
 
-      //Start of: Sharable link- external user: Selecting time slot from sharable link (videoconferencing - Zoom, MS Teams, Google Meet)
-      //Start of: Sharable link- external user: Selecting time slot from sharable link (inbound phone call)
-      //Start of: Sharable link- external user: Selecting time slot from sharable link (outbound phone call)
-      .group-availability-content {
-        // border: 1px solid #e3dddd;
-        padding: 15px 10px 35px;
-        border-radius: 10px;
+        .mb-20 {
+          margin-bottom: 20px;
+        }
 
-        .calendar {
+        .section-title-secondary{
+          font-size: 16px;
+          text-align: left;
+          font-family: "Open Sans", sans-serif;
+          color: #747474;
+          margin-bottom: 0.5rem;
+        }
+
+        .meeting-title-container{
+          margin-bottom: 20px;
+          .meeting-title-secondary{
+            font-family: "Open Sans", sans-serif;
+            font-size: 16px;
+            color: #747474;
+            text-align: left;
+          }
+          div {
+            text-align: left;
+          }
+      
+        }
+
+        .calendar-sidebar {
           position: relative;
+          margin-bottom: 20px;
+          margin-top: 20px;
 
-          .calendar-header {
-            height:60px;
+          .fc {
+            height: auto!important;
           }
 
+          .fc-event-div {
+            &.current-week {
+              .fc-daygrid-day-number {
+                background: #fff3c6;
+                border-color: unset;
+                border-radius: 50%;
+                padding: 3px 6px;
+                color: #fecb2d !important;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                justify-content: center;
+              }
+            }
+      
+      
+            &.na-week {
+              .fc-daygrid-day-top::before {
+                transform: translateX(-50%);
+                border-radius: 100%;
+                position: absolute;
+                background: #7cccf8;
+                bottom: 10px;
+                height: 8px;
+                content: '';
+                width: 8px;
+                left: 50%;
+              }
+            }
+      
+            .fc-daygrid-day-events {
+              display: none;
+            }
+      
+          }
+  
           .fc-toolbar {
             margin-left: 0px;
           }
           .fc-header-toolbar {
             width: 100%;
           }
-
+  
           .fc-toolbar-title {
             font-size: 16px;
           }
           .fc-toolbar-chunk{
             width: 100%;;
           }
+          .fc-view-harness {
+            height: auto!important;
+          }
+          .fc-daygrid-day-events {
+            display: none;
+          }
+          .fc-daygrid-day-frame {
+            height: 40px;
+          }
+    
+          .fc-daygrid-day-number {
+            text-decoration: unset;
+            color: #8E8E8E !important;
+            font-size: 14px;
+            font-family: "Lexend Deca", sans-serif;
+          }
+    
+          .fc-daygrid-day {
+            border: none !important;
+            cursor: pointer;
+          }
+    
+          td {
+            border: 0 !important;
+          }
+    
+          .fc-daygrid-day-top {
+            justify-content: center;
+            flex-direction: unset;
+          }
+          .fc-toolbar {
+            top: 0px!important;
+          }
+    
+          .fc-header-toolbar {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0px!important;
+    
+            h2 {
+              font-size: 16px!important;
+              width: unset;
+              font-family: 'Open Sans', sans-serif;
+              line-height: unset!important;
+              margin: 0 10px 3px 10px;
+            }
+    
+            
+            .fc-button {
+              transition: all 0.2s ease!important;
+              padding: 0!important;
+              cursor: pointer;
+              line-height: 1!important;
+              
+              border: 0!important;
+              
+              background-color: transparent!important;
+              &:focus {
+                box-shadow: none!important;
+              }
+
+              .fc-icon {
+                font-size: 1rem;
+                vertical-align: middle;
+              }
+            }
+            
+          }
+
+          .fc-col-header {
+            thead {
+              background-color: transparent!important;
+              th {
+                border: 0!important;
+              }
+            }
+          } 
+         
+          td, th {
+            border-style: none !important;
+          }
+
+          .fc-scrollgrid {
+            border: none!important;
+          }
+    
+          .fc-scrollgrid-section-header {
+            th {
+              border-bottom: 1px solid #d9d9d9!important;
+            }
+          }
         }
 
-        form {
-          position: relative;
+        .users-container {
+          border-radius: 12px;
+          border: 1px solid #d8d8d8;
+          padding: 12px;
+          text-align: left;
+          
+          background-color: #f5f5f5;
 
-          .users-container {
-            border-radius: 12px;
-            border: 1px solid #d8d8d8;
-            padding: 12px;
+          ul.users-list {
             text-align: left;
-            margin-bottom: 20px;
+            display: -webkit-inline-box;
+            width: 100%;
+            margin-bottom: 0;
 
-            ul.users-list {
-              text-align: left;
-              display: -webkit-inline-box;
-              width: 100%;
-              margin-bottom: 0;
-
-              li+li {
-                margin-top: 10px;
-              }
-
-              li.user-info {
-                min-width: 45%;
-
-                .user-info-wrapper {
-                  display: flex;
-                  justify-content: start;
-                  align-items: center;
-                  border: 1px solid #d6d6d6;
-                  border-radius: 28px;
-                  padding: 2px 5px 2px 4px;
-                  width: fit-content;
-                  height: 45px;
-                  width: 100%;
-
-                  .user-portrait {
-                    img {
-                      height: 35px;
-                      width: 35px;
-                      border-radius: 50%;
-                    }
-                  }
-
-                  .user-bio {
-                    margin: 0 8px;
-
-                    h5.full-name {
-                      font-family: 'Lexend Deca', sans-serif;
-                      font-size: 13px;
-                      margin-bottom: 1px;
-                      color: #000;
-                    }
-
-                    h6.contact-company {
-                      font-family: 'Lexend Deca', sans-serif;
-                      font-size: 11px;
-                      color: #360989;
-                      margin-bottom: 0;
-                    }
-                  }
-
-                  button.remove-button {
-                    border-radius: 50%;
-                    border: 0;
-                    background: #f1f1f1;
-                    height: 26px;
-                    width: 26px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    color: #707070;
-
-                    img {
-                      height: 13px;
-                    }
-
-                    &:hover {
-                      background-color: #e9e9e9;
-                      transition: 0.4s ease;
-                    }
-                  }
-                }
-
-              }
-
-              li.user-input {
-
-                input {
-                  border: 0;
-
-                  &:focus {
-                    outline: none;
-                    text-decoration: none;
-                  }
-                }
-              }
+            li+li {
+              margin-top: 10px;
             }
 
-          }
+            li.user-info {
+              min-width: 45%;
 
-          .date-time-container {
-            border-radius: 12px;
-            border: 1px solid #d8d8d8;
-            padding: 12px 3px;
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            
-           
+              .user-info-wrapper {
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                border: 1px solid #d6d6d6;
+                border-radius: 28px;
+                padding: 2px 5px 2px 8px;
+                width: fit-content;
+                height: 45px;
+                width: 100%;
+                background-color: #fff;;
 
-            ul {
-              display: flex;
-              align-items: initial;
-              justify-content: start;
-              margin-bottom: 0;
-              max-width: 100%;
-              gap: 1rem;
-              width: 100%;
 
-              
-
-              li {
-                margin-right: 0;
-                width: 31%;
-                overflow: hidden;
-
-                &+li {
-                  border-left: 1px solid #656565;
-                  margin-left: 7px;
-                  padding-left: 7px;
+                .user-portrait {
+                  img {
+                    height: 35px;
+                    width: 35px;
+                    border-radius: 50%;
+                  }
                 }
 
-                input {
-                  width: fit-content;
-                  height: fit-content;
-                  border: 0;
-                  background-color: transparent;
-                  max-width: 100%;
-                  padding: 0;
+                .user-bio {
+                  margin: 0 8px;
 
-                  &::placeholder {
+                  h5.full-name {
                     font-family: 'Lexend Deca', sans-serif;
                     font-size: 13px;
-                    color: #656565;
-                    text-align: center;
+                    margin-bottom: 1px;
+                    color: #000;
+                  }
 
+                  h6.contact-company {
+                    font-family: 'Lexend Deca', sans-serif;
+                    font-size: 11px;
+                    color: #360989;
+                    margin-bottom: 0;
                   }
                 }
 
-                p {
-                  margin-bottom: 0;
+                button.remove-button {
+                  border-radius: 50%;
+                  border: 0;
+                  background: #f1f1f1;
+                  height: 26px;
+                  width: 26px;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  color: #707070;
 
-                }
-                #meetingDate {
-                  padding-left: 0.5rem;
+                  img {
+                    height: 13px;
+                  }
+
+                  &:hover {
+                    background-color: #e9e9e9;
+                    transition: 0.4s ease;
+                  }
                 }
               }
 
-              
+            }
 
-              li.date {
-                font-family: 'Lexend Deca', sans-serif;
-                font-size: 13px;
-                color: #656565;
+            li.user-input {
+
+              input {
+                border: 0;
+
+                &:focus {
+                  outline: none;
+                  text-decoration: none;
+                }
+              }
+            }
+          }
+        }
+
+        .date-time-container {
+          border-radius: 12px;
+          border: 1px solid #d8d8d8;
+          padding: 12px 3px;
+          text-align: left;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          
+          ul {
+            display: flex;
+            align-items: initial;
+            justify-content: start;
+            margin-bottom: 0;
+            max-width: 100%;
+            gap: 1rem;
+            width: 100%;
+
+            
+
+            li {
+              margin-right: 0;
+              width: 31%;
+              overflow: hidden;
+
+              &+li {
+                border-left: 1px solid #656565;
+                margin-left: 7px;
+                padding-left: 7px;
               }
 
+              input {
+                width: fit-content;
+                height: fit-content;
+                border: 0;
+                background-color: transparent;
+                max-width: 100%;
+                padding: 0;
 
-              li.timeframe {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                margin-left: 10px !important;
-                padding-left: 8px !important;
+                &::placeholder {
+                  font-family: 'Lexend Deca', sans-serif;
+                  font-size: 13px;
+                  color: #656565;
+                  text-align: center;
+
+                }
+              }
+
+              p {
+                margin-bottom: 0;
+
+              }
+              #meetingDate {
+                padding-left: 0.5rem;
+              }
+            }
+
+            li.date {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 13px;
+              color: #656565;
+            }
+
+
+            li.timeframe {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              margin-left: 10px !important;
+              padding-left: 8px !important;
+              color: #4A8638;
+              font-family: "Lexend Deca", sans-serif;
+              font-size: 13px;
+              text-align: center;
+              flex-grow: 1;
+              /* justify-content: center; */
+              gap: 0.2rem;
+
+              p {
+                margin: 0 2px;
                 color: #4A8638;
-                font-family: "Lexend Deca", sans-serif;
-                font-size: 13px;
-                text-align: center;
-                flex-grow: 1;
-                /* justify-content: center; */
-                gap: 0.2rem;
+              }
 
-                p {
-                  margin: 0 2px;
+              input {
+                max-width: 49%;
+
+                &::placeholder {
+                  text-align: center;
                   color: #4A8638;
                 }
-
-                input {
-                  max-width: 49%;
-
-                  &::placeholder {
-                    text-align: center;
-                    color: #4A8638;
-                  }
-                }
-              }
-            }
-
-            button.remove-button {
-              border-radius: 50%;
-              border: 0;
-              background: #f1f1f1;
-              height: 26px;
-              width: 26px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              color: #707070;
-
-              img {
-                height: 13px;
-              }
-
-              &:hover {
-                background-color: #e9e9e9;
-                transition: 0.4s ease;
               }
             }
           }
 
-          .location {
-
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            border-radius: 12px;
-            border: 1px solid #d8d8d8;
-            padding: 4px 6px;
-            margin-bottom: 20px;
-
-            .logo {
-              margin-right: 20px;
-
-              img {
-                height: 30px;
-              }
-            }
-
-            .text {
-              text-align: left;
-              display: flex;
-              flex-direction: column;
-
-              h2 {
-                font-family: 'Lexend Deca', sans-serif;
-                font-size: 17px;
-                margin-bottom: 0;
-              }
-
-              p {
-                font-family: 'Lexend Deca', sans-serif;
-                font-size: 12px;
-                color: #939292;
-                margin-bottom: 0;
-                font-weight: 400;
-              }
-            }
-          }
-
-          .other-details {
-
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-direction: column;
-            gap: 0.5rem;
-            .logo {
-              margin-right: 20px;
-
-              img {
-                height: 30px;
-              }
-            }
-
-            .text {
-              text-align: left;
-              display: flex;
-              flex-direction: column;
-
-              h2 {
-                font-family: 'Lexend Deca', sans-serif;
-                font-size: 17px;
-                margin-bottom: 0;
-              }
-
-              p {
-                font-family: 'Lexend Deca', sans-serif;
-                font-size: 12px;
-                color: #939292;
-                margin-bottom: 0;
-                font-weight: 400;
-              }
-            }
-          }
-
-          input,
-          textarea {
-            border-radius: 12px;
-            border: 1px solid #d8d8d8;
-            height: 50px;
-            margin-bottom: 0;
-            resize: none;
-            padding: 7px 10px 10px;
-
-            &::placeholder {
-              font-family: 'Lexend Deca', sans-serif;
-              font-size: 12px;
-              color: #9b9b9b;
-              font-weight: 300;
-
-            }
-          }
-
-          textarea {
-            padding: 10px;
-
-            &::placeholder {
-              padding-top: 5px;
-            }
-          }
-
-          button#scheduleButton {
-            background: #47B8F6;
-            border-radius: 33px;
-            padding: 5px 10px;
+          button.remove-button {
+            border-radius: 50%;
             border: 0;
-            color: #fff;
-            font-size: 16px;
-            font-family: 'Lexend Deca', sans-serif;
-            position: absolute;
-            right: 0;
-            bottom: -95px;
+            background: #f1f1f1;
+            height: 26px;
+            width: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #707070;
+
+            img {
+              height: 13px;
+            }
 
             &:hover {
-              background-color: #1d97dc;
+              background-color: #e9e9e9;
               transition: 0.4s ease;
             }
           }
         }
 
-      }
-
-      //End of: Sharable link- external user: Selecting time slot from sharable link (videoconferencing - Zoom, MS Teams, Google Meet)
-      //End of: Sharable link- external user: Selecting time slot from sharable link (inbound phone call)
-      //End of: Sharable link- external user: Selecting time slot from sharable link (outbound phone call)
-    }
-
-
-      .calendar-sidebar {
-        height: 370px;
-        .fc-daygrid-day-events {
-          display: none;
-        }
-
-        
-
-        .fc-daygrid-day-frame {
-          height: 40px;
-        }
-
-        .fc-daygrid-day-number {
-          text-decoration: unset;
-          color: #8E8E8E !important;
-          font-size: 14px;
-          font-family: "Lexend Deca", sans-serif;
-        }
-
-        .fc-daygrid-day {
-          border: none !important;
-          cursor: pointer;
-        }
-
-        td {
-          border: 0 !important;
-        }
-
-        .fc-daygrid-day-top {
-          justify-content: center;
-          flex-direction: unset;
-        }
-        .fc-toolbar {
-          top: 0px!important;
-        }
-
-        .fc-header-toolbar {
-          position: relative;
+        .location {
           display: flex;
-          flex-direction: column;
-          margin-bottom: 0px!important;
+          justify-content: flex-start;
+          align-items: center;
+          border-radius: 12px;
+          border: 1px solid #d8d8d8;
+          padding: 4px 6px;
+          
+          .logo {
+            margin-right: 20px;
 
-          h2 {
-            font-size: 16px!important;
-            width: unset;
-            font-family: 'Open Sans', sans-serif;
-            line-height: unset!important;
-            margin: 0 10px 3px 10px;
-          }
-
-         
-          .fc-button {
-            transition: all 0.2s ease!important;
-            padding: 0!important;
-            cursor: pointer;
-            line-height: 1!important;
-           
-            border: 0!important;
-            
-            background-color: transparent!important;
-            &:focus {
-              box-shadow: none!important;
+            img {
+              height: 30px;
             }
           }
-         
-          .fc .fc-button .fc-icon {
-            font-size: 1rem;
-            vertical-align: middle;
-        }
-        
-        }
-        .fc-col-header thead th {
-          border: 0!important;
-        }
-        .fc-col-header thead{
-          background-color: transparent!important;
-        }
-         td, th {
-          border-style: none !important;
-        }
-        .fc-scrollgrid {
-          border: none!important;
-        }
 
-        .fc-scrollgrid-section-header {
-          th {
-            border-bottom: 1px solid #d9d9d9!important;
+          .text {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+
+            h2 {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 17px;
+              margin-bottom: 0;
+            }
+
+            p {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 12px;
+              color: #939292;
+              margin-bottom: 0;
+              font-weight: 400;
+            }
           }
         }
-        
-      }
+
+        .other-details {
+          
+          .input-field {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+        }
+
+        .text {
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+
+          h2 {
+            font-family: 'Lexend Deca', sans-serif;
+            font-size: 17px;
+            margin-bottom: 0;
+          }
+
+          p {
+            font-family: 'Lexend Deca', sans-serif;
+            font-size: 12px;
+            color: #939292;
+            margin-bottom: 0;
+            font-weight: 400;
+          }
+        }
       
 
-      .fc-event-div {
-        &.current-week {
-          .fc-daygrid-day-number {
-            background: #7cccf8;
-            border-radius: 50%;
-            padding: 3px 6px;
-            color: #ffffff !important;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            justify-content: center;
+        input,
+        textarea {
+          border-radius: 12px;
+          border: 1px solid #d8d8d8;
+          height: 50px;
+          margin-bottom: 0;
+          resize: none;
+          padding: 7px 10px 10px;
+
+          &::placeholder {
+            font-family: 'Lexend Deca', sans-serif;
+            font-size: 12px;
+            color: #9b9b9b;
+            font-weight: 300;
+
           }
         }
 
-        &.default-selected-date {
-          .fc-daygrid-day-number {
-            border: 1px solid #000;
+        textarea {
+          padding: 10px;
+
+          &::placeholder {
+            padding-top: 5px;
           }
         }
 
-        &.na-week {
-          .fc-daygrid-day-top::before {
-            transform: translateX(-50%);
-            border-radius: 100%;
-            position: absolute;
-            background: #7cccf8;
-            bottom: 10px;
-            height: 8px;
-            content: '';
-            width: 8px;
-            left: 50%;
+        button#scheduleButton {
+          width: 100%;
+          height: 46px;
+          background: #32AEF1;
+          border-radius: 33px;
+          border: 0;
+          color: #fff;
+          font-size: 16px;
+          font-family: "Open Sans", sans-serif;
+
+          &:hover {
+            background-color: #1d97dc;
+            transition: 0.4s ease;
           }
         }
-
-        .fc-daygrid-day-events {
-          display: none;
-        }
-
       }
+    }
+  }
 }
+
+  
+  

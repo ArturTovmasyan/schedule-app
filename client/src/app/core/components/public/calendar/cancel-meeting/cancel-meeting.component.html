@@ -1,13 +1,13 @@
-<section class="group-availability" id="groupAvailability">
+<section class="sidebar">
   <div class="header">
     <h2 class="section-title text-center">
       Group availability
     </h2>
   </div>
-  <div class="group-availability-content">
+  <div class="sidebar-content">
     <form action="" [formGroup]="form" (ngSubmit)="cancelMeeting()">
       <div>
-      <div class="users-container">
+      <div class="users-container mb-20">
         <ul class="users-list list-unstyled list-inline">
           <li class="list-inline-item user-info" *ngFor="let att of attendees">
             <div class="user-info-wrapper">
@@ -22,45 +22,52 @@
           </li>
         </ul>
       </div>
-      <div class="calendar w-100">
-        <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
+      <div class="calendar-sidebar mb-20">
+        <h3 class="section-title-secondary">
+          Calendar
+        </h3>
+        <full-calendar #calendar [options]="calendarOptions">
         </full-calendar>
       </div>
       </div>
-      <h3 class="section-title-secondary current-meeting">
-        Current Meeting
-      </h3>
-      <div class="date-time-container">
-        <ul class="list-unstyled list-inline w-100">
-          <li class="list-inline-item date d-flex align-items-center">
-            <div  id="meetingDate">{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}</div>
-          </li>
-          <li class="list-inline-item timeframe">
-            <div id="meetingStartTime">
-              {{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}
-            </div>
-            <p> - </p>
-            <div id="meetingEndTime">
-              {{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="error" *ngIf="errorMessage">
-        <span *ngFor="let error of errorMessage">
-          {{error}}
-        </span>
+      <div class="current-meeting mb-20">
+        <h3 class="section-title-secondary">
+          Current Meeting
+        </h3>
+        <div class="date-time-container">
+          <ul class="list-unstyled list-inline w-100">
+            <li class="list-inline-item date d-flex align-items-center">
+              <div  id="meetingDate">{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}</div>
+            </li>
+            <li class="list-inline-item timeframe">
+              <div id="meetingStartTime">
+                {{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}
+              </div>
+              <p> - </p>
+              <div id="meetingEndTime">
+                {{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="error" *ngIf="errorMessage">
+          <span *ngFor="let error of errorMessage">
+            {{error}}
+          </span>
+        </div>
       </div>
 
-      <h3 class="section-title-secondary">
-        Reason for cancellation
-      </h3>
-      <div class="other-details">
-        <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add reasons for cancellation" formControlName="reason"></textarea>
-        <div *ngIf="f['reason'].invalid && (f['reason'].dirty || f['reason'].touched)">
-          <span class="error">
-            <i class="fa fa-exclamation-triangle"></i>Please add the reasons for cancellation
-          </span>
+      <div class="other-details mb-20">
+        <h3 class="section-title-secondary">
+          Reason for cancellation
+        </h3>
+        <div class="input-field">
+          <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add reasons for cancellation" formControlName="reason"></textarea>
+          <div *ngIf="f['reason'].invalid && (f['reason'].dirty || f['reason'].touched)">
+            <span class="error">
+              <i class="fa fa-exclamation-triangle"></i>Please add the reasons for cancellation
+            </span>
+          </div>
         </div>
       </div>
       <button type="submit" id="scheduleButton">Cancel</button>

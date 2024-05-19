@@ -3,13 +3,14 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
 import { PublicCalendarService } from '../calendar.service';
 import interactionPlugin from "@fullcalendar/interaction";
+import bootstrapPlugin from "@fullcalendar/bootstrap"
 
 
 export class PublicSidebarCalendarComponent  {
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin, interactionPlugin],
+    plugins: [dayGridPlugin, interactionPlugin, bootstrapPlugin],
     height: 'auto',
     nowIndicator: true,
     direction: 'ltr',
@@ -79,12 +80,8 @@ export class PublicSidebarCalendarComponent  {
       return 'evento';
     },
     select: (info: any) => {
-      console.log('selectsdfsdfdfsdf');
       this.changeWeek(info.start);
     },
-    // selectOverlap: function (info) {
-    //   return true;
-    // }
   }
 
   constructor( public calendarService: PublicCalendarService) { }

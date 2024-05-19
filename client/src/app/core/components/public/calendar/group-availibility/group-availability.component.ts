@@ -67,26 +67,15 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
           // load available timeslots on calendar
           const datas = [];
           for (const date of data.slots) {
-            if (date.choosedByEmail) {
-              datas.push({
-                id: date.id,
-                groupId: 'notAvailableSlot',
-                display: 'background',
-                start: date.startDate,
-                end: date.endDate,
-                title: data.title
-              });
-            } else {
-              datas.push({
-                id: date.id,
-                groupId: 'availableSlot',
-                display: 'background',
-                start: date.startDate,
-                end: date.endDate,
-                className: AVAILABILITY_EVENT_CLASS,
-                title: data.title
-              });
-            }
+            datas.push({
+              id: date.id,
+              groupId: 'availableSlot',
+              display: 'background',
+              start: date.startDate,
+              end: date.endDate,
+              className: AVAILABILITY_EVENT_CLASS,
+              title: data.title
+            });
           }
           this.broadcaster.broadcast('loadAvailableTimeslots', datas);
           // location

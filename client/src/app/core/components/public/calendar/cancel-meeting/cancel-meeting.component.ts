@@ -102,7 +102,6 @@ export class CancelMeetingComponent extends PublicSidebarCalendarComponent imple
             user: data.user
           }];
         }
-        console.log('selected timeslot', this.componentData.selectedTimeSlot);
         this.calendarApi.gotoDate(this.componentData.selectedTimeSlot.start);
         this.calendarService.selectedWeek.next(this.componentData.selectedTimeSlot.start);
         

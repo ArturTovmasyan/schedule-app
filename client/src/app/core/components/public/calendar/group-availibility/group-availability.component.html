@@ -1,13 +1,13 @@
-<section class="group-availability" id="groupAvailability">
+<section class="sidebar">
   <div class="header">
     <h3>
       ENTANGLES
     </h3>
     <label id="title">Group Availabillity</label>
   </div>
-  <div class="group-availability-content">
+  <div class="sidebar-content">
     <form action="" [formGroup]="form" (ngSubmit)="submit()">
-      <div class="users-container">
+      <div class="users-container mb-20">
         <ul class="users-list list-unstyled list-inline">
           <li class="list-inline-item user-info" *ngFor="let att of attendees">
             <div class="user-info-wrapper">
@@ -23,107 +23,119 @@
         </ul>
       </div>
 
-      <div class="meeting-title">
-        <h3 class="meeting-title-secondary mb-2"> Meeting title </h3>
+      <div class="meeting-title-container mb-20">
+        <h3 class="section-title-secondary"> Meeting title </h3>
         <div>{{ meetingTitle }}</div>
       </div>
 
-      <div class="calendar w-100" [style.display]="componentData.isTimeslotSelected ? 'none' : ''">
-        
-        <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
-        </full-calendar>
+      <div class="calendar-sidebar mb-20" [style.display]="componentData.isTimeslotSelected ? 'none' : ''">
+          <h3 class="section-title-secondary">
+            Calendar
+          </h3>
+          <full-calendar #calendar [options]="calendarOptions">
+          </full-calendar>
       </div>
+
       <ng-container *ngIf="componentData.isTimeslotSelected">
-        <h3 class="section-title-secondary current-meeting">
-          Current Meeting
-        </h3>
-        <div class="date-time-container">
-          <ul class="list-unstyled list-inline">
-            <li class="list-inline-item date">
-              <input value="{{ componentData.selectedTimeSlot }}" style="display:none;"/>
-              <div  id="meetingDate">{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}</div>
-             
-            </li>
-            <li class="list-inline-item timeframe">
-              <div id="meetingStartTime">
-                {{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}
-              </div>
-              <p> - </p>
-              <div id="meetingEndTime">
-                {{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}
-              </div>
+        <div class="current-meeting mb-20">
+          <h3 class="section-title-secondary">
+            Current Meeting
+          </h3>
+          <div class="date-time-container">
+            <ul class="list-unstyled list-inline">
+              <li class="list-inline-item date">
+                <input value="{{ componentData.selectedTimeSlot }}" style="display:none;"/>
+                <div  id="meetingDate">{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}</div>
               
-            </li>
-          </ul>
-        </div>
-        <h3 class="section-title-secondary">
-          Location
-        </h3>
-        <div class="location">
-          <div class="logo" id="locationLogo">
-            <img src="{{ location?.image }}" alt="zoom">
+              </li>
+              <li class="list-inline-item timeframe">
+                <div id="meetingStartTime">
+                  {{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}
+                </div>
+                <p> - </p>
+                <div id="meetingEndTime">
+                  {{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}
+                </div>
+                
+              </li>
+            </ul>
           </div>
-          <div class="text" id="locationText">
-            <h2>
-              {{ location?.title }}
-            </h2>
-            <p>
-              {{ location?.sub_title }}
-            </p>
+        </div>
+        <div class="location-container mb-20">
+          <h3 class="section-title-secondary">
+            Location
+          </h3>
+          <div class="location">
+            <div class="logo" id="locationLogo">
+              <img src="{{ location?.image }}" alt="zoom">
+            </div>
+            <div class="text" id="locationText">
+              <h2>
+                {{ location?.title }}
+              </h2>
+              <p>
+                {{ location?.sub_title }}
+              </p>
+            </div>
           </div>
         </div>
 
-        <h3 class="section-title-secondary">
-          Your phone number
-        </h3>
-        <div class="other-details">
-          <input type="text" class="form-control" id="yourPhoneNumber"
-            placeholder="Please provide the phone number for the call" formControlName="phoneNumber">
-          <div *ngIf="f['phoneNumber'].invalid && (f['phoneNumber'].dirty || f['phoneNumber'].touched)">
-            <span class="error">
-              <i class="fa fa-exclamation-triangle"></i>Please add your phone
+        <div class="phone_number other-details mb-20">
+          <h3 class="section-title-secondary">
+            Your phone number
+          </h3>
+          <div class="input-field">
+            <input type="text" class="form-control" id="yourPhoneNumber"
+              placeholder="Please provide the phone number for the call" formControlName="phoneNumber">
+            <div *ngIf="f['phoneNumber'].invalid && (f['phoneNumber'].dirty || f['phoneNumber'].touched)">
+              <span class="error">
+                <i class="fa fa-exclamation-triangle"></i>Please add your phone
+              </span>
+            </div>
+          </div>
+
+          <div class="error" *ngIf="errorMessage">
+            <span *ngFor="let error of errorMessage">
+              {{error}}
             </span>
           </div>
         </div>
 
-        <div class="error" *ngIf="errorMessage">
-          <span *ngFor="let error of errorMessage">
-            {{error}}
-          </span>
-        </div>
-        <h3 class="section-title-secondary">
-          Your Name
-        </h3>
-        <div class="other-details">
-          <input type="text" class="form-control" id="yourName" placeholder="Please type your name" formControlName="name">
-          <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)">
-            <span class="error">
-              <i class="fa fa-exclamation-triangle"></i>Please add your name
-            </span>
+        <div class="other-details mb-20">
+          <h3 class="section-title-secondary">
+            Your Name
+          </h3>
+          <div class="input-field">
+            <input type="text" class="form-control" id="yourName" placeholder="Please type your name" formControlName="name">
+            <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)">
+              <span class="error">
+                <i class="fa fa-exclamation-triangle"></i>Please add your name
+              </span>
+            </div>
           </div>
         </div>
-
-        <h3 class="section-title-secondary">
-          Your Email
-        </h3>
-        <div class="other-details">
-          <input type="email" class="form-control" id="yourEmail" placeholder="Please provide your email and guest's emails" formControlName="email">
-          <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)">
-            <span class="error">
-              <i class="fa fa-exclamation-triangle"></i>Please add your valid email
-            </span>
+        <div class="other-details mb-20">
+          <h3 class="section-title-secondary">
+            Your Email
+          </h3>
+          <div class="input-field">
+            <input type="email" class="form-control" id="yourEmail" placeholder="Please provide your email" formControlName="email">
+            <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)">
+              <span class="error">
+                <i class="fa fa-exclamation-triangle"></i>Please add your valid email
+              </span>
+            </div>
           </div>
         </div>
-
-        <h3 class="section-title-secondary">
-          Optional notes
-        </h3>
-        <div class="other-details">
-          <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add notes and comments" formControlName="note"></textarea>
-        </div>
-       
         
-        
+        <div class="other-details mb-20">
+          <h3 class="section-title-secondary">
+            Optional notes
+          </h3>
+          <div class="input-field">
+            <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add notes and comments" formControlName="note"></textarea>
+          </div>
+        </div>
         <button type="submit" id="scheduleButton">Schedule</button>
       </ng-container>
     </form>

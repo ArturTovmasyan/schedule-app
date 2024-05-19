@@ -29,6 +29,7 @@ export class PublicCalendarComponent implements OnDestroy {
   };
   calendarApi!: Calendar;
   calendarOptions: CalendarOptions = {
+    height: 'auto',
     initialView: 'timeGridWeek',
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, bootstrapPlugin, rrulePlugin],
     dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },

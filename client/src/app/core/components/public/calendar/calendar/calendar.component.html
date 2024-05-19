@@ -8,7 +8,7 @@
       </div>
     </div>
     <div class="col-12 h-100 text-center col-sm-9 ps-0" id="calendarRightSide" >
-      <div class="calendar" id="calendar">
+      <div class="calendar calendar-main">
         <div class="calendar-header d-flex justify-content-between">
           <div></div>
           <div class="account-info">
@@ -22,7 +22,7 @@
             </div>
           </div>
         </div>
-        <full-calendar id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true"></full-calendar>
+        <full-calendar #calendar [options]="calendarOptions" [deepChangeDetection]="true"></full-calendar>
       </div>
     </div>
   </div>
