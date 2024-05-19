@@ -19,6 +19,12 @@ export class CommonService {
     return moment.tz.guess();
   }
 
+  get formattedLocalTimezone(): string {
+    let offset = moment.tz(this.localTimezone).format('Z');
+    offset = offset.replace(":00", "");
+    return `UTC${offset} / ${moment.tz(this.localTimezone).format('zz')}`
+  }
+
   getElapsedTime(dateString: string): [number, string] {
     const date = moment(dateString, 'YYYY-MM-DDTHH:mm:ss.sssZ').tz(moment.tz.guess());
     const mins = moment().utc().diff(date, 'minutes');

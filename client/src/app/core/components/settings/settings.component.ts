@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-settings',
@@ -33,7 +34,11 @@ export class SettingsComponent implements OnInit {
 
   setting_title = this.navOptions[0]['title'];
 
-  timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
+  timezone = "";
+
+  constructor(private readonly commonService: CommonService) {
+    this.timezone = this.commonService.formattedLocalTimezone;
+  }
 
   ngOnInit(): void {
   }

@@ -124,7 +124,7 @@ export class PublicCalendarComponent implements OnDestroy {
   }
 
   get timezone() {
-    return this.calendarService.timezone;
+    return this.commonService.formattedLocalTimezone;
   }
 
   ngOnInit(): void {
