@@ -88,6 +88,12 @@ h2#fc-dom-1 {
   border-left: 10px solid #B0EEB2 !important;
   border-radius: 9px !important;
   background-color: #D0EDD1 !important;
+  opacity: 0.4;
+}
+
+.suggest-event {
+  @extend .available-event;
+  opacity: 1;
 }
 
 //bid table layout top padding

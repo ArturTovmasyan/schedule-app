@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import * as moment from "moment/moment"
 import {dateDiff} from "../helpers/utils";
 
-
 @Injectable()
 export class InitEventService {
   constructor() {  }
@@ -56,7 +55,7 @@ export class InitEventService {
       let lastEventStartMinute = lastEventStart.getMinutes();
       let lastEventEndMinute = lastEventEnd.getMinutes();
 
-      if (eventStartHour >= lastEventStartHour && eventEndHour <= lastEventEndHour) {//TODO chi mtnum dranica
+      if (eventStartHour >= lastEventStartHour && eventEndHour <= lastEventEndHour) {
 
         if (eventStartHour == lastEventStartHour) {
           // when event start is equal
@@ -161,7 +160,6 @@ export class InitEventService {
         }
       }
       else if (eventStartHour <= lastEventEndHour && eventEndHour > lastEventEndHour) {
-
         if (eventStartHour == lastEventEndHour) {
           let difMinute = lastEventEndMinute - eventStartMinute;
 
