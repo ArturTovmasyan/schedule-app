@@ -2,11 +2,9 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Query,
   Req,
-  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -14,7 +12,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from '@user/entity/user.entity';
 import { CalendarPermissionsService } from './calendarPermissions.service';
 import { TokensByCalendar } from './types/statusOfCalendars.type';
-import { Response } from 'express';
 import { UpdateAccessTokenInterceptor } from '../calendar-accessibility/interceptors/updateAccessToken.interceptor';
 
 @ApiBearerAuth()

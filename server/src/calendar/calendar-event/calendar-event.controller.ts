@@ -26,11 +26,15 @@ import { Request, Response } from 'express';
 import { UpdateWebhookInterceptor } from './interceptors/updateWebhook.interceptor';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {GetUser} from "../../components/decorators/get-user.decorator";
+<<<<<<< HEAD
 >>>>>>> 9a3bcc7 (Cretae contact avail. event functionality)
+=======
+import GoogleMeetLinkDto from "./dto/GoogleMeetLink.dto";
+>>>>>>> b025448 (Finish google meet link create API)
 
 @ApiBearerAuth()
 @ApiTags('Calendar Event')
-@Controller('api/calendar/events')
+@Controller('api/calendar')
 export class CalendarEventController {
   constructor(private readonly calendarEventService: CalendarEventService) {}
 
@@ -121,6 +125,7 @@ export class CalendarEventController {
       return res.status(200).send();
     }
 
+<<<<<<< HEAD
     setTimeout(async () => {
       await this.calendarEventService.syncGoogleCalendarEventList(
         webhookChannel.owner,
@@ -148,11 +153,137 @@ export class CalendarEventController {
         await this.calendarEventService.syncOutlookCalendarEventList(
           webhookChannel.owner,
           webhookChannel.calendar,
+=======
+    @Get('events')
+    @UseGuards(AuthGuard())
+    @UseInterceptors(UpdateWebhookInterceptor)
+    @UseInterceptors(UpdateAccessTokenInterceptor)
+    async getUserCalendarEvents(
+        @GetUser() user,
+        @Query() query: TimeIntervalDto,
+    ) {
+        return await this.calendarEventService.getUserCalendarEvents(
+            user.id,
+            query,
+>>>>>>> b025448 (Finish google meet link create API)
         );
       }, 1000);
     }
 
+<<<<<<< HEAD
     res.status(200);
     res.send(query.validationToken);
   }
+=======
+    @Get('events/:contactId')
+    @UseGuards(AuthGuard())
+    async getContactEvents(
+        @Param('contactId') contactId: string,
+        @Query() query: TimeIntervalDto,
+    ) {
+        return await this.calendarEventService.getUserCalendarEvents(
+            contactId,
+            query,
+        );
+    }
+
+    @Post('events')
+    @UseGuards(AuthGuard())
+    @UseInterceptors(UpdateAccessTokenInterceptor)
+    async createUserCalendarEvent(
+        @Req() req: { user: User },
+        @Body() body: CreateEventDto,
+    ) {
+        return await this.calendarEventService.createUserCalendarEvent(
+            req.user,
+            body,
+        );
+    }
+
+    @Post('google/meet-link')
+    @UseGuards(AuthGuard())
+    @UseInterceptors(UpdateAccessTokenInterceptor)
+    async createGoogleMeetLink(
+        @Req() req: { user: User },
+        @Body() body: GoogleMeetLinkDto,
+    ) {
+        return await this.calendarEventService.createGoogleMeetLink(
+            req.user,
+            body,
+        );
+    }
+
+    @Put('events/:id')
+    @UseGuards(AuthGuard())
+    @UseInterceptors(UpdateAccessTokenInterceptor)
+    async updateUserCalendarEvent(
+        @Req() req: { user: User },
+        @Param('id') eventId: string,
+        @Body() body: UpdateEventDto,
+    ) {
+        return await this.calendarEventService.updateUserCalendarEvent(
+            req.user,
+            body,
+            eventId,
+        );
+    }
+
+    @Delete('events/:id')
+    @UseGuards(AuthGuard())
+    @UseInterceptors(UpdateAccessTokenInterceptor)
+    async deleteUserCalendarEvent(
+        @Req() req: { user: User },
+        @Param('id') eventId: string,
+    ) {
+        return await this.calendarEventService.deleteUserCalendarEvent(
+            req.user,
+            eventId,
+        );
+    }
+
+    @Post('events/google-webhook')
+    async forGoogleWebhook(@Req() req: Request, @Res() res: Response) {
+        const resourceId = req.headers['x-goog-resource-id'];
+        const resourceState = req.headers['x-goog-resource-state'];
+
+        const webhookChannel =
+            await this.calendarEventService.getWebhookByChannelId(resourceId);
+
+        if (resourceState === 'sync') {
+            return res.status(200).send();
+        }
+
+        setTimeout(async () => {
+            await this.calendarEventService.syncGoogleCalendarEventList(
+                webhookChannel.owner,
+                webhookChannel.calendar,
+            );
+        }, 1000);
+
+        res.status(200).send();
+    }
+
+    @Post('events/outlook-webhook')
+    async forOutlookWebhook(
+        @Query() query,
+        @Req() req: Request,
+        @Res() res: Response,
+    ) {
+        if (req.body.value) {
+            const resourceId = req.body.value[0].subscriptionId;
+            const webhookChannel =
+                await this.calendarEventService.getWebhookByChannelId(resourceId);
+
+            setTimeout(async () => {
+                await this.calendarEventService.syncOutlookCalendarEventList(
+                    webhookChannel.owner,
+                    webhookChannel.calendar,
+                );
+            }, 1000);
+        }
+
+        res.status(200);
+        res.send(query.validationToken);
+    }
+>>>>>>> b025448 (Finish google meet link create API)
 }
