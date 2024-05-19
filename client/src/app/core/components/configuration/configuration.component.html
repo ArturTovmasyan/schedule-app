@@ -1,71 +1,113 @@
-<div id="container">
-  <section class="configuration" *ngIf="isVisible(Section.PUBLIC)">
-    <div class="content">
-      <div class="info">
-        <label>Anyone On the internet</label>
-        <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
-          molestie.</span>
+<section class="configuration-page">
+  <div class="setting-content-header">
+    <div class="text">
+      <h1>Configuration</h1>
+    </div>
+    <div class="account-info">
+      <div class="timezone">
+        <h4 id="userTimezone">
+          GMT -4/ET
+        </h4>
       </div>
-      <div class="action">
-        <label class="switch">
-          <input #public type="checkbox" [checked]="isAccessible(AccessibilityType.PUBLIC)"
-            (change)="updateAccessibility(AccessibilityType.PUBLIC, public.checked)">
-          <span class="slider round"></span>
-        </label>
+      <a class="notifications" id="notifications">
+        <img src="assets/notification-icon.svg" alt="notifications">
+        <div class="counter">
+          <h6 id="notificationsCounter">
+            123
+          </h6>
+        </div>
+      </a>
+      <a class="user-profile" id="userProfile">
+        <img src="assets/user-icon.png" alt="profile image">
+      </a>
+    </div>
+  </div>
+  <div id="configurationPageWrapper">
+    <div class="configuration-page-title">
+      Who can see your calendar?
+    </div>
+    <div class="configuration" *ngIf="isVisible(Section.PUBLIC)">
+      <div class="content">
+        <div class="info">
+          <label>Anyone On the internet</label>
+          <span>Details: Anyone with the link will be able to see your calendar availability. No data will be visible to anyone other than busy and available time slots.</span>
+        </div>
+        <div class="action">
+          <label class="switch">
+            <input #public type="checkbox" [checked]="isAccessible(AccessibilityType.PUBLIC)"
+                   (change)="updateAccessibility(AccessibilityType.PUBLIC, public.checked)">
+            <span class="slider round"></span>
+          </label>
+        </div>
       </div>
     </div>
-  </section>
 
-  <section class="configuration" *ngIf="isVisible(Section.DOMAIN)">
-    <div class="content">
-      <div class="info">
-        <label>Anyone from a given domain</label>
-        <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
-          molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
-      </div>
-      <div class="action">
-        <label class="switch">
-          <input #domain type="checkbox" [checked]="isAccessible(AccessibilityType.DOMAIN)"
-            (change)="updateAccessibility(AccessibilityType.DOMAIN, domain.checked)">
-          <span class="slider round"></span>
-        </label>
+    <div class="configuration" *ngIf="isVisible(Section.DOMAIN)">
+      <div class="content">
+        <div class="info">
+          <label>Company-level access from a given domain</label>
+          <span>Details: Anyone from a given domain will see when you're available and when you're not. They will not see why you're not available. </span>
+        </div>
+        <div class="action">
+          <label class="switch">
+            <input #domain type="checkbox" [checked]="isAccessible(AccessibilityType.DOMAIN)"
+                   (change)="updateAccessibility(AccessibilityType.DOMAIN, domain.checked)">
+            <span class="slider round"></span>
+          </label>
 
-        <span *ngIf="currentAccessibility?.accessibilityType == AccessibilityType.DOMAIN.valueOf()" (click)="toggleSection(Section.DOMAIN)">
-          Details <img [src]="currentDisplaySection == Section.DOMAIN ? 'assets/ic_close_circle.svg' : 'assets/ic_open_circle.svg'">
+          <span *ngIf="currentAccessibility?.accessibilityType == AccessibilityType.DOMAIN.valueOf()"
+                (click)="toggleSection(Section.DOMAIN)">
+          Details <img
+            [src]="currentDisplaySection == Section.DOMAIN ? 'assets/ic_close_circle.svg' : 'assets/ic_open_circle.svg'">
         </span>
-      </div>
-    </div>
-    <div class="details" *ngIf="currentDisplaySection === Section.DOMAIN">
-      <label id="title">Domain</label>
-
-      <div class="item-container">
-        <div class="input">
-          <input #domainInput type="text" placeholder="Enter a domain" (keyup.enter)="addDomain()">
-          <img src="assets/ic_add.svg" fill="red" (click)="addDomain()">
-        </div>
-
-        <div class="item" *ngFor="let domain of domains; let i = index">
-          <span>@{{ domain }}</span>
-          <img src="assets/ic_delete.svg" (click)="removeDomain(i)">
         </div>
       </div>
-    </div>
-  </section>
+      <div class="details" *ngIf="currentDisplaySection === Section.DOMAIN">
+        <label id="title">Domain</label>
 
-  <section class="configuration" *ngIf="isVisible(Section.REQUEST)">
-    <div class="content">
-      <div class="info">
-        <label>Allow access by request only</label>
-        <span>Provide description/example text here. Lorem ipsum dolor sit amet porttitor mauris blandit duis
-          molestie. Neque lectus scelerisque imperdiet orci donec duis porta in sodales consectetur. </span>
-      </div>
-      <div class="action">
-        <label class="switch">
-          <input #request type="checkbox" [checked]="isAccessible(AccessibilityType.REQUEST)"
-            (change)="updateAccessibility(AccessibilityType.REQUEST, request.checked)">
-          <span class="slider round"></span>
-        </label>
+        <div class="item-container">
+          <div class="input">
+            <input #domainInput type="text" placeholder="Enter a domain" (keyup.enter)="addDomain()">
+            <img src="assets/ic_add.svg" fill="red" (click)="addDomain()">
+          </div>
+
+          <div class="item" *ngFor="let domain of domains; let i = index">
+            <span>@{{ domain }}</span>
+            <img src="assets/ic_delete.svg" (click)="removeDomain(i)">
+          </div>
+        </div>
       </div>
     </div>
-  </section>
-</div>
+
+    <div class="configuration" *ngIf="isVisible(Section.REQUEST)">
+      <div class="content">
+        <div class="info">
+          <label>Individual access</label>
+          <span>Details: Only people explicitly allowed to see your calendar will be able to see time slots where you're available and busy.</span>
+        </div>
+        <div class="action">
+          <label class="switch">
+            <input #request type="checkbox" [checked]="isAccessible(AccessibilityType.REQUEST)"
+                   (change)="updateAccessibility(AccessibilityType.REQUEST, request.checked)">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="back-next-buttons">
+      <a href="" class="back-button">
+        <img src="assets/chevron-left.png" alt="chevron left"> Back
+      </a>
+      <a href="" class="next-button">
+        Next <img src="assets/chevron-right.png" alt="chevron right">
+      </a>
+    </div>
+  </div>
+
+</section>
+
+
+
+
+
+

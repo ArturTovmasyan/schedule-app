@@ -1,16 +1,52 @@
-<div class="container-fluid p-0 flex flex-full-2">
-  <app-header></app-header>
-  <div id="content" class="flex flex-column align-items-center">
-    <img src="assets/ic_close.svg" routerLink="/calendar">
-    <label id="title">Settings</label>
-    <div id="menu" class="flex flex-row">
-      <section id="menu-nav" class="flex flex-column justify-content-stretch">
-        <span class="menu-item" *ngFor="let nav of navOptions" id="{{ nav.id }}" routerLink="{{ nav.route }}" [routerLinkActive]="['active']">{{ nav.title }}</span>
-      </section>
-      <section id="menu-content">
-        <router-outlet></router-outlet>
-      </section>
+<section class="settings">
+  <div class="container-fluid h-100">
+    <div id="content">
+      <div class="row h-100">
+        <div class="col-12 col-sm-3 h-100" style="width: 20%">
+          <div class="aside-navbar">
+            <div class="aside-navbar-header">
+              <label id="title">Settings</label>
+              <div class="close-image" routerLink="/calendar">
+                <img src="assets/ic_close.svg">
+              </div>
+            </div>
+            <div id="menu-nav" class="flex flex-column justify-content-stretch">
+              <span class="menu-item" *ngFor="let nav of navOptions" id="{{ nav.id }}" routerLink="{{ nav.route }}"
+                    [routerLinkActive]="['active']">{{ nav.title }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-9 ps-0 h-100" style="width: 80%">
+          <div class="setting-content">
+            <div id="menu-content">
+              <router-outlet></router-outlet>
+            </div>
+
+            <div class="settings-footer-component">
+              <div class="copyright">
+                Made with <img src="assets/heart.png" alt="heart"> by Entangles. All rights reserved.
+              </div>
+              <div id="nav">
+                <div id="nav-social">
+                  <a href="javascript:void(0)"><img src="assets/ic_footer_nav_facebook.svg" alt="facebook"></a>
+                  <a href="javascript:void(0)"><img src="assets/ic_footer_nav_twitter.svg" alt="twitter"></a>
+                  <a href="javascript:void(0)"><img src="assets/ic_footer_nav_instagram.svg" alt="instagram"></a>
+                  <a href="javascript:void(0)"><img src="assets/ic_footer_nav_youtube.svg" alt="youtube"></a>
+                  <a href="javascript:void(0)"><img src="assets/ic_footer_nav_linkedin.svg" alt="linkedin"></a>
+                </div>
+
+                <div id="nav-links">
+                  <a href="javascript:void(0)">About us</a>
+                  <a href="javascript:void(0)">Contact</a>
+                  <a href="javascript:void(0)">Terms of use</a>
+                  <a href="javascript:void(0)">Privacy policy</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <app-footer></app-footer>
-</div>
+</section>

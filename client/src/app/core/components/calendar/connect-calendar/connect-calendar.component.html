@@ -1,51 +1,149 @@
-<div id="container">
-  <section class="calendar-section">
-    <label class="header">Google</label>
-    <div class="calendar-item">
-      <img src="../../../../../assets/ic_calendar_google.svg" alt="">
-      <label class="calendar-name">Google Calendar</label>
-      <span class="calendar-desc">Gmail, G-suite</span>
-      <label class="switch">
-        <input #googleAccess type="checkbox" (change)="accessGoogleCalendar(googleAccess.checked)" [checked]="hasCalendarPermission(CalendarType.GOOGLE)">
-        <span class="slider round"></span>
-      </label>
+<section class="choose-calendar">
+  <div class="setting-content-header">
+    <div class="text">
+      <h1>Calendar Setup: Choose a calendar(s) to link</h1>
     </div>
-  </section>
+    <div class="account-info">
+      <div class="timezone">
+        <h4 id="userTimezone">
+          GMT -4/ET
+        </h4>
+      </div>
+      <a class="notifications" id="notifications">
+        <img src="assets/notification-icon.svg" alt="notifications">
+        <div class="counter">
+          <h6 id="notificationsCounter">
+            123
+          </h6>
+        </div>
+      </a>
+      <a class="user-profile" id="userProfile">
+        <img src="assets/user-icon.png" alt="profile image">
+      </a>
+    </div>
+  </div>
 
-  <section class="calendar-section">
-    <label class="header">Microsoft</label>
-    <div class="calendar-item">
-      <img src="../../../../../assets/ic_calendar_office365.svg" alt="">
-      <label class="calendar-name">Office 365 Calendar</label>
-      <span class="calendar-desc">Office 365, Outlook.com, live.com, or Hotmail calendar</span>
-      <label class="switch">
-        <input #msAccess type="checkbox" (change)="accessMsCalendar(msAccess.checked)" [checked]="hasCalendarPermission(CalendarType.MS)">
-        <span class="slider round"></span>
-      </label>
-      <div class="border"></div>
+  <div id="connectCalendar">
+    <div class="calendar-section">
+      <label class="header header-first">Google Suite</label>
+      <!--Google personal calendar connect-->
+      <div class="calendar-item personal-calendar-connect">
+        <img src="assets/alexisohanian.jpeg" alt="avatar">
+        <label class="calendar-name">arthur.gasparyan@gmail.com</label>
+        <span class="calendar-desc">Your Google Calendar</span>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <!-- End of Google personal calendar connect-->
+      <div class="calendar-item">
+        <img src="../../../../../assets/ic_calendar_google.svg" alt="">
+        <label class="calendar-name">Google Calendar</label>
+        <span class="calendar-desc">G-Suite, G-Calendar</span>
+        <label class="switch">
+          <input #googleAccess type="checkbox" (change)="accessGoogleCalendar(googleAccess.checked)"
+                 [checked]="hasCalendarPermission(CalendarType.GOOGLE)">
+          <span class="slider round"></span>
+        </label>
+      </div>
     </div>
-    <div class="calendar-item">
-      <img src="../../../../../assets/ic_calendar_exchange.svg" alt="">
-      <label class="calendar-name">Exchange Calendar</label>
-      <span class="calendar-desc">Exchange Server 2013, 2016, or 2019</span>
-      <label class="switch">
-        <input type="checkbox" >
-        <span class="slider round"></span>
-      </label>
-      <div class="border"></div>
-    </div>
-  </section>
+    <div class="calendar-section">
+      <label class="header">Microsoft Suite</label>
+      <!--Microsoft personal calendar connect-->
 
-  <section class="calendar-section">
-    <label class="header">Apple</label>
-    <div class="calendar-item">
-      <img src="../../../../../assets/ic_calendar_icloud.svg" alt="">
-      <label class="calendar-name">iCloud Calendar</label>
-      <span class="calendar-desc">Default calendar for all Apple products. (Coming Soon)</span>
-      <label class="switch">
-        <input type="checkbox" disabled>
-        <span class="slider round"></span>
-      </label>
+<!--      <div class="calendar-item personal-calendar-connect">-->
+<!--        <img src="assets/alexisohanian.jpeg" alt="avatar">-->
+<!--        <label class="calendar-name">arthur.gasparyan@gmail.com</label>-->
+<!--        <span class="calendar-desc">Your Microsoft Calendar</span>-->
+<!--        <label class="switch">-->
+<!--          <input type="checkbox" checked>-->
+<!--          <span class="slider round"></span>-->
+<!--        </label>-->
+<!--      </div>-->
+
+      <!-- End of Microsoft personal calendar connect-->
+      <div class="calendar-item">
+        <img src="../../../../../assets/ic_calendar_office365.svg" alt="">
+        <label class="calendar-name">Office 365 Calendar</label>
+        <span class="calendar-desc">
+        <ul class="list-unstyled mb-0">
+          <li>
+          <p>Office 365</p>
+          </li>
+          <li>
+          <p>Outlook.com</p>
+          </li>
+          <li>
+          <p>live.com</p>
+          </li>
+          <li>
+          <p>Hotmail calendar</p>
+          </li>
+          </ul>
+      </span>
+        <label class="switch">
+          <input #msAccess type="checkbox" (change)="accessMsCalendar(msAccess.checked)"
+                 [checked]="hasCalendarPermission(CalendarType.MS)">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="calendar-item">
+        <img src="../../../../../assets/ic_calendar_exchange.svg" alt="">
+        <label class="calendar-name">
+          <ul class="list-unstyled">
+            <li>Exchange Calendar</li>
+            <li><span>* Coming Soon</span></li>
+          </ul>
+
+
+        </label>
+        <span class="calendar-desc mb-2" style="margin-left: 16px">Exchange Server 2013, 2016, or 2019</span>
+        <!--      <label class="switch">-->
+        <!--        <input type="checkbox" >-->
+        <!--        <span class="slider round"></span>-->
+        <!--      </label>-->
+        <a class="notify-me">
+          <img src="assets/notify-me-bell.png" alt="notify me">
+          <p>
+            Notify me
+          </p>
+        </a>
+      </div>
     </div>
-  </section>
-</div>
+    <div class="calendar-section">
+      <label class="header">Apple</label>
+      <div class="calendar-item">
+        <img src="../../../../../assets/ic_calendar_icloud.svg" alt="">
+        <label class="calendar-name">
+          <ul class="list-unstyled">
+            <li>iCloud Calendar</li>
+            <li><span>* Coming Soon</span></li>
+          </ul>
+        </label>
+        <span class="calendar-desc mb-2" style="margin-left: 16px">All Apple products</span>
+        <!--      <label class="switch">-->
+        <!--        <input type="checkbox" disabled>-->
+        <!--        <span class="slider round"></span>-->
+        <!--      </label>-->
+        <a class="notify-me">
+          <img src="assets/notify-me-bell.png" alt="notify me">
+          <p>
+            Notify me
+          </p>
+        </a>
+      </div>
+    </div>
+    <div class="back-next-buttons">
+      <a href="" class="next-button">
+        Next <img src="assets/chevron-right.png" alt="chevron right">
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+

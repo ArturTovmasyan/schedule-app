@@ -1,4 +1,33 @@
+
+
 <section class="upload-picture">
+  <div class="setting-content-header">
+    <div class="text">
+      <h1>Account & profile</h1>
+    </div>
+    <div class="account-info">
+      <div class="timezone">
+        <h4 id="userTimezone">
+          GMT -4/ET
+        </h4>
+      </div>
+      <a class="notifications" id="notifications">
+        <img src="assets/notification-icon.svg" alt="notifications">
+        <div class="counter">
+          <h6 id="notificationsCounter">
+            123
+          </h6>
+        </div>
+      </a>
+      <a class="user-profile" id="userProfile">
+        <img src="assets/user-icon.png" alt="profile image">
+      </a>
+    </div>
+  </div>
+
+
+
+
   <div class="upload-picture-wrapper">
     <div class="upload-picture-header">
       <h2 class="section-title">
@@ -6,9 +35,6 @@
       </h2>
     </div>
     <div class="upload-picture-body">
-      <h2 class="section-title">
-        Profile Picture
-      </h2>
       <div class="profile-picture">
         <div class="profile-avatar">
           <img *ngIf="avatar" src="{{avatar}}">
@@ -44,6 +70,13 @@
       </div>
     </div>
 
-
+    <div class="back-next-buttons">
+      <a href="" class="back-button">
+        <img src="assets/chevron-left.png" alt="chevron left"> Back
+      </a>
+      <a href="" class="next-button">
+        Next <img src="assets/chevron-right.png" alt="chevron right">
+      </a>
+    </div>
   </div>
 </section>

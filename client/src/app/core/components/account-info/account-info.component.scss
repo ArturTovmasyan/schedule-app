@@ -1,12 +1,120 @@
 section.upload-picture {
-  padding: 100px 0;
+  padding-top: 15%;
+
+  .setting-content-header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 40px;
+    box-shadow: 0 6px 7px -2px #00000029;
+
+    .text {
+      h1 {
+        font-family: 'Lexend Deca', sans-serif;
+        font-size: 30px;
+        margin-bottom: 0;
+      }
+    }
+
+    .account-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 32px;
+
+      .timezone {
+        h4 {
+          font-size: 13px;
+          font-weight: bold;
+          font-family: 'Lexend Deca', sans-serif;
+          color: #1d1d1d;
+          line-height: 20px;
+          margin-bottom: 0;
+        }
+      }
+
+      a.notifications {
+        margin: 0 23px;
+        position: relative;
+        cursor: pointer;
+
+        img {
+          height: 26px;
+        }
+
+        &:hover {
+          .counter {
+            transition: 0.4s ease;
+            top: -1px;
+            right: -6px;
+            height: 18px;
+            width: 18px;
+            background-color: #b21313;
+
+            h6 {
+              font-size: 9px;
+            }
+          }
+        }
+
+        .counter {
+          height: 17px;
+          width: 17px;
+          background-color: #FF3B3B;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          top: -3px;
+          right: -8px;
+
+          h6 {
+            color: #fff;
+            font-size: 8px;
+            font-family: 'Lexend Deca', sans-serif;
+            font-weight: bold;
+            line-height: 10px;
+            margin-bottom: 0;
+
+          }
+        }
+      }
+
+      a.user-profile {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 28px;
+        width: 28px;
+        border: 1px solid #7c7c7ca6;
+        border-radius: 50%;
+
+        &:hover {
+          transition: 0.4s ease;
+          box-shadow: 0px 0px 8px #00000029;
+        }
+
+        img {
+          height: 14px;
+        }
+      }
+    }
+  }
 
   .upload-picture-wrapper {
-    box-shadow: 0px 0px 4px #0000004D;
-    border-radius: 15px;
-    width: 80%;
+    background-color: white;
+    border-radius: 20px;
+    width: 60%;
     margin: 0 auto;
-
+    position: relative;
+    box-shadow: 0px 0px 4px #00000029;
     h2.section-title {
       font-size: 22px;
       font-family: 'Lexend Deca', sans-serif;
@@ -79,20 +187,49 @@ section.upload-picture {
         }
 
       }
-      .profile-user-name, .profile-email{
+
+      .profile-user-name, .profile-email {
         border-top: 1px solid #64656524;
         padding-top: 25px;
         margin-top: 30px;
-        h5{
-          font-size: 15px;
+
+        h5 {
+          font-size: 20px;
           font-family: 'Lexend Deca', sans-serif;
-          color: #6465659c;
+          color: #000;
           border: 1px solid #6465659c;
           font-weight: 400;
           padding: 11px 16px;
           border-radius: 16px;
           width: fit-content;
         }
+      }
+    }
+
+    .back-next-buttons {
+      position: absolute;
+      bottom: -40px;
+      right: 10px;
+      display: flex;
+      flex-direction: row;
+
+      a + a {
+        margin-left: 20px;
+      }
+
+      a.next-button, a.back-button {
+        img {
+          height: 18px;
+        }
+
+        display: flex;
+        align-items: center;
+        font-family: 'Lexend Deca', sans-serif;
+        color: #000;
+        font-size: 17px;
+        text-decoration: none;
+        font-weight: 600;
+
       }
     }
   }
