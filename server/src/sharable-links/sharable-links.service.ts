@@ -267,15 +267,16 @@ export class SharableLinksService {
         'slots.choosedBy',
         'slots.choosedByEmail',
       ])
+      .addSelect(
+        `CASE WHEN sharableLink.sharedBy = '${user.id}' THEN true ELSE false END`,
+        'sharableLink_createdByMe',
+      )
       .leftJoin('sharableLink.attendees', 'attendees')
       .leftJoin(`attendees.user`, 'attuser')
       .innerJoin(`sharableLink.user`, 'user')
       .leftJoin(`sharableLink.slots`, 'slots')
-      .where(
-        filters.findBy === FindLinkByEnum.SharedByMe
-          ? `sharableLink.sharedBy = '${user.id}'`
-          : `attendees.userId IN('${user.id}')`,
-      )
+      .where(`sharableLink.sharedBy = '${user.id}'`)
+      .orWhere(`attendees.userId IN('${user.id}')`)
       .limit(filters.limit)
       .offset(filters.offset)
       .getManyAndCount();

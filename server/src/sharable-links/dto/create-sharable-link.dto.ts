@@ -104,11 +104,6 @@ export class PaginationDto implements IPaginate {
   @IsOptional()
   @IsNumber()
   offset: number = 0;
-
-  @ApiProperty({ required: false })
-  @IsNotEmpty()
-  @IsEnum(FindLinkByEnum)
-  findBy: FindLinkByEnum;
 }
 export class SharableLinkSlot implements ISharableLinkSlot {
   @ApiProperty({ required: true })
