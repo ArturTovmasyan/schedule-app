@@ -78,9 +78,9 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleLoginCallback(@Req() req, @Res() res) {
+  async googleLoginCallback(@Req() req, @Res() res, @Query('invitationId') invitationId: string,) {
     const user: any = req.user._json;
-    const jwt = await this.authService.validateGoogleLogin(user);
+    const jwt = await this.authService.validateGoogleLogin(user,invitationId);
     const webHost = this.configService.get<string>('WEB_HOST');
 
     if (isString(jwt)) {
@@ -91,11 +91,11 @@ export class AuthController {
   }
 
   @Post('microsoft/callback')
-  async msLoginCallback(@Req() req, @Res() res): Promise<any> {
+  async msLoginCallback(@Req() req, @Res() res, @Query('invitationId') invitationId: string,): Promise<any> {
     const user: any = req.body;
 
     if (user && user.id) {
-      const jwt = await this.authService.validateMicrosoftLogin(user);
+      const jwt = await this.authService.validateMicrosoftLogin(user,invitationId);
       if (jwt) {
         return { accessToken: jwt };
       }

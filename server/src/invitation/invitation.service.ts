@@ -79,6 +79,7 @@ export class InvitationService {
         .returning('id')
         .execute();
 
+      let htmlMessage: string;
       if (createInvitationDto.giveAccess) {
         await this.calendarAccessService.checkAccess(
           user,
@@ -95,38 +96,34 @@ export class InvitationService {
           });
         });
 
-        await Promise.all([
-          queryRunner.manager.getRepository(CalendarAccess).upsert(bulkAccess, {
+        await queryRunner.manager
+          .getRepository(CalendarAccess)
+          .upsert(bulkAccess, {
             conflictPaths: ['toEmail', 'owner'],
             skipUpdateIfNoValuesChanged: true,
-          }),
-          this.mailService.send({
-            from: this.configService.get<string>('NO_REPLY_EMAIL'),
-            to: createInvitationDto.emails,
-            subject: `${user.firstName} ${user.lastName} invited you to use entangles.io`,
-            html: `
+          });
+
+        htmlMessage = `
           <h3>Hello!</h3>
          <p>${
            (createInvitationDto.message ?? '') +
-           `</p><p>You're <a href='${process.env.WEB_HOST}register?invitationId=${invitation.raw[0].id}'>invited</a> and you also have access to the calendar of the ${user.firstName} ${user.lastName}`
-         }</p>
-      `,
-          }),
-        ]);
+           `</p><p>You're <a href='${process.env.WEB_HOST}register?invitationId=${invitation.raw[0].id}'>
+           invited</a> and you also have access to the calendar of the ${user.firstName} ${user.lastName}`
+         }</p> `;
       } else {
-        await this.mailService.send({
-          from: this.configService.get<string>('NO_REPLY_EMAIL'),
-          to: createInvitationDto.emails,
-          subject: `${user.firstName} ${user.lastName} invited you to use entangles.io`,
-          html: `
-          <h3>Hello!</h3>
-         <p>${
-           (createInvitationDto.message ?? '') +
-           `</p><br/><p>. ${user.firstName} ${user.lastName} invited you to use <a href='${process.env.WEB_HOST}register?invitationId=${invitation.raw[0].id}'>entangles.io</a>`
-         }</p>
-      `,
-        });
+        htmlMessage = `<h3>Hello!</h3><p>${
+          (createInvitationDto.message ?? '') +
+          `</p><br/><p>. ${user.firstName} ${user.lastName} invited you to use 
+          <a href='${process.env.WEB_HOST}register?invitationId=${invitation.raw[0].id}'>entangles.io</a>`
+        }</p>`;
       }
+
+      await this.mailService.send({
+        from: this.configService.get<string>('NO_REPLY_EMAIL'),
+        to: createInvitationDto.emails,
+        subject: `${user.firstName} ${user.lastName} invited you to use entangles.io`,
+        html: htmlMessage,
+      });
 
       await queryRunner.commitTransaction();
 

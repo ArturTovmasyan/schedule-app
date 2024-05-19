@@ -72,7 +72,10 @@ export class UsersService {
     return toUserDto(user);
   }
 
-  async registerGoogleUser(userDto: any): Promise<OauthUserDto> {
+  async registerGoogleUser(
+    userDto: any,
+    invitationId?: string,
+  ): Promise<OauthUserDto> {
     const user = new User();
     user.email = userDto.email;
     user.oauthId = userDto.sub;
@@ -89,10 +92,17 @@ export class UsersService {
       { toEmail: user.email },
     );
 
+    if (invitationId) {
+      await this.invitationService.update(invitationId);
+    }
+
     return user;
   }
 
-  async registerMicrosoftUser(userDto: any): Promise<OauthUserDto> {
+  async registerMicrosoftUser(
+    userDto: any,
+    invitationId?: string,
+  ): Promise<OauthUserDto> {
     const user = new User();
     user.email = userDto.mail;
     user.oauthId = userDto.id;
@@ -109,6 +119,10 @@ export class UsersService {
       { accessedUser: { id: user.id } },
       { toEmail: user.email },
     );
+
+    if (invitationId) {
+      await this.invitationService.update(invitationId);
+    }
 
     return user;
   }
@@ -219,3 +233,4 @@ export class UsersService {
     return toUserInfoDto(user);
   }
 }
+auth.service.ts
