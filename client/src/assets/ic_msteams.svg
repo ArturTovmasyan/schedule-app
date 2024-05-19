@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="26" height="26" viewBox="0 0 26 26">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#5961c3"/>
+      <stop offset="1" stop-color="#3a41ac"/>
+    </linearGradient>
+  </defs>
+  <g id="ic_msteams" transform="translate(-123 -990)">
+    <g id="icons8-microsoft-teams-2019_1" data-name="icons8-microsoft-teams-2019 1" transform="translate(122.833 990.292)">
+      <path id="Path_42736" data-name="Path 42736" d="M23.833,11.917V16.25a3.25,3.25,0,0,1-6.5,0V10.833H22.75A1.083,1.083,0,0,1,23.833,11.917Zm-3.25-3.25A2.167,2.167,0,1,0,18.417,6.5,2.167,2.167,0,0,0,20.583,8.667Z" fill="#5059c9"/>
+      <path id="Path_42737" data-name="Path 42737" d="M18.958,11.917v5.958a5.417,5.417,0,0,1-5.777,5.4,5.54,5.54,0,0,1-5.056-5.591V10.833h9.75A1.083,1.083,0,0,1,18.958,11.917ZM13.542,9.208a3.25,3.25,0,1,0-3.25-3.25A3.25,3.25,0,0,0,13.542,9.208Z" fill="#7b83eb"/>
+      <path id="Path_42738" data-name="Path 42738" d="M13.542,9.208a3.25,3.25,0,1,0-3.25-3.25A3.25,3.25,0,0,0,13.542,9.208Z" fill="#7b83eb"/>
+      <path id="Path_42739" data-name="Path 42739" d="M14.083,18.048V10.833H8.125v6.856a5.729,5.729,0,0,0,.511,2.353h3.453A1.994,1.994,0,0,0,14.083,18.048Z" opacity="0.05"/>
+      <path id="Path_42740" data-name="Path 42740" d="M8.125,10.833v6.856a5.72,5.72,0,0,0,.3,1.811h3.606a1.69,1.69,0,0,0,1.691-1.691V10.833Z" opacity="0.07"/>
+      <path id="Path_42741" data-name="Path 42741" d="M13.361,10.833H8.125v6.856a5.7,5.7,0,0,0,.148,1.269h3.7a1.386,1.386,0,0,0,1.387-1.387Z" opacity="0.09"/>
+      <path id="Path_42742" data-name="Path 42742" d="M11.917,18.417H3.25a1.083,1.083,0,0,1-1.083-1.083V8.667A1.083,1.083,0,0,1,3.25,7.583h8.667A1.083,1.083,0,0,1,13,8.667v8.667A1.083,1.083,0,0,1,11.917,18.417Z" fill="url(#linear-gradient)"/>
+      <path id="Path_42743" data-name="Path 42743" d="M9.787,10.291H5.38v.932H7.03v4.485H8.136V11.223h1.65Z" fill="#fff"/>
+    </g>
+    <rect id="Rectangle_17864" data-name="Rectangle 17864" width="26" height="26" transform="translate(123 990)" fill="none"/>
+  </g>
+</svg>

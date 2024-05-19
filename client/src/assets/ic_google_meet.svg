@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+  <g id="ic_google_meet" transform="translate(-161 -980)">
+    <g id="icons8-google-meet_1" data-name="icons8-google-meet 1" transform="translate(161.375 980.208)">
+      <path id="Path_42744" data-name="Path 42744" d="M6.5,8.667v8.667h8.667V8.667Z" fill="#fff"/>
+      <path id="Path_42745" data-name="Path 42745" d="M1.625,9.208v7.583l2.708.542,2.708-.542V9.208L4.333,8.667Z" fill="#1e88e5"/>
+      <path id="Path_42746" data-name="Path 42746" d="M20.042,13v7.583a1.625,1.625,0,0,1-1.625,1.625H7.042L6.5,19.5l.542-2.708h7.583V13l2.708-.542Z" fill="#4caf50"/>
+      <path id="Path_42747" data-name="Path 42747" d="M20.042,5.417V13H14.625V9.208H7.042L6.5,6.5l.542-2.708H18.417A1.625,1.625,0,0,1,20.042,5.417Z" fill="#fbc02d"/>
+      <path id="Path_42748" data-name="Path 42748" d="M7.042,16.792v5.417H3.25a1.625,1.625,0,0,1-1.625-1.625V16.792Z" fill="#1565c0"/>
+      <path id="Path_42749" data-name="Path 42749" d="M7.042,3.792V9.208H1.625Z" fill="#e53935"/>
+      <path id="Path_42750" data-name="Path 42750" d="M20.583,13l-.542,4.577L14.625,13l5.417-4.577Z" fill="#2e7d32"/>
+      <path id="Path_42751" data-name="Path 42751" d="M24.917,5.476V20.524a.543.543,0,0,1-.883.422l-3.992-3.369V8.423l3.992-3.369A.543.543,0,0,1,24.917,5.476Z" fill="#4caf50"/>
+    </g>
+    <rect id="Rectangle_17865" data-name="Rectangle 17865" width="26" height="26" transform="translate(161 980)" fill="none"/>
+  </g>
+</svg>

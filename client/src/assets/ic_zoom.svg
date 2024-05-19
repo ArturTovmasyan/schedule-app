@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="26" height="26" viewBox="0 0 26 26">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.002" y1="0.998" x2="0.971" y2="0.029" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#0079ff"/>
+      <stop offset="1" stop-color="#00c2ff"/>
+    </linearGradient>
+  </defs>
+  <g id="ic_zoom" transform="translate(-24 -637)">
+    <rect id="Rectangle_17863" data-name="Rectangle 17863" width="26" height="26" transform="translate(24 637)" fill="none"/>
+    <path id="_7693297_zoom_social_media_meeting_logo_apps_icon" data-name="7693297_zoom_social media_meeting_logo_apps_icon" d="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm3.065,15.417a.434.434,0,0,1-.434.434H7.272A2.147,2.147,0,0,1,5.125,13.7V8.583a.434.434,0,0,1,.434-.434h7.358A2.147,2.147,0,0,1,15.065,10.3Zm3.81.152a.2.2,0,0,1-.312.161l-3.125-2.214V10.484L18.563,8.27a.2.2,0,0,1,.312.161Z" transform="translate(25 638)" fill="url(#linear-gradient)"/>
+  </g>
+</svg>
