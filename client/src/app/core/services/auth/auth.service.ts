@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {Router} from "@angular/router";
 
 export interface ApplicationUser {
   accessToken: string;
@@ -15,14 +16,13 @@ export interface ApplicationUser {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
   private currentUserSubject: BehaviorSubject<ApplicationUser | null>;
   public currentUser: Observable<ApplicationUser | null>;
 
-  constructor(private readonly http: HttpClient) {
-    console.log(localStorage.getItem('currentUser'));
+  constructor(private readonly http: HttpClient, private router: Router) {
     this.currentUserSubject = new BehaviorSubject<ApplicationUser | null>(
       JSON.parse(localStorage.getItem('currentUser') || 'null')
     );
@@ -30,7 +30,6 @@ export class AuthService {
   }
 
   public get currentUserValue(): ApplicationUser | null {
-    console.log(this.currentUserSubject.value);
     return this.currentUserSubject.value;
   }
 
@@ -49,5 +48,17 @@ export class AuthService {
   logout() {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+  }
+
+  /**
+   * @param signupData
+   * @returns {any}
+   */
+  signup(signupData: Object): Observable<any> {
+    return this.http.post('/api/auth/register', signupData).pipe(map(token_info => {
+      if (token_info) { // && token_info.access_token
+        localStorage.setItem('token', JSON.stringify(token_info));
+      }
+    }))
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApplicationUser, AuthService } from 'src/app/services/auth/auth.service';
+import { ApplicationUser, AuthService } from 'src/app/core/services/auth/auth.service';
 
 
 @Component({
@@ -9,11 +9,14 @@ import { ApplicationUser, AuthService } from 'src/app/services/auth/auth.service
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-  isLogin = true;
-
+  isLoginPage: boolean = true;
   currentUser: ApplicationUser | null = null;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {
+    if (window.location.pathname === '/register') {
+      this.isLoginPage = false;
+    }
+  }
 
   ngOnInit(): void {
     this.authService.currentUser.subscribe({
@@ -36,10 +39,12 @@ export class HeaderComponent implements OnInit {
   }
 
   register() {
+    this.isLoginPage = false;
     this.router.navigate(['/register']);
   }
 
   login() {
+    this.isLoginPage = true;
     this.router.navigate(['/login']);
   }
 

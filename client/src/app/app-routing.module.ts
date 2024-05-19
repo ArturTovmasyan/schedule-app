@@ -1,10 +1,12 @@
 import { RouterModule, Routes } from '@angular/router';
-import { AuthComponent } from './components/auth/auth.component';
-import { HomeComponent } from './components/home/home.component';
+import { AuthComponent } from './core/components/auth/auth.component';
+import { HomeComponent } from './core/components/home/home.component';
 import { NgModule } from '@angular/core';
-import { AuthGuard } from './guards/auth.guard';
-import { LoginComponent } from './components/login/login.component';
+import { AuthGuard } from './core/guards/auth.guard';
+import { LoginComponent } from './core/components/login/login.component';
+import {SignupComponent} from "./core/components/signup/signup.component";
 
+//TODO In future will be change for use loadChildren (lazy load module)
 const routes: Routes = [
   {
     path: '',
@@ -18,7 +20,10 @@ const routes: Routes = [
       {
         path: 'login',
         component: LoginComponent
-      }
+      },
+      {
+        path: 'register', component: SignupComponent, data: {title: 'Sign Up'}
+      },
     ]
   },
   {

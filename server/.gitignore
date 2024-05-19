@@ -162,4 +162,4 @@ dist
 
 # Ignore code-workspaces
 *.code-workspace
-.idea/
+../.idea

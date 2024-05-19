@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
 import { toUserDto } from 'src/shared/mapper';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
@@ -63,12 +64,16 @@ export class UsersService {
         email,
       },
     });
+
+    debugger;
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException({'code': HttpStatus.NOT_FOUND, 'message': 'User not found'});
     }
+
     if (!(await comparePasswords(user.password, password))) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
+
     return toUserDto(user);
   }
 
@@ -83,6 +88,7 @@ export class UsersService {
     const userInDb = await this.userRepo.findOne({
       where: { email },
     });
+
     if (userInDb) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
@@ -93,6 +99,7 @@ export class UsersService {
       lastName,
       password,
     });
+
     await this.userRepo.save(user);
     return toUserDto(user);
   }
@@ -124,11 +131,13 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<UserDto> {
+
     let user: User = await this.userRepo.findOne({
       where: {
         id,
       },
     });
+
     if (!user) {
       throw new NotFoundException();
     }

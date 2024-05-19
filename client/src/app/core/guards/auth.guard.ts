@@ -24,13 +24,11 @@ export class AuthGuard implements CanActivate {
     | boolean
     | UrlTree {
     const currentUser = this.authService.currentUserValue;
-    console.log('AuthGuard');
-    console.log(currentUser);
     if (currentUser) {
       return true;
     }
 
-    this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+    this.router.navigate(['/login']);
     return false;
   }
 }

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ErrorInterceptor } from './error.interceptor';
+import { ErrorInterceptor } from '../../interceptors/error.interceptor';
 
 describe('ErrorInterceptor', () => {
   beforeEach(() =>

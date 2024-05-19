@@ -16,10 +16,12 @@ export class AuthService {
   ) {}
 
   async register(userDto: UserCreateDto): Promise<RegistrationStatus> {
+    debugger;
     let status: RegistrationStatus = {
       success: true,
       message: 'user registered',
     };
+
     try {
       await this.usersService.create(userDto);
     } catch (error) {
@@ -32,6 +34,7 @@ export class AuthService {
   }
 
   async login(dto: UserLoginDto): Promise<LoginStatus> {
+    debugger;
     const user = await this.usersService.findByLogin(dto);
     const token = this._createToken(user);
     return {
@@ -49,6 +52,7 @@ export class AuthService {
   }
 
   private _createToken({ id, email }: UserDto): any {
+    debugger;
     const user: JwtPayload = { id, email };
     const accessToken = this.jwtService.sign(user);
     return {

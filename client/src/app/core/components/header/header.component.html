@@ -4,11 +4,11 @@
         <span id="slogan">{{ slogan }}</span>
     </div>
     <div id="nav">
-        <div *ngIf="!isAuthenticated && !isLogin">
+        <div *ngIf="!isAuthenticated && !isLoginPage">
             <span>Have an account?</span>
             <button (click)="login()">Sign in</button>
         </div>
-        <div *ngIf="!isAuthenticated && isLogin">
+        <div *ngIf="!isAuthenticated && isLoginPage">
             <span>Need an account?</span>
             <button (click)="register()">Register</button>
         </div>

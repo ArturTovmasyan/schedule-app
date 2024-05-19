@@ -3,26 +3,27 @@
     <span id="welcome-back">Welcome back.</span>
     <span id="login">Log in.</span>
   </div>
-  <form id="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="off">
+  <form id="form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
     <div class="form-group">
       <label for="email">Email</label>
       <input type="email" id="email" formControlName="email" placeholder="Email" />
-      <span class="error" *ngIf="{ hasEmailError }">{{ emailError }}</span>
+      <app-control-messages [control]="f.email"></app-control-messages>
     </div>
     <div class="form-group">
       <label for="password">Password</label>
       <input type="password" id="password" formControlName="password" placeholder="Password" />
-      <span class="error" *ngIf="{ hasPasswordError }">{{ passwordError }}</span>
+      <app-control-messages [control]="f.password"></app-control-messages>
+      <span *ngIf="error" class="error">{{ error?.message }}</span>
     </div>
     <div id="actions">
       <label class="checkbox">
-        <input id="remember-me" type="checkbox" formControlName="remember" title="Remember me" /> 
+        <input id="remember-me" type="checkbox" formControlName="remember" title="Remember me" />
         Remember Me
       </label>
       <a id="forgot-password" href="/#">I forgot my password</a>
     </div>
     <div>
-      <button id="submit" type="submit">Log in</button>
+      <button id="submit" type="submit" [disabled]="!form.valid">Log in</button>
     </div>
   </form>
   <div id="social">

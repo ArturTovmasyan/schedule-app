@@ -79,3 +79,10 @@ input[type="checkbox"]:disabled {
   color: $disabled-color;
   cursor: not-allowed;
 }
+
+.error {
+  margin-top: 4px;
+  color: $text-error-color;
+  font-weight: 300;
+  letter-spacing: 0.15px;
+}
