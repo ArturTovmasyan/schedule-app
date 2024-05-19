@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-change-password',
@@ -13,13 +14,14 @@ import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 export class ChangePasswordComponent implements OnInit {
 
   form: FormGroup;
-  error?: ErrorResponse;
+  error?: ErrorResponse|null;
   errorMessage: undefined;
+  showCurrentPassword = true;
+  currentPasswordOption = [];
 
-  constructor(private settingService: SettingService, private router: Router, private formBuilder: FormBuilder) {
-
+  constructor(private settingService: SettingService, private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
     this.form = this.formBuilder.group({
-      'currentPassword': ['', [Validators.required]],
+      'currentPassword': ['', this.currentPasswordOption],
       'newPassword': ['', [ValidationService.passwordValidator, Validators.required]],
       'confirmPassword': ['', [Validators.required]]
     }, {validator: ValidationService.passwordsEqualValidator})
@@ -27,6 +29,16 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.hasAccess().subscribe({
+      next: ({ isActive, user }) => {
+        if (user && isActive) {
+          if (user.provider) {
+            this.showCurrentPassword = false;
+            this.currentPasswordOption = [];
+          }
+        }
+      }
+    });
   }
 
   changePassword() {
@@ -41,6 +53,8 @@ export class ChangePasswordComponent implements OnInit {
         next: () => {
           this.form.clearValidators();
           this.form.reset();
+          this.error = null;
+
           alert('Your password successfully changed')
         },
         error: (error) => {
