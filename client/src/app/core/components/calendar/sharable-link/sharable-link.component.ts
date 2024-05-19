@@ -29,7 +29,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   selectedDates$: BehaviorSubject<any> = new BehaviorSubject([]);
   selectedDates:any = []
   showLocation = false;
-  choosedLocation = 'Choose...';
   choosedLocationObj: Location | null = null;
   connectMessage = '';
   // for location: incoming call and address
@@ -43,7 +42,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   filteredContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
   selectedContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
   selectedContacts: CalendarAccess[] = [];
+  // used only to show on UI in joint Availibility
   selectedEmails: string[] = [];
+  // MAP<email, availability_data>
+  emailsWithAvailabilityMap = new Map();
 
   locations: Location[] = [
     { title: 'ZOOM', subTitle: 'Web conference', image:'assets/zoom.png', active: false, value: 'zoom'},
@@ -104,7 +106,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   chooseLocation(loc: Location) {
 
-    this.choosedLocation = loc.title;
     this.choosedLocationObj = loc;
     this.showLocation = false;
     this.connectMessage = '';
@@ -157,10 +158,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     if (this.choosedLocationObj?.value == 'address') {
       requestParams.set('address', this.address);
     }
-    console.log(requestParams);
     // TODO: send API Request with request Parameters
   }
 
+  // load contacts when clicked on Joint availability "plus" sign
   loadContacts() {
     if (this.contacts.length > 0){
       return;
@@ -178,6 +179,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   initFilterContact() {
+      // initializze keyup event to get filtered contacts
       fromEvent(this.input.nativeElement, 'keyup')
         .pipe(
           map((event: any) => {
@@ -189,7 +191,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           tap((searchedString) => {
             const filteredContact = this.contacts.filter(contact => this.filterContact(contact, searchedString));
             this.filteredContacts$.next(filteredContact);
-            console.log(this.contacts);
           })
         )
         .subscribe();
@@ -198,11 +199,11 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   filterContact(item: any, query: any) {
     return (item.owner.firstName.toLowerCase().startsWith(query) ||
           item.owner.lastName.toLowerCase().startsWith(query) ||
-      item.owner.email.toLowerCase().startsWith(query)) && !this.selectedEmails.includes(item.owner.email);
+      item.owner.email.toLowerCase().startsWith(query));
   }
 
+  // select contact after search in joint availability
   selectContact(contact: CalendarAccess) {
-    console.log(contact);
     this.selectedContacts.push(contact);
     this.selectedEmails.push(contact.owner.email);
     this.selectedContacts$.next(this.selectedContacts);
@@ -211,6 +212,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.getContactAvailability(contact);
   }
 
+  // add availability to the calendar
   getContactAvailability(contact: CalendarAccess) {
     const contactId = contact.owner.id;
     const contactEmail = contact.owner.email;
@@ -220,18 +222,33 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data: any | null) => {
           const availabilityData = data?.availabilityData;
-          const contactData = {
-            ...availabilityData,
-            contactEmail,
-            contactId
-          }
-          console.log(contactData);
-          this.broadcaster.broadcast('contact_calendar_data', contactData);
+          this.emailsWithAvailabilityMap.set(contactEmail, availabilityData);
+          this.broadcastContactData();
+
         },
         error: (error) => {
           console.error(error.message);
         }
       });
+  }
+
+  broadcastContactData() {
+    let contacts = [...this.emailsWithAvailabilityMap.values()].flat();
+    console.log([...new Set(contacts)]);
+    contacts = {...contacts};
+    this.broadcaster.broadcast('contact_calendar_data', contacts);
+  }
+
+  removeSingleContact(contact: CalendarAccess ) {
+    this.selectedContacts = this.selectedContacts.filter((res: CalendarAccess) => {
+      return res.owner.email != contact.owner.email
+    });
+    this.selectedEmails = this.selectedEmails.filter((res) => {
+      return res != contact.owner.email
+    });
+    this.selectedContacts$.next(this.selectedContacts);
+    this.emailsWithAvailabilityMap.delete(contact.owner.email);
+    this.broadcastContactData();
   }
 
   ngOnDestroy(): void {
