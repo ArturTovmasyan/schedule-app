@@ -1,10 +1,9 @@
-import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CalendarOptions } from '@fullcalendar/angular';
-import * as moment from 'moment';
-import { Subject, takeUntil } from 'rxjs';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { PublicCalendarService } from '../public.service';
-import { AVAILABILITY_EVENT_CLASS, SUGGEST_EVENT_CLASS } from "../../../interfaces/constant/calendar.constant";
+import { AVAILABILITY_EVENT_CLASS } from "../../../interfaces/constant/calendar.constant";
 
 @Component({
   selector: 'app-public-calendar',
@@ -13,6 +12,8 @@ import { AVAILABILITY_EVENT_CLASS, SUGGEST_EVENT_CLASS } from "../../../interfac
 })
 export class PublicCalendarComponent implements OnDestroy {
   timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
+  @ViewChild("calendar") calendar!: FullCalendarComponent;
+  calendarApi!: Calendar;
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
     dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },
@@ -29,10 +30,10 @@ export class PublicCalendarComponent implements OnDestroy {
     dragRevertDuration: 500,
     handleWindowResize: false,
     expandRows: false,
-    showNonCurrentDates: false,
+    showNonCurrentDates: true,
     lazyFetching: false,
+    firstDay: 1,
     windowResize: (view) => {
-      alert('asdads');
       view.view.calendar.updateSize();
     },
     eventClick: function (eventInfo: any) {
@@ -61,7 +62,7 @@ export class PublicCalendarComponent implements OnDestroy {
     headerToolbar: {
       left: '',
       center: 'prev,title,next',
-      right: 'today'
+      right: ''
     },
     eventContent: this.eventContent.bind(this),
     eventClassNames: function () {
@@ -78,14 +79,15 @@ export class PublicCalendarComponent implements OnDestroy {
   linkId: string;
   destroySubscription = new Subject();
   calendarData$ = this.calendarService.calendarData$$;
+  openSelectedWeek$ = new Subscription;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private readonly calendarService: PublicCalendarService,
   ) {
-    this.linkId = route.snapshot.params['id'];
+    this.linkId = this.route.snapshot.params['id'];
     this.calendarService.getDetails(this.linkId).subscribe();
+    this.openSelectedWeek();
   }
 
   eventContent(arg: any) {
@@ -105,7 +107,8 @@ export class PublicCalendarComponent implements OnDestroy {
     this.calendarData$
       .pipe(takeUntil(this.destroySubscription))
       .subscribe((data: any) => {
-        if (data.slots) {
+        if (data?.slots) {
+          console.log(data);
           const datas = [];
           for (const date of data.slots) {
             datas.push({
@@ -123,12 +126,14 @@ export class PublicCalendarComponent implements OnDestroy {
       })
   }
 
+  ngAfterViewChecked() {
+    this.calendarApi = this.calendar.getApi();
+  }
+
   getAvailableSlots(dates: any){
     const availabilitySlots: any = [];
     const availabilityEvents: any = [];
-    console.log('dd', dates);
     for (const key in dates) {
-      console.log('ff', dates[key].start);
       const weekDay = new Date(dates[key].start).getDay();
       availabilitySlots.push({
         daysOfWeek: [weekDay],
@@ -144,9 +149,18 @@ export class PublicCalendarComponent implements OnDestroy {
     return [availabilitySlots, availabilityEvents];
   }
 
+  openSelectedWeek() {
+    this.openSelectedWeek$ = this.calendarService.openSelectedWeek()
+      .subscribe(res => {
+        this.calendarApi.gotoDate(res);
+        console.log('subscription res', res);
+      });
+  }
+
   ngOnDestroy(): void {
     this.destroySubscription.next(true);
     this.destroySubscription.complete();
+    this.openSelectedWeek$.unsubscribe();
   }
 
 }

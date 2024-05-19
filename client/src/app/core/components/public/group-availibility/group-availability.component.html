@@ -12,55 +12,17 @@
    <div class="group-availability-content">
      <div class="users-container">
        <ul class="users-list list-unstyled list-inline">
-         <li class="list-inline-item user-info">
+         <li class="list-inline-item user-info" *ngFor="let att of attendees">
            <div class="user-info-wrapper">
              <div class="user-portrait">
-               <img src="assets/brianchesky.jpg" alt="brian chesky">
+               <img *ngIf="att.avatar" [src]="att.avatar">
+               <span *ngIf="!att.avatar">{{ att.user.firstName | acronymName }}</span>
              </div>
              <div class="user-bio">
-               <h5 class="full-name">Brian Chesky</h5>
-               <h6 class="contact-company">
-                 AirBnb
-               </h6>
-             </div>
-           </div>
-         </li>
-         <li class="list-inline-item user-info">
-           <div class="user-info-wrapper">
-             <div class="user-portrait">
-               <img src="assets/alexisohanian.jpeg" alt="alexis ohanyan">
-             </div>
-             <div class="user-bio">
-               <h5 class="full-name">Alexis Ohanyan</h5>
-               <h6 class="contact-company">
-                 Reddit
-               </h6>
-              </div>
-           </div>
-         </li>
-         <li class="list-inline-item user-info">
-           <div class="user-info-wrapper">
-             <div class="user-portrait">
-               <img src="assets/patrickcollison.png" alt="patrick collison">
-             </div>
-             <div class="user-bio">
-               <h5 class="full-name">Patrick Collison</h5>
-               <h6 class="contact-company">
-                 Stripe
-               </h6>
-             </div>
-           </div>
-         </li>
-         <li class="list-inline-item user-info">
-           <div class="user-info-wrapper">
-             <div class="user-portrait">
-               <img src="assets/wadefoster.jpeg" alt="Wade Foster">
-             </div>
-             <div class="user-bio">
-               <h5 class="full-name">Wade Foster</h5>
-               <h6 class="contact-company">
-                 Zapier
-               </h6>
+               <h5 class="full-name">{{ att.user.firstName }} {{ att.user.lastName }}</h5>
+               <!-- <h6 class="contact-company">
+                 AirBnbddffasdfsdfdf
+               </h6> -->
              </div>
            </div>
          </li>

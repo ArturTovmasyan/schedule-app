@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
-import { pipe, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { PublicCalendarService } from '../public.service';
 @Component({
   selector: 'app-group-availability',
@@ -32,6 +32,10 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     lazyFetching: false,
     firstDay: 1,
     eventDisplay: 'block',
+    eventStartEditable: false,
+    slotMinWidth: 1,
+    eventDurationEditable: false,
+    dayHeaderFormat: { weekday: 'narrow' },
     windowResize: (view) => {
       view.view.calendar.updateSize();
     },
@@ -50,7 +54,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
         }
       }
     },
-    selectable: false,
+    selectable: true,
     slotLabelFormat: [
       {
         hour: 'numeric',
@@ -80,11 +84,11 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
       right: ''
     },
     eventClassNames: function (args) {
-      console.log('sdfdsf', args);
       return 'eventooo';
     },
     select: (info) => {
-      console.log(info);
+      console.log('info', info);
+      this.changeWeek(info.start);
     },
     selectOverlap: function (info) {
       return true;
@@ -92,6 +96,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   }
   linkId: string;
   calendarData$ = this.calendarService.calendarData$$;
+  attendees: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -106,7 +111,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     this.calendarData$
     .pipe(takeUntil(this.destroySubscription))
     .subscribe((data: any) => {
-      if (data.slots) {
+      if (data?.slots) {
         const datas = [];
         for (const date of data.slots) {
           datas.push({
@@ -116,7 +121,15 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
         }
         this.calendarOptions.events = datas;
       }
+      if (data?.attendees?.length > 0) {
+        this.attendees = data.attendees;
+      }
     })
+  }
+
+  changeWeek(date:any) {
+    this.calendarService.selectedWeek.next(date);
+
   }
 
   ngOnDestroy(): void {

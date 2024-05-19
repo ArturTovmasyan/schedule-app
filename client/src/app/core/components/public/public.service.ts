@@ -1,14 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, of, throwError } from 'rxjs';
+import { EventEmitter, Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, map, of, Subject, throwError } from 'rxjs';
 import { ApiResponse } from '../../interfaces/response/api.response.interface';
 
 @Injectable()
 export class PublicCalendarService {
 
-  calendarData$: BehaviorSubject<any> = new BehaviorSubject({});
+  calendarData$: BehaviorSubject<any> = new BehaviorSubject(undefined);
   calendarData$$ = this.calendarData$.asObservable();
   calendarData: any;
+  selectedWeek = new Subject();
+
   constructor(
     private readonly http: HttpClient
     ) {
@@ -28,5 +30,9 @@ export class PublicCalendarService {
             })
           );
     }
+
+  openSelectedWeek() {
+    return this.selectedWeek.asObservable();
+  }
 
 }
