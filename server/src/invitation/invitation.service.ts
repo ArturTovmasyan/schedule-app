@@ -11,7 +11,7 @@ import { ErrorMessages } from 'src/components/constants/error.messages';
 import { InvitationStatusEnum } from './enums/invitation-status.enum';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { Invitation } from './entities/invitation.entity';
-import { MailService } from '../mail/mail.service';
+import { MailService, MailTemplate } from '../mail/mail.service';
 import { User } from '@user/entity/user.entity';
 
 @Injectable()
@@ -118,11 +118,17 @@ export class InvitationService {
         }</p>`;
       }
 
-      await this.mailService.send({
+      this.mailService.send({
         from: this.configService.get<string>('NO_REPLY_EMAIL'),
-        to: createInvitationDto.emails,
-        subject: `${user.firstName} ${user.lastName} invited you to use entangles.io`,
-        html: htmlMessage,
+        templateId: MailTemplate.INVITE_EMAIL,
+        personalizations: [{
+            to: user.email,
+            dynamicTemplateData: {
+                ...this.mailService.defaultTemplateData,
+                name: `${user.firstName} ${user.lastName}`.trim(),
+                confirmation_url: `${process.env.WEB_HOST}register`
+            }
+        }]
       });
 
       await queryRunner.commitTransaction();

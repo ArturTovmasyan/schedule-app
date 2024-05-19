@@ -125,18 +125,16 @@ export class AccessRequestService {
       )[0];
 
       this.mailService.send({
-        from: this.configService.get<string>('NO_REPLY_EMAIL'),
-        to: current.toEmail as string,
-        subject: `Access request from ${user.firstName} ${user.lastName}`,
-        html: `
-        <h3>Hello!</h3>
-      ${
-        currentUser
-          ? `<p>${user.firstName} ${user.lastName} wants to access your calendar.
-          Please go to <a href='${process.env.WEB_HOST}'>homepage</a> to accept or decline request.</p>`
-          : `<p><a href='${process.env.WEB_HOST}register'>Register</a> and approve the request from ${user.firstName} ${user.lastName}</p>`
-      }
-    `,
+          from: this.configService.get<string>('NO_REPLY_EMAIL'),
+          templateId: MailTemplate.CALENDAR_REQUESTED,
+          personalizations: [{
+              to: user.email,
+              dynamicTemplateData: {
+                  ...this.mailService.defaultTemplateData,
+                  name: `${user.firstName} ${user.lastName}`.trim(),
+                  invite_url: `${process.env.WEB_HOST}`
+              }
+          }]
       });
     });
 

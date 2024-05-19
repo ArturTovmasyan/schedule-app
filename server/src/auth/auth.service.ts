@@ -114,21 +114,6 @@ export class AuthService {
         return null;
     }
 
-    sendConfirmation(user: UserDto) {
-        const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
-        const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
-
-        this.mailService.send({
-            from: this.configService.get<string>('NO_REPLY_EMAIL'),
-            to: user.email,
-            subject: 'Verify Handshake Account',
-            html: `
-                <h3>Hello ${user.firstName}!</h3>
-                <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
-            `,
-        });
-    }
-
     async resetPassword(email: string): Promise<boolean> {
         const user = await this.userRepo.findOne({ where: { email } });
 
@@ -147,16 +132,18 @@ export class AuthService {
         }
 
         const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
-        const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
+        const changeLink = `${this.appHost}new-password?token=${token.accessToken}`;
 
         this.mailService.send({
             from: this.configService.get<string>('NO_REPLY_EMAIL'),
-            to: user.email,
-            subject: 'Reset Handshake Account Password',
-            html: `
-                <h3>Hello ${user.firstName}!</h3>
-                <p>Please use this <a href="${changeLink}">link</a> to reset your password.</p>
-            `,
+            templateId: MailTemplate.RESET_PASSWORD,
+            personalizations: [{
+                to: user.email,
+                dynamicTemplateData: {
+                    ...this.mailService.defaultTemplateData,
+                    reset_url: changeLink
+                }
+            }]
         });
 
         return true;
@@ -254,12 +241,14 @@ export class AuthService {
 
         this.mailService.send({
             from: this.configService.get<string>('NO_REPLY_EMAIL'),
-            to: user.email,
-            subject: 'Verify Handshake Account',
-            html: `
-                <h3>Hello ${user.firstName}!</h3>
-                <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
-            `,
+            templateId: MailTemplate.CONFIRM_ACCOUNT,
+            personalizations: [{
+                to: user.email,
+                dynamicTemplateData: {
+                    ...this.mailService.defaultTemplateData,
+                    confirmation_url: confirmLink
+                }
+            }]
         });
     }
 }

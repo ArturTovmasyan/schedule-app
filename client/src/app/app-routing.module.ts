@@ -67,7 +67,7 @@ const routes: Routes = [
         canActivate: [RedirectGuard]
       },
       {
-        path: 'recovery-password',
+        path: 'new-password',
         component: RecoveryPasswordComponent,
         data: {title: 'Change Password'},
         canActivate: [RedirectGuard]

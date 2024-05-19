@@ -100,18 +100,15 @@ export class CalendarAccessService {
 
       this.mailService.send({
         from: this.configService.get<string>('NO_REPLY_EMAIL'),
-        to: current.toEmail as string,
-        subject: `${user.firstName} ${user.lastName} shared their calendar with you`,
-        html: `
-        <h3>Hello!</h3>
-        ${
-          currentUser
-            ? `<p>${user.firstName} ${user.lastName} shared their calendar with you 
-            Please go to <a href='${process.env.WEB_HOST}'>homepage</a> to access calendar.</p>`
-            : `<p>${user.firstName} ${user.lastName} shared their calendar with you.
-             Please <a href='${process.env.WEB_HOST}register'>Register</a> and access to calendar.</p>`
-        }
-    `,
+        templateId: MailTemplate.CALENDAR_SHARED,
+        personalizations: [{
+            to: user.email,
+            dynamicTemplateData: {
+                ...this.mailService.defaultTemplateData,
+                name: `${user.firstName} ${user.lastName}`.trim(),
+                notification_url: `${process.env.WEB_HOST}`
+            }
+        }]
       });
     });
 
