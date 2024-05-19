@@ -47,7 +47,7 @@ export class SignupComponent {
     this.email = this.form.value.email;
 
     const data = {
-      'firstName': firstName,// assume full name is 2 part
+      'firstName': firstName,
       'lastName': lastName,
       'email': this.email,
       'password': this.form.value.password

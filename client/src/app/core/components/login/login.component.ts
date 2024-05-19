@@ -81,7 +81,6 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/onboarding/calendar']);
         },
         error: (error) => {
-          debugger;
           this.error = error;
         }
       });

@@ -1,17 +1,15 @@
-import { Expose } from 'class-transformer';
-import {IsNotEmpty, IsNumber, IsString, Matches} from 'class-validator';
+import {IsNotEmpty, IsString, Matches} from 'class-validator';
 
 export class UserCreateDto {
   @IsNotEmpty()
   @IsString()
   email: string;
-
-  @Expose({ name: 'first_name' })
+  @IsNotEmpty()
+  @IsString()
   firstName: string;
-
-  @Expose({ name: 'last_name' })
+  @IsNotEmpty()
+  @IsString()
   lastName: string;
-
   @IsNotEmpty()
   @IsString()
   @Matches(
