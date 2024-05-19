@@ -66,25 +66,27 @@ export class CancelMeetingComponent extends PublicSidebarCalendarComponent imple
         if (data?.slots) {
           // load available timeslots on calendar
           const datas = [];
-          for (const date of data.slots) {
-            if (date.choosedByEmail && date.id == this.scheduledId) {
+          
+          for (const slot of data.slots) {
+            if (slot.choosedByEmail && slot.id == this.scheduledId) {
               datas.push({
-                id: date.id,
+                id: slot.id,
                 groupId: 'defaultSelectedSlot',
-                start: date.startDate,
-                end: date.endDate
+                start: slot.startDate,
+                end: slot.endDate
               });
               this.componentData.selectedTimeSlot = {
-                start: date.startDate,
-                end: date.endDate
+                start: slot.startDate,
+                end: slot.endDate
               }
-              this.componentData.selectedTimeSlotId = date.id;
+              
+              this.componentData.selectedTimeSlotId = slot.id;
             } else {
               datas.push({
-                id: date.id,
+                id: slot.id,
                 groupId: 'notAvailableSlot',
-                start: date.startDate,
-                end: date.endDate,
+                start: slot.startDate,
+                end: slot.endDate,
                 className: AVAILABILITY_EVENT_CLASS
               });
             }
@@ -100,8 +102,10 @@ export class CancelMeetingComponent extends PublicSidebarCalendarComponent imple
             user: data.user
           }];
         }
+        console.log('selected timeslot', this.componentData.selectedTimeSlot);
         this.calendarApi.gotoDate(this.componentData.selectedTimeSlot.start);
         this.calendarService.selectedWeek.next(this.componentData.selectedTimeSlot.start);
+        
       });
   }
 

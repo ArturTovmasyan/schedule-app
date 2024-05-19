@@ -27,21 +27,22 @@
         </full-calendar>
       </div>
       </div>
-      <h3 class="section-title-secondary">
+      <h3 class="section-title-secondary current-meeting">
         Current Meeting
       </h3>
       <div class="date-time-container">
-        <ul class="list-unstyled list-inline">
+        <ul class="list-unstyled list-inline w-100">
           <li class="list-inline-item date d-flex align-items-center">
-            {{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}
+            <div  id="meetingDate">{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}</div>
           </li>
           <li class="list-inline-item timeframe">
-            <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}" readonly>
+            <div id="meetingStartTime">
+              {{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}
+            </div>
             <p> - </p>
-            <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}" readonly>
-          </li>
-          <li class="list-inline-item timezone">
-            <span id="timezoneText">{{ timezone }}</span>
+            <div id="meetingEndTime">
+              {{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}
+            </div>
           </li>
         </ul>
       </div>
@@ -51,8 +52,10 @@
         </span>
       </div>
 
-      <div class="form-group mb-0">
-        <label for="optionalNotes">Reason for cancellation</label>
+      <h3 class="section-title-secondary">
+        Reason for cancellation
+      </h3>
+      <div class="other-details">
         <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add reasons for cancellation" formControlName="reason"></textarea>
         <div *ngIf="f['reason'].invalid && (f['reason'].dirty || f['reason'].touched)">
           <span class="error">

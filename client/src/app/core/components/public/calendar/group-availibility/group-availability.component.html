@@ -41,12 +41,18 @@
           <ul class="list-unstyled list-inline">
             <li class="list-inline-item date">
               <input value="{{ componentData.selectedTimeSlot }}" style="display:none;"/>
-              <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}" readonly>
+              <div  id="meetingDate">{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}</div>
+             
             </li>
             <li class="list-inline-item timeframe">
-              <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}" readonly>
+              <div id="meetingStartTime">
+                {{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}
+              </div>
               <p> - </p>
-              <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}" readonly>
+              <div id="meetingEndTime">
+                {{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}
+              </div>
+              
             </li>
           </ul>
         </div>
