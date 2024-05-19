@@ -1,12 +1,12 @@
 import {
   Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
   Unique,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
   UpdateDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { CalendarTypeEnum } from '../enums/calendarType.enum';
@@ -26,6 +26,9 @@ export class CalendarToken {
 
   @Column({ type: 'varchar', nullable: true })
   refreshToken!: string;
+
+  @Column({ type: 'varchar', nullable: true, name: 'owner_email' })
+  ownerEmail: string;
 
   @CreateDateColumn()
   createdOn!: Date;

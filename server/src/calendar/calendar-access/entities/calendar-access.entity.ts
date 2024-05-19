@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  OneToOne,
   ManyToOne,
   JoinColumn,
   DeleteDateColumn,
@@ -25,6 +24,9 @@ export class CalendarAccess {
 
   @Column({ name: 'accessed_user_id', type: 'uuid' })
   accessedUserId: string;
+
+  @Column({ name: 'owner_id', type: 'uuid' })
+  ownerId: string;
 
   @Column({ name: 'time_for_access', type: 'timestamptz' })
   timeForAccess: Date;

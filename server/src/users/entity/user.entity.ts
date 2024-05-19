@@ -5,12 +5,14 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Subscription } from '../../payment/subscriptions/entity/subscription.entity';
+import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
 
 @Entity('user')
 export class User {

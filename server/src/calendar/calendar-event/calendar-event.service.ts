@@ -720,7 +720,10 @@ export class CalendarEventService {
     });
   }
 
-  private async getTokens(user: User, manager) {
+  async getTokens(
+    user: User,
+    manager: EntityManager,
+  ): Promise<{ googleToken: CalendarToken; outlookToken: CalendarToken }> {
     const googleToken = await manager.getRepository(CalendarToken).findOne({
       owner: { id: user.id },
       calendarType: CalendarTypeEnum.GoogleCalendar,

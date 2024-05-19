@@ -13,6 +13,8 @@ import { CryptoProvider } from '@azure/msal-node/dist/crypto/CryptoProvider';
 import { User } from '@user/entity/user.entity';
 import { CalendarEventService } from '../calendar-event/calendar-event.service';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
+import { google, oauth2_v2 } from 'googleapis';
+import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 
 @Injectable()
 export class CalendarPermissionsService {
@@ -52,6 +54,23 @@ export class CalendarPermissionsService {
       auth: msalConfig,
     });
     this.msalCryptoProvider = new msal.CryptoProvider();
+  }
+
+  /**
+   * @description `Get main unfo of Google user`
+   * @param accessToken - `Token of google access`
+   * @returns `Google user data`
+   */
+
+  private async getGoogleUsersInfo(
+    accessToken: string,
+  ): GaxiosPromise<oauth2_v2.Schema$Userinfo> {
+    await this.clientsCredentials.googleOAuth2Client.setCredentials({
+      access_token: accessToken,
+    });
+    return await google.oauth2('v2').userinfo.v2.me.get({
+      auth: this.clientsCredentials.googleOAuth2Client,
+    });
   }
 
   async toggleGoogleCalendar(user: User) {
@@ -127,6 +146,9 @@ export class CalendarPermissionsService {
       }
       const tokens = getTokenResponse.tokens;
 
+      const ownerEmail = (await this.getGoogleUsersInfo(tokens.access_token))
+        .data.email;
+
       const expiryDate = new Date(tokens.expiry_date).toISOString();
 
       const existingToken = await calendarTokenRepository.findOne({
@@ -142,6 +164,7 @@ export class CalendarPermissionsService {
             expiryDate,
             calendarType: CalendarTypeEnum.GoogleCalendar,
             owner: { id: user.id },
+            ownerEmail,
           }
         : {
             accessToken: tokens.access_token,
@@ -149,6 +172,7 @@ export class CalendarPermissionsService {
             expiryDate,
             calendarType: CalendarTypeEnum.GoogleCalendar,
             owner: { id: user.id },
+            ownerEmail,
           };
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
@@ -260,6 +284,7 @@ export class CalendarPermissionsService {
             extExpiryDate: tokenResponse.extExpiresOn,
             calendarType: CalendarTypeEnum.Office365Calendar,
             owner: { id: user.id },
+            ownerEmail: tokenResponse.account.idTokenClaims.email,
           }
         : {
             accessToken: tokenResponse.accessToken,
@@ -268,6 +293,7 @@ export class CalendarPermissionsService {
             extExpiryDate: tokenResponse.extExpiresOn,
             calendarType: CalendarTypeEnum.Office365Calendar,
             owner: { id: user.id },
+            ownerEmail: tokenResponse.account.idTokenClaims.email,
           };
 
       await calendarTokenRepository.save(calendarTokenBody);
