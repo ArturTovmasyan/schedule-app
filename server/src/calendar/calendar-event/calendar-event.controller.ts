@@ -36,8 +36,8 @@ export class CalendarEventController {
 
   @Get()
   @UseGuards(AuthGuard())
-  @UseInterceptors(UpdateWebhookInterceptor)
-  @UseInterceptors(UpdateAccessTokenInterceptor)
+  // @UseInterceptors(UpdateWebhookInterceptor)
+  // @UseInterceptors(UpdateAccessTokenInterceptor)
   async getUserCalendarEvents(
     @GetUser() user,
     @Query() query: TimeIntervalDto,

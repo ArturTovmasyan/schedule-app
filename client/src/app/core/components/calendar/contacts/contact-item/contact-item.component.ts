@@ -11,6 +11,7 @@ import {AvailabilityService} from "../../../../services/calendar/availability.se
 })
 export class ContactItemComponent implements OnInit {
 
+
   @Input("contact")
   contact!: CalendarAccess;
 

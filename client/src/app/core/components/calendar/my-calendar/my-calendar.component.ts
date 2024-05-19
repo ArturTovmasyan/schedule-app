@@ -5,7 +5,6 @@ import {CalendarService} from "../../../services/calendar/calendar.service";
 import DateConverter from "../../helpers/date.converter";
 import {BroadcasterService} from "../../../../shared/services";
 import {BehaviorSubject} from "rxjs";
-import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interface";
 
 @Component({
   selector: 'app-my-calendar',
@@ -24,7 +23,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   constructor(private calendarService: CalendarService, private broadcaster: BroadcasterService) {
     this.subscription = this.broadcaster.on('contact_calendar_data').subscribe((contactAvailabilities: any) => {
       debugger;
-      const availabilityDates: CalendarEvent[] = [];
+      const availabilityDates: any[] = [];
       const contactId = contactAvailabilities.contactId;
 
       if (contactAvailabilities) {
@@ -93,7 +92,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
                 className: 'available-event'
               })
             })
-            this.contactEvents = data;
+            // this.contactEvents = data;
             // this.calendarOptions.events = data;
           }
         },

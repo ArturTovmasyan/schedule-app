@@ -64,7 +64,7 @@ export class AvailabilityService {
         });
 
         if (convert) {
-            const availabilityDates:any[] = await this.convertAvailabilityToDate(data);
+            const availabilityDates: any[] = await this.convertAvailabilityToDate(data);
             // const contactEvents:any[] = await this.eventService.getEventsByUserIds([userId]);
             return {availabilityDates};
         }
@@ -102,7 +102,7 @@ export class AvailabilityService {
     /**
      * @description `Convert user Availability data to event dates`
      *
-     * @returns `{updated}`
+     * @returns `{dates}`
      * @param data
      */
     async convertAvailabilityToDate(data: Availability): Promise<any[]> {
@@ -111,23 +111,35 @@ export class AvailabilityService {
         const dateRange = moment().dateRangeToDates({
             rangeStart: moment().toDate(),
             rangeEnd: moment().add(2, 'week').format('yyyy-MM-DD'),//TODO get from time_for_access
-            weekdays: this.generateWeekDays(data)
+            weekdays: await this.generateWeekDays(data)
         });
 
         dateRange.forEach((date) => {
             let dateStart;
             let dateEnd;
-            let timeFrom:number = +data.from.split(':')[0];
-            let timeTo:number = +data.to.split(':')[0];
+            let hourFromSplit = data.from.split(':');
+            let hourToSplit = data.to.split(':');
+
+            let hourFrom: number = +hourFromSplit[0];
+            let hourTo: number = +hourToSplit[0];
+
+            let fromType = hourFromSplit[1].length > 2 ? hourFromSplit[1].slice(-2).toUpperCase() : '';
+            let toType = hourToSplit[1].length > 2 ? hourToSplit[1].slice(-2).toUpperCase() : '';
+
+            let minuteFrom: number = fromType ? +(hourFromSplit[1].slice(0, -2)) : +hourFromSplit[1];
+            let minuteTo: number = toType ? +(hourToSplit[1].slice(0, -2)) : +hourToSplit[1];
 
             if (data.clockType == ClockType.H12) {
-                 dateStart = date.set({ hour:timeFrom }).toDate();
-                 let formatHour = moment(timeTo+" PM", ["h:mm A"]).format("HH:mm");
-                 formatHour = formatHour.split(':')[0];
-                 dateEnd = date.set({ hour:formatHour }).toDate();
+                let formatFromHour = moment(hourFrom + ' ' + fromType, ["h:mm A"]).format("HH:mm");
+                let formatToHour = moment(hourTo + ' ' + toType, ["h:mm A"]).format("HH:mm");
+
+                formatFromHour = formatFromHour.split(':')[0];
+                dateStart = date.set({hour: formatFromHour, minute: minuteFrom}).toDate();
+                formatToHour = formatToHour.split(':')[0];
+                dateEnd = date.set({hour: formatToHour, minute: minuteTo}).toDate();
             } else {
-                dateStart = date.set({ hour:timeFrom }).toDate();
-                dateEnd = date.set({ hour:timeTo }).toDate();
+                dateStart = date.set({hour: hourFrom, minute: minuteFrom}).toDate();
+                dateEnd = date.set({hour: hourTo, minute: minuteTo}).toDate();
             }
 
             dates.push({
@@ -139,35 +151,41 @@ export class AvailabilityService {
         return dates;
     }
 
-    generateWeekDays(data: Availability) {
+    /**
+     * @description `Generate week days array by user availability data`
+     *
+     * @returns `{weekDays}`
+     * @param data
+     */
+    async generateWeekDays(data: Availability) {
         const weekDays = [];
 
         if (data.monday) {
-            weekDays.push(1);
+            weekDays.push(0);
         }
 
         if (data.tuesday) {
-            weekDays.push(2);
+            weekDays.push(1);
         }
 
         if (data.wednesday) {
-            weekDays.push(3);
+            weekDays.push(2);
         }
 
         if (data.thursday) {
-            weekDays.push(4);
+            weekDays.push(3);
         }
 
         if (data.friday) {
-            weekDays.push(5);
+            weekDays.push(4);
         }
 
         if (data.saturday) {
-            weekDays.push(6);
+            weekDays.push(5);
         }
 
         if (data.sunday) {
-            weekDays.push(7);
+            weekDays.push(6);
         }
 
         return weekDays;
