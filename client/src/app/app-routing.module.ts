@@ -144,6 +144,28 @@ const routes: Routes = [
       ]
     },
     {
+      path: 'settings',
+      component: SettingsComponent,
+      canActivate: [AuthGuard],
+      children: [
+        {
+          path: 'calendar',
+          component: ConnectCalendarComponent
+        },
+        {
+          path: 'configuration',
+          component: ConfigurationComponent
+        },
+        {
+          path: 'availability',
+          component: AvailabilityComponent
+        },{
+          path: '**',
+          redirectTo: '/settings/availability'
+        }
+      ]
+    },
+    {
     path: 'calendar',
     component: CalendarComponent,
     canActivate: [AuthGuard],

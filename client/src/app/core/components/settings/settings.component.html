@@ -1,0 +1,15 @@
+<div class="container-fluid p-0 flex flex-full-2">
+  <app-header></app-header>
+  <div class="flex flex-column align-items-center">
+    <label id="title">Settings</label>
+    <div id="menu" class="flex flex-row">
+      <section id="menu-nav" class="flex flex-column justify-content-stretch">
+        <span class="menu-item" *ngFor="let nav of navOptions" id="{{ nav.id }}" routerLink="{{ nav.route }}" [routerLinkActive]="['active']">{{ nav.title }}</span>
+      </section>
+      <section id="menu-content">
+        <router-outlet></router-outlet>
+      </section>
+    </div>
+  </div>
+  <app-footer></app-footer>
+</div>
