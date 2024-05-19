@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
-import { EntityManager, IsNull, Not, Repository } from 'typeorm';
+import { EntityManager, In, IsNull, Not, Repository } from 'typeorm';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
 import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
 import { google } from 'googleapis';
@@ -23,6 +23,7 @@ import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity
 import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import moment = require('moment');
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class CalendarEventService {
@@ -36,15 +37,18 @@ export class CalendarEventService {
     @InjectRepository(CalendarWebhookChannel)
     private readonly calendarWebhookChannelRepository: Repository<CalendarWebhookChannel>,
     private readonly clientsCredentials: ClientsCredentialsService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
-  async getCalendarsFromGoogle(user: User, token: CalendarToken, manager?: EntityManager) {
+  async getCalendarsFromGoogle(
+    user: User,
+    token: CalendarToken,
+    manager?: EntityManager,
+  ) {
     return transactionManagerWrapper(
       manager,
       this.calendarTokenRepository,
       async (manager) => {
-
         const { accessToken } = token;
 
         const googleCalendar = await this.getGoogleCredentials(accessToken);
@@ -73,7 +77,11 @@ export class CalendarEventService {
     );
   }
 
-  async getCalendarsFromOutlook(user: User, token: CalendarToken, manager?: EntityManager) {
+  async getCalendarsFromOutlook(
+    user: User,
+    token: CalendarToken,
+    manager?: EntityManager,
+  ) {
     return transactionManagerWrapper(
       manager,
       this.calendarTokenRepository,
@@ -110,15 +118,19 @@ export class CalendarEventService {
     );
   }
 
-  async syncGoogleCalendarEventList(user: User, calendar: Calendar, manager?: EntityManager) {
+  async syncGoogleCalendarEventList(
+    user: User,
+    calendar: Calendar,
+    manager?: EntityManager,
+  ) {
     return transactionManagerWrapper(
       manager,
       this.calendarTokenRepository,
       async (manager) => {
         const cal = await manager.getRepository(Calendar).findOne({
           where: { id: calendar.id },
-          relations: ['calendarToken']
-        })
+          relations: ['calendarToken'],
+        });
         const token = cal.calendarToken;
         if (!token) {
           throw new NotFoundException(
@@ -177,8 +189,22 @@ export class CalendarEventService {
       const outlookToken = tokens.outlookToken;
       const eventSavers = [];
 
-      if ((eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar) && !googleToken) ||
-         (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn) && !outlookToken)
+      const [attendees, optionalAttendees] = await Promise.all([
+        manager.getRepository(User).find({
+          where: { id: In(eventBody.attendees) },
+          select: ['email', 'id'],
+        }),
+        manager.getRepository(User).find({
+          where: { id: In(eventBody.optionalAttendees) },
+          select: ['email', 'id'],
+        }),
+      ]);
+
+      if (
+        (eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar) &&
+          !googleToken) ||
+        (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn) &&
+          !outlookToken)
       ) {
         throw new BadRequestException({
           message: ErrorMessages.calendarNotLinked,
@@ -199,16 +225,46 @@ export class CalendarEventService {
           });
 
         async function saveEventGoogle() {
-          const googleEventCreateRes = await googleCalendarClient.events.insert(
-            {
-              calendarId: googleLocalPrimaryCalendar.calendarId,
-              requestBody: {
-                summary: eventBody.title,
-                description: eventBody.description,
-                start: { dateTime: eventBody.start, timeZone: 'GMT' },
-                end: { dateTime: eventBody.end, timeZone: 'GMT' },
-              },
+          const attendeeData = attendees.map((attendee) => {
+            return {
+              email: attendee.email,
+              optional: false,
+            };
+          });
+
+          optionalAttendees.map((attendee) => {
+            attendeeData.push({ email: attendee.email, optional: false });
+          });
+
+          const eventData = {
+            conferenceDataVersion: 1,
+            sendNotifications: true,
+            calendarId: googleLocalPrimaryCalendar.calendarId,
+            requestBody: {
+              summary: eventBody.title,
+              description: `
+              Attached links
+              ${eventBody.meetLink}
+              
+              ${eventBody.description}`,
+              start: { dateTime: eventBody.start, timeZone: 'GMT' },
+              end: { dateTime: eventBody.end, timeZone: 'GMT' },
+              attendees,
             },
+          };
+
+          if (!eventBody.meetLink) {
+            Object.assign(eventData.requestBody, {
+              conferenceData: {
+                createRequest: {
+                  requestId: randomUUID(),
+                },
+              },
+            });
+          }
+
+          const googleEventCreateRes = await googleCalendarClient.events.insert(
+            eventData,
           );
 
           googleEventId = googleEventCreateRes.data.id;
@@ -234,6 +290,26 @@ export class CalendarEventService {
           });
 
         async function saveEventOutlook() {
+          const attendeeData = attendees.map((attendee) => {
+            return {
+              emailAddress: {
+                address: attendee.email,
+                name: attendee.firstName + ' ' + attendee.lastName,
+              },
+              type: 'required',
+            };
+          });
+
+          optionalAttendees.map((attendee) => {
+            attendeeData.push({
+              emailAddress: {
+                address: attendee.email,
+                name: attendee.firstName + ' ' + attendee.lastName,
+              },
+              type: 'optional',
+            });
+          });
+
           const outlookEventCreateRes = await outlookCalendarClient
             .api(
               `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events`,
@@ -242,8 +318,13 @@ export class CalendarEventService {
               subject: eventBody.title,
               bodyPreview: eventBody.description,
               body: {
-                content: eventBody.description,
+                content: `
+                Attached links
+                ${eventBody.meetLink}
+                
+                ${eventBody.description}`,
               },
+              attendees: attendeeData,
               start: { dateTime: eventBody.start, timeZone: 'GMT' },
               end: { dateTime: eventBody.end, timeZone: 'GMT' },
             });
@@ -570,7 +651,7 @@ export class CalendarEventService {
             type: 'web_hook',
             address: `${baseUrl}/api/calendar/events/google-webhook`,
             token: calendar.calendarToken.accessToken,
-            expiration: null
+            expiration: null,
           },
           calendarId: calendar.calendarId,
         });
@@ -590,8 +671,14 @@ export class CalendarEventService {
     );
   }
 
-  async outlookEventWatcher(user: User, calendar: Calendar, manager?: EntityManager) {
-    const outlookCalendarClient = await this.getOutlookCredentials(calendar.calendarToken.accessToken);
+  async outlookEventWatcher(
+    user: User,
+    calendar: Calendar,
+    manager?: EntityManager,
+  ) {
+    const outlookCalendarClient = await this.getOutlookCredentials(
+      calendar.calendarToken.accessToken,
+    );
 
     const tunnel = await locaTunnel({
       port: +this.configService.get<string>('PORT'),
@@ -602,7 +689,9 @@ export class CalendarEventService {
         ? tunnel.url
         : this.configService.get<string>('WEB_PRODUCTION_HOST');
 
-    const calendarWebhookChannelRepo = manager.getRepository(CalendarWebhookChannel);
+    const calendarWebhookChannelRepo = manager.getRepository(
+      CalendarWebhookChannel,
+    );
 
     const watchResponse = await outlookCalendarClient
       .api('/subscriptions')
