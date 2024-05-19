@@ -85,6 +85,7 @@ export class AvailabilityService {
     async findUserAvailabilityTimes(userIds: any[], currentUserId: string): Promise<any> {
         let availabilityData;
 <<<<<<< HEAD
+<<<<<<< HEAD
         let data: Availability[] = await this.availabilityRepo.find({
             where: { user: In(userIds) },
         });
@@ -109,31 +110,57 @@ export class AvailabilityService {
             sunday: true,
             clockType: ClockType.H24
         };
+=======
+>>>>>>> 8270847 (Fix bug in no valid attendes data - load avail. events)
 
-        let availabilities: Availability[] = await this.availabilityRepo.find({where: {user: In(userIds)}});
+        if (userIds.length > 0) {
 
-        if (availabilities) {
-            // for contact list click
-            if (availabilities.length == 1) {
-                availability = availabilities[0];
-            } else {
-                availabilities.map((data) => {
-                    availability = this.generateAttendeesAvailability(availability, data);
+            let availability:any = {
+                from: '09:00am',
+                to: '18:00pm',
+                monday: true,
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: true,
+                sunday: true,
+                clockType: ClockType.H24
+            };
 
-                    let startFrom = moment(availability.from, 'h:mma');
-                    let endFrom = moment(data.from, 'h:mma');
-                    let startTo = moment(data.to, 'h:mma');
-                    let endTo = moment(availability.to, 'h:mma');
+            let availabilities: Availability[] = await this.availabilityRepo.find({where: {user: In(userIds)}});
 
-                    if (startFrom.isBefore(endFrom)) {
-                        availability.from = data.from;
-                    }
+            if (availabilities) {
+                // for contact list click
+                if (availabilities.length == 1) {
+                    availability = availabilities[0];
+                } else {
+                    availabilities.map((data) => {
+                        availability = this.generateAttendeesAvailability(availability, data);
 
-                    if (startTo.isBefore(endTo)) {
-                        availability.to = data.to;
-                    }
-                });
+                        let startFrom = moment(availability.from, 'h:mma');
+                        let endFrom = moment(data.from, 'h:mma');
+                        let startTo = moment(data.to, 'h:mma');
+                        let endTo = moment(availability.to, 'h:mma');
+
+                        if (startFrom.isBefore(endFrom)) {
+                            availability.from = data.from;
+                        }
+
+                        if (startTo.isBefore(endTo)) {
+                            availability.to = data.to;
+                        }
+                    });
+                }
+
+                const startDate = moment().subtract(1, 'day').format('yyyy-MM-DD hh:mm:ss')
+                const dateEnd = moment().add(1, 'month').format('yyyy-MM-DD hh:mm:ss');
+
+                const eventUserIds = [...userIds, currentUserId];
+                const contactEvents: any[] = await this.eventService.getEventsByUserIds(eventUserIds, {startDate, dateEnd});
+                availabilityData = await this.convertAvailabilityToDate(availability, contactEvents);
             }
+<<<<<<< HEAD
 
             const startDate = moment().subtract(1, 'day').format('yyyy-MM-DD hh:mm:ss')
             const dateEnd = moment().add(1, 'month').format('yyyy-MM-DD hh:mm:ss');
@@ -142,6 +169,8 @@ export class AvailabilityService {
             const contactEvents: any[] = await this.eventService.getEventsByUserIds(eventUserIds, {startDate, dateEnd});
             availabilityData = await this.convertAvailabilityToDate(availability, contactEvents);
 >>>>>>> 8af85e7 (Finish caklendar availability functionality)
+=======
+>>>>>>> 8270847 (Fix bug in no valid attendes data - load avail. events)
         }
 
         return {availabilityData};
@@ -372,6 +401,7 @@ export class AvailabilityService {
     }
 
     async findIdsByEmails(emails:string[], currentUserId: string):Promise<any> {
+        debugger;
         let contactIds = await this.userRepo
             .createQueryBuilder('user')
             .select('user.id')
