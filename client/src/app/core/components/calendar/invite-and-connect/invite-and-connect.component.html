@@ -19,17 +19,21 @@
           </h6>
           <div class="duration-radio">
             <div class="duration-radio-wrapper">
-              <input type="radio" name="duration" id="threeWeek" value="2 Weeks" (change)="onDurationSelectionChanged(0)" [checked]="inviteForm.controls['duration'].value==0">
-              <label for="threeWeek">2 Weeks</label>
+              <input type="radio" name="duration" id="forever" value="forever" (change)="onDurationSelectionChanged(2)" [checked]="inviteForm.controls['duration'].value==2">
+              <label for="forever">Forever</label>
             </div>
+
             <div class="duration-radio-wrapper"  >
               <input type="radio" name="duration" id="oneMonth" value="1 Month" (change)="onDurationSelectionChanged(1)" [checked]="inviteForm.controls['duration'].value==1">
               <label for="oneMonth">1 Month</label>
             </div>
+
             <div class="duration-radio-wrapper">
-              <input type="radio" name="duration" id="forever" value="forever" (change)="onDurationSelectionChanged(2)" [checked]="inviteForm.controls['duration'].value==2">
-              <label for="forever">Forever</label>
+              <input type="radio" name="duration" id="threeWeek" value="3 Weeks" (change)="onDurationSelectionChanged(0)" [checked]="inviteForm.controls['duration'].value==0">
+              <label for="threeWeek">3 Weeks</label>
             </div>
+            
+            
             <div class="duration-radio-wrapper">
               <input type="radio" name="duration" id="custom" value="custom" (change)="onDurationSelectionChanged(3)" [checked]="inviteForm.controls['duration'].value==3">
               <label for="custom">Custom</label>
@@ -49,7 +53,7 @@
 
         <div class="checkbox-wrapper">
           <input type="checkbox" formControlName="shareMyCalendar" name="shareMyCalendar" id="shareMyCalendar" value="1">
-          <label for="shareMyCalendar">Share my calendar with the request</label>
+          <label for="shareMyCalendar">Share my calendar with the recipient(s)</label>
         </div>
 
         <div class="checkbox-wrapper">

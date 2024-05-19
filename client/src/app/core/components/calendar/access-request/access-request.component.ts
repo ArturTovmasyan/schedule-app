@@ -1,20 +1,21 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import * as moment from 'moment';
 import {Moment} from 'moment';
-import {first} from 'rxjs';
+import {Subscription, first} from 'rxjs';
 import {AccessRequest} from 'src/app/core/interfaces/calendar/access-request.interface';
 import {CalendarAccessService} from 'src/app/core/services/calendar/access.service';
 import {CommonService} from 'src/app/core/services/common.service';
 import {BroadcasterService} from "../../../../shared/services";
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-access-request',
   templateUrl: './access-request.component.html',
   styleUrls: ['./access-request.component.scss']
 })
-export class AccessRequestComponent implements OnInit {
-
+export class AccessRequestComponent implements OnInit, OnDestroy {
+  subscription$!: Subscription;
   emails: string[] = [];
   currentDurationIndex = 2;
   endDate: Moment | null = null;
@@ -27,10 +28,15 @@ export class AccessRequestComponent implements OnInit {
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
+    private readonly authService: AuthService,
     private readonly router: Router) { }
 
   ngOnInit() {
-    this.message = `Hey all,\n\nPlease Share your calendars with me so I can schedule with ease.`;
+    this.subscription$ = this.authService.currentUser.subscribe({
+      next: (res: any) => {
+        this.message = `Hey all,\n\nPlease share your calendars with me so I can schedule with ease. \n\n ${res?.user?.fullName ?? ''}`;
+      }
+    });
   }
 
   updateEmails(emails: string[]) {
@@ -99,5 +105,9 @@ export class AccessRequestComponent implements OnInit {
 
   close() {
     this.broadcaster.broadcast('calendar_full_size', true);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription$.unsubscribe();
   }
 }

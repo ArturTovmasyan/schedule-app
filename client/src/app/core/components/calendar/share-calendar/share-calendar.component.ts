@@ -1,34 +1,44 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import * as moment from 'moment';
 import {Moment} from 'moment';
-import {first} from 'rxjs';
+import {Subscription, first} from 'rxjs';
 import {AccessRequest} from 'src/app/core/interfaces/calendar/access-request.interface';
 import {CalendarAccessService} from 'src/app/core/services/calendar/access.service';
 import {CommonService} from 'src/app/core/services/common.service';
 import {BroadcasterService} from "../../../../shared/services";
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-share-calendar',
   templateUrl: './share-calendar.component.html',
   styleUrls: ['./share-calendar.component.scss']
 })
-export class ShareCalendarComponent {
+export class ShareCalendarComponent implements OnDestroy {
 
+  subscription$!: Subscription;
   emails: string[] = [];
   currentDurationIndex = 2;
   endDate: Moment | null = null;
   message = '';
   requestCalendarAccess = true;
   error: any | null = null;
+  fullName = '';
 
   constructor(
     private readonly accessService: CalendarAccessService,
     private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
+    private readonly authService: AuthService
   ) { }
+ 
 
   ngOnInit() {
-    this.message = `Hey all,\n\nFollow the link and you will have access to my calendar availability, meaning we can schedule easily.`;
+    this.subscription$ = this.authService.currentUser.subscribe({
+      next: (res: any) => {
+        this.fullName = res?.user?.fullName ?? '';
+        this.message = `Hey all,\n\nPlease share your calendars with me so I can schedule with ease. \n\n ${this.fullName}`;
+      }
+    });
   }
 
   updateEmails(emails: string[]) {
@@ -48,7 +58,7 @@ export class ShareCalendarComponent {
     this.currentDurationIndex = index;
     switch (index) {
       case 0:
-        this.endDate = moment(new Date()).add(2, 'weeks');
+        this.endDate = moment(new Date()).add(3, 'weeks');
         break;
       case 1:
         this.endDate = moment(new Date()).add(1, 'month');
@@ -97,4 +107,9 @@ export class ShareCalendarComponent {
   close() {
     this.broadcaster.broadcast('calendar_full_size', true);
   }
+
+  ngOnDestroy(): void {
+    this.subscription$.unsubscribe();
+  }
+
 }

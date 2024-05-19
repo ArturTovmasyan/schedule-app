@@ -211,10 +211,10 @@ section.request-access {
         cursor: pointer;
       }
       input[type=checkbox]:checked{
-        background-color:  #32AEF1;
+        background-color: #e9f6fd;
       }
       input[type=checkbox]::before{
-        background-color: red;
+        background-color: #645f5e;;
       }
       label {
         color: #707070;

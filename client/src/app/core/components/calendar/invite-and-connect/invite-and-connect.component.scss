@@ -4,7 +4,7 @@ section.invite-friends {
   height: 100%;
   .header {
     position: relative;
-    margin-bottom: 17px;
+    margin-bottom: 5px;
     text-align: left;
     h3 {
       font-family: 'Lexend Deca', sans-serif;
@@ -115,10 +115,10 @@ section.invite-friends {
           cursor: pointer;
         }
         input[type=checkbox]:checked{
-          background-color:  #32AEF1;
+          background-color: #e9f6fd;
         }
         input[type=checkbox]::before{
-          background-color: red;
+          background-color: #645f5e;;
         }
 
         label {

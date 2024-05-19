@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
-import { first } from 'rxjs';
+import { Subscription, first } from 'rxjs';
 import { CommonService } from 'src/app/core/services/common.service';
 import { CalendarInvitationService } from '../../../services/calendar/invitation.service';
 import {BroadcasterService} from "../../../../shared/services";
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-invite-and-connect',
   templateUrl: './invite-and-connect.component.html',
   styleUrls: ['./invite-and-connect.component.scss']
 })
-export class InviteAndConnectComponent implements OnInit {
+export class InviteAndConnectComponent implements OnInit, OnDestroy {
 
+  subscription$!: Subscription;
   inviteForm!: FormGroup;
   formSubmitted = false;
   error: any = null;
@@ -23,6 +25,7 @@ export class InviteAndConnectComponent implements OnInit {
     private readonly invitationService: CalendarInvitationService,
     private readonly commonService: CommonService,
     private readonly broadcaster: BroadcasterService,
+    private readonly authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -37,6 +40,8 @@ export class InviteAndConnectComponent implements OnInit {
     });
 
     this.initFormValue();
+
+    
   }
 
   get f() {
@@ -47,11 +52,16 @@ export class InviteAndConnectComponent implements OnInit {
     if (!defaultValues) {
       defaultValues = {
         'duration': 2,
-        'message': 'Hey All, \n\nPlease share your calendars with me so I can schedule with ease.',
         'shareMyCalendar': true,
         'requestCalendarView': true,
       }
     }
+
+    this.subscription$ = this.authService.currentUser.subscribe({
+      next: (res: any) => {
+        this.inviteForm.patchValue({'message': `Hey All, \n\nPlease share your calendars with me so I can schedule with ease.\n\n${res?.user?.fullName}`})
+      }
+    });
     this.inviteForm.patchValue(defaultValues);
   }
 
@@ -66,7 +76,7 @@ export class InviteAndConnectComponent implements OnInit {
     let endDate = null;
     switch (index) {
       case 0:
-        endDate = moment(new Date()).add(2, 'weeks');
+        endDate = moment(new Date()).add(3, 'weeks');
         break;
       case 1:
         endDate = moment(new Date()).add(1, 'month');
@@ -120,5 +130,9 @@ export class InviteAndConnectComponent implements OnInit {
 
   close() {
     this.broadcaster.broadcast('calendar_full_size', true);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription$.unsubscribe();
   }
 }
