@@ -1,5 +1,5 @@
-#container {
-    padding: 10px 60px;
+.container {
+    padding: 10px;
     border-radius: 10px;
     background-color: white;
     display: flex;
@@ -34,12 +34,7 @@
                 background-color: #DFFCFD;
                 border-radius: 4px;
                 text-transform: uppercase;
-
-                a {
-                    color: #0099BE;
-                    font-weight: 500;
-                    text-decoration-line: none;
-                }
+                font-weight: 500;
             }
         }
     }

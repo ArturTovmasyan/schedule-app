@@ -1,27 +1,28 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 import { HeaderComponent } from './components/header/header.component';
+import {
+  AuthModule,
+  errorInterceptorProvider,
+  jwtInterceptorProvider
+} from 'projects/auth/src/public-api';
+import { AppCommonModule } from 'projects/app-common/src/public-api';
+import { AuthComponent } from './components/auth/auth.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    HeaderComponent
-  ],
+  declarations: [AppComponent, HomeComponent, HeaderComponent, AuthComponent],
   imports: [
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,
-    FormsModule,
+    AppCommonModule,
+    AuthModule
   ],
-  providers: [],
+  providers: [jwtInterceptorProvider, errorInterceptorProvider],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
