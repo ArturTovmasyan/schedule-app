@@ -1,6 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
+  Query,
   Req,
   UseGuards,
   UseInterceptors,
@@ -9,8 +12,10 @@ import { UpdateAccessTokenInterceptor } from '../components/helpers/updateAccess
 import { User } from '@user/entity/user.entity';
 import { CalendarService } from './calendar.service';
 import { AuthGuard } from '@nestjs/passport';
+import TimeIntervalDto from './dto/timeInterval.dto';
+import CreateEventDto from './dto/createEvent.dto';
 
-@Controller('calendar')
+@Controller('api/calendar')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
@@ -45,14 +50,26 @@ export class CalendarController {
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async getUserMSCalendar(@Req() req: { user: User }) {
-    // req.user = { ...req.user, id: '947344d9-7a3b-416d-b17d-bf6626988c16' };
     return await this.calendarService.getCalendarsFromOutlook(req.user);
   }
 
   @Get('events')
   @UseGuards(AuthGuard())
   @UseInterceptors(UpdateAccessTokenInterceptor)
-  async getUserCalendarEvents(@Req() req: { user: User }) {
-    return await this.calendarService.getUserCalendarEvents(req.user);
+  async getUserCalendarEvents(
+    @Req() req: { user: User },
+    @Query() query: TimeIntervalDto,
+  ) {
+    return await this.calendarService.getUserCalendarEvents(req.user, query);
+  }
+
+  @Post('events')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(UpdateAccessTokenInterceptor)
+  async createUserCalendarEvent(
+    @Req() req: { user: User },
+    @Body() body: CreateEventDto,
+  ) {
+    return await this.calendarService.createUserCalendarEvent(req.user, body);
   }
 }

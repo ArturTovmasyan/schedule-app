@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
 import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
 import { google } from 'googleapis';
@@ -10,6 +10,8 @@ import 'isomorphic-fetch';
 import { Calendar } from './entities/calendar.entity';
 import { User } from '@user/entity/user.entity';
 import { CalendarEvent } from './entities/calendarEvent.entity';
+import { EventTypeEnum } from './enums/eventType.enum';
+import CreateEventDto from './dto/createEvent.dto';
 
 @Injectable()
 export class CalendarService {
@@ -36,13 +38,7 @@ export class CalendarService {
 
       const { accessToken } = token;
 
-      await this.clientsCredentials.googleOAuth2Client.setCredentials({
-        access_token: accessToken,
-      });
-      const calendar = google.calendar({
-        version: 'v3',
-        auth: this.clientsCredentials.googleOAuth2Client,
-      });
+      const calendar = await this.getGoogleCredentials(accessToken);
 
       const calendarList = await calendar.calendarList.list();
 
@@ -77,16 +73,11 @@ export class CalendarService {
 
       const { accessToken } = token;
 
-      const client = graph.Client.init({
-        authProvider: (done) => {
-          done(null, accessToken);
-        },
-      });
+      const client = await this.getOutlookCredentials(accessToken);
+
       const calendarList = await client
         .api('https://graph.microsoft.com/v1.0/me/calendars/')
         .get();
-
-      console.log('calendarList ', calendarList);
 
       await manager.getRepository(Calendar).delete({
         owner: { id: user.id },
@@ -109,17 +100,6 @@ export class CalendarService {
     });
   }
 
-  // const createEvents = await calendar.events.insert();
-
-  // const tasks = google.tasks({
-  //   version: 'v1',
-  //   auth: this.clientsCredentials.googleOAuth2Client,
-  // });
-  // console.log('before');
-  //
-  // const tasksData = await tasks.tasklists.list();
-  // console.log('after');
-
   async syncGoogleCalendarEventList(user: User) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const token = await manager.getRepository(CalendarToken).findOne({
@@ -133,14 +113,7 @@ export class CalendarService {
 
       const { accessToken } = token;
 
-      await this.clientsCredentials.googleOAuth2Client.setCredentials({
-        access_token: accessToken,
-      });
-
-      const calendar = google.calendar({
-        version: 'v3',
-        auth: this.clientsCredentials.googleOAuth2Client,
-      });
+      const calendar = await this.getGoogleCredentials(accessToken);
 
       const localPrimaryCalendar = await manager
         .getRepository(Calendar)
@@ -152,7 +125,7 @@ export class CalendarService {
 
       const eventsFromDb = await manager.getRepository(CalendarEvent).find({
         owner: { id: user.id },
-        calendarType: CalendarTypeEnum.GoogleCalendar,
+        googleId: Not(IsNull()),
       });
 
       const events = await calendar.events.list({
@@ -162,8 +135,8 @@ export class CalendarService {
 
       const serializedEvents = events.data.items.map((item) => {
         const event = new CalendarEvent();
-        event.eventId = item.id;
-        event.calendarType = CalendarTypeEnum.GoogleCalendar;
+        event.googleId = item.id;
+        event.eventType = EventTypeEnum.GoogleCalendarEvent;
         event.owner = user;
         event.start = item.start.dateTime
           ? new Date(item.start.dateTime)
@@ -179,7 +152,11 @@ export class CalendarService {
         return event;
       });
 
-      const delta = this.compareEvents(eventsFromDb, serializedEvents);
+      const delta = this.compareEvents(
+        eventsFromDb,
+        serializedEvents,
+        'googleId',
+      );
 
       return await manager.getRepository(CalendarEvent).save(delta.added);
     });
@@ -198,11 +175,7 @@ export class CalendarService {
 
       const { accessToken } = token;
 
-      const calendarClient = graph.Client.init({
-        authProvider: (done) => {
-          done(null, accessToken);
-        },
-      });
+      const calendarClient = await this.getOutlookCredentials(accessToken);
 
       const localPrimaryCalendar = await manager
         .getRepository(Calendar)
@@ -214,7 +187,7 @@ export class CalendarService {
 
       const eventsFromDb = await manager.getRepository(CalendarEvent).find({
         owner: { id: user.id },
-        calendarType: CalendarTypeEnum.GoogleCalendar,
+        outlookId: Not(IsNull()),
       });
 
       const events = await calendarClient
@@ -223,8 +196,8 @@ export class CalendarService {
 
       const serializedEvents = events.value.map((item) => {
         const event = new CalendarEvent();
-        event.eventId = item.id;
-        event.calendarType = CalendarTypeEnum.Office365Calendar;
+        event.outlookId = item.id;
+        event.eventType = EventTypeEnum.Office365CalendarEvent;
         event.owner = user;
         event.start = item.start.dateTime
           ? new Date(item.start.dateTime)
@@ -240,7 +213,11 @@ export class CalendarService {
         return event;
       });
 
-      const delta = this.compareEvents(eventsFromDb, serializedEvents);
+      const delta = this.compareEvents(
+        eventsFromDb,
+        serializedEvents,
+        'outlookId',
+      );
 
       return await manager.getRepository(CalendarEvent).save(delta.added);
     });
@@ -264,7 +241,6 @@ export class CalendarService {
 
     console.log('events ', events.data.items);
   }
-
   async getFromMS(userId: string) {
     const { accessToken } = await this.calendarTokenRepository.findOne({
       owner: { id: userId },
@@ -287,7 +263,38 @@ export class CalendarService {
     console.log('event ', event.value[0]);
   }
 
-  private compareEvents(eventsFromDb, eventsFromGoogle) {
+  async createUserCalendarEvent(user: User, body: CreateEventDto) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const googleToken = await manager.getRepository(CalendarToken).findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+      });
+      const outlookToken = await manager.getRepository(CalendarToken).findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.Office365Calendar,
+      });
+
+      if (!googleToken) {
+        throw new NotFoundException('You have not calendar access token');
+      }
+      if (!outlookToken) {
+        throw new NotFoundException('You have not calendar access token');
+      }
+
+      const googleAccessToken = googleToken.accessToken;
+      const outlookAccessToken = outlookToken.accessToken;
+
+      const googleCalendarClient = await this.getGoogleCredentials(
+        googleAccessToken,
+      );
+
+      const calendarClient = await this.getOutlookCredentials(
+        outlookAccessToken,
+      );
+    });
+  }
+
+  private compareEvents(eventsFromDb, remoteEvents, eventIdProperty) {
     function mapFromArray(
       array: Array<any>,
       prop: string,
@@ -307,14 +314,15 @@ export class CalendarService {
       o: Array<any>,
       n: Array<any>,
       comparator: (a, b) => boolean,
+      eventIdProperty: string,
     ): { added: Array<any>; deleted: Array<any>; changed: Array<any> } {
       const delta = {
         added: <Array<any>>[],
         deleted: <Array<any>>[],
         changed: <Array<any>>[],
       };
-      const mapO = mapFromArray(o, 'eventId');
-      const mapN = mapFromArray(n, 'eventId');
+      const mapO = mapFromArray(o, eventIdProperty);
+      const mapN = mapFromArray(n, eventIdProperty);
       for (const id in mapO) {
         if (!mapN.hasOwnProperty(id)) {
           delta.deleted.push(mapO[id]);
@@ -331,6 +339,35 @@ export class CalendarService {
       return delta;
     }
 
-    return getDelta(eventsFromDb, eventsFromGoogle, isEqualEvent);
+    return getDelta(eventsFromDb, remoteEvents, isEqualEvent, eventIdProperty);
+  }
+
+  private async getGoogleCredentials(accessToken: string) {
+    await this.clientsCredentials.googleOAuth2Client.setCredentials({
+      access_token: accessToken,
+    });
+
+    return google.calendar({
+      version: 'v3',
+      auth: this.clientsCredentials.googleOAuth2Client,
+    });
+  }
+
+  private async getOutlookCredentials(accessToken: string) {
+    return graph.Client.init({
+      authProvider: (done) => {
+        done(null, accessToken);
+      },
+    });
   }
 }
+
+// const tasks = google.tasks({
+//   version: 'v1',
+//   auth: this.clientsCredentials.googleOAuth2Client,
+// });
+// console.log('before');
+//
+// const tasksData = await tasks.tasklists.list();
+// console.log('after');
+// const createEvents = await calendar.events.insert();
