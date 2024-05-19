@@ -5,8 +5,19 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
+<<<<<<< HEAD
 import { EntityManager, IsNull, Not, Repository } from 'typeorm';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
+=======
+import {
+  Connection,
+  EntityManager,
+  In,
+  IsNull,
+  Not,
+  Repository,
+} from 'typeorm';
+>>>>>>> 598a568 (fix: calendar timezone issue)
 import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
 import 'isomorphic-fetch';
 import { Calendar } from './entities/calendar.entity';
@@ -17,10 +28,10 @@ import CreateEventDto from './dto/createEvent.dto';
 import { transactionManagerWrapper } from '../../components/helpers/dbTransactionManager';
 import UpdateEventDto from './dto/updateEvent.dto';
 import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity';
-import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
 import {
+<<<<<<< HEAD
     FirstWeekDaysAbbreviateEnum,
     FirstWeekDaysOutlookAbbreviateEnum,
     GoogleWeekDaysEnum,
@@ -35,6 +46,20 @@ import { EventRecurrenceTypeEnum } from './enums/eventRecurrenceType.enum';
 import { RRule } from 'rrule';
 import { getEnumKeyByEnumValue } from '../../components/helpers/getEnumKeyByEnumValue';
 import moment = require('moment');
+=======
+  FirstWeekDaysAbbreviateEnum,
+  WeekDaysAbbreviateEnum,
+} from './enums/weekDays.enum';
+import { IndexOfWeekToNumberEnum } from './enums/indexOfWeek.enum';
+import { EventRecurrenceTypeEnum } from './enums/eventRecurrenceType.enum';
+import { RRule } from 'rrule';
+import { getEnumKeyByEnumValue } from '../../components/helpers/getEnumKeyByEnumValue';
+import moment = require('moment-timezone');
+import GoogleMeetLinkDto from './dto/GoogleMeetLink.dto';
+import { IResponseMessage } from 'src/components/interfaces/response.interface';
+import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
+import { CalendarService, EventManager } from '../calendar.service';
+>>>>>>> 598a568 (fix: calendar timezone issue)
 
 @Injectable()
 export class CalendarEventService {
@@ -205,64 +230,19 @@ export class CalendarEventService {
         const eventManager = await this.calendarService.initManager(
           accessToken,
         );
-        const events = await eventManager.getAllEvents(
-          calendar.calendarId,
-          moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.sssZ'),
-          'GMT',
+        const eventsFromCal = eventManager.serializeEvents(
+          await eventManager.getAllEvents(
+            calendar.calendarId,
+            moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+            'GMT',
+          ),
+          calendar,
+          user,
         );
-
-        const serializedEvents = events.map((item) => {
-          const event = new CalendarEvent();
-          event.externalId = item.id;
-          event.calendar = calendar;
-          event.eventType = EventTypeEnum.GoogleCalendarEvent;
-          event.owner = user;
-          event.title = item.summary || null;
-          event.entanglesLocation = null;
-          event.attendees = item.attendees || [];
-          event.createdOn = item.created
-            ? new Date(item.created)
-            : new Date(Date.now());
-          event.updatedOn = item.updated
-            ? new Date(item.updated)
-            : new Date(Date.now());
-          event.description = item.description || null;
-          event.allDay = item.start.date !== undefined; // allDay events format in google (yyyy-mm-dd)
-
-          if (event.allDay) {
-            event.start = moment(item.start.date)
-              .set({
-                hour: 0,
-                minute: 0,
-                second: 0,
-                millisecond: 0,
-              })
-              .toDate();
-            event.end = moment(item.start.date)
-              .set({
-                hour: 23,
-                minute: 59,
-                second: 59,
-                millisecond: 0,
-              })
-              .toDate();
-          } else {
-            event.start = item.start?.dateTime
-              ? new Date(item.start.dateTime)
-              : null;
-            event.end = item.end?.dateTime ? new Date(item.end.dateTime) : null;
-          }
-
-          if (item.recurrence) {
-            this.serializedGoogleEventRecurrence(event, item);
-          }
-
-          return event;
-        });
 
         const delta = this.compareEvents(
           eventsFromDb,
-          serializedEvents,
+          eventsFromCal,
           'externalId',
         );
 
@@ -335,64 +315,17 @@ export class CalendarEventService {
           token.accessToken,
           CalendarTypeEnum.Office365Calendar,
         );
-        const events = await eventManager.getAllEvents(
-          calendar.calendarId,
-          '',
-          'GMT',
+        const eventsFromCal = eventManager.serializeEvents(
+          await eventManager.getAllEvents(calendar.calendarId, '', 'GMT'),
+          calendar,
+          user,
         );
-
-        const serializedEvents = events.value.map((item) => {
-          const event = new CalendarEvent();
-          event.externalId = item.id;
-          event.calendar = calendar;
-          event.eventType = EventTypeEnum.Office365CalendarEvent;
-          event.owner = user;
-
-          event.title = item.subject || null;
-          event.entanglesLocation = null;
-          event.createdOn = new Date(item.createdDateTime);
-          event.updatedOn = new Date(item.lastModifiedDateTime);
-          event.description = item.bodyPreview || null;
-          event.allDay = item.isAllDay || false;
-          event.attendees = this.mapOutlookAttendees(item.attendees);
-
-          if (event.allDay) {
-            event.start = moment(item.start.dateTime)
-              .set({
-                hour: 0,
-                minute: 0,
-                second: 0,
-                millisecond: 0,
-              })
-              .toDate();
-            event.end = moment(item.start.dateTime)
-              .set({
-                hour: 23,
-                minute: 59,
-                second: 59,
-                millisecond: 0,
-              })
-              .toDate();
-          } else {
-            event.start = item.start.dateTime
-              ? new Date(item.start.dateTime)
-              : null;
-            event.end = item.end.dateTime ? new Date(item.end.dateTime) : null;
-          }
-
-          if (item.recurrence) {
-            this.serializedOutlookEventRecurrence(event, item);
-          }
-
-          return event;
-        });
 
         const delta = this.compareEvents(
           eventsFromDb,
-          serializedEvents,
+          eventsFromCal,
           'externalId',
         );
-        console.log(delta.changed.length);
         if (delta.changed.length > 0) {
           const externalId = delta.changed[0].externalId;
 
@@ -1400,127 +1333,6 @@ export class CalendarEventService {
     return getDelta(eventsFromDb, remoteEvents, isEqualEvent, eventIdProperty);
   }
 
-  private convertDateToNegativeLocalTimeZone(inputDate: string) {
-    const date = new Date(inputDate);
-    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-    return new Date(date.getTime() + userTimezoneOffset);
-  }
-
-  private serializedOutlookEventRecurrence(event: CalendarEvent, item) {
-    const recurrenceType = item.recurrence?.pattern.type;
-    const firstDayOfWeek = item.recurrence?.pattern.firstDayOfWeek;
-    if (
-      recurrenceType === 'absoluteMonthly' ||
-      recurrenceType === 'relativeMonthly'
-    ) {
-      event.recurrenceType = EventRecurrenceTypeEnum.MONTHLY || null;
-    } else if (
-      recurrenceType === 'absoluteYearly' ||
-      recurrenceType === 'relativeYearly'
-    ) {
-      event.recurrenceType = EventRecurrenceTypeEnum.YEARLY || null;
-    } else {
-      event.recurrenceType = recurrenceType || null;
-    }
-    event.recurrenceInterval = item.recurrence?.pattern.interval || null;
-    event.recurrenceDaysOfWeek = item.recurrence?.pattern.daysOfWeek
-      ? item.recurrence?.pattern.daysOfWeek.map((weekDay) => {
-          const capitalizedWeekDay =
-            weekDay.charAt(0).toUpperCase() + weekDay.slice(1);
-          return WeekDaysEnum[capitalizedWeekDay];
-        })
-      : null;
-    event.recurrenceIndexOfWeek = item.recurrence?.pattern.index || null;
-    event.recurrenceDayOfMonth = item.recurrence?.pattern.dayOfMonth || null;
-    event.recurrenceMonth = item.recurrence?.pattern.month || null;
-    event.recurrenceFirstDayOfWeek = firstDayOfWeek
-      ? FirstWeekDaysOutlookAbbreviateEnum[firstDayOfWeek]
-      : null;
-    event.recurrenceStartDate = item.recurrence?.range.startDate
-      ? this.convertDateToNegativeLocalTimeZone(
-          item.recurrence?.range.startDate,
-        )
-      : null;
-    event.recurrenceEndDate = item.recurrence?.range.endDate
-      ? this.convertDateToNegativeLocalTimeZone(item.recurrence?.range.endDate)
-      : null;
-    event.recurrenceNumberOfOccurrences =
-      item.recurrence?.range.numberOfOccurrences || null;
-  }
-
-  private serializedGoogleEventRecurrence(
-    event: CalendarEvent,
-    eventFromGoogle,
-  ) {
-    const recurrence = eventFromGoogle.recurrence[0].split(';');
-
-    function serializer(event, recurrenceElementArr, eventFromGoogle) {
-      event.recurrenceStartDate = eventFromGoogle.created
-        ? new Date(eventFromGoogle.created)
-        : null;
-      switch (recurrenceElementArr[0]) {
-        case 'RRULE:FREQ':
-          if (recurrenceElementArr[1] === 'YEARLY') {
-            event.recurrenceDayOfMonth =
-              new Date(eventFromGoogle.start?.dateTime).getDate() || null;
-            event.recurrenceMonth =
-              new Date(eventFromGoogle.start?.dateTime).getMonth() + 1 || null;
-          }
-          if (recurrenceElementArr[1] === 'MONTHLY') {
-            event.recurrenceDayOfMonth =
-              new Date(eventFromGoogle.start?.dateTime).getDate() || null;
-          }
-
-          event.recurrenceType = recurrenceElementArr[1].toLowerCase();
-          break;
-        case 'WKST':
-          event.recurrenceFirstDayOfWeek =
-            FirstWeekDaysAbbreviateEnum[recurrenceElementArr[1]];
-          break;
-
-        case 'COUNT':
-          event.recurrenceNumberOfOccurrences = recurrenceElementArr[1]
-            ? Number(recurrenceElementArr[1])
-            : null;
-          break;
-
-        case 'BYDAY':
-          const byDay = recurrenceElementArr[1];
-
-          if (/\d/.test(byDay)) {
-            const index = Math.floor(byDay.length / 2);
-            const byDayArr = [byDay.slice(0, index), byDay.slice(index)];
-            const byDayIndex = Number(byDayArr[0]);
-            const byDayWeekDay = byDayArr[1];
-
-            event.recurrenceDaysOfWeek = [GoogleWeekDaysEnum[byDayWeekDay]];
-            event.recurrenceIndexOfWeek = GoogleIndexOfWeekEnum[byDayIndex];
-            break;
-          }
-          const weekDays = recurrenceElementArr[1].split(',');
-          event.recurrenceDaysOfWeek = weekDays.map((item) => {
-            return GoogleWeekDaysEnum[item];
-          });
-          break;
-        case 'UNTIL':
-          event.recurrenceEndDate = new Date(
-            +moment(recurrenceElementArr[1]).format('X'),
-          );
-          break;
-        case 'INTERVAL':
-          event.recurrenceInterval = recurrenceElementArr[1]
-            ? Number(recurrenceElementArr[1])
-            : null;
-          break;
-      }
-    }
-
-    for (const recurrenceElement of recurrence) {
-      const recurrenceElementArr = recurrenceElement.split('=');
-      serializer(event, recurrenceElementArr, eventFromGoogle);
-    }
-  }
-
   private joinCommonAndRecurrenceEvents(
     commonEvents,
     recurringEventsFromDb,
@@ -1590,6 +1402,7 @@ export class CalendarEventService {
           allDay: event.allDay,
 >>>>>>> f8a7810 (fix: refactor event comparison to check also for attendees)
         });
+<<<<<<< HEAD
     }
 
     async getTokens(
@@ -1606,6 +1419,70 @@ export class CalendarEventService {
         });
         return { googleToken, outlookToken };
     }
+=======
+      }
+    });
+
+    return [...commonEvents, ...recurringEvents]
+      .sort((a, b) => {
+        return a.start.getTime() - b.start.getTime();
+      })
+      .map((event) => {
+        return { ...event, additionalId: randomUUID() };
+      });
+  }
+
+  private getEventDescription(eventDto: CreateEventDto): string {
+    const additional_description = (): string => {
+      switch (eventDto.entanglesLocation) {
+        case MeetViaEnum.Zoom:
+          return 'Zoom meeting information:';
+        case MeetViaEnum.InboundCall:
+          return `Please give me a call at: ${eventDto.phoneNumber ?? ''}`;
+        case MeetViaEnum.OutboundCall:
+          return 'You will receive a call from me.';
+        case MeetViaEnum.PhysicalAddress:
+          return `Lets meet at ${eventDto.address ?? ''}`;
+        default:
+          return '';
+      }
+    };
+
+    return `
+      <p>${eventDto.description}</p>
+      <p>${additional_description()}</p>
+    `;
+  }
+
+  private async getEventFromThirdPartyResponse(
+    manager: EntityManager,
+    user: User,
+    eventDto: CreateEventDto,
+    externalId: string | null = null,
+  ) {
+    const tokens = await this.getTokens(user, manager);
+    const googleToken = tokens.googleToken;
+    const outlookToken = tokens.outlookToken;
+    const eventSavers = [];
+
+    const calendar = await manager.getRepository(Calendar).findOne({
+      owner: { id: user.id },
+      id: eventDto.calendarId,
+    });
+
+    if (!calendar) {
+      throw new BadRequestException({
+        message: ErrorMessages.calendarNotFound,
+      });
+    }
+    let attendeeData = [];
+    let eventManager: EventManager;
+
+    if (calendar.calendarType === CalendarTypeEnum.GoogleCalendar) {
+      eventManager = await this.calendarService.initManager(
+        googleToken.accessToken,
+      );
+>>>>>>> 598a568 (fix: calendar timezone issue)
 
     private compareEvents(eventsFromDb, remoteEvents, eventIdProperty) {
         function mapFromArray(
@@ -1686,9 +1563,67 @@ export class CalendarEventService {
             authProvider: (done) => {
                 done(null, accessToken);
             },
+<<<<<<< HEAD
+=======
+          });
+        }
+        return await eventManager.saveEvent(eventData, isUpdate, null);
+      };
+      eventSavers.push(saveEventGoogle);
+    } else if (calendar.calendarType === CalendarTypeEnum.Office365Calendar) {
+      eventManager = await this.calendarService.initManager(
+        outlookToken.accessToken,
+        CalendarTypeEnum.Office365Calendar,
+      );
+
+      const saveEventOutlook = async (isUpdate = false) => {
+        if (eventDto.attendees) {
+          attendeeData = attendeeData.concat(
+            eventDto.attendees.map((attendee) => {
+              return {
+                emailAddress: {
+                  address: attendee,
+                  name: attendee,
+                },
+                type: 'required',
+              };
+            }),
+          );
+        }
+        if (eventDto.optionalAttendees) {
+          attendeeData = attendeeData.concat(
+            eventDto.optionalAttendees.map((attendee) => {
+              return {
+                emailAddress: {
+                  address: attendee,
+                  name: attendee,
+                },
+                type: 'optional',
+              };
+            }),
+          );
+        }
+
+        const eventData = {
+          subject: eventDto.title,
+          bodyPreview: eventDto.description,
+          body: {
+            contentType: 'HTML',
+            content: this.getEventDescription(eventDto),
+          },
+          attendees: attendeeData,
+          start: { dateTime: eventDto.start, timeZone: 'GMT' },
+          end: { dateTime: eventDto.end, timeZone: 'GMT' },
+        };
+
+        return await eventManager.saveEvent(eventData, isUpdate, {
+          eventId: externalId,
+          calendarId: calendar.calendarId,
+>>>>>>> 598a568 (fix: calendar timezone issue)
         });
     }
 
+<<<<<<< HEAD
     private convertDateToNegativeLocalTimeZone(inputDate: string) {
         const date = new Date(inputDate);
         const userTimezoneOffset = date.getTimezoneOffset() * 60000;
@@ -1803,4 +1738,11 @@ export class CalendarEventService {
             serializer(event, recurrenceElementArr, eventFromGoogle);
         }
     }
+=======
+    const eventResponse = await Promise.all(
+      eventSavers.map((saver) => saver(externalId != null)),
+    );
+    return eventManager.serializeEvent(eventResponse[0], calendar, user);
+  }
+>>>>>>> 598a568 (fix: calendar timezone issue)
 }
