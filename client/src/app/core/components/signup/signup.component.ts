@@ -21,7 +21,6 @@ export class SignupComponent {
   register = false;
   showRequiredErrors = false;
   error?: ErrorResponse;
-  @ViewChild("focusField") focusField:any;
 
   constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
@@ -39,9 +38,7 @@ export class SignupComponent {
 
   signup() {
     if (this.form.invalid) {
-      // this.focusField.nativeElement.focus();
       this.showRequiredErrors = true;
-
       return;
     }
 
