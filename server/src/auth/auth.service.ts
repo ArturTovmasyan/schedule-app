@@ -69,6 +69,7 @@ export class AuthService {
             message: 'user registered',
         };
 
+        debugger;
         try {
             let fullName = userDto.firstName + ' ' + userDto.lastName;
             const stripeCustomer = await this.stripeService.createCustomer(fullName, userDto.email);
