@@ -30,7 +30,8 @@ export class RecoveryPasswordComponent {
     this.form = this.formBuilder.group({
       'newPassword': ['', [ValidationService.passwordValidator, Validators.required]],
       'confirmPassword': ['', [Validators.required]]
-    }, {validator: ValidationService.passwordsEqualValidator})
+    },
+      {updateOn: 'blur', validator: ValidationService.passwordsEqualValidator})
   }
 
   toggleNewPasswordType() {
@@ -42,6 +43,11 @@ export class RecoveryPasswordComponent {
   }
 
   setNewPassword() {
+
+    if (this.form.invalid) {
+      return;
+    }
+
     this.authService
       .setNewPassword(this.confirmToken, this.form.value.newPassword)
       .subscribe({

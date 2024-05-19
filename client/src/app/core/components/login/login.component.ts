@@ -34,10 +34,12 @@ export class LoginComponent implements OnInit {
     private broadcaster: BroadcasterService
   ) {
     this.form = this.formBuilder.group({
-      email: ['', [ValidationService.emailValidator, Validators.required]],
-      password: ['', [Validators.required]],
-      remember: [false]
-    });
+        email: ['', [ValidationService.emailValidator, Validators.required]],
+        password: ['', [Validators.required]],
+        remember: [false]
+      },
+      {updateOn: 'blur'}
+    );
 
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }

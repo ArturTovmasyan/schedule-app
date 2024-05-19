@@ -12,10 +12,11 @@ export class ControlMessageComponent {
 
     get errorMessage() {
         for (const propertyName in this.control.errors) {
-            if (this.control.value && this.control.errors.hasOwnProperty(propertyName) && this.control.invalid ) {
+            if (this.control.value && this.control.errors.hasOwnProperty(propertyName) && this.control.invalid) {
                 return ValidationService.getValidatorErrorMessage(propertyName, this.control.errors[propertyName]);
             }
         }
+
         return null;
     }
 }

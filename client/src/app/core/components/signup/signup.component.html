@@ -1,15 +1,15 @@
 <div id="container">
   <div *ngIf="!register; else confirmRegister">
-    <div id="title">
+    <div class="title">
       <span id="line1">Welcome to Handshake.</span>
       <span id="line2">Start for free.</span>
     </div>
-    <form id="form" [formGroup]="form" (ngSubmit)="signup()" autocomplete="off">
+    <form class="form" [formGroup]="form" (ngSubmit)="signup()" autocomplete="off">
       <div class="form-group">
         <label for="fullName">Full Name</label>
         <div class="input-group">
           <img src="assets/user-icon.png" alt="user icon">
-          <input type="text" id="fullName" formControlName="fullName" placeholder="Full Name" />
+          <input type="text" id="fullName" formControlName="fullName" #firstNameField placeholder="Full Name" />
         </div>
         <app-control-messages [control]="f['fullName']"></app-control-messages>
       </div>
@@ -40,7 +40,7 @@
       </span>
 
       <div>
-        <button id="submit" type="submit">Register</button>
+        <button class="submit" type="submit">Register</button>
       </div>
     </form>
     <div id="social">
@@ -56,14 +56,14 @@
   </div>
 
 <ng-template #confirmRegister>
-  <div id="title">
+  <div class="title">
     <span id="welcome-back">Confirm Email Sent!</span>
     <span id="login">Check your inbox.</span>
     <span id="reset-password-note" [ngStyle]="{'line-height':'25px'}">An email has been sent to<br/><strong>{{email}}</strong><br/>
           Follow the instruction for confirm your account.</span>
   </div>
 
-  <div id="form">
+  <div class="form">
     <button id="submit" type="button" routerLink="/">Back to Sign in</button>
   </div>
 </ng-template>
