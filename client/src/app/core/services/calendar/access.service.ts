@@ -41,4 +41,21 @@ export class CalendarAccessService {
         })
       )
   }
+
+  approveAccessRequest(requestId: string) {
+    return this.updateAccessRequest(requestId, 'accept')
+  }
+
+  denyAccessRequest(requestId: string) {
+    return this.updateAccessRequest(requestId, 'decline')
+  }
+
+  private updateAccessRequest(requestId: string, status: string) {
+    return this.http.patch<ApiResponse<any>>(`/api/calendar/access-request/${requestId}`, { status }, {})
+    .pipe(
+      map(() => {
+        return {}
+      })
+    );
+  }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as moment from 'moment';
-import { Moment } from 'moment';
+import * as moment from 'moment-timezone';
 
 @Injectable({
   providedIn: 'root'
@@ -9,28 +8,25 @@ export class CommonService {
 
   constructor() {}
 
-  getFormattedDateString(date: Moment | null): string | null {
+  getFormattedDateString(date: moment.Moment | null, format = `YYYY-MM-DDTHH:mm:ss.sssZ`): string | null {
     if(date != null) {
-      return date.utc().format(`YYYY-MM-DDTHH:mm:ss.sssZ`);
+      return date.utc().format(format);
     }
     return null
   }
 
   getElapsedTime(dateString: string): [number, string] {
-    const date = moment(dateString, 'YYYY-MM-DDTHH:mm:ss.sssZ');
-    const seconds = moment().diff(date, 'seconds');
-    if(seconds > 60) {
-      const mins = moment().diff(date, 'minutes');
-      if(mins > 60) {
-        const hours = moment().diff(date, 'hours');
-        if(hours >= 24) {
-          const days = moment().diff(date, 'days');
-          return [days, 'days'];
-        }
-        return [hours, 'hours'];
+    const date = moment(dateString, 'YYYY-MM-DDTHH:mm:ss.sssZ').tz(moment.tz.guess());
+    console.log(dateString, date, moment().utc())
+    const mins = moment().utc().diff(date, 'minutes');
+    if(mins > 60) {
+      const hours = moment().diff(date, 'hours');
+      if(hours >= 24) {
+        const days = moment().diff(date, 'days');
+        return [days, 'days'];
       }
-      return [mins, 'mins'];
+      return [hours, 'hours'];
     }
-    return [seconds, 'secs'];
+    return [mins, 'mins'];
   }
 }

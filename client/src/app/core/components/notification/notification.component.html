@@ -22,12 +22,12 @@
             </div>
 
             <div class="notification-info">
-              <p><span class="name">{{ getSenderName(notification) }} -</span> {{ getNotificationMessage(notification.type) }}</p>
-              <div *ngIf="hasActions(notification.type)" class="buttons">
-                <button class="transparent-button" id="denyButton">
+              <p><span class="name">{{ getSenderName(notification) }} -</span> {{ getNotificationMessage(notification) }}</p>
+              <div *ngIf="hasActions(notification)" class="buttons">
+                <button class="transparent-button" id="denyButton" (click)="denyRequest(notification)">
                   Deny
                 </button>
-                <button class="blue-button" id="approveButton">
+                <button class="blue-button" id="approveButton" (click)="approveRequest(notification)">
                   Approve
                 </button>
               </div>

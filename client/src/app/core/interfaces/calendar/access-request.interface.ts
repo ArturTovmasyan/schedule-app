@@ -1,5 +1,7 @@
 export interface AccessRequest {
+  id?: string,
   toEmails: string[],
   timeForAccess: string | null,
-  comment: string
+  comment: string,
+  status?: string
 }
