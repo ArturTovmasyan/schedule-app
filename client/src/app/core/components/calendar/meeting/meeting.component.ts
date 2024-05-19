@@ -45,7 +45,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
   dropdownSettings = {};
   errorMessages: any = [];
   showCalendars = false;
-  selectEvent = false;
   error = false;
 
   showRequiredErrors = false;
@@ -85,7 +84,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
     this.subscription = this.broadcaster.on('meet_date_range').subscribe((eventData: any) => {
       if (eventData.contact_email) {
-        // changged by me == for tests
         this.selectedAttendees = [
           eventData
         ]
@@ -94,7 +92,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
       this.data.start = eventData.start;
       this.data.end = eventData.end;
-      this.selectEvent = this.data.attendees?.length != 0;
     });
   }
 
@@ -120,6 +117,37 @@ export class MeetingComponent implements OnInit, OnDestroy {
       allowSearchFilter: true,
     };
     this.initFormValue();
+
+    // load from saved Data of localstorage after connect redirection
+    if (localStorage.getItem('meetingDatas')) {
+      this.runAfterRedirect();
+    }
+  }
+  
+  // run after connect button is clicked on Location to connect to zoom, meet or teams
+  runAfterRedirect() {
+    const savedData = localStorage.getItem('meetingDatas') as string;
+    if (savedData) {
+      const savedDataArr = JSON.parse(savedData);
+      this.choosedLocationObj = savedDataArr.choosedLocationObj;
+      this.data = savedDataArr.data;
+      this.selectedAttendees = savedDataArr.selectedAttendees ?? [];
+      console.log(this.data);
+      this.broadcaster.broadcast('selectUnselectDate', {'startDate': this.data.start, 'endDate': this.data.end});
+      if (this.selectedAttendees.length) {
+        for (let i=0; i < this.selectedAttendees.length; i++) {
+          this.getContactsAvailability(this.selectedAttendees[i]);
+        }
+      }
+      this.onDurationSelectionChanged(this.data.duration!);
+      if (!this.choosedLocationObj?.available) {
+        // if not connected show connect message
+        this.connectMessage = {
+          title: this.choosedLocationObj?.title as string,
+          type: this.choosedLocationObj?.value as string
+        };
+      }
+    }
   }
 
   initFormValue(defaultValues: any = null) {
@@ -142,6 +170,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (localStorage.getItem('meetingDatas')) localStorage.removeItem('meetingDatas');
     this.subscription.unsubscribe();
   }
 
@@ -206,6 +235,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.resetData();
+          if (localStorage.getItem('meetingDatas')) localStorage.removeItem('meetingDatas');
         },
         error: (error:any) => {
           this.errorMessages.push(error?.message);
@@ -221,7 +251,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       meetLink: "",
       start: "",
       end: "",
-      syncWith: "",
+      syncWith: this.data.syncWith,
       attendees: [],
       optionalAttendees: [],
       duration: 1,
@@ -297,9 +327,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   broadcastContactData() {
     const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
-    if (contacts.length != 0) {
-      this.broadcaster.broadcast('contact_calendar_data', contacts);
-    }
+    this.broadcaster.broadcast('contact_calendar_data', contacts);
+    
   }
 
   updateAttendees(users: UserData[]) {
@@ -347,18 +376,15 @@ export class MeetingComponent implements OnInit, OnDestroy {
   // type could be zoom, teams or gmeet used MeetViaEnum
   connect(type: string) {
     const savedData = {
-      messageTitle: this.data.title,
+      data: this.data,
+      choosedLocationObj: this.choosedLocationObj,
       selectedAttendees: this.selectedAttendees,
-      selectedStartDate: this.data.start,
-      selectedEndDate: this.data.end,
-      choosedLocationObj: this.choosedLocationObj
     }
-
-    localStorage.setItem('savedDatas', JSON.stringify({}));
+    localStorage.setItem('meetingDatas', JSON.stringify(savedData));
     localStorage.setItem('calendar-redirect', window.location.pathname);
     let connectApiReq = null;
     if (type == MeetViaEnum.Zoom) {
-      this.calendarPermissionService.connectZoom()
+      this.calendarPermissionService.connectZoom() 
         .subscribe({
           next: (url: string) => {
             window.location.href = url;
@@ -405,6 +431,12 @@ export class MeetingComponent implements OnInit, OnDestroy {
     setTimeout(() => {
         this.errorMessages = [];
       }, time);
+  }
+
+  resetSelectedDate() {
+    this.data['start'] = '';
+    this.data['end'] = '';
+    this.broadcaster.broadcast('selectUnselectDate', {'startDate': '', 'endDate': ''});
   }
 
   get f() {

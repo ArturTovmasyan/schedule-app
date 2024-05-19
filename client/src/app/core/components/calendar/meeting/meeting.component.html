@@ -71,7 +71,7 @@
         <h3 class="section-title-secondary">
           Date/Time
         </h3>
-        <div class="date-time-container">
+        <div class="date-time-container {{ this.data.start ? 'date-selected': ''}}">
           <ul class="list-unstyled list-inline">
             <li class="list-inline-item date">
               <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ parsedDate }}" readonly>
@@ -83,7 +83,11 @@
               <input type="text" id="meetingEndTime" name="meetingEndTime"
                 placeholder="{{ this.data.end | parseTime:'hh:mmA' }}" readonly>
             </li>
+            
           </ul>
+          <div>
+            <button  id="remove-button" class="remove-button {{ !this.data.start ? 'hidden': ''}}" (click)="resetSelectedDate()"></button>
+          </div>
         </div>
         <div class="save-to-calendar" *ngIf="hasCalendars">
           <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img
