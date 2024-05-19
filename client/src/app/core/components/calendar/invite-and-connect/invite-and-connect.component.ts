@@ -128,10 +128,6 @@ export class InviteAndConnectComponent implements OnInit, OnDestroy {
     }
   }
 
-  close() {
-    this.broadcaster.broadcast('calendar_full_size', true);
-  }
-
   ngOnDestroy(): void {
     this.subscription$.unsubscribe();
   }

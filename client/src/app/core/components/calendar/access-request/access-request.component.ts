@@ -103,16 +103,6 @@ export class AccessRequestComponent implements OnInit, OnDestroy {
       });
   }
 
-  
-  close() {
-    this.broadcaster.broadcast('calendar_full_size', true);
-  }
-
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: 
-    KeyboardEvent) {
-    this.close();
-   }
-
   ngOnDestroy(): void {
     this.subscription$.unsubscribe();
   }

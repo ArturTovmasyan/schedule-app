@@ -1,36 +1,38 @@
-import {Component, OnDestroy} from '@angular/core';
-import {BroadcasterService} from "../../../shared/services";
-import {BehaviorSubject} from "rxjs";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BroadcasterService } from "../../../shared/services";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { CommonService } from '../../services/common.service';
+import { ActivatedRoute, NavigationEnd, Router,Event as NavigationEvent } from '@angular/router';
 
 @Component({
   selector: 'app-availability',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss']
 })
-export class CalendarComponent implements OnDestroy {
-  subscription: BehaviorSubject<boolean>;
+export class CalendarComponent implements OnInit, OnDestroy {
+  subscription: Subscription | null = null;
   calendarFullSize: boolean = false;
-  displayStyle: string = '';
   timezone = "";
 
   constructor(
-    private readonly broadcaster: BroadcasterService,
-    private readonly commonService: CommonService
+    private readonly commonService: CommonService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
     this.timezone = `${this.commonService.formattedLocalTimezone}`;
-    this.subscription = this.broadcaster.on('calendar_full_size').subscribe(() => {
-      this.calendarFullSize = true;
-      this.displayStyle = 'none';
+  }
+
+  ngOnInit(): void {
+    this.subscription = this.route.url.subscribe(() => {
+      this.calendarFullSize = this.route.snapshot.firstChild == null;
     });
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.subscription?.unsubscribe();
   }
 
-  openLeftMenu() {
-    this.calendarFullSize = false;
-    this.displayStyle = 'block';
+  close() {
+    this.router.navigate(['/calendar']);
   }
 }

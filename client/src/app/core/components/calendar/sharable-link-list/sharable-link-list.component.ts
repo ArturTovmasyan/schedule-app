@@ -97,8 +97,4 @@ export class SharableLinkListComponent implements OnInit {
     });
 
   }
-
-  close() {
-    this.broadcaster.broadcast('calendar_full_size', true);
-  }
 }

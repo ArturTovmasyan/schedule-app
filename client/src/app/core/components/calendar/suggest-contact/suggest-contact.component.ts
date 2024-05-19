@@ -3,7 +3,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CalendarInvitationService} from "../../../services/calendar/invitation.service";
 import {first} from "rxjs";
 import {SuggestContactService} from "../../../services/calendar/suggest-contact.service";
-import {BroadcasterService} from "../../../../shared/services";
 
 @Component({
   selector: 'app-suggest-contact',
@@ -25,7 +24,6 @@ export class SuggestContactComponent implements OnInit {
     private formBuilder: FormBuilder,
     private readonly invitationService: CalendarInvitationService,
     private readonly suggestService: SuggestContactService,
-    private readonly broadcaster: BroadcasterService
   ) {
     this.initSuggestContact();
   }
@@ -41,8 +39,6 @@ export class SuggestContactComponent implements OnInit {
             this.suggestForm.patchValue({
               'emails': [response.data.unregisteredEmails[0]],
             });
-          } else {
-            this.broadcaster.broadcast('calendar_full_size', true);
           }
         },
         error: (error) => {

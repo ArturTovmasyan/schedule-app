@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div class="container-fluid" id="container">
   <div class="row h-100">
     <div class="h-100 text-center" [style.display]="displayStyle" [ngClass]="!calendarFullSize ? 'col-12 col-sm-3 p-0' : ''" id="calendarLeftSide">
@@ -16,19 +17,26 @@
 <!--              Invite <br> Contacts-->
 <!--            </p>-->
 <!--          </a>-->
+=======
+<div id="container">
+  <section id="left-menu" [ngClass]="{hidden: calendarFullSize}">
+    <router-outlet></router-outlet>
+    <button class="close-button" (click)="close()">
+      <img src="assets/close-icon.svg" alt="close button">
+    </button>
+  </section>
+  <section id="calendar">
+    <div class="calendar-header d-flex justify-content-end">
+>>>>>>> 5dee4a2 (refactor closing side panel)
 
-          <div class="account-info">
-            <div class="timezone ">
-              <h4 id="userTimezone" class="text-hover-scale">
-                {{ timezone }}
-              </h4>
-            </div>
-
-            <app-notification></app-notification>
-            <app-avatar></app-avatar>
-          </div>
+      <div class="account-info">
+        <div class="timezone ">
+          <h4 id="userTimezone" class="text-hover-scale">
+            {{ timezone }}
+          </h4>
         </div>
 
+<<<<<<< HEAD
         <app-my-calendar></app-my-calendar>
 
         <div class="calendar-footer d-flex justify-content-center align-items-center">
@@ -82,7 +90,43 @@
             </li>
           </ul>
         </div>
+=======
+        <app-notification></app-notification>
+        <app-avatar></app-avatar>
+>>>>>>> 5dee4a2 (refactor closing side panel)
       </div>
     </div>
-  </div>
+
+    <app-my-calendar></app-my-calendar>
+
+    <div class="calendar-footer d-flex justify-content-center align-items-center">
+      <ul class="list-unstyled mb-0">
+        <li class="list-inline-item">
+          <a routerLink="/calendar/meeting" class="handshake hover-scale">
+              <img src="assets/handshake-icon.png" alt="schedule a meeting">
+          </a>
+        </li>
+        <li class="list-inline-item">
+          <a routerLink="/calendar/access-request" [routerLinkActive]="['active']" class="hover-scale">
+              <img src="assets/request-calendar.png" alt="request calendar">
+          </a>
+        </li>
+        <li class="list-inline-item">
+          <a routerLink="/calendar/share" [routerLinkActive]="['active']" class="hover-scale">
+              <img src="assets/share-calendar.png" alt="share calendar">
+          </a>
+        </li>
+        <li class="list-inline-item">
+          <a routerLink="/calendar/contacts" [routerLinkActive]="['active']" class="hover-scale">
+              <img src="assets/contacts.png" alt="view contacts">
+          </a>
+        </li>
+        <li class="list-inline-item">
+          <a routerLink="/calendar/sharable-link" [routerLinkActive]="['active']" class="hover-scale">
+              <img src="assets/share-availability.png" alt="view shareable links">
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
 </div>

@@ -57,8 +57,4 @@ export class ContactsComponent implements OnInit {
         }
       });
   }
-
-  close() {
-    this.broadcaster.broadcast('calendar_full_size', true);
-  }
 }

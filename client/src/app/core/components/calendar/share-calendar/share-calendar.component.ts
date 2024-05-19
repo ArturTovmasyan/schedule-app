@@ -104,10 +104,6 @@ export class ShareCalendarComponent implements OnDestroy {
       });
   }
 
-  close() {
-    this.broadcaster.broadcast('calendar_full_size', true);
-  }
-
   ngOnDestroy(): void {
     this.subscription$.unsubscribe();
   }
