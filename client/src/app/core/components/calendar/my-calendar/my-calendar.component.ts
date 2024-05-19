@@ -17,7 +17,7 @@ export class MyCalendarComponent implements OnInit {
   constructor(private calendarService: CalendarService) {}
 
   ngOnInit(): void {
-    // this.fetchMyEvents();
+    this.fetchMyEvents();
   }
 
   fetchMyEvents() {
@@ -55,6 +55,12 @@ export class MyCalendarComponent implements OnInit {
     eventBackgroundColor: '#E9F6FD',
     eventOrderStrict: true,
     stickyHeaderDates: true,
+    windowResizeDelay: 100,
+    dragRevertDuration: 500,
+    handleWindowResize: false,
+    expandRows: false,
+    showNonCurrentDates: false,
+    lazyFetching: false,
     slotLabelFormat: [
       {
         hour: 'numeric',
@@ -78,41 +84,19 @@ export class MyCalendarComponent implements OnInit {
       center: 'prev,title,next',
       right: 'today'
     },
-    events: [
-      {title: 'event 1 Test big title for resize event block', start: '2022-10-11T03:45:00', end: '2022-10-11T04:45:00', description: 'Event 1 description'},
-      {title: 'event 2', start: '2022-10-12T07:45:00', end: '2022-10-12T08:45:00', description: 'Event 2 description'},
-      {title: 'event 3', start: '2022-10-13T02:45:00', end: '2022-10-13T05:45:00', description: 'Event 3 description'},
-      {title: 'event 4', start: '2022-10-14T10:45:00', end: '2022-10-14T12:45:00', description: 'Event 4 description'},
-    ],
+    events: [],
     eventContent: this.eventContent.bind(this),
     eventClassNames: function(arg) {
-      const title = arg.event._def.title;
-      if (title.length > 20) {
-        return 'event-big';
-      } else {
-        return 'event-standard';
-      }
-    },
-    // eventClick: function(arg) {
-    //   if (confirm('Are you sure you want to delete this event?')) {
-    //     arg.event.remove()
-    //   }
-    // },
-    // dateClick: this.handleDateClick.bind(this),
-    // select: function(arg) {
-    // },
+      return 'event-block';
+    }
   };
 
   eventContent(arg: any) {
-    // let description = arg.event._def.extendedProps['description'];
     let divEl = document.createElement('div');
     let title = arg.event.title;
     let time = arg.timeText;
+
     divEl.innerHTML = '<span>' + title + '</span><br/><span style="color: #047BDAFF">' + time + '</span>';
     return {html: divEl.innerHTML};
-  }
-
-  handleDateClick(arg: { dateStr: string; }) {
-    alert('date click! ' + arg.dateStr)
   }
 }
