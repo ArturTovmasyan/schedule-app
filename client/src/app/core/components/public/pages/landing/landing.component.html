@@ -74,8 +74,8 @@
   </section>
   <section class="partners" id="partners">
     <div id="wrapper">
-      <div id="carousel">
-        <div id="content">
+      <div id="carousel" #carousel>
+        <div id="content" #content>
           <div class="item">
             <img src="assets/partner-logo-1.png" alt="Partner logo"/>
           </div>
@@ -108,10 +108,10 @@
           </div>
         </div>
       </div>
-      <button id="prev">
+      <button id="prev" #prev>
         <img src="assets/partner-carousel-prev-button.png" style="margin-right: 2px;" alt="carousel-button">
       </button>
-      <button id="next">
+      <button id="next" #next>
         <img src="assets/partner-carousel-next-button.png" style="margin-left: 2px;" alt="carousel-button">
       </button>
     </div>
@@ -121,8 +121,8 @@
       Testimonials
     </h2>
     <div id="testimonialsWrapper">
-      <div id="testimonialsCarousel">
-        <div id="testimonialsContent">
+      <div id="testimonialsCarousel" #testimonialCarousel>
+        <div id="testimonialsContent" #testimonialContent>
           <div class="testimonial-wrap" *ngFor="let testimonial of mockTestimonials">
             <div class="item">
               <div class="image">
@@ -141,10 +141,10 @@
           </div>
         </div>
       </div>
-      <button id="testimonialsPrev">
+      <button id="testimonialsPrev" #testimonialPrev>
         <img src="assets/partner-carousel-prev-button.png" style="margin-right: 2px;" alt="carousel-button">
       </button>
-      <button id="testimonialsNext">
+      <button id="testimonialsNext" #testimonialNext>
         <img src="assets/partner-carousel-next-button.png" style="margin-left: 2px;" alt="carousel-button">
       </button>
     </div>

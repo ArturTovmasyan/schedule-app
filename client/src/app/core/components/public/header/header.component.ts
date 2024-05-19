@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService} from 'src/app/core/services/auth/auth.service';
 import {BroadcasterService} from "../../../../shared/services";
@@ -22,7 +22,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private broadcaster: BroadcasterService) {
+    private broadcaster: BroadcasterService,
+    private cd: ChangeDetectorRef) {
     this.isLoginPage = window.location.pathname !== '/register';
 
     this.subscription = this.broadcaster.on('isLoginPage').subscribe((data: boolean) => {
@@ -51,6 +52,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
       }
     });
+
   }
 
   ngOnDestroy() {

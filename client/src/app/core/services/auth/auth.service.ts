@@ -103,22 +103,11 @@ export class AuthService {
 
     return this.http.post<any>('/api/auth/microsoft/callback', {...data}, requestOptions).pipe(
       map((response: any) => {
-<<<<<<< HEAD
         if (response && response.accessToken) {
           localStorage.setItem('cu', JSON.stringify(response));
           this.currentUserSubject.next(response);
         }
-=======
-        const resp: any = {
-          ...token,
-          user: {
-            'fullName': response.user.firstName + ' ' + response.user.lastName,
-            'email': response.user.email,
-            'avatar': response.user.avatar
-          }
-        }
-        this.currentUserSubject.next(resp);
->>>>>>> 29b2421 (shake-90-redirect user to homepage on 404)
+
         return response;
       })
     );

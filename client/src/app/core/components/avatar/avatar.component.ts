@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {AuthService} from "../../services/auth/auth.service";
 
@@ -15,7 +16,9 @@ export class AvatarComponent implements OnInit, OnDestroy {
 
   @Input() showDropdown = true;
 
-  constructor(private authService:AuthService) { }
+  constructor(
+    private authService:AuthService,
+    private router: Router,) { }
 
   ngOnInit(): void {
     this.subscription$ = this.authService.currentUser.subscribe(res => {
@@ -35,6 +38,10 @@ export class AvatarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription$.unsubscribe();
+  }
 
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
