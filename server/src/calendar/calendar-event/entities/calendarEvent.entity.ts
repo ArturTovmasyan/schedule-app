@@ -14,6 +14,7 @@ import { EventRecurrenceTypeEnum } from '../enums/eventRecurrenceType.enum';
 import { WeekDaysEnum } from '../enums/weekDays.enum';
 import { IndexOfWeekEnum } from '../enums/indexOfWeek.enum';
 import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
+import { IZoomMeetingResponse } from 'src/integrations/zoom/interfaces/zoom.interface';
 
 @Entity()
 export class CalendarEvent {
@@ -45,6 +46,9 @@ export class CalendarEvent {
 
   @Column({ type: 'jsonb', default: [] })
   attendees: Array<any>;
+
+  @Column({ type: 'jsonb', default: null, nullable: true })
+  zoom: IZoomMeetingResponse;
 
   @Column({ type: 'boolean', nullable: false, default: false })
   allDay: boolean;

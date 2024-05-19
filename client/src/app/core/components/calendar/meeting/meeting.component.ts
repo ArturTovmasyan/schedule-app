@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment-timezone';
 import { BehaviorSubject, Observable, first } from 'rxjs';
 import {
@@ -71,7 +71,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private readonly sharableLinkService: SharableLinkService,
     private readonly calendarPermissionService: CalendarPermissionService,
     private readonly calendarService: CalendarService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
   ) {
 
     this.dropdownSettings = {
@@ -147,6 +148,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.log(err);
+          this.router.navigate(['/calendar/meeting']);
         }
       })
   }
@@ -166,7 +168,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
         address: event.address,
         duration: 1,
       }
-
+      this.selectedLocation = this.locations.find((item) => event.entanglesLocation == item.value) || null;
+      console.log(event.entanglesLocation, this.selectedLocation)
       this.selectedCalendar = this.myCalendars.find((item) => item.id == event.calendar.id) || this.myCalendars[0];
       event.attendees.forEach((attendee: { email: any; optional: boolean; }) => {
         const contact: UserData = {
@@ -192,7 +195,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     const savedData = localStorage.getItem('meetingDatas') as string;
     if (savedData) {
       const savedDataArr = JSON.parse(savedData);
-      this.selectedLocation = savedDataArr.selectedLocation;
+      this.selectedLocation = this.locations.find((item) => item.value === savedDataArr.selectedLocation.value) || null;
       this.data = savedDataArr.data;
       this.selectedAttendees = savedDataArr.selectedAttendees ?? [];
       this.selectedOptionalAttendees = savedDataArr.selectedOptionalAttendees ?? [];
@@ -212,6 +215,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
         };
       }
     }
+    localStorage.removeItem('meetingDatas');
   }
 
   updateAttendees(users: UserData[], isOptional: boolean = false) {
@@ -425,6 +429,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
     });
   }
 
+  showCalendarDropdown() {
+    if (this.currentEventId != null) return;
+    this.showCalendars = !this.showCalendars
+  }
+
   chooseLocation(loc: Location | null = null) {
     this.selectedLocation = loc;
     this.data.address = '';
@@ -432,21 +441,22 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.data.entanglesLocation = loc?.value ?? null;
     this.showLocationDropdown = false;
 
-    if (loc) {
-      if (
-        ![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(
-          loc.value
-        )
-      ) {
-        // if incoming and outgoing and address is choosed from location option
-        // no need to check for connection of location choosed
-        this.connectMessage = {
-          title: '',
-          type: '',
-        };
-        return;
-      }
+    if (
+      !loc ||
+      ![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(
+        loc.value
+      )
+    ) {
+      // if incoming and outgoing and address is choosed from location option
+      // no need to check for connection of location choosed
+      this.connectMessage = {
+        title: '',
+        type: '',
+      };
+      return;
+    }
 
+    if (loc) {
       if (!loc.available) {
         // if not connected show connect message
         this.connectMessage = {

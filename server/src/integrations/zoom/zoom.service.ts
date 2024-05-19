@@ -19,7 +19,7 @@ import {
 } from 'src/components/interfaces/response.interface';
 import {
   ZOOM_GET_AUTHCODE,
-  ZOOM_MEETING,
+  ZOOM_BASE_URL,
   ZOOM_AUTH,
 } from 'src/components/constants/zoom.const';
 
@@ -170,26 +170,34 @@ export class ZoomService {
   async createMeeting(
     user: User,
     meeting: IZoomMeeting,
-  ): Promise<IResponse<IZoomMeetingResponse>> {
-    const token = (await this._getZoomTokenFromDb(user)).data;
-    if (!token) {
-      throw new BadRequestException({
-        message: ErrorMessages.zoomTokenNotFound,
-      });
-    }
-
-    const bearerAuth = 'Bearer ' + token.accessToken;
-
-    const data = await this.httpService
-      .post(encodeURI(ZOOM_MEETING), meeting, {
-        headers: {
-          Authorization: bearerAuth,
-        },
-      })
-      .pipe(map((res) => res.data))
-      .toPromise();
-
-    return { data, metadata: {} };
+  ): Promise<IZoomMeetingResponse> {
+    return new Promise(async (resolve, reject) => {
+      const token = (await this._getZoomTokenFromDb(user)).data;
+      if (!token) {
+        reject(ErrorMessages.zoomTokenNotFound);
+      }
+      this.httpService
+        .post(encodeURI(`${ZOOM_BASE_URL}/users/me/meetings`), meeting, {
+          headers: {
+            Authorization: `Bearer ${token.accessToken}`,
+          },
+        })
+        .pipe(map((res) => res.data))
+        .subscribe({
+          next: (res) => {
+            resolve({
+              uuid: res.uuid,
+              id: res.id,
+              join_url: res.join_url,
+              password: res.password,
+              encrypted_password: res.encrypted_password,
+            });
+          },
+          error: (err) => {
+            reject(err.message);
+          },
+        });
+    });
   }
 
   /**
@@ -201,29 +209,32 @@ export class ZoomService {
    * @returns `Deleted`
    */
 
-  async deleteMeeting(
-    user: User,
-    meetingId: string,
-  ): Promise<IResponse<IZoomMeetingResponse>> {
-    const token = (await this._getZoomTokenFromDb(user)).data;
-    if (!token) {
-      throw new BadRequestException({
-        message: ErrorMessages.zoomTokenNotFound,
-      });
-    }
-
-    const bearerAuth = 'Bearer ' + token.accessToken;
-
-    const data = await this.httpService
-      .delete(encodeURI(ZOOM_MEETING + `/${meetingId}`), {
-        headers: {
-          Authorization: bearerAuth,
-        },
-      })
-      .pipe(map((res) => res.data))
-      .toPromise();
-
-    return { data, metadata: {} };
+  async deleteMeeting(user: User, meetingId: number): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const token = (await this._getZoomTokenFromDb(user)).data;
+      if (!token) {
+        reject(ErrorMessages.zoomTokenNotFound);
+      }
+      this.httpService
+        .delete(encodeURI(`${ZOOM_BASE_URL}/meetings/${meetingId}`), {
+          headers: {
+            Authorization: `Bearer ${token.accessToken}`,
+          },
+        })
+        .pipe(
+          map((res) => {
+            return res.data;
+          }),
+        )
+        .subscribe({
+          next: () => {
+            resolve();
+          },
+          error: (err) => {
+            reject(err.message);
+          },
+        });
+    });
   }
 
   /**

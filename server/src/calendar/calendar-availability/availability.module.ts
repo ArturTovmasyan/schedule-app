@@ -14,6 +14,8 @@ import { ConfigService } from '@nestjs/config';
 import { InitEventService } from '../../components/services/init-event.service';
 import { User } from '@user/entity/user.entity';
 import { CalendarService } from '../calendar.service';
+import { ZoomService } from 'src/integrations/zoom/zoom.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { CalendarService } from '../calendar.service';
       User,
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    HttpModule,
   ],
   controllers: [AvailabilityController],
   providers: [
@@ -35,6 +38,7 @@ import { CalendarService } from '../calendar.service';
     ConfigService,
     InitEventService,
     CalendarService,
+    ZoomService,
   ],
 })
 export class AvailabilityModule {}

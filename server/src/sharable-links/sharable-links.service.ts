@@ -403,6 +403,42 @@ export class SharableLinksService {
           isPrimary: true,
         });
 
+<<<<<<< HEAD
+=======
+      if (!schedulerUserCalendar) {
+        throw new BadRequestException({
+          message: ErrorMessages.calendarNotFound,
+        });
+      }
+
+      let meetLink: string;
+      let meetingId: string;
+
+      if (slot.link.meetVia === MeetViaEnum.Zoom) {
+        const zoomMeet = await this.zoomService.createMeeting(schedulerUser, {
+          topic: '',
+          start_time: slot.startDate.toISOString(),
+          meeting_invitees: [{ email: user.email }],
+        });
+
+        meetLink = zoomMeet.join_url;
+        meetingId = zoomMeet.id.toString();
+      } else if (slot.link.meetVia === MeetViaEnum.GMeet) {
+        const gMeet = await this.calendarEventService.createGoogleMeetLink(
+          schedulerUser,
+          {
+            start: moment(slot.startDate).format(),
+            end: moment(slot.endDate).format(),
+            calendarId: schedulerUserCalendar.id,
+            attendees: [user.email],
+          },
+        );
+
+        meetLink = gMeet.meetLink;
+        meetingId = gMeet.meetingId;
+      }
+
+>>>>>>> e38a4ff (fix: refactor zoom integration on scheduling meeting)
       const event = await this.calendarEventService.createUserCalendarEvent(
         schedulerUser,
         {
@@ -492,18 +528,13 @@ export class SharableLinksService {
 
       if (slot.link.meetVia === MeetViaEnum.Zoom) {
         const zoomMeet = await this.zoomService.createMeeting(schedulerUser, {
-          start_time: slot.startDate,
-          pre_schedule: true,
+          topic: '',
+          start_time: slot.startDate.toISOString(),
           meeting_invitees: [{ email: body.email }],
-          waiting_room: true,
-          type: 1,
-          settings: {
-            email_notification: true,
-          },
         });
 
-        meetLink = zoomMeet.data.join_url;
-        meetingId = zoomMeet.data.id.toString();
+        meetLink = zoomMeet.join_url;
+        meetingId = zoomMeet.id.toString();
       } else if (slot.link.meetVia === MeetViaEnum.GMeet) {
         const gMeet = await this.calendarEventService.createGoogleMeetLink(
           schedulerUser,
@@ -676,7 +707,7 @@ export class SharableLinksService {
         calendar.calendarId,
       );
     } else if (slot.link.meetVia === MeetViaEnum.Zoom) {
-      await this.zoomService.deleteMeeting(user, slot.meetingId);
+      await this.zoomService.deleteMeeting(user, 123);
     }
 
     if (slot.calendarEventId) {
@@ -747,16 +778,11 @@ export class SharableLinksService {
 
       if (slot.link.meetVia === MeetViaEnum.Zoom) {
         const zoomMeet = await this.zoomService.createMeeting(schedulerUser, {
-          start_time: newSlot.startDate,
-          pre_schedule: true,
+          topic: '',
+          start_time: newSlot.startDate.toISOString(),
           meeting_invitees: [{ email: email }],
-          waiting_room: true,
-          type: 1,
-          settings: {
-            email_notification: true,
-          },
         });
-        entanglesLocation = MeetViaEnum.Zoom
+        entanglesLocation = MeetViaEnum.Zoom;
         // meetLink = zoomMeet.data.join_url;
         // meetingId = zoomMeet.data.id.toString();
       } else if (slot.link.meetVia === MeetViaEnum.GMeet) {

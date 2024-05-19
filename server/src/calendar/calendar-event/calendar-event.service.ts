@@ -59,7 +59,12 @@ import GoogleMeetLinkDto from './dto/GoogleMeetLink.dto';
 import { IResponseMessage } from 'src/components/interfaces/response.interface';
 import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
 import { CalendarService, EventManager } from '../calendar.service';
+<<<<<<< HEAD
 >>>>>>> 598a568 (fix: calendar timezone issue)
+=======
+import { ZoomService } from 'src/integrations/zoom/zoom.service';
+import { IZoomMeetingResponse } from 'src/integrations/zoom/interfaces/zoom.interface';
+>>>>>>> e38a4ff (fix: refactor zoom integration on scheduling meeting)
 
 @Injectable()
 export class CalendarEventService {
@@ -87,6 +92,7 @@ export class CalendarEventService {
     @InjectRepository(Calendar)
     private readonly calendarRepository: Repository<Calendar>,
     private readonly calendarService: CalendarService,
+    private readonly zoomService: ZoomService,
     private readonly connection: Connection,
   ) {}
 >>>>>>> c8c9b63 (add api to  sync all calendar events)
@@ -400,7 +406,7 @@ export class CalendarEventService {
 
   async createUserCalendarEvent(user: User, eventDto: CreateEventDto) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
-      const event = await this.getEventFromThirdPartyResponse(
+      const event = await this.createorUpdateThirdPartyEvent(
         manager,
         user,
         eventDto,
@@ -516,6 +522,10 @@ export class CalendarEventService {
 
       const eventDeleters = [];
 
+      if (event.entanglesLocation == MeetViaEnum.Zoom) {
+        await this.zoomService.deleteMeeting(user, event.zoom.id);
+      }
+
       if (event.calendar.calendarType == CalendarTypeEnum.GoogleCalendar) {
         const eventManager = await this.calendarService.initManager(
           googleToken.accessToken,
@@ -621,6 +631,7 @@ export class CalendarEventService {
 
         const cal = await calendar.calendarList.list();
 
+<<<<<<< HEAD
         const events = await calendar.events.list({
             calendarId: cal.data.items[0].id,
             timeZone: 'GMT',
@@ -628,6 +639,65 @@ export class CalendarEventService {
 
         const tasks = await calendar.acl.list({
             calendarId: cal.data.items[0].id,
+=======
+  async updateUserCalendarEvent(
+    user: User,
+    eventDto: UpdateEventDto,
+    eventId: string,
+  ) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const eventOld = await manager.getRepository(CalendarEvent).findOne({
+        where: { id: eventId },
+      });
+      if (!eventOld) {
+        throw new NotFoundException('Event not found');
+      }
+      const event = await this.createorUpdateThirdPartyEvent(
+        manager,
+        user,
+        eventDto,
+        eventOld,
+      );
+      event.id = eventId;
+      return await manager.getRepository(CalendarEvent).save(event);
+    });
+  }
+
+  async stopGoogleWebhookChannel(
+    user: User,
+    token: string,
+    calendarId: string,
+    manager: EntityManager,
+  ) {
+    const calendarWebhookChannelRepo = manager.getRepository(
+      CalendarWebhookChannel,
+    );
+    const eventManager = await this.calendarService.initManager(token);
+    const googleLocalPrimaryCalendar = await manager
+      .getRepository(Calendar)
+      .findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+        calendarId: calendarId,
+        isPrimary: true,
+      });
+    const existedGoogleWebhookChannel =
+      await calendarWebhookChannelRepo.findOne({
+        owner: { id: user.id },
+        calendar: googleLocalPrimaryCalendar,
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+      });
+    if (existedGoogleWebhookChannel) {
+      const stopChannelResponse = await eventManager.removeWebhook(
+        googleLocalPrimaryCalendar.id,
+        existedGoogleWebhookChannel.channelId,
+      );
+
+      if (stopChannelResponse) {
+        await calendarWebhookChannelRepo.delete({
+          owner: { id: user.id },
+          calendarType: CalendarTypeEnum.GoogleCalendar,
+>>>>>>> e38a4ff (fix: refactor zoom integration on scheduling meeting)
         });
     }
     async getFromMS(userId: string) {
@@ -1454,11 +1524,11 @@ export class CalendarEventService {
     `;
   }
 
-  private async getEventFromThirdPartyResponse(
+  private async createorUpdateThirdPartyEvent(
     manager: EntityManager,
     user: User,
     eventDto: CreateEventDto,
-    externalId: string | null = null,
+    oldEvent: CalendarEvent | null = null,
   ) {
     const tokens = await this.getTokens(user, manager);
     const googleToken = tokens.googleToken;
@@ -1475,15 +1545,61 @@ export class CalendarEventService {
         message: ErrorMessages.calendarNotFound,
       });
     }
-    let attendeeData = [];
-    let eventManager: EventManager;
 
+    // start: manage zoom meeting loation
+    let zoomData: IZoomMeetingResponse | null = null;
+    try {
+      if (
+        oldEvent?.entanglesLocation === MeetViaEnum.Zoom &&
+        eventDto.entanglesLocation !== MeetViaEnum.Zoom
+      ) {
+        await this.zoomService.deleteMeeting(user, oldEvent?.zoom.id);
+      }
+
+      if (
+        oldEvent?.entanglesLocation != MeetViaEnum.Zoom &&
+        eventDto.entanglesLocation == MeetViaEnum.Zoom
+      ) {
+        zoomData = await this.zoomService.createMeeting(user, {
+          topic: eventDto.title,
+          start_time: eventDto.start,
+          meeting_invitees: eventDto.attendees?.map((email) => {
+            return { email: email };
+          }),
+        });
+      }
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+    // end: manage zoom meeting loation
+
+    // start: serialize attendee data
+    let attendeeData = [];
+    if (calendar.calendarType === CalendarTypeEnum.GoogleCalendar) {
+      attendeeData = attendeeData.concat(
+        this.mapGoogleAttendees(eventDto.attendees ?? []),
+      );
+      attendeeData = attendeeData.concat(
+        this.mapGoogleAttendees(eventDto.optionalAttendees ?? []),
+      );
+    } else if (calendar.calendarType === CalendarTypeEnum.Office365Calendar) {
+      attendeeData = attendeeData.concat(
+        this.mapOutlookAttendees(eventDto.attendees ?? []),
+      );
+      attendeeData = attendeeData.concat(
+        this.mapOutlookAttendees(eventDto.optionalAttendees ?? []),
+      );
+    }
+    // end: serialize attendee data
+
+    let eventManager: EventManager;
     if (calendar.calendarType === CalendarTypeEnum.GoogleCalendar) {
       eventManager = await this.calendarService.initManager(
         googleToken.accessToken,
       );
 >>>>>>> 598a568 (fix: calendar timezone issue)
 
+<<<<<<< HEAD
     private compareEvents(eventsFromDb, remoteEvents, eventIdProperty) {
         function mapFromArray(
             array: Array<any>,
@@ -1513,6 +1629,24 @@ export class CalendarEventService {
                 // a.recurrenceEndDate.getTime() === b.recurrenceEndDate.getTime() &&
                 // a.recurrenceNumberOfOccurrences === b.recurrenceNumberOfOccurrences
             );
+=======
+      const saveEventGoogle = async (isUpdate = false) => {
+        const eventData = {
+          conferenceDataVersion: 1,
+          sendNotifications: true,
+          calendarId: calendar.calendarId,
+          requestBody: {
+            summary: eventDto.title,
+            location: zoomData?.join_url ?? '',
+            start: { dateTime: eventDto.start, timeZone: 'GMT' },
+            end: { dateTime: eventDto.end, timeZone: 'GMT' },
+            attendees: attendeeData,
+            description: this.getEventDescription(eventDto),
+          },
+        };
+        if (isUpdate) {
+          eventData['eventId'] = oldEvent?.externalId;
+>>>>>>> e38a4ff (fix: refactor zoom integration on scheduling meeting)
         }
 
         function getDelta(
@@ -1577,36 +1711,12 @@ export class CalendarEventService {
       );
 
       const saveEventOutlook = async (isUpdate = false) => {
-        if (eventDto.attendees) {
-          attendeeData = attendeeData.concat(
-            eventDto.attendees.map((attendee) => {
-              return {
-                emailAddress: {
-                  address: attendee,
-                  name: attendee,
-                },
-                type: 'required',
-              };
-            }),
-          );
-        }
-        if (eventDto.optionalAttendees) {
-          attendeeData = attendeeData.concat(
-            eventDto.optionalAttendees.map((attendee) => {
-              return {
-                emailAddress: {
-                  address: attendee,
-                  name: attendee,
-                },
-                type: 'optional',
-              };
-            }),
-          );
-        }
-
         const eventData = {
           subject: eventDto.title,
           bodyPreview: eventDto.description,
+          location: {
+            displayName: zoomData?.join_url ?? '',
+          },
           body: {
             contentType: 'HTML',
             content: this.getEventDescription(eventDto),
@@ -1617,7 +1727,7 @@ export class CalendarEventService {
         };
 
         return await eventManager.saveEvent(eventData, isUpdate, {
-          eventId: externalId,
+          eventId: oldEvent?.externalId,
           calendarId: calendar.calendarId,
 >>>>>>> 598a568 (fix: calendar timezone issue)
         });
@@ -1740,9 +1850,35 @@ export class CalendarEventService {
     }
 =======
     const eventResponse = await Promise.all(
-      eventSavers.map((saver) => saver(externalId != null)),
+      eventSavers.map((saver) => saver(oldEvent?.externalId != null)),
     );
-    return eventManager.serializeEvent(eventResponse[0], calendar, user);
+    const event = eventManager.serializeEvent(eventResponse[0], calendar, user);
+    event.entanglesLocation = eventDto.entanglesLocation;
+    event.address = eventDto.address;
+    event.phoneNumber = eventDto.phoneNumber;
+    event.zoom = zoomData;
+    return event;
+  }
+
+  private mapGoogleAttendees(attendees: string[], isOptional = false) {
+    return attendees.map((attendee) => {
+      return {
+        email: attendee,
+        optional: isOptional,
+      };
+    });
+  }
+
+  private mapOutlookAttendees(attendees: string[], isOptional = false) {
+    return attendees.map((attendee) => {
+      return {
+        emailAddress: {
+          address: attendee,
+          name: attendee,
+        },
+        type: isOptional ? 'optional' : 'required',
+      };
+    });
   }
 >>>>>>> 598a568 (fix: calendar timezone issue)
 }

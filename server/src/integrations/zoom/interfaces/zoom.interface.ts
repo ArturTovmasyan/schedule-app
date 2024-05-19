@@ -15,22 +15,17 @@ export interface ILinkedIntegrations {
 }
 
 export interface IZoomMeeting {
-  start_time: Date;
-  pre_schedule: boolean;
-  meeting_invitees?: [
-    {
-      email: string;
-    },
-  ];
-  waiting_room: boolean;
-  type: number;
-  settings?: {
-    email_notification: boolean;
-  };
+  topic: string;
+  start_time: string;
+  meeting_invitees?: {
+    email: string;
+  }[];
 }
 
 export interface IZoomMeetingResponse {
-  join_url: string;
-  host_email: string;
+  uuid: string;
   id: number;
+  join_url: string;
+  password: string;
+  encrypted_password: string;
 }

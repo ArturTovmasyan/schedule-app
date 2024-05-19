@@ -78,7 +78,7 @@
           </div>
         </div>
         <div class="save-to-calendar" *ngIf="hasCalendars">
-          <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img
+          <h6>Save this event in <span (click)="showCalendarDropdown()"><img
                 [src]="getCalendarIcon(selectedCalendar?.calendarType ?? null)" alt="calendar icon">
               {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
           <div id="calendar-dropdown" *ngIf="showCalendars">

@@ -755,9 +755,3 @@ class OfficeEventManager implements EventManager {
     });
   }
 }
-
-interface OutlookAttendee {
-  emailAddress: { address: string };
-  type: string;
-  status: { response: string };
-}
