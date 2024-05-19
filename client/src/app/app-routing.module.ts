@@ -14,7 +14,7 @@ import {RedirectGuard} from "./core/guards/redirect.guard";
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
 
 const routes: Routes = [
-    {path: '', redirectTo: 'onboarding/calendar', pathMatch: 'full'}, //TODO will redirect to calendar main page
+    {path: '', redirectTo: 'calendar/access-request', pathMatch: 'full'},
     {path: 'calendar', redirectTo: 'calendar/access-request', pathMatch: 'full'},
     {path: '404', component: P404Component, data: {title: 'Page 404'}},
     {path: '500', component: P500Component, data: {title: 'Page 500'}},

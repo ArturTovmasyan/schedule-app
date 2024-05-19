@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
+    <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error.message }}</span>
     <input type="submit" value="Make Payment" [disabled]="!form.valid" />
   </form>
 </div>
