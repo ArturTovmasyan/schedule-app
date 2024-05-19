@@ -21,7 +21,7 @@ export class User {
   @Column({ type: 'varchar', length: 100, nullable: true, default: 0 }) oauthId: number;
   @Column({ type: 'varchar', length: 10, nullable: true }) provider: string;
   @Column({ type: 'varchar', length: 20, nullable: true, name: 'stripe_customer_id' }) stripeCustomerId: string;
-  @OneToOne(() => Subscription, {nullable: true})
+  @OneToOne(() => Subscription, {nullable: true, cascade: true})
   @JoinColumn({ name: "stripe_subscription_id" })
   subscription: Subscription
   @Column({ name: 'stripe_subscription_id', type: 'uuid', nullable: true })

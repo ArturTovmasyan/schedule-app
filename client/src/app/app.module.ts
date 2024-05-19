@@ -56,6 +56,7 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     errorInterceptorProvider,
     ValidationService,
     BroadcasterService,
+    CalendarPermissionService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,

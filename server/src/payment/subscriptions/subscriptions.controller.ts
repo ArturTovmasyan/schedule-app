@@ -23,13 +23,14 @@ export class SubscriptionsController {
     @Post('standard')
     async createStandardSubscription(@Body() data: AddCreditCardDto, @GetUser() user: User) {
         try {
+            debugger;
             const priceId = this.configService.get('STANDARD_SUBSCRIPTION_PRICE_ID');
             await this.stripeService.updateCustomer(user.stripeCustomerId, data.stripeToken);
             const subscriptionData = await this.subscriptionsService.createSubscription(user.stripeCustomerId, priceId);
 
             if (subscriptionData) {
                 await this.subscriptionsService.saveSubscriptionForUser(subscriptionData, user);
-                return {data: {id: 'sub_1LjOmgKV9se4cvHzpUwZ0feV'}, status: HttpStatus.OK};
+                return {data: {id: subscriptionData.id}, status: HttpStatus.OK};
             }
         } catch (error) {
             throw new BadRequestException({message: error.message});

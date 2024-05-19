@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
+import {BadRequestException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {PaymentService} from "../payment.service";
 import {InjectRepository} from "@nestjs/typeorm";
@@ -22,7 +22,6 @@ export default class SubscriptionsService {
     public async createSubscription(stripeCustomerId: string, priceId: string) {
         const subscriptions = await this.stripeService.listSubscriptions(stripeCustomerId);
 
-        //TODO fix this part subscription return null
         if (subscriptions.data.length) {
             const sub = subscriptions.data[0];
             const subId = subscriptions.data[0].id;
@@ -30,10 +29,8 @@ export default class SubscriptionsService {
 
             if (subscription) {
                 await this.activateSubscription(subscription.id, sub);
+                return subscription;
             }
-
-            //TODO fix this part subscription return null upsert error
-            return subscription;
         }
 
         return await this.stripeService.createSubscription(priceId, stripeCustomerId);

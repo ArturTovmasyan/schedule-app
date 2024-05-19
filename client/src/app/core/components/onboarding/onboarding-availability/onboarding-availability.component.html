@@ -6,9 +6,9 @@
   <div id="availability">
     <app-availability></app-availability>
     <section id="buttons">
-      <button class="btn btn-secondary">Back</button>
-      <button class="btn btn-secondary">Set up later</button>
-      <button class="btn btn-primary">Next</button>
+      <button class="btn btn-secondary" (click)="back()">Back</button>
+      <button class="btn btn-secondary" (click)="setupLater()">Set up later</button>
+      <button class="btn btn-primary" (click)="next()">Done</button>
     </section>
   </div>
 </div>

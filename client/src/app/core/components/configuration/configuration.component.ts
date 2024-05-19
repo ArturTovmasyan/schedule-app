@@ -3,6 +3,12 @@ import { first } from 'rxjs/operators';
 import { CalendarAccessibility } from '../../interfaces/calendar/accessibility.calendar.inteface';
 import { AccessibilityService } from '../../services/calendar/accessibility.service';
 
+enum AccessibilityType {
+  PUBLIC = "public",
+  DOMAIN = "domain",
+  REQUEST = "request"
+}
+
 @Component({
   selector: 'app-configuration',
   templateUrl: './configuration.component.html',
@@ -78,10 +84,4 @@ export class ConfigurationComponent implements OnInit {
   get AccessibilityType(): typeof AccessibilityType {
     return AccessibilityType;
   }
-}
-
-enum AccessibilityType {
-  PUBLIC = "public",
-    DOMAIN = "domain",
-    REQUEST = "request"
 }
