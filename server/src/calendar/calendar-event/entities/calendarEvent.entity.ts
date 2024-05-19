@@ -13,7 +13,6 @@ import { Calendar } from './calendar.entity';
 import { EventRecurrenceTypeEnum } from '../enums/eventRecurrenceType.enum';
 import { WeekDaysEnum } from '../enums/weekDays.enum';
 import { IndexOfWeekEnum } from '../enums/indexOfWeek.enum';
-import { UTCDateTransformer } from '../../../components/decorators/utc-date.decorator';
 
 @Entity()
 export class CalendarEvent {
@@ -55,21 +54,10 @@ export class CalendarEvent {
   @Column({ type: 'varchar', nullable: true })
   meetLink: string;
 
-  // @CreateDateColumn({ nullable: true, precision: 3 })
-  @CreateDateColumn({
-    nullable: true,
-    precision: 3,
-    name: 'start',
-    transformer: UTCDateTransformer,
-  })
+  @CreateDateColumn({ nullable: true, precision: 3 })
   start!: Date;
 
-  @CreateDateColumn({
-    nullable: true,
-    precision: 3,
-    name: 'start',
-    transformer: UTCDateTransformer,
-  })
+  @CreateDateColumn({ nullable: true, precision: 3 })
   end!: Date;
 
   @CreateDateColumn()
