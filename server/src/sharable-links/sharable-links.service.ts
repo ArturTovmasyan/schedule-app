@@ -20,6 +20,7 @@ import {
   IResponseMessage,
 } from 'src/components/interfaces/response.interface';
 import { User } from '@user/entity/user.entity';
+import { UpdateSharableLinkDto } from './dto/update-sharable-link.dto';
 
 @Injectable()
 export class SharableLinksService {
@@ -104,6 +105,81 @@ export class SharableLinksService {
       await queryRunner.commitTransaction();
 
       return { message: 'Created', status: 1 };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+
+      throw new BadRequestException({ message: error.message });
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async update(
+    user: User,
+    updateSharableLinkDto: UpdateSharableLinkDto,
+  ): Promise<IResponseMessage> {
+    if (updateSharableLinkDto.slots) {
+      const checkAvailability = await this.calendarEventsRepo.count({
+        where: [
+          ...updateSharableLinkDto.slots.map((slot) => {
+            return {
+              start: Between(slot.startDate, slot.endDate),
+              owner: { id: user.id },
+            };
+          }),
+          ...updateSharableLinkDto.slots.map((slot) => {
+            return {
+              end: Between(slot.startDate, slot.endDate),
+              owner: { id: user.id },
+            };
+          }),
+        ],
+      });
+
+      if (checkAvailability) {
+        throw new BadRequestException({ message: ErrorMessages.slotIsBusy });
+      }
+    }
+
+    const sharableLinkId = randomUUID();
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.getRepository(SharableLinkEntity).insert({
+        id: sharableLinkId,
+        sharedBy: user.id,
+        title: updateSharableLinkDto.title,
+        link: process.env.WEB_HOST + 'sharable-links/' + sharableLinkId,
+      });
+
+      if (updateSharableLinkDto.attendees?.length) {
+        await queryRunner.manager
+          .getRepository(SharableLinkAttendeesEntity)
+          .insert(
+            updateSharableLinkDto.attendees.map((attendee) => {
+              return {
+                linkId: sharableLinkId,
+                userId: attendee,
+              };
+            }),
+          );
+      }
+
+      await queryRunner.manager.getRepository(SharableLinkSlotsEntity).insert(
+        updateSharableLinkDto.slots.map((slot) => {
+          return {
+            linkId: sharableLinkId,
+            startDate: slot.startDate,
+            endDate: slot.endDate,
+          };
+        }),
+      );
+
+      await queryRunner.commitTransaction();
+
+      return { message: 'Updated', status: 1 };
     } catch (error) {
       await queryRunner.rollbackTransaction();
 
@@ -210,7 +286,10 @@ export class SharableLinksService {
    * @returns `Created`
    */
 
-  async selectSlot(user: User, slotId: string) {
+  async selectSlot(
+    user: User,
+    slotId: string,
+  ): Promise<IResponse<CalendarEvent>> {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.startTransaction();
 
@@ -280,7 +359,7 @@ export class SharableLinksService {
 
       await queryRunner.commitTransaction();
 
-      return event;
+      return { data: event };
     } catch (error) {
       await queryRunner.rollbackTransaction();
 
