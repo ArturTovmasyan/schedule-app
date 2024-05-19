@@ -102,7 +102,7 @@ export class UsersService {
 
   async registerMicrosoftUser(userDto: any): Promise<OauthUserDto> {
     const user = new User();
-    user.email = userDto.mail;
+    user.email = userDto.userPrincipalName;
     user.oauthId = userDto.id;
     user.firstName = userDto.givenName;
     user.lastName = userDto.surname;

@@ -48,8 +48,148 @@ export class AuthService {
     private _createToken({id, email, stripeCustomerId}: UserUpdateDto, expiresTime: number | string | null = null, rememberMe: boolean = false): any {
         const user: JwtPayload = {id, email};
 
+<<<<<<< HEAD
         if (!expiresTime) {
             expiresTime = rememberMe ? this.REMEMBER_ME_LIFETIME : this.configService.get<string>('JWT_EXPIRES_IN');
+=======
+  async login(dto: SignInDto): Promise<LoginStatus> {
+    const user = await this.usersService.findByLogin(dto);
+    const token = this._createToken(user, null, dto.remember);
+    const stripeCustomerId = user.stripeCustomerId;
+    return {
+      stripeCustomerId,
+      ...token,
+    };
+  }
+
+  async validateUser(payload: JwtPayload): Promise<UserDto> {
+    const user = await this.usersService.findOneByEmail(payload.email);
+    if (!user) {
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+    }
+    return user;
+  }
+
+  public async verifyToken(token): Promise<any> | null {
+    const data = this.jwtService.verify(token) as JwtPayload;
+    const user = await this.userRepo.findOne(data.id);
+    let isActive = false;
+
+    if (user.stripeSubscriptionId) {
+      isActive = await this.subService.isActive(user.stripeSubscriptionId);
+    }
+
+    if (user) {
+      return { user, isActive };
+    }
+
+    return null;
+  }
+
+  async resetPassword(email: string): Promise<boolean> {
+    const user = await this.userRepo.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
+    }
+
+    if (user.provider) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.socialAccountExistError,
+      });
+    }
+
+    const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
+    const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
+
+    this.mailService.send({
+      from: this.configService.get<string>('NO_REPLY_EMAIL'),
+      to: user.email,
+      subject: 'Reset Handshake Account Password',
+      html: `
+                <h3>Hello ${user.firstName}!</h3>
+                <p>Please use this <a href="${changeLink}">link</a> to reset your password.</p>
+            `,
+    });
+
+    return true;
+  }
+
+  async confirmRegistration(token: string): Promise<boolean> {
+    const { user } = await this.verifyToken(token);
+
+    if (user && user.status === StatusEnum.pending) {
+      user.status = StatusEnum.active;
+      const data = await this.userRepo.update(user.id, user);
+      return data.affected > 0;
+    }
+
+    throw new BadRequestException({
+      status: HttpStatus.BAD_REQUEST,
+      message: ErrorMessages.confirmError,
+    });
+  }
+
+  async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    const password = await this.usersService.hashPassword(
+      changePasswordDto.password,
+    );
+    await this.userRepo.update(userId, { password });
+    return true;
+  }
+
+  async validateGoogleLogin(data: any): Promise<any> {
+    const { sub, email } = data;
+    const oauthId = sub;
+    let user: UserDto = await this.userRepo.findOne({ where: { oauthId } });
+
+    if (!user) {
+      user = await this.userRepo.findOne({ where: [{ email: email }] });
+      if (user) {
+        return {
+          error: ErrorMessages.socialAccountExist,
+          status: HttpStatus.FORBIDDEN,
+        };
+      }
+
+      const fullName = data.given_name + ' ' + data.family_name;
+      const customerData = await this.stripeService.createCustomer(
+        fullName,
+        data.email,
+      );
+
+      data.stripeCustomerId = customerData.id;
+      data.provider = OauthProvider.GOOGLE;
+      user = await this.usersService.registerGoogleUser(data);
+    }
+
+    return this._createToken(user, '30d').accessToken;
+  }
+
+  async validateMicrosoftLogin(data: any): Promise<any> {
+    try {
+      const { id, userPrincipalName } = data;
+      const oauthId = id;
+      let user: UserDto = await this.userRepo.findOne({ where: { oauthId } });
+
+      if (!user) {
+        user = await this.userRepo.findOne({
+          where: [{ email: userPrincipalName }],
+        });
+
+        if (user) {
+          new ForbiddenException({
+            message: ErrorMessages.socialAccountExist,
+            status: HttpStatus.FORBIDDEN,
+          });
+>>>>>>> 166b31b (fix microsoft calendar tenant id bug)
         }
 
         const accessToken = this.jwtService.sign(user, {

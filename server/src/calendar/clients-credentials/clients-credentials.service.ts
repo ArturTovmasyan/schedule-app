@@ -34,9 +34,6 @@ export class ClientsCredentialsService {
 
     const msalConfig = {
       clientId: this.configService.get<string>('MICROSOFT_CLIENT_ID'),
-      authority:
-        this.configService.get<string>('MICROSOFT_CLOUD_INSTANCE') +
-        this.configService.get<string>('MICROSOFT_TENANT_ID'),
       clientSecret: this.configService.get<string>('MICROSOFT_CLIENT_SECRET'),
     };
 
