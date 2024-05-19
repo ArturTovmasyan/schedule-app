@@ -8,6 +8,7 @@ import {
   IsNotEmpty,
   ArrayNotEmpty,
   ValidateNested,
+  IsEmail,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -50,6 +51,28 @@ export class CreateSharableLinkDto {
   @Type(() => SharableLinkSlot)
   @ArrayNotEmpty()
   slots: SharableLinkSlot[];
+}
+
+export class SelectSlotPublic {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  note?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
 }
 
 export class PaginationDto implements IPaginate {

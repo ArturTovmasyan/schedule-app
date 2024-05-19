@@ -24,6 +24,7 @@ import {
 import {
   CreateSharableLinkDto,
   PaginationDto,
+  SelectSlotPublic,
 } from './dto/create-sharable-link.dto';
 import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { SharableLinkEntity } from './entities/sharable-link.entity';
@@ -64,6 +65,16 @@ export class SharableLinksController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.sharableLinksService.findOne(id);
+  }
+
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Non user Select slot for scheduling  meeting' })
+  @Patch('select-slot/public/:slotId')
+  selectSlotPublic(
+    @Param('slotId') slotId: string,
+    @Body() body: SelectSlotPublic,
+  ) {
+    return this.sharableLinksService.selectSlotPublic(slotId, body);
   }
 
   @ApiResponse({ type: IResponseMessage })

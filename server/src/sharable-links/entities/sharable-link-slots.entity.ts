@@ -18,6 +18,9 @@ export class SharableLinkSlotsEntity {
   @Column({ name: 'choosed_by', nullable: true })
   choosedBy: string;
 
+  @Column({ name: 'choosed_by_email', nullable: true })
+  choosedByEmail: string;
+
   @Column({ name: 'link_id' })
   linkId: string;
 

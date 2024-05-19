@@ -27,6 +27,7 @@ import {
 import {
   SharableLinkSlot,
   CreateSharableLinkDto,
+  SelectSlotPublic,
 } from './dto/create-sharable-link.dto';
 
 @Injectable()
@@ -341,7 +342,7 @@ export class SharableLinksService {
         });
       } */
 
-      if (slot.choosedBy) {
+      if (slot.choosedBy || slot.choosedByEmail) {
         throw new BadRequestException({ message: ErrorMessages.slotIsBusy });
       }
 
@@ -390,6 +391,117 @@ export class SharableLinksService {
           attendees: [user.email],
         },
       );
+
+      await queryRunner.manager
+        .getRepository(SharableLinkSlotsEntity)
+        .update({ id: slotId }, { choosedBy: user.id });
+
+      await queryRunner.commitTransaction();
+
+      return { data: event };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+
+      throw new BadRequestException({ message: error.message });
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * @description `Select sharable link for non-user persons`
+   *
+   * @param slotId - `ID of selectable slot`
+   * @param body - `emai,name,phone and notes(optional)`
+   *
+   * @returns `Selected`
+   */
+
+  async selectSlotPublic(
+    slotId: string,
+    body: SelectSlotPublic,
+  ): Promise<IResponse<CalendarEvent>> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+
+    try {
+      const slot = await queryRunner.manager
+        .getRepository(SharableLinkSlotsEntity)
+        .createQueryBuilder('slot')
+        .addSelect('user.id')
+        .innerJoinAndSelect('slot.link', 'link')
+        .innerJoin('link.user', 'user')
+        .where({ id: slotId })
+        .getOne();
+
+      if (slot.choosedBy || slot.choosedByEmail) {
+        throw new BadRequestException({ message: ErrorMessages.slotIsBusy });
+      }
+
+      const schedulerUser = await queryRunner.manager
+        .getRepository(User)
+        .findOne({
+          where: { id: slot.link.user.id },
+          select: ['id', 'email', 'firstName', 'lastName', 'avatar'],
+        });
+
+      const schedulerUserCalendar = await queryRunner.manager
+        .getRepository(Calendar)
+        .findOne({
+          owner: { id: schedulerUser.id },
+          isPrimary: true,
+        });
+
+      let meetLink: string;
+
+      if (slot.link.meetVia === MeetViaEnum.Zoom) {
+        meetLink = (
+          await this.zoomService.createMeeting(schedulerUser, {
+            start_time: slot.startDate,
+            pre_schedule: true,
+            meeting_invitees: [{ email: body.email }],
+            waiting_room: true,
+            type: 1,
+            settings: {
+              email_notification: true,
+            },
+          })
+        ).data.join_url;
+      } else if (slot.link.meetVia === MeetViaEnum.GMeet) {
+        meetLink = (
+          await this.calendarEventService.createGoogleMeetLink(schedulerUser, {
+            start: moment(slot.startDate).format(),
+            end: moment(slot.endDate).format(),
+            calendarId: schedulerUserCalendar.id,
+            attendees: [body.email],
+          })
+        ).meetLink;
+      }
+
+      const event = await this.calendarEventService.createUserCalendarEvent(
+        schedulerUser,
+        {
+          title: slot.link.title,
+          description: body.note
+            ? `Note: ${body.note}
+            `
+            : '' + `Sharable link event with ${body.name}`,
+          meetLink,
+          phoneNumber:
+            slot.link.meetVia === MeetViaEnum.InboundCall
+              ? slot.link.phoneNumber
+              : body.phoneNumber,
+          address: slot.link.address,
+          start: moment(slot.startDate).format(),
+          end: moment(slot.endDate).format(),
+          syncWith: schedulerUserCalendar.calendarId,
+          attendees: [body.email],
+        },
+      );
+
+      await queryRunner.manager
+        .getRepository(SharableLinkSlotsEntity)
+        .update({ id: slotId }, { choosedByEmail: body.email });
 
       await queryRunner.commitTransaction();
 
