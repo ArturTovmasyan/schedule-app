@@ -18,7 +18,7 @@ export class PublicCalendarComponent implements OnDestroy {
   timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
   @ViewChild("calendar") calendar!: FullCalendarComponent;
   componentData = {
-    timeslotSelected: false,
+    isTimeslotSelected: false,
     selectedTimeSlot: null,
     timezone: ''
   };
@@ -79,7 +79,7 @@ export class PublicCalendarComponent implements OnDestroy {
     },
     select: (info) => {
       this.componentData['selectedTimeSlot'] = info as any;
-      this.componentData['timeslotSelected'] = true;
+      this.componentData['isTimeslotSelected'] = true;
       this.broadcaster.broadcast('timeSlotSelected', this.componentData);
     },
     selectOverlap: function (info) {
@@ -126,19 +126,13 @@ export class PublicCalendarComponent implements OnDestroy {
   loadBroadcastEvents() {
     this.destroy$ = this.broadcaster.on('loadAvailableTimeslots')
       .subscribe((data: any) => {
-        if (data?.slots) {
-          const datas = [];
-          for (const date of data.slots) {
-            datas.push({
-              start: date.startDate,
-              end: date.endDate
-            });
-          }
+        if (data) {
+          console.log('data' , data);
           this.calendarOptions.selectable = true;
           this.calendarOptions.slotDuration = '00:30:00';
           this.calendarOptions.slotLabelInterval = 30;
           this.calendarOptions.selectConstraint = "availableSlot";
-          this.calendarOptions.events = this.getAvailableSlots(datas)[1];
+          this.calendarOptions.events = data;
           // this.calendarOptions.validRange = {
           //   start: moment().toDate(),
           //   end: moment().add(2, 'year').toDate()

@@ -6,26 +6,23 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
-import { AVAILABILITY_EVENT_CLASS } from 'src/app/core/interfaces/constant/calendar.constant';
 import { BroadcasterService } from 'src/app/shared/services';
 import { MeetViaEnum } from '../../calendar/enums/sharable-links.enum';
 import { PublicCalendarService } from '../public.service';
 
 type ComponentData = {
-  isTimeslotSelected: boolean,
   selectedTimeSlot: any,
   timezone: any
 };
 
 @Component({
-  selector: 'app-group-availability',
-  templateUrl: './group-availability.component.html',
-  styleUrls: ['./group-availability.component.scss']
+  selector: 'app-cancel-meeting',
+  templateUrl: './cancel-meeting.component.html',
+  styleUrls: ['./cancel-meeting.component.scss']
 })
-export class GroupAvailabilityComponent implements OnInit, OnDestroy {
+export class CancelMeetingComponent implements OnInit, OnDestroy {
 
   componentData: ComponentData = {
-    isTimeslotSelected: false,
     selectedTimeSlot: null,
     timezone: ''
   };
@@ -34,7 +31,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin],
-    height: 'auto',
+    height: '400px',
     nowIndicator: true,
     direction: 'ltr',
     themeSystem: 'bootstrap',
@@ -85,7 +82,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     views: {
       month: {
         columnHeaderFormat: 'dd'
-      },
+      }
     },
     titleFormat: {
       month: 'short', day: 'numeric'
@@ -112,6 +109,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     }
   }
   linkId: string;
+  scheduledId: string;
   attendees: any;
   location: Location | undefined;
   form!: FormGroup;
@@ -124,7 +122,9 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     private calendarService: PublicCalendarService,
     private broadcaster: BroadcasterService
   ) {
-    this.linkId = route.snapshot.params['id'];
+
+    this.linkId = route.snapshot.parent?.params['id'];
+    this.scheduledId = route.snapshot.params['scheduledId'];
     this.initForm();
   }
 
@@ -136,46 +136,37 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     this.calendarService.getDetails(this.linkId)
       .subscribe((data: any) => {
         if (data?.slots) {
-          // load available timeslots on calendar
           const datas = [];
           for (const date of data.slots) {
             datas.push({
-              groupId: 'availableSlot',
               start: date.startDate,
-              end: date.endDate,
-              className: AVAILABILITY_EVENT_CLASS
+              end: date.endDate
             });
           }
           this.broadcaster.broadcast('loadAvailableTimeslots', datas);
-          // location
-          this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
-          if (data['meetVia'] == MeetViaEnum.InboundCall) {
-            this.addValidation('phone');
-          }
-
+          // may need in future
+          // this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
           this.calendarOptions.events = datas;
         }
+
         if (data?.attendees?.length > 0) {
           this.attendees = data.attendees;
         }
+
+        // selected timeslot from api
+        const timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
+        this.componentData.selectedTimeSlot = {
+          start: new Date(),
+          end: new Date()
+        }
+        this.componentData.timezone = timezone;
       });
 
-      this.onTimeSlotSelected();
-  }
-
-  onTimeSlotSelected() {
-    this.destroy$ = this.broadcaster.on('timeSlotSelected')
-      .subscribe((data: any) => {
-        this.componentData = data;
-      });
   }
 
   initForm() {
     this.form = this.formBuilder.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      notes: [''],
-      phone: ['']
+      notes: ['', [Validators.required]]
     }, { updateOn: 'blur' });
   }
 
@@ -183,7 +174,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     this.calendarService.selectedWeek.next(date);
   }
 
-  submit() {
+  cancelMeeting() {
     if (!this.form.valid){
       this.form.markAllAsTouched();
       return;

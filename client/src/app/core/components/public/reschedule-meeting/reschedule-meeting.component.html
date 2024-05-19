@@ -1,0 +1,80 @@
+<section class="group-availability" id="groupAvailability">
+  <div class="header">
+    <h2 class="section-title text-center">
+      Group availability
+    </h2>
+  </div>
+  <div class="group-availability-content">
+    <form action="" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="users-container">
+        <ul class="users-list list-unstyled list-inline">
+          <li class="list-inline-item user-info" *ngFor="let att of attendees">
+            <div class="user-info-wrapper">
+              <div class="user-portrait">
+                <img *ngIf="att.avatar" [src]="att.avatar">
+                <span *ngIf="!att.avatar">{{ att.user.firstName | acronymName }}</span>
+              </div>
+              <div class="user-bio">
+                <h5 class="full-name">{{ att.user.firstName }} {{ att.user.lastName }}</h5>
+                <!-- <h6 class="contact-company">
+                  AirBnbddffasdfsdfdf
+                </h6> -->
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="calendar w-100" *ngIf="!componentData.isTimeslotSelected">
+        <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
+        </full-calendar>
+      </div>
+      <h3 class="section-title-secondary">
+        Old meeting slot
+      </h3>
+      <div class="date-time-container">
+        <ul class="list-unstyled list-inline">
+          <li class="list-inline-item date d-flex align-items-center text-decoration-line-through">
+            {{ componentData.oldTimeslot?.start | parseTime:'ddd, MMM Do' }}
+          </li>
+          <li class="list-inline-item timeframe text-decoration-line-through">
+            {{ componentData.oldTimeslot?.start | parseTime:'hh:mmA'}}
+            <p> - </p>
+            {{ componentData.oldTimeslot?.end | parseTime:'hh:mmA'}}
+          </li>
+          <li class="list-inline-item timezone">
+            <span id="timezoneText">{{ componentData.timezone }}</span>
+          </li>
+        </ul>
+      </div>
+      <h3 class="section-title-secondary">
+        New meeting slot
+      </h3>
+      <div class="date-time-container">
+        <ul class="list-unstyled list-inline">
+          <li class="list-inline-item date d-flex align-items-center">
+            {{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}
+          </li>
+          <li class="list-inline-item timeframe">
+            <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}" readonly>
+            <p> - </p>
+            <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}" readonly>
+          </li>
+          <li class="list-inline-item timezone">
+            <span id="timezoneText">{{ componentData.timezone }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="form-group mb-0">
+        <label for="optionalNotes">Reason for rescheduling</label>
+        <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add reason for rescheduling" formControlName="notes"></textarea>
+        <div *ngIf="f['notes'].invalid && (f['notes'].dirty || f['notes'].touched)">
+          <span class="error">
+            <i class="fa fa-exclamation-triangle"></i>Please add the reasons for rescheduling
+          </span>
+        </div>
+      </div>
+      <button type="submit" id="scheduleButton">Reschedule</button>
+
+    </form>
+   </div>
+</section>

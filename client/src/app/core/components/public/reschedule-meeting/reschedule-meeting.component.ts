@@ -14,19 +14,21 @@ import { PublicCalendarService } from '../public.service';
 type ComponentData = {
   isTimeslotSelected: boolean,
   selectedTimeSlot: any,
+  oldTimeslot: any,
   timezone: any
 };
 
 @Component({
-  selector: 'app-group-availability',
-  templateUrl: './group-availability.component.html',
-  styleUrls: ['./group-availability.component.scss']
+  selector: 'app-reschedule-meeting',
+  templateUrl: './reschedule-meeting.component.html',
+  styleUrls: ['./reschedule-meeting.component.scss']
 })
-export class GroupAvailabilityComponent implements OnInit, OnDestroy {
+export class RescheduleMeetingComponent implements OnInit, OnDestroy {
 
   componentData: ComponentData = {
     isTimeslotSelected: false,
     selectedTimeSlot: null,
+    oldTimeslot: null,
     timezone: ''
   };
   readonly MeetViaEnum = MeetViaEnum;
@@ -34,7 +36,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin],
-    height: 'auto',
+    height: '400px',
     nowIndicator: true,
     direction: 'ltr',
     themeSystem: 'bootstrap',
@@ -63,12 +65,18 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     },
     eventDidMount: function (info) {
       if (info.el.closest('.fc-daygrid-day')) {
-        const hh = moment(info.event.start).isSame(new Date(), 'isoWeek');
+        const sameWeek = moment(info.event.start).isSame(new Date(), 'isoWeek');
         info.el.closest('.fc-daygrid-day')?.classList.add('fc-event-div');
-        if (hh) {
+        if (sameWeek) {
           info.el.closest('.fc-daygrid-day')?.classList.add('current-week');
         } else {
           info.el.closest('.fc-daygrid-day')?.classList.add('na-week');
+        }
+        console.log('llllll', info.event._def.groupId);
+        if (info.event._def.groupId == 'defaultSelectedSlot') {
+          console.log('lllllkkkkk', info.event._def.groupId);
+          console.log('ff', info.el.closest('.fc-daygrid-day')?.classList);
+          info.el.closest('.fc-daygrid-day')?.classList.add('default-selected-date');
         }
       }
     },
@@ -112,19 +120,21 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     }
   }
   linkId: string;
+  scheduledId: string;
   attendees: any;
   location: Location | undefined;
   form!: FormGroup;
   selectedSlot: any;
 
+
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private formBuilder: FormBuilder,
     private calendarService: PublicCalendarService,
     private broadcaster: BroadcasterService
   ) {
-    this.linkId = route.snapshot.params['id'];
+    this.linkId = route.snapshot.parent?.params['id'];
+    this.scheduledId = route.snapshot.params['scheduledId'];
     this.initForm();
   }
 
@@ -135,6 +145,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.calendarService.getDetails(this.linkId)
       .subscribe((data: any) => {
+        console.log('data12345', data);
         if (data?.slots) {
           // load available timeslots on calendar
           const datas = [];
@@ -149,12 +160,21 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
           this.broadcaster.broadcast('loadAvailableTimeslots', datas);
           // location
           this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
-          if (data['meetVia'] == MeetViaEnum.InboundCall) {
-            this.addValidation('phone');
-          }
+          // TODO: already scheduled date from API
+          const oldSlot = {
+            groupId: 'defaultSelectedSlot',
+            start: '2023-01-24T09:45:00.000Z',
+            end: '2023-01-24T10:15:00.000Z'
+          };
+          datas.push(oldSlot);
+          const timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
+          this.componentData.oldTimeslot = oldSlot
+          this.componentData.timezone = timezone;
+          // upto here
 
           this.calendarOptions.events = datas;
         }
+
         if (data?.attendees?.length > 0) {
           this.attendees = data.attendees;
         }
@@ -172,10 +192,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.form = this.formBuilder.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      notes: [''],
-      phone: ['']
+      notes: ['', [Validators.required]]
     }, { updateOn: 'blur' });
   }
 
@@ -191,16 +208,6 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     const formData = this.form.value;
     formData['selectedTimeslot'] = this.componentData.selectedTimeSlot;
     return;
-  }
-
-  addValidation(controlName: string) {
-    this.form.controls[controlName].setValidators(Validators.required);
-    this.form.controls[controlName].updateValueAndValidity();
-  }
-
-  removeValidation(controlName: string) {
-    this.form.controls[controlName].clearValidators();
-    this.form.controls[controlName].updateValueAndValidity();
   }
 
   ngOnDestroy(): void {

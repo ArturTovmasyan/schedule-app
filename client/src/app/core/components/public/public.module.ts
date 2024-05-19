@@ -18,6 +18,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
 import rrulePlugin from '@fullcalendar/rrule';
 import { BroadcasterService } from 'src/app/shared/services';
+import { CancelMeetingComponent } from './cancel-meeting/cancel-meeting.component';
+import { RescheduleMeetingComponent } from './reschedule-meeting/reschedule-meeting.component';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -30,7 +32,9 @@ FullCalendarModule.registerPlugins([
 @NgModule({
   declarations: [
     PublicCalendarComponent,
-    GroupAvailabilityComponent
+    GroupAvailabilityComponent,
+    CancelMeetingComponent,
+    RescheduleMeetingComponent
   ],
   imports: [
     PublicRoutingModule,

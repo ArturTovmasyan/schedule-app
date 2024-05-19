@@ -24,11 +24,11 @@
           </li>
         </ul>
       </div>
-      <div class="calendar w-100" *ngIf="!componentData.timeslotSelected">
+      <div class="calendar w-100" *ngIf="!componentData.isTimeslotSelected">
         <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
         </full-calendar>
       </div>
-      <ng-container *ngIf="componentData.timeslotSelected">
+      <ng-container *ngIf="componentData.isTimeslotSelected">
         <h3 class="section-title-secondary">
           Date/Time
         </h3>
