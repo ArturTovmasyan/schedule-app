@@ -15,7 +15,9 @@ import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { CalendarAccessService } from './calendar-access.service';
 import { User } from '@user/entity/user.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Calendar Access')
 @Controller('api/calendar-access')
 export class CalendarAccessController {
   constructor(private readonly calendarAccessService: CalendarAccessService) {}

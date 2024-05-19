@@ -15,7 +15,9 @@ import { CreateCalendarAccessibilityDto } from './dto/create-calendar-accessibil
 import { CalendarAccessibilityService } from './calendar-accessibility.service';
 import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { User } from '@user/entity/user.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Calendar accessibility')
 @Controller('api/calendar-accessibility')
 export class CalendarAccessibilityController {
   constructor(

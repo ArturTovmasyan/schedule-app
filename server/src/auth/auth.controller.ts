@@ -12,7 +12,6 @@ import {
     UseGuards,
     ValidationPipe,
 } from '@nestjs/common';
-<<<<<<< HEAD
 import {AuthGuard} from '@nestjs/passport';
 import {UserCreateDto} from '@user/dto/user-create.dto';
 import {AuthService} from './auth.service';
@@ -25,20 +24,8 @@ import {ChangePasswordDto} from "./dto/change-password.dto";
 import {ConfigService} from "@nestjs/config";
 import {ErrorMessages} from "@shared/error.messages";
 import {OauthProvider} from "./enums/oauth.provider.enum";
-=======
-import { AuthGuard } from '@nestjs/passport';
-import { UserCreateDto } from '@user/dto/user-create.dto';
-import { AuthService } from './auth.service';
-import { LoginStatus } from './interfaces/login-status.interface';
-import { RegistrationStatus } from './interfaces/regisitration-status.interface';
-import { UserDto } from '@user/dto/user.dto';
-import { SignInDto } from './dto/signin.dto';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { ConfigService } from '@nestjs/config';
-import { isString } from '@nestjs/common/utils/shared.utils';
->>>>>>> 57c7584 (Add get calendars from google and outlook)
 
+@ApiTags('Authentication')
 @Controller('api/auth')
 export class AuthController {
   constructor(
@@ -46,6 +33,8 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Register user' })
   @Post('register')
   public async register(
     @Body() dto: UserCreateDto,

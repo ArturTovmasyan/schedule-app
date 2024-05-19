@@ -15,7 +15,9 @@ import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { AvailabilityService } from './availability.service';
 import { User } from '@user/entity/user.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Calendar availablity')
 @Controller('api/calendar')
 export class AvailabilityController {
   constructor(private readonly availabilityService: AvailabilityService) {}

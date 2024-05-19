@@ -11,10 +11,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiHideProperty, ApiTags } from '@nestjs/swagger';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 
+@ApiTags('Users')
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

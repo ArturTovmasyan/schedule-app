@@ -1,9 +1,15 @@
-export interface IResponse<T> {
+import { ApiProperty } from '@nestjs/swagger';
+
+export class IResponse<T> {
+  @ApiProperty()
   data: T;
+  @ApiProperty()
   metadata?: {};
 }
 
-export interface IResponseMessage {
+export class IResponseMessage {
+  @ApiProperty()
   message: string;
+  @ApiProperty()
   status: number;
 }
