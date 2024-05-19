@@ -48,6 +48,31 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
         this.calendarOptions.events = this.myEvents.concat(availabilityDates);
         //TODO compare with my events and availability
       }
+<<<<<<< HEAD
+=======
+
+      // init calendar options dynamically
+      if (availabilityDates && availabilityDates.length > 0) {
+        this.calendarOptions.selectable = true;
+        this.calendarOptions.slotDuration = '00:30:00';
+        this.calendarOptions.slotLabelInterval = 30;
+        this.calendarOptions.businessHours = availabilityDates;
+        this.calendarOptions.selectConstraint = "businessHours";
+
+        this.calendarOptions.validRange = {
+          start: moment().toDate(),
+          end: moment().add(2, 'year').toDate(),
+        }
+
+      } else {
+        delete this.calendarOptions.validRange;
+        this.calendarOptions.selectable = false;
+        this.calendarOptions.businessHours = [];
+        this.broadcaster.broadcast('meet_date_range', []);
+      }
+
+      this.calendarOptions.events = this.myEvents ? this.myEvents.concat(availabilityEvents) : availabilityEvents;
+>>>>>>> abd03ae (Finish recurrence event functionality)
     });
   }
 
@@ -154,6 +179,96 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
     eventContent: this.eventContent.bind(this),
     eventClassNames: function () {
       return 'event';
+<<<<<<< HEAD
     }
   };
+=======
+    },
+    select: (info) => {
+      this.currentUrl = this.router.url;
+      let data = {start: info.startStr, end: info.endStr};
+
+      if (this.selectedContactEmail) {
+        Object.assign(data, {
+          contact_email: this.selectedContactEmail,
+          contact_id: this.selectedContactId,
+        })
+      }
+
+      setTimeout(() => {
+        this.broadcaster.broadcast('meet_date_range', data);
+      }, 0);
+
+      if (this.currentUrl !== '/calendar/meeting') {
+        this.router.navigate(['/calendar/meeting'])
+      }
+    },
+    selectOverlap: function (info) {
+      return (info._def.ui.classNames[0] == AVAILABILITY_EVENT_CLASS) || (info._def.ui.classNames[0] == SUGGEST_EVENT_CLASS);
+    },
+  }
+
+  ngOnInit(): void {
+    this.fetchMyEvents();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  fetchMyEvents() {
+    this.calendarService.fetchEvents()
+      .pipe(first())
+      .subscribe({
+        next: (events: any) => {
+          const data: any[] = [];
+          if (events.length > 0) {
+            events.forEach((el: any) => {
+              let obj = {
+                title: el.title,
+                description: el.description,
+              };
+
+              if (el.allDay) {
+                this.calendarOptions.allDaySlot = el.allDay;
+                Object.assign(obj, {
+                   start: el.start,
+                   allDay: el.allDay,
+                 });
+              } else {
+                Object.assign(obj, {
+                  start: DateConverter.convertToLocalDate(new Date(el.start)),
+                  end: DateConverter.convertToLocalDate(new Date(el.end)),
+                });
+              }
+
+              data.push(obj)
+            })
+
+            this.myEvents = data;
+            this.calendarOptions.events = data;
+          }
+        },
+      });
+  }
+
+  eventContent(arg: any) {
+    let divEl = document.createElement('div');
+    let title = arg.event.title;
+    let time = arg.timeText;
+
+    if (title) {
+      divEl.innerHTML = '<span>' + title + '</span><br/><span style="color: #047BDAFF; font-size: 8pt; text-wrap: avoid">' + time + '</span>';
+    } else {
+      divEl.innerHTML = '<span style="color: #047BDAFF;font-size: 8pt; text-wrap: avoid">' + time + '</span>';
+    }
+    return {html: divEl.innerHTML};
+  }
+
+  getLocaleTime(date: string): string {
+    let offset = moment().utcOffset() / 60;
+    let utcTime = moment(date).add(offset, 'hour');
+    return this.commonService.getFormattedDateString(utcTime, 'HH:mm') ?? "";
+  }
+>>>>>>> abd03ae (Finish recurrence event functionality)
 }

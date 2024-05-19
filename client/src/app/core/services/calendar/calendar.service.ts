@@ -14,8 +14,7 @@ export class CalendarService {
   constructor(
     private readonly http: HttpClient,
     private datePipe: DatePipe
-  ) {
-  }
+  ) {}
 
   get url(): string {
     return '/api/calendar/events';
@@ -24,7 +23,7 @@ export class CalendarService {
   fetchEvents() {
     let initDate = moment().subtract(1, 'month').toDate();
     let startDate = this.datePipe.transform(initDate, 'yyyy-MM-dd');
-    let endDate = moment(startDate, "yyyy-MM-DD").add(2, 'month').format('yyyy-MM-DD');
+    let endDate = moment(startDate, "yyyy-MM-DD").add(2, 'year').format('yyyy-MM-DD');
 
     return this.http.get<ApiResponse<any>>(this.url + '?startDate='+startDate+'&dateEnd='+endDate, {}).pipe(
       map((response: ApiResponse<any>) => {
