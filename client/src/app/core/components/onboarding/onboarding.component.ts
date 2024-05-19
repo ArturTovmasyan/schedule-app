@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-onboarding',
@@ -31,12 +32,45 @@ export class OnboardingComponent implements OnInit {
   ];
 
   onboard_title = this.navOptions[0]['title'];
+  currentNavIndex = 0;
+  isAtFirstPage = true;
 
-  ngOnInit(): void {
+  constructor(
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute
+  ) {
+
   }
 
-  changeTitle(title: string) {
-    this.onboard_title = title;
+  ngOnInit(): void {
+    this.navOptions.forEach((nav, index) => {
+      if(nav.route === `/onboarding/${this.activatedRoute.firstChild?.snapshot?.url[0].path}`) {
+        this.navigate(index);
+      }
+    });
+  }
+
+  navigate(index: number) {
+    this.onboard_title = this.navOptions[index].title;
+    this.isAtFirstPage = index == 0;
+    this.currentNavIndex = index;
+  }
+
+  navigateNext() {
+    if(this.currentNavIndex == 3) {
+      this.router.navigate(['/calendar/contacts']);
+    } else {
+      this.navigate(++this.currentNavIndex);
+      this.router.navigate([this.navOptions[this.currentNavIndex].route]);
+    }
+  }
+
+  navigateBack() {
+    if(this.currentNavIndex == 0) {
+      return;
+    }
+    this.navigate(--this.currentNavIndex);
+    this.router.navigate([this.navOptions[this,this.currentNavIndex].route]);
   }
 }
 
