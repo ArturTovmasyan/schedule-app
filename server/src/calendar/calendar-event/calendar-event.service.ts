@@ -196,11 +196,8 @@ export class CalendarEventService {
       const outlookToken = tokens.outlookToken;
       const eventSavers = [];
 
-      if (
-        (eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar) &&
-          !googleToken) ||
-        (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn) &&
-          !outlookToken)
+      if ((eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar) && !googleToken) ||
+         (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn) && !outlookToken)
       ) {
         throw new BadRequestException({
           message: ErrorMessages.calendarNotLinked,

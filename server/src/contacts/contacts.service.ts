@@ -36,7 +36,7 @@ export class ContactsService {
   }
 
   /**
-   * @description `Find recomended contacts fro calendar events`
+   * @description `Find recommended contacts fro calendar events`
    * @param user - `Authorized user data`
    * @returns `Array of users`
    */

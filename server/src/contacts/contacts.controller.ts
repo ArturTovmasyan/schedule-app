@@ -25,7 +25,7 @@ import { ContactsService } from './contacts.service';
 import { User } from '@user/entity/user.entity';
 
 @ApiBearerAuth()
-@ApiTags('Recomended Contacts')
+@ApiTags('Recommended Contacts')
 @Controller('api/contacts')
 export class ContactsController {
   constructor(private readonly contactsService: ContactsService) {}
@@ -37,7 +37,7 @@ export class ContactsController {
   }
 
   @ApiResponse({ type: IResponse })
-  @ApiOperation({ summary: 'Get list of recomended contacts' })
+  @ApiOperation({ summary: 'Get list of recommended contacts' })
   @Get()
   @UseGuards(AuthGuard())
   async getUserContacts(@GetUser() user: User) {
