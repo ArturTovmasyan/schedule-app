@@ -63,8 +63,7 @@ export class SharableLinksService {
     await this._checkSlotAvailability(user, createSharableLinkDto.slots);
 
     if (
-      (createSharableLinkDto.meetVia === MeetViaEnum.InboundCall ||
-        createSharableLinkDto.meetVia === MeetViaEnum.OutboundCall) &&
+      createSharableLinkDto.meetVia === MeetViaEnum.InboundCall &&
       !createSharableLinkDto.phoneNumber
     ) {
       throw new BadRequestException({
