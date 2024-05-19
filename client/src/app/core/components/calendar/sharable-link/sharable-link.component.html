@@ -140,28 +140,27 @@
       <div class="connect-message" [innerHtml]="connectMessage">
       </div>
 
-      <!--
-      <div class="generate-link" id="generateLink">
+
+      <div class="generate-link" id="generateLink" *ngIf="sharableLink">
         <h3 class="section-title-secondary mt-4 mb-2">
           Link to the poll
         </h3>
         <div class="url-wrapper">
           <button class="url">
-            entangles.io/D538hul9/84wow
+            {{ sharableLink }}
           </button>
-          <div class="buttons">
+          <div class="buttons position-relative">
+            <span class="copied-tooltip {{ showCopiedText ? 'visible': ''}}">Copied</span>
             <button>
               <img src="assets/edit-icon.png" alt="copy">
             </button>
-            <button>
+            <button (click)="copyLink(sharableLink)">
               <img src="assets/copy-icon.png" alt="copy">
             </button>
-
           </div>
         </div>
         <p class="copy-send">Copy and send this link to anyone you want</p>
       </div>
-      -->
     </div>
     <div class="error w-100 {{errorMessage ? 'animate' : ''}}">{{ errorMessage }}</div>
     <div class="d-flex justify-content-end">

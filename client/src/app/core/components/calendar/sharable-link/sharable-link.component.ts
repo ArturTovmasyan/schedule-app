@@ -1,5 +1,6 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
+import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Observable, of, shareReplay, Subject, switchMap, tap } from 'rxjs';
 import { CalendarAccess } from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
@@ -47,6 +48,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   // MAP<email, availability_data>
   emailsWithAvailabilityMap = new Map();
 
+  sharableLink = '';
+  showCopiedText = false;
+  private readonly _document: Document;
+
   locations: Location[] = [
     { title: 'ZOOM', subTitle: 'Web conference', image:'assets/zoom.png', active: false, value: 'zoom'},
     { title: 'Microsoft Teams', subTitle: 'Web conference', image: 'assets/microsoft-teams.png', active: false, value: 'teams' },
@@ -64,8 +69,11 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
     private readonly calendarAccessService: CalendarAccessService,
-    private availabilityService: AvailabilityService
+    private availabilityService: AvailabilityService,
+    @Inject(DOCUMENT) document: any
+
   ) {
+    this._document = document;
     this.subscription = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
       const startdate = moment.utc(dates.start).local().format('ddd, MMM Do');
       if (this.selectedDates[startdate]) {
@@ -159,6 +167,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       requestParams.set('address', this.address);
     }
     // TODO: send API Request with request Parameters
+    this.sharableLink = `https://entangles.io/share/abc-def-xyz`;
   }
 
   // load contacts when clicked on Joint availability "plus" sign
@@ -249,6 +258,29 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.selectedContacts$.next(this.selectedContacts);
     this.emailsWithAvailabilityMap.delete(contact.owner.email);
     this.broadcastContactData();
+  }
+
+  copyLink(text: any) {
+    // after link copied show copied
+    const textarea = this._document.createElement('textarea');
+    const styles = textarea.style;
+    styles.position = 'fixed';
+    styles.top = styles.opacity = '0';
+    styles.left = '-999em';
+    textarea.setAttribute('aria-hidden', 'true');
+    textarea.value = text;
+    // Making the textarea `readonly` prevents the screen from jumping on iOS Safari.
+    textarea.readOnly = true;
+    this._document.body.appendChild(textarea);
+
+    textarea.select();
+    textarea.setSelectionRange(0, textarea.value.length);
+    this._document.execCommand('copy');
+    textarea.remove();
+    this.showCopiedText = true;
+    setTimeout(() => {
+      this.showCopiedText = false;
+    }, 2000);
   }
 
   ngOnDestroy(): void {
