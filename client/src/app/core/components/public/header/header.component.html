@@ -17,8 +17,8 @@
       </li>
     </ng-container>
 
-    <li class="list-inline-item" *ngIf="(isLoggedIn$ | async); else notLoggedIn">
-      <span class="button" (click)="logout()">Log out</span>
+    <li class="list-inline-item" *ngIf="(isLoggedIn$ | async) as data; else notLoggedIn">
+      <app-avatar></app-avatar>
     </li>
     <ng-template #notLoggedIn>
       <li>

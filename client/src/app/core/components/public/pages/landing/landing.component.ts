@@ -16,7 +16,6 @@ export class LandingPageComponent implements OnDestroy {
     private scroller: ViewportScroller,
     private broadcaster: BroadcasterService
   ) {
-    console.log(this.mockTestimonials);
     this.broadcaster.broadcast('isAuthPage', false);
     this.broadcaster.broadcast('isLandingPage', true);
 

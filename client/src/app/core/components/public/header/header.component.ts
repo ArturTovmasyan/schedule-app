@@ -44,10 +44,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const user = this.authService.currentUserValue;
-    if (user && user.accessToken) {
-      this.loggedUser = true;
-    }
+    this.authService.hasAccess().subscribe({
+      next: ({ user }) => {
+        if (user) {
+          this.loggedUser = true;
+        }
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -73,7 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.loggedUser = false;
+
     const user = JSON.parse(localStorage.getItem('cu') || 'null')
     this.authService.logout();
 
@@ -82,7 +85,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         window.location.href = environment.ms_logout_url;
       }
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'])
+      .then(() => {
+        this.loggedUser = false;
+      });
     }
   }
 

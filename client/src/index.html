@@ -24,7 +24,6 @@
         content = document.getElementById("content"),
         next = document.getElementById("next"),
         prev = document.getElementById("prev");
-      console.log('caruouse', carousel);
       next.addEventListener("click", e => {
         carousel.scrollBy(width + gap, 0);
       });
@@ -48,7 +47,6 @@
       testimonialsContent = document.getElementById("testimonialsContent"),
       testimonialsNext = document.getElementById("testimonialsNext"),
       testimonialsPrev = document.getElementById("testimonialsPrev");
-      console.log('testimonial', testimonialsCarousel);
         testimonialsNext.addEventListener("click", e => {
         testimonialsCarousel.scrollBy(testimonialsWidth + testimonialsGap, 0);
       });
