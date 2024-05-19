@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: () => {
           this.form.reset();
-          this.router.navigate(['/payment']);
+          this.router.navigate(['/']);
         },
         error: (error) => {
           this.error = error;

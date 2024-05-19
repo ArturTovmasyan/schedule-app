@@ -25,6 +25,7 @@ import {ChangePasswordDto} from "./dto/change-password.dto";
 import {UserUpdateDto} from "@user/dto/user-update.dto";
 import {ConfigService} from "@nestjs/config";
 import {OauthProvider} from "./enums/oauth.provider.enum";
+import {PaymentService} from "../payment/payment.service";
 
 @Injectable()
 export class AuthService {
@@ -38,6 +39,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly mailService: MailService,
         private readonly configService: ConfigService,
+        private readonly stripeService: PaymentService,
         @InjectRepository(User)
         private readonly userRepo: Repository<User>,
     ) {
@@ -68,6 +70,10 @@ export class AuthService {
         };
 
         try {
+            let fullName = userDto.firstName + ' ' + userDto.lastName;
+            const stripeCustomer = await this.stripeService.createCustomer(fullName, userDto.email);
+
+            userDto.stripeCustomerId = stripeCustomer.id;
             const user = await this.usersService.create(userDto);
             this.sendConfirmation(user);
         } catch (error) {
@@ -84,7 +90,7 @@ export class AuthService {
         const user = await this.usersService.findByLogin(dto);
         const token = this._createToken(user, null, dto.remember);
         return {
-            // user,
+            user,
             ...token,
         };
     }
@@ -108,7 +114,7 @@ export class AuthService {
         return null;
     }
 
-     sendConfirmation(user: UserDto) {
+    sendConfirmation(user: UserDto) {
         const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
         const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
 
@@ -178,34 +184,25 @@ export class AuthService {
     }
 
     async validateGoogleLogin(data: any): Promise<string> {
-        try {
+        let {sub, email} = data;
+        let oauthId = sub;
+        let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
 
-            let {sub, email} = data;
-            let oauthId = sub;
-            let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
-
-            if (!user) {
-                user = await this.userRepo.findOne({where: [{email: email}]});
-                if (user) {
-                     new ForbiddenException(
-                        {
-                            message: ErrorMessages.socialAccountExist,
-                            status: HttpStatus.FORBIDDEN
-                        }
-                    );
-                }
-                data.provider = OauthProvider.GOOGLE;
-                user = await this.usersService.registerGoogleUser(data);
+        if (!user) {
+            user = await this.userRepo.findOne({where: [{email: email}]});
+            if (user) {
+                throw new ForbiddenException(
+                    {
+                        message: ErrorMessages.socialAccountExist,
+                        status: HttpStatus.FORBIDDEN
+                    }
+                );
             }
-
-            return this._createToken(user, '30d').accessToken;
-
-        } catch (err) {
-            throw new InternalServerErrorException({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                message: err.message,
-            });
+            data.provider = OauthProvider.GOOGLE;
+            user = await this.usersService.registerGoogleUser(data);
         }
+
+        return this._createToken(user, '30d').accessToken;
     }
 
     async validateMicrosoftLogin(data: any): Promise<string> {

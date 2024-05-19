@@ -31,4 +31,8 @@ export class UserCreateDto {
   @Expose({ name: 'provider' })
   @IsString()
   provider: string;
+
+  @Expose({ name: 'stripe_customer_id' })
+  @IsString()
+  stripeCustomerId: string;
 }

@@ -47,7 +47,8 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     BrowserAnimationsModule,
     HttpClientModule,
     SharedModule,
-    MsAuthModule
+    MsAuthModule,
+    IMaskModule
   ],
   providers: [
     jwtInterceptorProvider,

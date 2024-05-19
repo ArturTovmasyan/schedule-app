@@ -28,8 +28,8 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async create(userDto: UserCreateDto): Promise<UserDto> {
-    const { email, firstName, lastName, password } = userDto;
+  async create(userDto: UserCreateDto): Promise<UserDto> { // TODO add customerId to userDTo
+    const { email, firstName, lastName, password, stripeCustomerId } = userDto;
     const userInDb = await this.userRepo.findOne({
       where: { email }, withDeleted: true
     });
@@ -50,6 +50,7 @@ export class UsersService {
       firstName,
       lastName,
       password,
+      stripeCustomerId
     });
 
     await this.userRepo.save(user);
@@ -102,7 +103,8 @@ export class UsersService {
       status: 0,
       password: user.password,
       oauthId: 0,
-      provider: ""
+      provider: "",
+      stripeCustomerId: "",
     };
 
     await this.userRepo.update({ id }, user);

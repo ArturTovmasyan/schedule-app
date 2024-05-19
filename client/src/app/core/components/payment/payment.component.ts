@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
 import {PaymentService} from "../../services/auth/payment/payment.service";
+import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 
 @Component({
   selector: 'app-payment',
@@ -11,7 +12,7 @@ import {PaymentService} from "../../services/auth/payment/payment.service";
 export class PaymentComponent implements OnInit {
 
   form: FormGroup;
-  errorMessage: string | undefined;
+  error?: ErrorResponse;
 
   constructor(private formBuilder: FormBuilder, private paymentService: PaymentService) {
     this.form = this.formBuilder.group({
@@ -22,6 +23,11 @@ export class PaymentComponent implements OnInit {
     });
   }
 
+  cvvMask = { mask: "{000}" }
+  dateMask = { mask: "{00}/{00}" };
+  cardNumberMask = { mask: "0000 0000 0000 0000" };
+
   ngOnInit(): void {
+    this.loadStripe();
   }
 }

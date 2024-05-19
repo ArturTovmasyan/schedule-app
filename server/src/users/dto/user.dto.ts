@@ -26,4 +26,7 @@ export class UserDto {
 
   @Expose({ name: 'deleted_on' })
   deletedOn?: Date;
+
+  @Expose({ name: 'stripe_customer_id' })
+  stripeCustomerId?: string;
 }

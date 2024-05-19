@@ -4,7 +4,7 @@
       <label>1. Select a plan</label>
       <section>
         <app-subscription-plan-item *ngFor="let subscriptionPlan of subscriptionPlans; let i = index"
-        [subscription-plan]="subscriptionPlan" [isSelected]="i == 0"></app-subscription-plan-item>
+        [subscription-plan]="subscriptionPlan" [isSelected]="i == selectedPlan"></app-subscription-plan-item>
       </section>
     </div>
 

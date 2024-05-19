@@ -1,4 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import {BroadcasterService} from "../../../shared/services";
+
+const STANDARD_PLAN = 0;
+const PROFESSIONAL_PLAN = 1;
 
 @Component({
   selector: 'app-subscription-plan-item',
@@ -26,7 +30,16 @@ export class SubscriptionPlanItemComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  constructor(private broadcaster: BroadcasterService) {
+  }
+
   get iconPath(): string {
     return `/assets/${this.isSelected ? this.subscriptionPlan.icons.selected : this.subscriptionPlan.icons.normal}`;
+  }
+
+  selectPlan() {
+    this.isSelected = true;
+    this.broadcaster.broadcast('plan_type', this.subscriptionPlan.recommended ? STANDARD_PLAN : PROFESSIONAL_PLAN);
+    console.log(this.subscriptionPlan);
   }
 }

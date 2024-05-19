@@ -1,34 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {Controller, Post, Body, UseGuards, Req, HttpCode} from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+import CreateChargeDto from "./dto/create-charge.dto";
+import {AuthGuard} from "@nestjs/passport";
+import AddCreditCardDto from "./dto/add-credit-card.dto";
 
-@Controller('payment')
+@Controller('api/payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentService.create(createPaymentDto);
+  @Post('charge')
+  @UseGuards(AuthGuard())
+  async createCharge(@Body() charge: CreateChargeDto) {
+    return await this.paymentService.charge(charge.amount, charge.paymentMethodId);
   }
 
-  @Get()
-  findAll() {
-    return this.paymentService.findAll();
+  @Post('add/credit-cards')
+  @UseGuards(AuthGuard())
+  async addCreditCard(@Body() creditCard: AddCreditCardDto) {
+    debugger;
+    return this.paymentService.attachCreditCard(creditCard.paymentMethodId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentService.update(+id, updatePaymentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentService.remove(+id);
+  @Post('card/default')
+  @HttpCode(200)
+  @UseGuards(AuthGuard())
+  async setDefaultCard(@Body() creditCard: AddCreditCardDto) {
+    await this.paymentService.setDefaultCreditCard(creditCard.paymentMethodId, creditCard.customerId);
   }
 }

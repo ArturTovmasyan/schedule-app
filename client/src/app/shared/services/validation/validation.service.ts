@@ -32,12 +32,13 @@ export class ValidationService {
       }
   }
 
-  // Visa, MasterCard, American Express, Diners Club, Discover, and JCB cards:
+  // Visa, MasterCard, American Express
   static cardNumber(c: FormControl) {
-    if (c.value && (
-      c.value.match(/^(?:4[0-9]{12}(?:[0-9]{3})?)$/) ||
-      c.value.match(/^(?:5[1-5][0-9]{14})$/) ||
-      c.value.match(/^(?:3[47][0-9]{13})$/))) {
+    const val = c.value ? c.value.replace(/\s/g, '') : null;
+    if (val && (
+      val.match(/^(?:4[0-9]{12}(?:[0-9]{3})?)$/) ||
+      val.match(/^(?:5[1-5][0-9]{14})$/) ||
+      val.match(/^(?:3[47][0-9]{13})$/))) {
       return null;
     } else {
       return {'invalidCreditCardNumber': true};
@@ -53,7 +54,7 @@ export class ValidationService {
   }
 
   static cardExpireDate(c: FormControl) {
-    if (c.value && c.value.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+    if (c.value && c.value.match(/^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$/)) {
       return null;
     } else {
       return {'invalidCardDate': true};

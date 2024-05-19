@@ -1,11 +1,26 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
+import {BehaviorSubject} from "rxjs";
+import {BroadcasterService} from "../../../shared/services";
 
 @Component({
   selector: 'app-subscription-plan',
   templateUrl: './subscription-plan.component.html',
   styleUrls: ['./subscription-plan.component.scss']
 })
-export class SubscriptionPlanComponent {
+export class SubscriptionPlanComponent implements OnDestroy{
+
+  selectedPlan = 0;
+  subscription: BehaviorSubject<number>;
+
+  constructor(private broadcaster: BroadcasterService) {
+    this.subscription = this.broadcaster.on('plan_type').subscribe((planItem: number) => {
+      this.selectedPlan = planItem;
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 
   subscriptionPlans = [
     {

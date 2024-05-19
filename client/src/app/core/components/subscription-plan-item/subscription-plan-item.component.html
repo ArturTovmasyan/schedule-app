@@ -1,4 +1,4 @@
-<div id="container" [ngClass]="{'selected': isSelected }" class="selected">
+<div id="container" [ngClass]="{'selected': isSelected }" class="selected" (click)="selectPlan()">
   <label id="ribbon" *ngIf="subscriptionPlan.recommended">Recommended</label>
   <img id="logo" src="{{ iconPath }} " alt="">
 

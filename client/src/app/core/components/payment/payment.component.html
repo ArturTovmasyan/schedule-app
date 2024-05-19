@@ -1,8 +1,8 @@
 <div id="container">
-  <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+  <form class="form" [formGroup]="form" (ngSubmit)="onSubmit(form.value)"  autocomplete="off">
     <div class="form-group">
       <label for="number">Card number</label>
-      <input type="text" id="number" pattern="\d*" formControlName="number" maxlength="16" placeholder="0000 0000 0000 0000" />
+      <input type="text" id="number" formControlName="number" [imask]="cardNumberMask" placeholder="0000 0000 0000 0000" />
       <app-control-messages [control]="f['number']"></app-control-messages>
     </div>
     <div class="form-group">
@@ -14,17 +14,18 @@
     <div id="date-code">
       <div class="form-group">
         <label for="expiration_date">Expiration Date</label>
-        <input type="text" dataformatas="MM/YYYY" id="expiration_date" formControlName="expiration_date" placeholder="MM / YYYY" />
+        <input type="text" dataformatas="MM/YYYY" id="expiration_date" [imask]="dateMask" formControlName="expiration_date" placeholder="MM / YYYY" />
         <app-control-messages [control]="f['expiration_date']"></app-control-messages>
       </div>
 
       <div class="form-group">
         <label for="cvv">CVV</label>
-        <input type="text" id="cvv" formControlName="cvv" pattern="\d*" maxlength="3" placeholder="&#x2022;&#x2022;&#x2022;" />
+        <input type="text" id="cvv" formControlName="cvv" [imask]="cvvMask" placeholder="&#x2022;&#x2022;&#x2022;" />
         <app-control-messages [control]="f['cvv']"></app-control-messages>
       </div>
     </div>
 
+    <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
     <input type="submit" value="Make Payment" [disabled]="!form.valid" />
   </form>
 </div>

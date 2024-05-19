@@ -7,5 +7,6 @@ export interface ApplicationUser {
     firstName: string;
     lastName: string;
     email: string;
+    stripeCustomerId: string;
   };
 }
