@@ -23,7 +23,7 @@
       <h3 class="section-title-secondary mb-2">
         Meeting title
       </h3>
-      <input type="text" name="meetingTitle" placeholder="Please type meeting title" id="meetingTitle">
+      <input type="text" name="meetingTitle" placeholder="Please type meeting title" id="meetingTitle" [(ngModel)]="meetingTitle" [disabled]="!updateView">
 
       <!--      selected time slots     -->
       <h3 class="section-title-secondary  mt-4 mb-2">

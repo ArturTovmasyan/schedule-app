@@ -40,6 +40,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   connectMessage = { 'title': '', 'type': '' };
   // for location: incoming call and address
   phoneNumber = null;
+  meetingTitle = ''; 
   address = null;
 
   errorMessage = '';
@@ -49,7 +50,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   emailsWithAvailabilityMap = new Map();
   sharableLink = '';
   showCopiedText = false;
-  showJointAvailability = true;
+  showJointAvailability = false;
   updateView = true;
   private readonly _document: Document;
 
@@ -122,7 +123,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.userSubscription$ = this.authService.currentUser.subscribe((res: ApplicationUser | null) => {
       this.currentUser = res?.user || null;
       if(this.currentUser) {
+        console.log(this.currentUser)
         this.selectedUsers[0] = {
+          id: this.currentUser.id,
           name: this.currentUser.fullName,
           email: this.currentUser.email,
           avatar: this.currentUser.avatar ?? null,
@@ -205,6 +208,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
               return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
             })
           )
+          console.log(sortedObject);
           this.selectedDates$.next(sortedObject);
 
           // for preselect events on calendar
@@ -217,12 +221,13 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           if (res.data.address) {
             this.address = res.data.address;
           }
+          this.meetingTitle = res.data.title;
 
           // for attendees
           const attendees = res.data.attendees;
           if (attendees.length > 0) {
             this.showJointAvailability = true;
-            for (const attendee of attendees) {
+            for (const attendee of attendees.filter((x: { user: { id: string | undefined; }; }) => x.user.id != this.currentUser?.id)) {
               const user: UserData = {
                   id: attendee.user.id,
                   name: attendee.user.fullName,
@@ -257,6 +262,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     const selectedDate = this.selectedDates[date].splice(i, 1);
     // run if in update page
     if (this.sharableLink && selectedDate?.[0]?.id) {
+      console.log('test')
       this.deletedTimeSlots.push(selectedDate[0].id);
     } else {
       this.addedTimeSlots.filter((date: any) => {
@@ -342,6 +348,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   createSharableLink() {
     const selectedDates = this.selectedDates$.value;
+    console.log(selectedDates)
     if (Object.keys(selectedDates).length == 0) {
       this.errorMessage = 'Please select at least one available time slot';
     } else if (!this.choosedLocationObj) {
@@ -350,14 +357,11 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Please enter Phone Number';
     } else if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress && !this.address) {
       this.errorMessage = 'Please enter Address';
+    } else if (!this.meetingTitle) {
+      this.errorMessage = 'Please enter Title';
     }
 
-    if (this.errorMessage) {
-      setTimeout(() => {
-        this.errorMessage = '';
-      }, 3000);
-      return;
-    }
+    if(this.showError(this.errorMessage)) return;
 
     const selectedDatesNew = [];
     for (const key in selectedDates) {
@@ -371,7 +375,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     }
 
     const requestParams = {
-      'title': this.choosedLocationObj?.title,
+      'title': this.meetingTitle,
       'slots': selectedDatesNew,
       'meetVia': this.choosedLocationObj?.value,
       'attendees': [] as any,
@@ -380,7 +384,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedUsers.length > 0) {
-      requestParams['attendees'] = this.selectedUsers.map(user => user.id);
+      requestParams['attendees'] = this.selectedUsers.filter(user => user.id != this.currentUser?.id).map(user => user.id);
     }
 
     if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
@@ -519,8 +523,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   updateSharableLink() {
-    const selectedDates = this.addedTimeSlots;
-    if (selectedDates.length == 0) {
+    const selectedDates = this.selectedDates$.value;
+    if (Object.keys(selectedDates).length == 0) {
       this.errorMessage = 'Please select at least one available time slot';
     } else if (!this.choosedLocationObj) {
       this.errorMessage = 'Please select the Location';
@@ -528,20 +532,32 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Please enter Phone Number';
     } else if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress && !this.address) {
       this.errorMessage = 'Please enter Address';
+    } else if (!this.meetingTitle) {
+      this.errorMessage = 'Please enter Title';
     }
 
-    this.showError(this.errorMessage);
+    if (this.errorMessage) {
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000);
+      return;
+    }
+
+    if(this.showError(this.errorMessage)) return;
+
     const selectedDatesNew = [];
     for (const key in selectedDates) {
       const value = selectedDates[key];
-      selectedDatesNew.push({
-        'startDate': value['start'],
-        'endDate': value['end']
-      });
+      for (const val of value) {
+        selectedDatesNew.push({
+          'startDate': val['start'],
+          'endDate': val['end']
+        });
+      }
     }
 
     const requestParams = {
-      'title': this.choosedLocationObj?.title,
+      'title': this.meetingTitle,
       'addSlots': selectedDatesNew,
       'deleteSlots': this.deletedTimeSlots,
       'meetVia': this.choosedLocationObj?.value,
@@ -551,7 +567,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedUsers.length > 0) {
-      requestParams['attendees'] = this.selectedUsers.map(x => x.id);
+      requestParams['attendees'] = this.selectedUsers.filter(user => user.id != this.currentUser?.id).map(user => user.id);
     }
 
     if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
@@ -583,14 +599,15 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
   }
 
-  showError(error: string): void {
+  showError(error: string): boolean {
     if (error) {
       this.errorMessage = error;
       setTimeout(() => {
         this.errorMessage = '';
       }, 3000);
-      return;
+      return true;
     }
+    return false;
   }
 
   close() {
