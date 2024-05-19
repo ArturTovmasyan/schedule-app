@@ -247,4 +247,19 @@ export class AuthService {
             });
         }
     }
+
+    sendConfirmation(user: UserDto) {
+        const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
+        const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
+
+        this.mailService.send({
+            from: this.configService.get<string>('NO_REPLY_EMAIL'),
+            to: user.email,
+            subject: 'Verify Handshake Account',
+            html: `
+                <h3>Hello ${user.firstName}!</h3>
+                <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
+            `,
+        });
+    }
 }

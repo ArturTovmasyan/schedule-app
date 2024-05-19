@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ValidationService} from "../../../shared/services";
@@ -21,7 +21,7 @@ export class SignupComponent {
   error?: ErrorResponse;
   errorMessage: undefined;
 
-  constructor(private route: ActivatedRoute, private authService: AuthService, private router: Router, private formBuilder: FormBuilder) {
+  constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
       fullName: ['', [ValidationService.fullNameValidator, Validators.required]],
       email: ['', [ValidationService.emailValidator, Validators.required]],

@@ -14,6 +14,7 @@ import {RedirectGuard} from "./core/guards/redirect.guard";
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
 
 const routes: Routes = [
+  {path: '', redirectTo: 'onboarding/calendar', pathMatch: 'prefix'}, //TODO will redirect to calendar main page
   {
     path: 'onboarding',
     component: HomeComponent,
@@ -94,4 +95,5 @@ const isIframe = window !== window.parent && !window.opener;
   })],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+}
