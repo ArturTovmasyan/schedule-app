@@ -7,7 +7,7 @@ import {AccessRequestComponent} from "./access-request/access-request.component"
 import { ShareCalendarComponent } from './share-calendar/share-calendar.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { MeetingComponent } from './meeting/meeting.component';
-import { ProposaeTimeSlotComponent } from './proposae-time-slot/proposae-time-slot.component';
+import { ProposeTimeSlotComponent } from './propose-time-slot/propose-time-slot.component';
 
 @NgModule({
     declarations: [
@@ -16,7 +16,7 @@ import { ProposaeTimeSlotComponent } from './proposae-time-slot/proposae-time-sl
       ShareCalendarComponent,
       ContactsComponent,
       MeetingComponent,
-      ProposaeTimeSlotComponent
+      ProposeTimeSlotComponent
     ],
     imports: [
         CommonModule,

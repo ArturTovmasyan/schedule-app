@@ -166,7 +166,7 @@ const routes: Routes = [
       },
       {
         path: 'propose-time',
-        component: ProposaeTimeSlotComponent
+        component: ProposeTimeSlotComponent
       }
     ]
   },
