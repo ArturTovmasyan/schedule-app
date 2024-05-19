@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ApiResponse } from '../../interfaces/response/api.response.interface';
 import { AccessRequest } from '../../interfaces/calendar/access-request.interface';
+import { CalendarAccess } from '../../interfaces/calendar/calendar-access.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +31,14 @@ export class CalendarAccessService {
         return formData
       })
     );
+  }
+
+  fetchAccessibleContacts() {
+    return this.http.get<ApiResponse<CalendarAccess[]>>('/api/calendar/access/accessed', {})
+      .pipe(
+        map((response: ApiResponse<CalendarAccess[]>) => {
+          return response.data;
+        })
+      )
   }
 }
