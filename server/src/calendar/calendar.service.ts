@@ -9,6 +9,7 @@ import * as graph from '@microsoft/microsoft-graph-client';
 import 'isomorphic-fetch';
 import { Calendar } from './entities/calendar.entity';
 import { User } from '@user/entity/user.entity';
+import { CalendarEvent } from './entities/calendarEvent.entity';
 
 @Injectable()
 export class CalendarService {
@@ -83,6 +84,8 @@ export class CalendarService {
         .api('https://graph.microsoft.com/v1.0/me/calendars/')
         .get();
 
+      console.log('calendarList ', calendarList);
+
       await manager.getRepository(Calendar).delete({
         owner: { id: user.id },
         calendarType: CalendarTypeEnum.Office365Calendar,
@@ -123,7 +126,7 @@ export class CalendarService {
 
   // console.log('events ', events.data.items);
 
-  async syncGoogleCalendarList(user: User) {
+  async syncGoogleCalendarEventList(user: User) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const token = await manager.getRepository(CalendarToken).findOne({
         owner: { id: user.id },
@@ -153,16 +156,99 @@ export class CalendarService {
           isPrimary: true,
         });
 
-      // console.log('localPrimaryCalendar ', localPrimaryCalendar);
+      const eventsFromDb = await manager.getRepository(CalendarEvent).find({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+      });
 
       const events = await calendar.events.list({
         calendarId: localPrimaryCalendar.calendarId,
         timeZone: 'GMT',
-        timeMin: '2022-08-25T00:00:00Z',
-        timeMax: '2022-09-05T00:00:00Z',
       });
 
-      console.log('events ', events.data.items);
+      const serializedEvents = events.data.items.map((item) => {
+        const event = new CalendarEvent();
+        event.eventId = item.id;
+        event.calendarType = CalendarTypeEnum.GoogleCalendar;
+        event.owner = user;
+        event.start = item.start.dateTime
+          ? new Date(item.start.dateTime)
+          : null;
+        event.end = item.start.dateTime ? new Date(item.end.dateTime) : null;
+        event.title = item.summary || null;
+        event.creator = item.creator.email || null;
+        event.meetLink = item.hangoutLink || null;
+        event.createdOn = new Date(item.created);
+        event.updatedOn = new Date(item.updated);
+        event.description = item.description || null;
+
+        return event;
+      });
+
+      const delta = this.compareEvents(eventsFromDb, serializedEvents);
+
+      return await manager.getRepository(CalendarEvent).save(delta.added);
+    });
+  }
+
+  async syncOutlookCalendarEventList(user: User) {
+    return this.calendarTokenRepository.manager.transaction(async (manager) => {
+      const token = await manager.getRepository(CalendarToken).findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.Office365Calendar,
+      });
+
+      if (!token) {
+        throw new NotFoundException('You have not calendar access token');
+      }
+
+      const { accessToken } = token;
+
+      const calendarClient = graph.Client.init({
+        authProvider: (done) => {
+          done(null, accessToken);
+        },
+      });
+
+      const localPrimaryCalendar = await manager
+        .getRepository(Calendar)
+        .findOne({
+          owner: { id: user.id },
+          calendarType: CalendarTypeEnum.Office365Calendar,
+          isPrimary: true,
+        });
+
+      const eventsFromDb = await manager.getRepository(CalendarEvent).find({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.GoogleCalendar,
+      });
+
+      const events = await calendarClient
+        .api(`/me/calendars/${localPrimaryCalendar.calendarId}/events`)
+        .get();
+
+      const serializedEvents = events.value.map((item) => {
+        const event = new CalendarEvent();
+        event.eventId = item.id;
+        event.calendarType = CalendarTypeEnum.Office365Calendar;
+        event.owner = user;
+        event.start = item.start.dateTime
+          ? new Date(item.start.dateTime)
+          : null;
+        event.end = item.start.dateTime ? new Date(item.end.dateTime) : null;
+        event.title = item.subject || null;
+        event.creator = item.organizer.emailAddress.address || null;
+        event.meetLink = item.onlineMeeting || null;
+        event.createdOn = new Date(item.createdDateTime);
+        event.updatedOn = new Date(item.lastModifiedDateTime);
+        event.description = item.bodyPreview || null;
+
+        return event;
+      });
+
+      const delta = this.compareEvents(eventsFromDb, serializedEvents);
+
+      return await manager.getRepository(CalendarEvent).save(delta.added);
     });
 
     console.log('before');
@@ -191,8 +277,6 @@ export class CalendarService {
       calendarType: CalendarTypeEnum.Office365Calendar,
     });
 
-    // console.log('accessToken ', accessToken);
-
     const client = graph.Client.init({
       authProvider: (done) => {
         done(null, accessToken);
@@ -209,63 +293,50 @@ export class CalendarService {
     console.log('event ', event.value[0]);
   }
 
-  // async testCompare() {
-  //   function mapFromArray(
-  //     array: Array<any>,
-  //     prop: string,
-  //   ): { [index: number]: any } {
-  //     const map = {};
-  //     for (let i = 0; i < array.length; i++) {
-  //       map[array[i][prop]] = array[i];
-  //     }
-  //     return map;
-  //   }
-  //
-  //   function isEqual(a, b): boolean {
-  //     return a.title === b.title;
-  //   }
-  //
-  //   function getDelta(
-  //     o: Array<any>,
-  //     n: Array<any>,
-  //     comparator: (a, b) => boolean,
-  //   ): { added: Array<any>; deleted: Array<any>; changed: Array<any> } {
-  //     const delta = {
-  //       added: <Array<any>>[],
-  //       deleted: <Array<any>>[],
-  //       changed: <Array<any>>[],
-  //     };
-  //     const mapO = mapFromArray(o, 'id');
-  //     const mapN = mapFromArray(n, 'id');
-  //     for (const id in mapO) {
-  //       if (!mapN.hasOwnProperty(id)) {
-  //         delta.deleted.push(mapO[id]);
-  //       } else if (!comparator(mapN[id], mapO[id])) {
-  //         delta.changed.push(mapN[id]);
-  //       }
-  //     }
-  //
-  //     for (const id in mapN) {
-  //       if (!mapO.hasOwnProperty(id)) {
-  //         delta.added.push(mapN[id]);
-  //       }
-  //     }
-  //     return delta;
-  //   }
-  //
-  //   const arr1 = [
-  //     { id: 1, title: 'title1' },
-  //     { id: 2, title: 'title2' },
-  //     { id: 3, title: 'title3' },
-  //     { id: 5, title: 'title5' },
-  //   ];
-  //
-  //   const arr2 = [
-  //     { id: 1, title: 'title1updated' },
-  //     { id: 2, title: 'title2' },
-  //     { id: 4, title: 'title4' },
-  //   ];
-  //
-  //   console.log(getDelta(arr1, arr2, isEqual));
-  // }
+  private compareEvents(eventsFromDb, eventsFromGoogle) {
+    function mapFromArray(
+      array: Array<any>,
+      prop: string,
+    ): { [index: number]: any } {
+      const map = {};
+      for (let i = 0; i < array.length; i++) {
+        map[array[i][prop]] = array[i];
+      }
+      return map;
+    }
+
+    function isEqualEvent(a, b): boolean {
+      return a.updatedOn === b.updatedOn;
+    }
+
+    function getDelta(
+      o: Array<any>,
+      n: Array<any>,
+      comparator: (a, b) => boolean,
+    ): { added: Array<any>; deleted: Array<any>; changed: Array<any> } {
+      const delta = {
+        added: <Array<any>>[],
+        deleted: <Array<any>>[],
+        changed: <Array<any>>[],
+      };
+      const mapO = mapFromArray(o, 'eventId');
+      const mapN = mapFromArray(n, 'eventId');
+      for (const id in mapO) {
+        if (!mapN.hasOwnProperty(id)) {
+          delta.deleted.push(mapO[id]);
+        } else if (!comparator(mapN[id], mapO[id])) {
+          delta.changed.push(mapN[id]);
+        }
+      }
+
+      for (const id in mapN) {
+        if (!mapO.hasOwnProperty(id)) {
+          delta.added.push(mapN[id]);
+        }
+      }
+      return delta;
+    }
+
+    return getDelta(eventsFromDb, eventsFromGoogle, isEqualEvent);
+  }
 }
