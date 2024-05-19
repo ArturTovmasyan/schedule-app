@@ -64,9 +64,7 @@ export class CalendarEventService {
             this.calendarTokenRepository,
             async (manager) => {
                 const { accessToken } = token;
-
                 const googleCalendar = await this.getGoogleCredentials(accessToken);
-
                 const calendarList = await googleCalendar.calendarList.list();
 
                 const calendarSerializedList = calendarList.data.items

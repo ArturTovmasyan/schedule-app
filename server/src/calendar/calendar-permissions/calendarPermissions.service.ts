@@ -1,4 +1,4 @@
-import { BadGatewayException, Injectable } from '@nestjs/common';
+import {BadGatewayException, BadRequestException, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CalendarToken } from './entity/calendarToken.entity';
@@ -172,23 +172,23 @@ export class CalendarPermissionsService {
 
   async getTokensFromGoogleAndSave(user: User, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
-      const calendarTokenRepository = manager.getRepository(CalendarToken);
       let getTokenResponse;
+      const calendarTokenRepository = manager.getRepository(CalendarToken);
+
       try {
-        getTokenResponse =
-          await this.clientsCredentials.googleOAuth2Client.getToken(code);
+        getTokenResponse = await this.clientsCredentials.googleOAuth2Client.getToken(code);
       } catch (err) {
-        throw new BadGatewayException(`${err.message}: try new code`);
+        throw new BadRequestException({
+          message: `${err.message}: try new code`,
+        });
       }
 
       if (getTokenResponse.res.status !== 200) {
-        throw new BadGatewayException();
+        throw new BadRequestException();
       }
+
       const tokens = getTokenResponse.tokens;
-
-      const ownerEmail = (await this.getGoogleUsersInfo(tokens.access_token))
-        .data.email;
-
+      const ownerEmail = (await this.getGoogleUsersInfo(tokens.access_token)).data.email;
       const expiryDate = new Date(tokens.expiry_date).toISOString();
 
       const calendarTokenBody = {
@@ -201,17 +201,18 @@ export class CalendarPermissionsService {
       };
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
-
       const calendar = await this.calendarEventService.getCalendarsFromGoogle(
         user,
         token,
         manager,
       );
+
       await this.calendarEventService.googleEventWatcher(
         user,
         calendar,
         manager,
       );
+
       await this.calendarEventService.syncGoogleCalendarEventList(
         user,
         calendar,
