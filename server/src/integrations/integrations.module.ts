@@ -7,6 +7,7 @@ import { IntegrationsController } from './integrations.controller';
 import { ZoomService } from './zoom/zoom.service';
 import { ZoomOAuthToken } from './zoom/entity/zoom-oauth-token.entity';
 import { ZoomStrategy } from './zoom/zoom.strategy';
+import { IntegrationsService } from './integrations.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ZoomStrategy } from './zoom/zoom.strategy';
     HttpModule,
   ],
   controllers: [IntegrationsController],
-  providers: [ZoomService, ZoomStrategy],
+  providers: [ZoomService, ZoomStrategy, IntegrationsService],
   exports: [ZoomService],
 })
 export class IntegrationsModule {}

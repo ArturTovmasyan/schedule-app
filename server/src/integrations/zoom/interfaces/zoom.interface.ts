@@ -4,6 +4,12 @@ export interface IZoomTokenResponse {
   expires_in: string;
 }
 
+export interface ILinkedIntegrations {
+  title: string;
+  sub_title: string;
+  available: boolean;
+}
+
 export interface IZoomMeeting {
   start_time: Date;
   pre_schedule: boolean;

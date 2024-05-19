@@ -28,7 +28,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@azure/msal-node": "^1.12.1",
     "@giorgosavgeris/passport-zoom-oauth2": "^1.1.0",
     "@google-cloud/local-auth": "^2.1.0",
     "@microsoft/microsoft-graph-client": "^3.0.2",
