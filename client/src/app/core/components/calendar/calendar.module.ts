@@ -42,7 +42,7 @@ FullCalendarModule.registerPlugins([
     SharedModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
-  providers: [DatePipe]
+  providers: [DatePipe, GetContactNamePipe, GetContactCompanyPipe]
 })
 
 export class CalendarModule {

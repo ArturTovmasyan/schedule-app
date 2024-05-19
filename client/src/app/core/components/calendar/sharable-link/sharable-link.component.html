@@ -19,24 +19,45 @@
         <div class="content">
           <div class="users-container">
             <ul class="users-list list-unstyled list-inline">
-              <li class="list-inline-item user-info">
-                <div class="user-info-wrapper">
-                  <div class="user-portrait">
-                    <img src="assets/brianchesky.jpg" alt="brian chesky">
+              <ng-container >
+                <li class="list-inline-item user-info" *ngFor="let selectedContact of selectedContacts$ | async">
+                  <div class="user-info-wrapper">
+                    <div class="user-portrait">
+                      <img *ngIf="selectedContact.owner.avatar;" src="{{selectedContact.owner.avatar}}">
+                    </div>
+                    <div class="user-bio">
+                      <h5 class="full-name">{{ selectedContact | getContactName }}</h5>
+                      <h6 class="contact-company">
+                        {{ selectedContact | getContactCompany }}
+                      </h6>
+                    </div>
+                    <button class="remove-button">
+                      <img src="assets/close-icon.svg" alt="remove user">
+                    </button>
                   </div>
-                  <div class="user-bio">
-                    <h5 class="full-name">Brian Chesky</h5>
-                    <h6 class="contact-company">
-                      AirBnb
-                    </h6>
-                  </div>
-                  <button class="remove-button">
-                    <img src="assets/close-icon.svg" alt="remove user">
-                  </button>
-                </div>
-              </li>
+                </li>
+              </ng-container>
               <li class="user-input">
-                <input type="text" #input (keyup)="filterContacts(input.value)">
+                <input type="text" #contactInput>
+                <ul>
+                  <ng-container *ngFor="let contact of filteredContacts$|async" >
+                  <li (click)="selectContact(contact)">
+                    <div class="user-info-wrapper">
+                      <div class="user-portrait">
+                        <img *ngIf="contact.owner.avatar;" src="{{contact.owner.avatar}}" alt="brian chesky">
+                      </div>
+                      <div class="user-bio">
+                        <h5 class="full-name">{{ contact | getContactName }}</h5>
+                        <h6 class="contact-company">
+                          {{ contact | getContactCompany }}
+                        </h6>
+                      </div>
+                    </div>
+
+                    <div class="contact-border-line"></div>
+                  </li>
+                  </ng-container>
+                </ul>
               </li>
             </ul>
           </div>
