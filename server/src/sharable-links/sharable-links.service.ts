@@ -82,6 +82,7 @@ export class SharableLinksService {
       await queryRunner.manager.getRepository(SharableLinkEntity).insert({
         id: sharableLinkId,
         sharedBy: user.id,
+        meetVia: createSharableLinkDto.meetVia,
         phoneNumber: createSharableLinkDto.phoneNumber,
         address: createSharableLinkDto.address,
         title: createSharableLinkDto.title,

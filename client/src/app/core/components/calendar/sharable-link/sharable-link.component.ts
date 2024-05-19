@@ -78,7 +78,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     const linkId = this.route.snapshot.params['id'];
     // load from api if link id is sent to parameters ie used for edit page
     if (linkId) {
-      this.loadSharableLinkDetails(linkId);
+      setTimeout(() => {
+        this.loadSharableLinkDetails(linkId);
+      }, 0);
+      
     }
     // load from saved Data of localstorage after connect redirection
     if (localStorage.getItem('savedData')) {
@@ -167,6 +170,14 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.broadcaster.broadcast('addSharableLinkTimeSlot', res.data.slots);
           }, 2000);
+          
+          // for phone and address
+          if (res.data.phoneNumber) {
+            this.phoneNumber = res.data.phoneNumber;
+          }
+          if (res.data.address) {
+            this.address = res.data.address;
+          }
 
           // for attendees
           const attendees = res.data.attendees;
@@ -295,8 +306,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       'slots': selectedDatesNew,
       'meetVia': this.choosedLocationObj?.value,
       'attendees': [] as any,
-      'phone_number': '' as any,
-      'address': '' as any
+      'phoneNumber': null,
+      'address': null
     }
 
     if (this.selectedContacts.length > 0) {
@@ -304,7 +315,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     }
 
     if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
-      requestParams['phone_number'] = this.phoneNumber;
+      requestParams['phoneNumber'] = this.phoneNumber;
     }
     if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress) {
       requestParams['address'] = this.address;
