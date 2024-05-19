@@ -1,16 +1,33 @@
 .container-fluid {
-  padding: 20px 120px;
+  padding: 35px 120px;
   border-radius: 10px;
-  background-color: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(200px);
   display: flex;
   justify-content: space-between;
 
-  #title {
-    font-size: 19px;
-    line-height: 23px;
-    font-weight: bold;
-    color: #000;
+  a.logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+
+    img {
+      height: 42px;
+      width: 42px;
+      margin-right: 8px;
+    }
+
+    #title {
+      font-family: 'Lexend Deca', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(139.61deg, #433FE7 3.43%, #55E3FF 96.57%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   }
+
 
   #slogan {
     font-size: 1em;
@@ -19,7 +36,7 @@
     margin-left: 20px;
   }
 
-  #nav {
+  ul#nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -27,26 +44,52 @@
     line-height: 19px;
     font-weight: 500;
 
-    span {
-      color: #959595;
-      padding: 2px 8px;
-      margin-left: 10px;
-      font-family: 'Lexend Deca', sans-serif;
-      font-weight: 400;
-    }
+    li{
+      & + li {
+        margin-left: 52px;
+      }
 
-    button {
-      padding: 8px 30px;
-      color: #fff;
-      background-color: #32AEF1;
-      font-family: 'Lexend Deca', sans-serif;
-      border-radius: 100px;
-      border: 0px;
-      cursor: pointer;
-      &:hover{
-        transition: 0.4s ease;
-        background-color: #1d97dc;
+      a {
+        font-family: 'Lexend Deca', sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+        color: #1E1E1E;
+        margin-bottom: 0;
+        text-decoration: none;
+        &:hover{
+         color: #7340E0;
+          transition: 0.4s ease;
+        }
+      }
+
+      span {
+        color: #959595;
+        padding: 2px 8px;
+        margin-left: 10px;
+        font-family: 'Lexend Deca', sans-serif;
+        font-weight: 400;
+      }
+
+      button {
+        width: 150px;
+        height: 46px;
+        color: #fff;
+        font-family: 'Lexend Deca', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        border: 0px;
+        cursor: pointer;
+        background: linear-gradient(139.61deg, #433FE7 3.43%, #55E3FF 96.57%);
+        border-radius: 24px;
+        &:hover {
+          transition: 0.4s ease;
+          box-shadow: rgb(0 0 0 / 40%) 0px 3px 9px;
+        }
       }
     }
+
+
+
+
   }
 }

@@ -1,16 +1,28 @@
 <div class="container-fluid">
-    <div>
-        <span id="title">{{ title }}</span>
-    </div>
-    <div id="nav" *ngIf="{ val: isLoggedIn$ | async } as isLoggedIn">
-        <div *ngIf="!isLoggedIn.val && !isLoginPage">
-            <span>Have an account?</span>
-            <button (click)="login()">Sign in</button>
-        </div>
-        <div *ngIf="!isLoggedIn.val && isLoginPage">
-            <span>Need an account?</span>
-            <button (click)="register()">Register</button>
-        </div>
-        <span *ngIf="isLoggedIn.val" class="button" (click)="logout()">Log out</span>
-    </div>
+  <a class="logo" href="#">
+    <img src="assets/logo.png" alt="logo">
+    <span id="title">{{ title }}</span>
+  </a>
+  <ul class="list-unstyled list-inline mb-0" id="nav" *ngIf="{ val: isLoggedIn$ | async } as isLoggedIn">
+    <li class="list-inline-item">
+      <a href="">Features</a>
+    </li>
+    <li class="list-inline-item">
+      <a href="">Partners</a>
+    </li>
+    <li class="list-inline-item">
+      <a href="">Testimonials</a>
+    </li>
+    <li class="list-inline-item">
+      <div *ngIf="!isLoggedIn.val && !isLoginPage">
+        <span>Have an account?</span>
+        <button (click)="login()">Sign in</button>
+      </div>
+      <div *ngIf="!isLoggedIn.val && isLoginPage">
+        <span></span>
+        <button (click)="register()">Sign In</button>
+      </div>
+      <span *ngIf="isLoggedIn.val" class="button" (click)="logout()">Log out</span>
+    </li>
+  </ul>
 </div>
