@@ -32,7 +32,7 @@ export class User {
   @Column({ name: 'stripe_subscription_id', type: 'uuid', nullable: true })
   stripeSubscriptionId: string;
 
-  @Column({ name: 'avatar', type: 'varchar' })
+  @Column({ name: 'avatar', type: 'varchar', nullable: true })
   avatar: string;
 
   @CreateDateColumn() createdOn?: Date;
