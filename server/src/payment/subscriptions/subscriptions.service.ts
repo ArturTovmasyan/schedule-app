@@ -17,42 +17,29 @@ export default class SubscriptionsService {
         private readonly subscriptionRepo: Repository<Subscription>,
         @InjectRepository(User)
         private readonly userRepo: Repository<User>,
-    ) {
-    }
+    ) {}
 
-    public async createStandardSubscription(stripeCustomerId: string) {
-        const priceId = this.configService.get('STANDARD_SUBSCRIPTION_PRICE_ID');
+    public async createSubscription(stripeCustomerId: string, priceId: string) {
         const subscriptions = await this.stripeService.listSubscriptions(stripeCustomerId);
 
+        //TODO fix this part subscription return null
         if (subscriptions.data.length) {
-            throw new BadRequestException('Customer already subscribed');
+            const sub = subscriptions.data[0];
+            const subId = subscriptions.data[0].id;
+            const subscription = await this.subscriptionRepo.findOne({where: { stripeSubscriptionId: subId, status: SubscriptionStatusEnum.CANCEL }});
+
+            if (subscription) {
+                await this.activateSubscription(subscription.id, sub);
+            }
+
+            //TODO fix this part subscription return null upsert error
+            return subscription;
         }
 
         return await this.stripeService.createSubscription(priceId, stripeCustomerId);
     }
 
-    public async getStandardSubscription(stripeCustomerId: string) {
-        const subscriptions = await this.stripeService.listSubscriptions(stripeCustomerId);
-
-        if (!subscriptions.data.length) {
-            return new NotFoundException('Customer not subscribed');
-        }
-
-        return subscriptions.data[0];
-    }
-
-    public async createProfessionalSubscription(stripeCustomerId: string) {
-        const priceId = this.configService.get('PROFESSIONAL_SUBSCRIPTION_PRICE_ID');
-        const subscriptions = await this.stripeService.listSubscriptions(stripeCustomerId);
-
-        if (subscriptions.data.length) {
-            throw new BadRequestException('Customer already subscribed');
-        }
-
-        return await this.stripeService.createSubscription(priceId, stripeCustomerId);
-    }
-
-    public async getProfessionalSubscription(stripeCustomerId: string) {
+    public async getSubscription(stripeCustomerId: string) {
         const subscriptions = await this.stripeService.listSubscriptions(stripeCustomerId);
 
         if (!subscriptions.data.length) {
@@ -64,9 +51,10 @@ export default class SubscriptionsService {
 
     public async saveSubscriptionForUser(subscriptionData, user: User) {
         // @ts-ignore
-        const subscription = await this.subscriptionRepo.save({
+        const subscription = await this.subscriptionRepo.upsert({
             // @ts-ignore
             email: user.email,
+            endsAt: null,
             stripeSubscriptionId: subscriptionData.id,
             // @ts-ignore
             stripePlanId: subscriptionData.plan.id,
@@ -74,27 +62,24 @@ export default class SubscriptionsService {
             billingPeriodEndsAt: new Date(subscriptionData.current_period_end).toISOString(),
             status: subscriptionData.status,
             lastInvoice: subscriptionData.latest_invoice,
-        });
+        }, {
+                conflictPaths: ['email'],
+                skipUpdateIfNoValuesChanged: true,
+            },
+        );
 
         // @ts-ignore
-        await this.userRepo.update(user.id, {stripeSubscriptionId: subscription.id});
+        await this.userRepo.update(user.id, {stripeSubscriptionId: subscription.raw[0].id});
     }
 
-    public async activateSubscription(id, stripeSubscription, periodEnd: Date) {
+    public async activateSubscription(id, stripeSubscription) {
         await this.subscriptionRepo.update(id, {
             stripePlanId: stripeSubscription.plan.id,
             stripeSubscriptionId: stripeSubscription.id,
-            status: stripeSubscription.status === 'active' ? SubscriptionStatusEnum.ACTIVE : SubscriptionStatusEnum.INACTIVE,
+            status: stripeSubscription.status === SubscriptionStatusEnum.ACTIVE ? SubscriptionStatusEnum.ACTIVE : SubscriptionStatusEnum.INACTIVE,
             lastInvoice: stripeSubscription.latest_invoice,
-            billingPeriodEndsAt: periodEnd,
+            billingPeriodEndsAt: new Date(stripeSubscription.current_period_end * 1000),
             endsAt: null
-        });
-    }
-
-    public async deactivateSubscription(subscription: Subscription) {
-        await this.subscriptionRepo.update(subscription.id, {
-            endsAt: subscription.billingPeriodEndsAt,
-            billingPeriodEndsAt: null,
         });
     }
 
@@ -104,8 +89,13 @@ export default class SubscriptionsService {
     }
 
     public async notActiveYet(id): Promise<boolean> {
+<<<<<<< HEAD
         const subscription = await this.subscriptionRepo.findOne(+id);
         return (subscription.endsAt === null || new Date(new Date(subscription.endsAt)) > new Date()) && subscription.status === SubscriptionStatusEnum.INACTIVE;
+=======
+        const subscription = await this.subscriptionRepo.findOne({where: { id: id }});
+        return (subscription.endsAt === null || new Date(subscription.endsAt) > new Date()) && subscription.status === SubscriptionStatusEnum.INACTIVE;
+>>>>>>> 2cd4f4b (Finish payment integration)
     }
 
     public async isCancelled(id): Promise<boolean> {
@@ -113,8 +103,14 @@ export default class SubscriptionsService {
         return subscription.endsAt !== null || subscription.status === SubscriptionStatusEnum.CANCEL;
     }
 
-    public async cancel(id): Promise<void> {
-        await this.subscriptionRepo.update(id, {
+    public async cancel(stripeSubscriptionId): Promise<NotFoundException> {
+        const subscription = await this.subscriptionRepo.findOne({where: { stripeSubscriptionId: stripeSubscriptionId }});
+
+        if (!subscription) {
+            return new NotFoundException('Subscription not found');
+        }
+
+        await this.subscriptionRepo.update(subscription.id, {
             endsAt: new Date(),
             billingPeriodEndsAt: null,
             status: SubscriptionStatusEnum.CANCEL,

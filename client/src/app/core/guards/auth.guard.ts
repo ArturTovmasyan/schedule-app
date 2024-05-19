@@ -28,11 +28,17 @@ export class AuthGuard implements CanActivate {
 
     if (token && token.accessToken) {
 <<<<<<< HEAD
+<<<<<<< HEAD
        return this.authService.isAuthenticated();
 =======
       this.authService.hasAccess(token.accessToken).subscribe({
         next: (user) => {
           if (user && !user.stripeSubscriptionId) {
+=======
+      this.authService.hasAccess().subscribe({
+        next: ({ isActive, user }) => {
+          if (user && !isActive) {
+>>>>>>> 2cd4f4b (Finish payment integration)
             this.router.navigate(['/onboarding/subscription-plan'])
           }
         }

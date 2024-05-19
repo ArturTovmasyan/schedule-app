@@ -121,12 +121,12 @@ export class PaymentService {
     return await this.stripe.subscriptions.retrieve(id);
   }
 
-  public async updateSubscription(id, price) {
-    await this.stripe.subscriptions.update(id, {
-      'cancel_at_period_end': false,
+  public async updateSubscription(id, plan) {
+    return await this.stripe.subscriptions.update(id, {
+      'cancel_at_period_end': true,
       items: [{
         id: id,
-        plan: price
+        plan: plan
       }]
     });
   }

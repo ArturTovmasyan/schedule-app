@@ -15,36 +15,27 @@ import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.com
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'onboarding',
     component: HomeComponent,
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'onboarding',
-        component: OnboardingComponent,
-        children: [
-          {
-            path: 'subscription-plan',
-            component: SubscriptionPlanComponent
-          },
-          {
-            path: 'calendar',
-            component: OnboardingCalendarComponent
-          },
-          {
-            path: 'configuration',
-            component: OnboardingConfigurationComponent
-          },
-          {
-            path: 'availability',
-            component: OnboardingAvailabilityComponent
-          },
-          {
-            path: 'payment-success',
-            component: PaymentSuccessComponent
-          }
-        ]
+        path: 'subscription-plan',
+        component: SubscriptionPlanComponent
+      },
+      {
+        path: 'calendar',
+        component: OnboardingCalendarComponent
+      },
+      {
+        path: 'configuration',
+        component: OnboardingConfigurationComponent
+      },
+      {
+        path: 'availability',
+        component: OnboardingAvailabilityComponent
       }
+
     ]
   },
   {
@@ -84,6 +75,11 @@ const routes: Routes = [
         component: OauthLoginComponent
       }
     ]
+  },
+  {
+    path: 'payment/success',
+    component: PaymentSuccessComponent,
+    canActivate: [AuthGuard],
   },
   {path: '404', component: P404Component, data: {title: 'Page 404'}},
   {path: '500', component: P500Component, data: {title: 'Page 500'}},
