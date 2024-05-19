@@ -18,6 +18,8 @@ export class CalendarService {
     private readonly calendarTokenRepository: Repository<CalendarToken>,
     @InjectRepository(Calendar)
     private readonly calendarRepository: Repository<Calendar>,
+    @InjectRepository(CalendarEvent)
+    private readonly calendarEventRepository: Repository<CalendarEvent>,
     private readonly clientsCredentials: ClientsCredentialsService,
   ) {}
 
@@ -117,14 +119,6 @@ export class CalendarService {
   //
   // const tasksData = await tasks.tasklists.list();
   // console.log('after');
-
-  // const tasks = await calendar.acl.list({
-  //   calendarId: cal.data.items[0].id,
-  // });
-  //
-  // console.log('tasksData ', tasksData.data);
-
-  // console.log('events ', events.data.items);
 
   async syncGoogleCalendarEventList(user: User) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {

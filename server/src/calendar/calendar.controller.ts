@@ -49,10 +49,10 @@ export class CalendarController {
     return await this.calendarService.getCalendarsFromOutlook(req.user);
   }
 
-  // @Get('test')
-  // // @UseGuards(AuthGuard())
-  // // @UseInterceptors(UpdateAccessTokenInterceptor)
-  // async test() {
-  //   return await this.calendarService.testCompare();
-  // }
+  @Get('events')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(UpdateAccessTokenInterceptor)
+  async getUserCalendarEvents(@Req() req: { user: User }) {
+    return await this.calendarService.getUserCalendarEvents(req.user);
+  }
 }
