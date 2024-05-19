@@ -1,12 +1,8 @@
 <section class="invite-friends" id="inviteFriends">
   <ng-container *ngIf="!formSubmitted">
     <div class="header">
-      <h2 class="section-title text-center">
-        Invite and connect
-      </h2>
-      <button class="close-button" (click)="close()">
-        <img src="assets/close-icon.svg" alt="close button">
-      </button>
+      <h3>ENTANGLES</h3>
+      <label id="title">Invite and connect</label>
     </div>
     <div class="body">
       <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>

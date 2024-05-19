@@ -32,24 +32,25 @@
     justify-content: center;
 
     h5.full-name {
-      font-family: 'Lexend Deca', sans-serif;
-      font-size: 15px;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: bold;
+      font-size: 16px;
       margin-bottom: 3px;
       color: #000;
     }
 
     h6.contact-company {
       text-transform: capitalize;
-      font-family: 'Lexend Deca', sans-serif;
-      font-size: 12px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
       margin-bottom: 0;
-      color: #360989;
+      color: #7D7A7A;
     }
   }
 }
 
 .more-dots {
-  display: none;
 
   .dropbtn {
     border-radius: 50%;
@@ -89,35 +90,33 @@
     position: absolute;
     left: -115px !important;
     top: 20px;
-    min-width: 120px;
+    min-width: 155px;
     background-color: #fff;
     border: 1px solid #70707052;
     z-index: 1;
     border-radius: 10px;
-    padding: 5px;
+    padding: 0 4px 0 8px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 
     ul {
       li {
-        padding: 4px 0;
-
-        &:nth-child(2) {
-          padding: 5px 14px 4px 0;
-        }
+        padding: 0 4px 0 8px;
+        border: 0 !important;
 
         &:after {
           content: "";
-          background: #70707052;
+          background: #eee;
           position: absolute;
           bottom: 0;
           left: 0;
           height: 1px;
-          width: 100%;
+          width: 90%;
+          text-align: center;
         }
 
         a {
-          font-family: 'Lexend Deca', sans-serif;
-          font-size: 13px;
+          font-family: 'Open Sans', sans-serif;
+          font-size: 14px;
           color: #1d1d1d;
           text-decoration: none;
         }
@@ -126,15 +125,18 @@
           border-radius: 50%;
           border: 0;
           background: #f1f1f1;
-          height: 20px;
-          width: 20px;
+          height: 28px;
+          width: 28px;
           display: flex;
           justify-content: center;
           align-items: center;
           color: #707070;
+          position: absolute;
+          right: 5px;
+          top: 9px;
 
           img {
-            height: 9px;
+            height: 14px;
           }
 
           &:hover {

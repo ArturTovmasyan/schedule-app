@@ -1,60 +1,65 @@
 section.sharable-link {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 20px;
+  padding: 37px 16px 0 14px;
+  background-color: white;
   height: 100%;
 
   .header {
     position: relative;
+    margin-bottom: 17px;
+    text-align: left;
 
-    h2.section-title {
-      font-size: 22px;
-      font-weight: bold;
+    h3 {
       font-family: 'Lexend Deca', sans-serif;
-      line-height: 28px;
-      margin-bottom: 12px;
+      color: #0C105A;
+      font-size: 20px;
+      letter-spacing: 1.64px;
+      margin-bottom: 19px;
     }
 
-    button.close-button {
-      border-radius: 50%;
-      border: 0;
-      background: #f1f1f1;
-      height: 26px;
-      width: 26px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      top: -8px;
-      right: -10px;
-      color: #707070;
-
-      img {
-        height: 13px;
-      }
-
-      &:hover {
-        background-color: #e9e9e9;
-        transition: 0.4s ease;
-      }
+    #title {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 16px;
+      letter-spacing: 1.23px;
+      line-height: 22px;
+      color: #747474;
+      text-transform: uppercase;
+      padding-bottom: 13px;
+      width: 100%;
     }
   }
 
   form {
+    height: 88%;
+    overflow: scroll;
+    padding:0 0 20px 0;
     .sharable-link-body {
-      border: 1px solid #e3dddd;
-      padding: 15px 10px;
-      border-radius: 10px;
-
+      padding: 15px 0;
       h3.section-title-secondary {
-        font-size: 18px;
+        font-size: 14px;
         text-align: left;
-        font-family: 'Lexend Deca', sans-serif;
-        line-height: 23px;
+        font-family: 'Open Sans', sans-serif;
+        line-height: 19px;
         margin-bottom: 16px;
-        font-weight: bold;
+        font-weight: 600;
       }
 
+      input[type="text"] {
+        width: 100%;
+        border: 1px solid #D3D3D3;
+        border-radius: 10px;
+        height: 50px;
+        padding-left: 10px;
+
+        &:focus {
+          outline: none;
+          text-decoration: none;
+        }
+
+        &::placeholder {
+          font-family: 'Open Sans', sans-serif;
+          font-size: 14px;
+        }
+      }
 
       //accordion start
       .accordion > input[type="checkbox"] {
@@ -87,6 +92,9 @@ section.sharable-link {
 
       .accordion {
         margin-bottom: 1em;
+        background-color: #F5F5F5;
+        border-radius: 10px;
+        padding: 10px;
       }
 
       .accordion > input[type="checkbox"]:checked ~ .content {
@@ -104,21 +112,21 @@ section.sharable-link {
       .accordion label {
         font-size: 18px;
         text-align: left;
-        font-family: 'Lexend Deca', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         line-height: 23px;
-        margin-bottom: 16px;
         font-weight: bold;
         display: flex;
         justify-content: space-between;
         align-items: center;
         transition: 0.5s;
-        .avatar {
-            display: block;
-          }
 
-          .no-avatar {
-            display: none;
-          }
+        .avatar {
+          display: block;
+        }
+
+        .no-avatar {
+          display: none;
+        }
       }
 
 
@@ -127,26 +135,33 @@ section.sharable-link {
       }
 
       .accordion .handle label::after {
+        height: 28px;
+        width: 28px;
+        border-radius: 50%;
+        border: 1px solid #11A4F4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         content: "+";
-        display: inline-block;
-        margin-right: 10px;
-        font-weight: bold;
-        font-size: 25px;
+        color: #11A4F4;
+        font-size: 20px;
         transition: 0.5s;
         cursor: pointer;
-
+        padding-bottom: 1px;
       }
 
       .accordion > input[type="checkbox"]:checked ~ .handle label:after {
         content: "-";
-        font-size: 30px;
+        font-size: 20px;
         transition: 0.5s;
+        padding-bottom: 3px;
       }
 
-      .accordion>input[type="checkbox"]:checked~.handle label {
+      .accordion > input[type="checkbox"]:checked ~ .handle label {
         .avatar {
           display: none;
         }
+
         .no-avatar {
           display: block;
         }
@@ -160,6 +175,7 @@ section.sharable-link {
         border: 1px solid #d8d8d8;
         padding: 12px;
         text-align: left;
+        background-color: #fff;
 
         ul.users-list {
           text-align: left;
@@ -172,6 +188,7 @@ section.sharable-link {
           }
 
           li.user-info {
+            background-color: #fff;
 
             .user-info-wrapper {
               display: flex;
@@ -182,7 +199,7 @@ section.sharable-link {
               padding: 2px 5px 2px 4px;
               width: fit-content;
               height: 45px;
-
+              background-color: #fff;
               .user-portrait {
                 img {
                   height: 35px;
@@ -195,16 +212,17 @@ section.sharable-link {
                 margin: 0 8px;
 
                 h5.full-name {
-                  font-family: 'Lexend Deca', sans-serif;
-                  font-size: 13px;
+                  font-family: 'Open Sans', sans-serif;
+                  font-size: 16px;
                   margin-bottom: 1px;
+                  font-weight: bold;
                   color: #000;
                 }
 
                 h6.contact-company {
-                  font-family: 'Lexend Deca', sans-serif;
-                  font-size: 11px;
-                  color: #360989;
+                  font-family: 'Open Sans', sans-serif;
+                  font-size: 14px;
+                  color: #7D7A7A;
                   margin-bottom: 0;
                 }
               }
@@ -257,7 +275,7 @@ section.sharable-link {
 
       ul.time-slots {
         margin-bottom: 0;
-        border: 1px solid #adabab;
+        border: 1px solid #D3D3D3;
         padding: 7px 5px;
         border-radius: 10px;
         height: 350px;
@@ -281,7 +299,7 @@ section.sharable-link {
               &::placeholder {
                 font-size: 13px;
                 color: #656565;
-                font-family: 'Lexend Deca', sans-serif;
+                font-family: 'Open Sans', sans-serif;
               }
             }
           }
@@ -309,7 +327,7 @@ section.sharable-link {
                   &::placeholder {
                     font-size: 13px;
                     color: #4A8638;
-                    font-family: 'Lexend Deca', sans-serif;
+                    font-family: 'Open Sans', sans-serif;
                   }
                 }
 
@@ -332,7 +350,7 @@ section.sharable-link {
                 span {
                   font-size: 13px;
                   color: #656565;
-                  font-family: 'Lexend Deca', sans-serif;
+                  font-family: 'Open Sans', sans-serif;
                 }
               }
 
@@ -372,7 +390,7 @@ section.sharable-link {
           position: relative;
           display: flex;
           flex-direction: column;
-          border: 1px solid #adabab;
+          border: 1px solid #D3D3D3;
           border-radius: 10px;
         }
 
@@ -383,7 +401,7 @@ section.sharable-link {
           justify-content: space-between;
           padding: 0 22px;
           font-size: 14px;
-          font-family: 'Lexend Deca', sans-serif;
+          font-family: 'Open Sans', sans-serif;
           font-weight: 300;
           color: #3b3b3b;
           height: 50px;
@@ -393,7 +411,7 @@ section.sharable-link {
           cursor: pointer;
 
           .custom-option {
-              line-height: 1rem;
+            line-height: 1rem;
           }
 
         }
@@ -404,7 +422,7 @@ section.sharable-link {
           top: 100%;
           left: 0;
           right: 0;
-          border: 1px solid #adabab;
+          border: 1px solid #D3D3D3;
           margin-top: 5px;
           background: #fff;
           transition: all 0.5s;
@@ -458,13 +476,13 @@ section.sharable-link {
             flex-direction: column;
 
             span {
-              font-family: 'Lexend Deca', sans-serif;
+              font-family: 'Open Sans', sans-serif;
               font-size: 17px;
               margin-bottom: 0;
             }
 
             p {
-              font-family: 'Lexend Deca', sans-serif;
+              font-family: 'Open Sans', sans-serif;
               font-size: 12px;
               color: #939292;
               margin-bottom: 0;
@@ -490,46 +508,68 @@ section.sharable-link {
         text-align: left;
         color: #FF0F1E;
         font-size: 13px;
-        font-family: 'Lexend Deca', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         margin-bottom: 0;
         margin-top: 3px;
       }
 
       .url-wrapper {
-        border: 1px solid #adabab;
-        padding: 7px 5px;
+        border: 1px solid #11A4F4;
+        padding: 10px;
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+
         button {
           background-color: transparent;
           border: 0;
         }
-        button.url{
-          font-family: 'Lexend Deca', sans-serif;
-          font-size: 12px;
-          font-weight: 400;
-          color: #315EA0;
+
+        .generated-url {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          img {
+            height: 15px;
+          }
+
+          button.url {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            color: #315EA0;
+          }
         }
-        .buttons{
+
+        .buttons {
           display: flex;
           align-items: center;
           flex-direction: row;
           justify-content: space-between;
 
-          img{
-            height: 25px;
+          button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
+              height: 20px;
+            }
           }
+
         }
-        .buttons button:first-child{
-          img{
-            height: 22px;
+
+        .buttons button:first-child {
+          img {
+            height: 20px;
           }
         }
       }
-      p.copy-send{
-        font-family: 'Lexend Deca', sans-serif;
+
+      p.copy-send {
+        font-family: 'Open Sans', sans-serif;
         text-align: left;
         margin-bottom: 0;
         margin-top: 5px;
@@ -541,20 +581,22 @@ section.sharable-link {
     }
 
     button.request-button {
-      background: #47B8F6;
+      width: 90%;
+      height: 46px;
+      background: #32AEF1;
       border-radius: 33px;
-      padding: 5px 10px;
       border: 0;
       color: #fff;
       font-size: 16px;
-      font-family: 'Lexend Deca', sans-serif;
-      margin-top: 20px;
+      font-family: 'Open Sans', sans-serif;
+      margin: 0 auto;
 
       &:hover {
         background-color: #1d97dc;
         transition: 0.4s ease;
       }
     }
+
     .error {
       -moz-transition: min-height .5s;
       -ms-transition: min-height .5s;
@@ -564,6 +606,7 @@ section.sharable-link {
       height: 0;
       min-height: 0;
     }
+
     .animate {
       min-height: 50px;
     }
@@ -573,18 +616,18 @@ section.sharable-link {
 // copied tooltip
 .copied-tooltip {
   position: absolute;
-    top: -20px;
-    right: 0;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    width: 120px;
-    z-index: 1;
-    visibility: hidden;
-    opacity:0;
-    transition:visibility 0.3s linear,opacity 0.3s linear;
+  top: -20px;
+  right: 0;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  width: 120px;
+  z-index: 1;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.3s linear, opacity 0.3s linear;
 }
 
 .copied-tooltip.visible {

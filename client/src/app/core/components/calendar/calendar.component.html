@@ -9,7 +9,7 @@
     </div>
     <div class="col-12 h-100 text-center" [ngClass]="!calendarFullSize ? 'col-sm-9 p-0' : ''" id="calendarRightSide">
       <div class="calendar" id="calendar">
-        <div class="calendar-header d-flex justify-content-between">
+        <div class="calendar-header d-flex justify-content-end">
 <!--          <a class="invite-contacts" id="inviteContacts" routerLink="/calendar/invite" (click)="openLeftMenu()">-->
 <!--            <img src="assets/invite-contacts-icon.svg" alt="invite friends">-->
 <!--            <p>-->
@@ -35,9 +35,7 @@
           <ul class="list-unstyled mb-0">
             <li class="list-inline-item" (click)="openLeftMenu()">
               <a routerLink="/calendar/meeting" class="handshake">
-                <span class="icon w-100">
-                  <img src="assets/handshake-icon.svg" alt="handshake">
-                </span>
+                  <img src="assets/handshake-icon.png" alt="handshake">
               </a>
             </li>
             <li class="list-inline-item">
@@ -48,7 +46,6 @@
                 </span>
                 <span class="icon">
                   <img src="assets/request-calendar.png" alt="request calendar">
-                </span>
               </a>
             </li>
             <li class="list-inline-item" routerLink="/calendar/share" [routerLinkActive]="['active']">
@@ -70,7 +67,6 @@
                 </span>
                 <span class="icon">
                   <img src="assets/contacts.png" alt="view contacts">
-                </span>
               </a>
             </li>
             <li class="list-inline-item">

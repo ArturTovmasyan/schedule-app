@@ -9,59 +9,25 @@
   .calendar {
     height: 100%;
     width: 100%;
-    background-color: #ffffff;
-    padding: 20px;
+    background-color: #F6F8FA;
+    padding: 20px 10px 0 10px;
     position: relative;
 
     .calendar-header {
-      a.invite-contacts {
-        background-color: #FDFAB1;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        text-decoration: none;
-        cursor: pointer;
-        padding: 5px 20px;
-        color: #000;
-        border-radius: 30px;
-        box-shadow: 0px 0px 4px #0000004D;
-
-        &:hover {
-          transition: 0.4s ease;
-          background-color: #f1ec92;
-          box-shadow: 0px 0px 9px #0000004D;
-        }
-
-        img {
-          height: 32px;
-          margin-right: 5px;
-        }
-
-        p {
-          text-align: left;
-          font-size: 12px;
-          font-family: 'Lexend Deca', sans-serif;
-          margin-bottom: 0px;
-          line-height: 1.1;
-          margin-top: 1px;
-          letter-spacing: 0.5px;
-        }
-      }
+      margin-bottom: 20px;
 
       .account-info {
         display: flex;
         flex-direction: row;
         align-items: center;
-        height: 32px;
 
         .timezone {
           h4 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
-            font-family: 'Lexend Deca', sans-serif;
-            color: #1d1d1d;
-            line-height: 20px;
+            font-family: 'Open Sans', sans-serif;
+            color: #000;
+            line-height: 24px;
             margin-bottom: 0;
           }
         }
@@ -144,16 +110,17 @@
           }
 
           a {
-            min-height: 60px;
-            padding: 15px;
-            border-radius: 40px;
-            background-color: #fff;
+            border-radius: 50%;
+            height: 60px;
+            width: 60px;
+            background-color: #FFFFFF;
             cursor: pointer;
             display: flex;
-
+            justify-content: center;
             align-items: center;
             text-decoration: none;
-            box-shadow: 0px 0px 4px #0000004D;
+            box-shadow: 0px 4px 7px #0000003B;
+            border: 1px solid #D3D3D3;
 
             &:active {
               background-color: #E4F5FC;
@@ -161,48 +128,16 @@
 
             &:hover {
               transition: 0.4s ease;
-              box-shadow: 0px 0px 9px #0000004D;
+              box-shadow: 2px 2px 19px #0000003B;;
             }
 
-            span.text {
-              text-align: left;
-              font-size: 12px;
-              font-family: 'Lexend Deca', sans-serif;
-              margin-bottom: 0px;
-              line-height: 1.1;
-              margin-top: 1px;
-              letter-spacing: 0.5px;
-              color: #000000;
-              margin-right: 15px;
-            }
-
-            span.icon {
-              height: 100%;
-              width: auto;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-
-              img {
-                width: auto;
-                height: 30px;
-              }
-            }
-          }
-
-          a.handshake {
-            width: 60px;
-            padding: unset;
-            justify-content: center;
 
             img {
-
-              width: 44px !important;
-
-              height: auto !important;
-
+              width: auto;
+              height: 30px;
             }
           }
+
         }
       }
     }

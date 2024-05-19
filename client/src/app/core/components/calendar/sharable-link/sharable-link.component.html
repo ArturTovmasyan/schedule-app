@@ -1,11 +1,7 @@
 <section class="sharable-link" id="sharableLink">
   <div class="header">
-    <h2 class="section-title text-center">
-      Sharable link
-    </h2>
-    <button class="close-button" id="closeButton">
-      <img src="assets/close-icon.svg" alt="close button">
-    </button>
+    <h3>ENTANGLES</h3>
+    <label id="title">sharable link</label>
   </div>
   <form>
     <div class="sharable-link-body">
@@ -65,10 +61,15 @@
         </div>
       </div>
 
+      <h3 class="section-title-secondary mb-2">
+        Meeting title
+      </h3>
+      <input type="text" name="meetingTitle" placeholder="Please type meeting title" id="meetingTitle">
 
-      <h3 class="section-title-secondary">
+      <h3 class="section-title-secondary  mt-4 mb-2">
         Selected time slots
       </h3>
+
 
       <ul class="list-unstyled time-slots">
         <li class="time-slot" id="timeSlot" *ngFor="let date of selectedDates$ | async | keyvalue:sortTimeslots">
@@ -122,10 +123,10 @@
         to your account
       </div>
       <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.InboundCall">
-          <h3 class="section-title-secondary mt-4 mb-2">
-            Phone number
-          </h3>
-          <input type="text" class="form-control" [(ngModel)]="phoneNumber" name="phoneNumber" [disabled]="!updateView">
+        <h3 class="section-title-secondary mt-4 mb-2">
+          Phone number
+        </h3>
+        <input type="text" class="form-control" [(ngModel)]="phoneNumber" name="phoneNumber" [disabled]="!updateView">
       </ng-container>
 
       <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.PhysicalAddress">
@@ -143,12 +144,15 @@
 
       <div class="generate-link" id="generateLink" *ngIf="sharableLink">
         <h3 class="section-title-secondary mt-4 mb-2">
-          Link to the poll
+          Sharable link
         </h3>
         <div class="url-wrapper">
-          <button class="url">
-            {{ sharableLink }}
-          </button>
+          <div class="generated-url">
+            <img src="assets/link-icon.png" alt="link icon">
+            <button class="url">
+              {{ sharableLink }}
+            </button>
+          </div>
           <div class="buttons position-relative">
             <span class="copied-tooltip {{ showCopiedText ? 'visible': ''}}">Copied</span>
             <button (click)="editLink()" *ngIf="!updateView">
@@ -159,7 +163,7 @@
             </button>
           </div>
         </div>
-        <p class="copy-send">Copy and send this link to anyone you want</p>
+        <p class="copy-send">* copy and send this link to anyone you want</p>
       </div>
           <div class="error w-100 {{errorMessage ? 'animate' : ''}}">{{ errorMessage }}</div>
           <div class="d-flex justify-content-end">

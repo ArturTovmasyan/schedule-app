@@ -1,32 +1,32 @@
 button.fc-prev-button {
-  background-color: #E5F4FC;
+  background-color: transparent;
   border: 0;
-  height: 20px;
+  height: 25px;
   width: 20px;
-  border-radius: 10px 0 0 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-
-  &:hover {
-    transition: 0.4s ease;
-    background-color: #95c1de !important;
-  }
-
   span {
-    font-size: 10px;
-    color: #656565;
+    font-size: 18px;
+    color: #11A4F4;
     line-height: inherit;
+  }
+  &:hover {
+    background-color: transparent !important;
+    border: 0 !important;
+    span{
+      transition: 0.4s ease;
+      color: #0b73a8;
+    }
   }
 }
 
 button.fc-next-button {
-  background-color: #E5F4FC;
+  background-color: transparent;
   border: 0;
-  height: 20px;
+  height: 25px;
   width: 20px;
-  border-radius: 0 10px 10px 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -38,9 +38,17 @@ button.fc-next-button {
   }
 
   span {
-    font-size: 10px;
-    color: #656565;
+    font-size: 18px;
+    color: #11A4F4;
     line-height: inherit;
+  }
+  &:hover {
+    background-color: transparent !important;
+    border: 0 !important;
+    span{
+      transition: 0.4s ease;
+      color: #0b73a8;
+    }
   }
 }
 
@@ -66,15 +74,19 @@ full-calendar {
   justify-content: space-between;
   align-items: center;
 }
-
+.fc-toolbar{
+  justify-content: start !important;
+  position: absolute;
+  top: 25px;
+  margin-left: 20px;
+}
 
 h2#fc-dom-1 {
   width: unset;
-  font-family: 'Lexend Deca', sans-serif;
-  font-weight: bold;
-  font-size: 22px;
-  line-height: 28px;
-  margin: 0 10px 1px 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 30px;
+  line-height: 48px;
+  margin: 0 10px 3px 10px;
 }
 
 .event {
@@ -115,18 +127,24 @@ h2#fc-dom-1 {
 }
 
 .fc-scrollgrid-shrink-cushion {
-  color: #8E8E8E !important;
-  font-family: 'Lexend Deca', sans-serif;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  font-size: 14px;
+  color: #000000 !important;
+  font-family: 'Open Sans', sans-serif;
+  letter-spacing: 0;
+  font-size: 16px;
+
+}
+.fc-col-header-cell-cushion{
+  display: flex !important;
+  flex-direction: column !important;
+
 }
 
 .date-styled {
   color: #8E8E8E;
   font-size: 22px;
-  margin-right: 2px;
-  font-weight: 700;
+  line-height: 30px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: bold;
 }
 
 .fc-scrollgrid-shrink, .fc-timegrid-slot-label {
@@ -148,13 +166,12 @@ h2#fc-dom-1 {
   top: -26px;
   right: 4px
 }
-
 //table border right color
 tr.fc-scrollgrid-section {
-  border: 0;
+  border: 1px solid #d9d9d9;
 
   th {
-    border: 0;
+    border: 1px solid #d9d9d9;
   }
 
   td {
@@ -180,8 +197,8 @@ table.fc-scrollgrid {
   border-color: #D9D9D9;
 }
 
-thead {
-  box-shadow: 0px 2px 3px #3E4F6F33;
+.fc-timegrid-cols {
+  background-color: #fff;
 }
 
 tbody tr:nth-child(odd) {
@@ -192,7 +209,9 @@ tbody tr:nth-child(odd) {
 .table-bordered > :not(caption) > * {
   border-width: 0;
 }
-
+fc-scrollgrid-section-body table{
+  background-color: #fff;
+}
 
 td.fc-timegrid-col {
   border-right: 1px solid #D9D9D9;
@@ -213,7 +232,9 @@ th.fc-day-today .fc-col-header-cell-cushion {
     color: #000;
   }
 }
-
+.fc-today-button {
+  display: none;
+}
 .fc-day-today, .fc-day-disabled, .fc-non-business {
   background: none !important;
 }
@@ -233,3 +254,11 @@ th.fc-day-today .fc-col-header-cell-cushion {
 
 .fc-col-header, .fc-timegrid-body { width: 100% !important; }
 .fc-timegrid-body { table { width: 100% !important; } }
+
+.fc-col-header thead{
+
+  background-color: #F6F8FA;
+}
+.fc-col-header thead th {
+  padding: 15px 0 !important;
+}

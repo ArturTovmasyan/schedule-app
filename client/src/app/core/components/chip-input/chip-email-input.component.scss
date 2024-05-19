@@ -1,9 +1,8 @@
 .emails-container {
-  border-radius: 12px;
-  border: 1px solid #d8d8d8;
+  border-radius: 6px;
   padding: 12px;
   text-align: left;
-
+  background-color: #E9F6FD;
   ul.emails-list {
     text-align: left;
     display: -webkit-inline-box;
@@ -16,10 +15,11 @@
     li.user-email {
 
       .user-email-wrap {
+        background-color: #fff;
         display: flex;
         justify-content: start;
+
         align-items: center;
-        border: 1px solid #d6d6d6;
         border-radius: 28px;
         padding: 5px 7px;
         width: fit-content;
@@ -29,9 +29,9 @@
         }
 
         p.email-address {
-          font-family: 'Lexend Deca', sans-serif;
+          font-family: 'Open Sans', sans-serif;
           font-size: 16px;
-          line-height: 20px;
+          line-height: 22px;
           margin: 0 8px;
         }
 
@@ -59,6 +59,9 @@
 
     }
     li.user-email-input{
+      input{
+        background-color: #E9F6FD;
+      }
     }
   }
 
@@ -66,7 +69,7 @@
     border: 0;
     outline: none !important;
     box-shadow: none;
-
+    font-size: 16px;
     &::placeholder {
       font-size: 16px;
       line-height: 20px;
