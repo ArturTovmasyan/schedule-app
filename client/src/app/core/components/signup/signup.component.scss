@@ -32,6 +32,13 @@
 
     .form-group {
       margin-bottom: 20px;
+      label{
+        margin-bottom: 5px;
+      }
+      input{
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+      }
     }
 
     #tos {

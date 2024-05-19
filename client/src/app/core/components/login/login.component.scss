@@ -29,7 +29,13 @@
     font-size: 15px;
     line-height: 19px;
     color: $text-primary-color;
-
+    label{
+      margin-bottom: 5px;
+    }
+    input#email, input#password{
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+    }
     #actions {
       display: flex;
       flex-direction: row;

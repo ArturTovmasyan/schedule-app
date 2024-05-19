@@ -26,11 +26,11 @@
         padding: 5px 20px;
         color: #000;
         border-radius: 30px;
-
+        box-shadow: 0px 0px 4px #0000004D;
         &:hover {
           transition: 0.4s ease;
           background-color: #f1ec92;
-          box-shadow: rgba(149, 157, 165, 0.2) 0px 2px 16px;
+          box-shadow: 0px 0px 9px #0000004D;
         }
 
         img {
@@ -70,18 +70,25 @@
           margin: 0 23px;
           position: relative;
           cursor: pointer;
-          &:hover{
-            img{
-              transition: 0.4s ease;
-              height: 34px;
-            }
-          }
           img {
             height: 32px;
           }
+          &:hover{
+            .counter{
+              transition: 0.4s ease;
+              top: 1px;
+              right: 1px;
+              height: 18px;
+              width: 18px;
+              background-color: #b21313;
+              h6{
+                font-size: 9px;
+              }
+            }
+          }
           .counter{
-            height: 15px;
-            width: 15px;
+            height: 17px;
+            width: 17px;
             background-color: #FF3B3B;
             border-radius: 50%;
             display: flex;
@@ -103,12 +110,6 @@
         }
         a.user-profile{
           cursor: pointer;
-          &:hover{
-            img{
-              transition: 0.4s ease;
-              height: 34px;
-            }
-          }
           img{
             height: 32px;
           }
@@ -132,12 +133,17 @@
           a{
             //height: 52px;
             //min-width: 52px;
+            min-height: 60px;
             padding: 15px;
             border-radius: 40px;
             display: flex;
             align-items: center;
             text-decoration: none;
             box-shadow: 0px 0px 4px #0000004D;
+            &:hover{
+              transition: 0.4s ease;
+              box-shadow: 0px 0px 9px #0000004D;
+            }
             span.text{
               text-align: left;
               font-size: 12px;
@@ -159,6 +165,18 @@
                 width: auto;
                 height: 30px;
               }
+            }
+          }
+          a.handshake{
+            width: 60px;
+            padding: unset;
+            justify-content: center;
+            img{
+
+              width: 44px !important;
+
+              height: auto !important;
+
             }
           }
         }
