@@ -63,7 +63,7 @@ export class OnboardingComponent implements OnInit {
 
   navigateNext() {
     if(this.currentNavIndex == 3) {
-      this.router.navigate(['/calendar/suggest-contact']);
+      this.router.navigate(['/calendar/contacts']);
     } else {
       this.navigate(++this.currentNavIndex);
       this.router.navigate([this.navOptions[this.currentNavIndex].route]);
