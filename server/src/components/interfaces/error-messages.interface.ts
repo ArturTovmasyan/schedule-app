@@ -21,4 +21,5 @@ export interface IErrorMessages {
   emailAlreadyExists: string;
   paymentSubscriptionError: string;
   requestEmptyData: string;
+  imageTypeError: string;
 }

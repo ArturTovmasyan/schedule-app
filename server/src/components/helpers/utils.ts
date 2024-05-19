@@ -1,5 +1,6 @@
 import { getConnectionOptions, getConnection } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import {ErrorMessages} from "../constants/error.messages";
 
 export const getDbConnectionOptions = async (connectionName = 'default') => {
   const options = await getConnectionOptions(
@@ -44,6 +45,13 @@ export const generatePassword = (passwordLength)  => {
   randPasswordArray = randPasswordArray.fill(allChars, 3);
   return shuffleArray(randPasswordArray.map(function(x) { return x[Math.floor(Math.random() * x.length)] })).join('');
 }
+
+export const validateImageFile = (req, file, callback) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    return callback(new Error(ErrorMessages.imageTypeError), false);
+  }
+  callback(null, true);
+};
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {

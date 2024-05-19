@@ -165,6 +165,10 @@ const routes: Routes = [
           component: ChangePasswordComponent
         },
         {
+          path: 'account-info',
+          component: AccountInfoComponent
+        },
+        {
           path: '**',
           redirectTo: '/settings/availability'
         }

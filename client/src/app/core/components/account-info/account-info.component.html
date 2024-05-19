@@ -1,0 +1,16 @@
+<div class="-align-center">
+  <span>User name: {{ userName }}</span> <br/>
+  <span>Email: {{ email }}</span><br/>
+
+  <img *ngIf="avatar" src="{{avatar}}" width="50px" >
+
+  <br/>
+  <br/>
+  <input #fileInput type="file" class="file-input" [accept]="acceptedFileExtensions" (change)="attachFile($event)" />
+  <div class="row document-type">
+    <div class="col-xs-12">
+      <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error?.message }}</span>
+      allowed file types(JPG, PNG, GIF)
+    </div>
+  </div>
+</div>

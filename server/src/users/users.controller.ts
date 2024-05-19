@@ -23,6 +23,7 @@ import {
   IResponseMessage,
   IResponse,
 } from 'src/components/interfaces/response.interface';
+import {validateImageFile} from "../components/helpers/utils";
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -55,13 +56,15 @@ export class UsersController {
 
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Set user avatar' })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {
+    fileFilter: validateImageFile
+  }))
   @Put('avatar')
   @UseGuards(AuthGuard())
   async setUserAvatar(
     @GetUser() user: User,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<IResponseMessage> {
+  ): Promise<IResponse<any>> {
     return await this.usersService.setUserAvatar(user, file);
   }
 
