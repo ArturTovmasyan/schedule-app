@@ -17,8 +17,6 @@ import { ClientsCredentialsService } from '../clients-credentials/clients-creden
 import { google, oauth2_v2 } from 'googleapis';
 import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 import { CalendarData } from './types/calendar-data.type';
-import { CalendarEvent } from '../calendar-event/entities/calendarEvent.entity';
-import { EventTypeEnum } from '../calendar-event/enums/eventType.enum';
 
 @Injectable()
 export class CalendarPermissionsService {

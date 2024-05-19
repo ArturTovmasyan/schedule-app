@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,6 +12,7 @@ import {
 import { User } from '@user/entity/user.entity';
 import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
 import { CalendarToken } from 'src/calendar/calendar-permissions/entity/calendarToken.entity';
+import { CalendarEvent } from './calendarEvent.entity';
 
 @Entity()
 export class Calendar {
@@ -40,6 +42,9 @@ export class Calendar {
     nullable: false,
   })
   calendarType!: CalendarTypeEnum;
+
+  @OneToMany(() => CalendarEvent, (calendarEvent) => calendarEvent.calendar)
+  calendarEvent: CalendarEvent[];
 
   @CreateDateColumn()
   createdOn!: Date;

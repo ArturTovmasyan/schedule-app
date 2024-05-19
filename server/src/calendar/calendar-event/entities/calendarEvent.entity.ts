@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { EventTypeEnum } from '../enums/eventType.enum';
+import { Calendar } from './calendar.entity';
 
 @Entity()
 export class CalendarEvent {
@@ -24,6 +25,13 @@ export class CalendarEvent {
   @ManyToOne(() => User, (user) => user.id, { nullable: false })
   @JoinColumn()
   owner!: User;
+
+  @ManyToOne(() => Calendar, (calendar) => calendar.id, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  calendar!: Calendar;
 
   @Column({ type: 'varchar', nullable: true })
   creator: string;
