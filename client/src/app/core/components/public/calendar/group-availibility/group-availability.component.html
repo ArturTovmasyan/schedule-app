@@ -34,7 +34,7 @@
         </full-calendar>
       </div>
       <ng-container *ngIf="componentData.isTimeslotSelected">
-        <h3 class="section-title-secondary">
+        <h3 class="section-title-secondary current-meeting">
           Current Meeting
         </h3>
         <div class="date-time-container">
@@ -66,8 +66,11 @@
             </p>
           </div>
         </div>
-        <div class="form-group mb-0" *ngIf="location?.value == MeetViaEnum.OutboundCall">
-          <label for="yourPhoneNumber">Your phone number</label>
+
+        <h3 class="section-title-secondary">
+          Your phone number
+        </h3>
+        <div class="other-details">
           <input type="text" class="form-control" id="yourPhoneNumber"
             placeholder="Please provide the phone number for the call" formControlName="phoneNumber">
           <div *ngIf="f['phoneNumber'].invalid && (f['phoneNumber'].dirty || f['phoneNumber'].touched)">
@@ -76,6 +79,7 @@
             </span>
           </div>
         </div>
+
         <div class="error" *ngIf="errorMessage">
           <span *ngFor="let error of errorMessage">
             {{error}}
