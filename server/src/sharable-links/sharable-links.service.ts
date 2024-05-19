@@ -94,7 +94,7 @@ export class SharableLinksService {
         phoneNumber: createSharableLinkDto.phoneNumber,
         address: createSharableLinkDto.address,
         title: createSharableLinkDto.title,
-        link: process.env.WEB_HOST + 'sharable-links/' + sharableLinkId,
+        link: process.env.WEB_HOST + 'share/' + sharableLinkId,
       });
 
       if (createSharableLinkDto.attendees?.length) {
