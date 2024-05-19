@@ -9,7 +9,6 @@ export class SharableLinkService {
   constructor(private readonly http: HttpClient) { }
 
   getLinks(params: any) {
-    console.log('oo', params);
     return this.http.get<ApiResponse<any>>(`/api/sharable-links`, { params : params });
   }
 

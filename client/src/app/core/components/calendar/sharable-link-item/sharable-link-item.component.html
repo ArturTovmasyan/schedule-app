@@ -1,4 +1,4 @@
-
+<div class="sharable-link-container">
   <div class="delete-dialog" *ngIf="link.createdByMe && showDeletePopup">
     <h5>Are you sure?</h5>
     <div>
@@ -6,6 +6,62 @@
       <a (click)="deleteLink(true)">Yes</a>
     </div>
   </div>
+  <div class="sharable-link-container-header">
+    <ul class="list-unstyled list-inline users-avatars" id="usersAvatars">
+      <li class="list-inline-item user-avatar">
+        <div class="wrapper">
+          <img src="{{link.user.avatar}}" alt="{{ link.user.firstName }}">
+        </div>
+      </li>
+      <li class="list-inline-item user-avatar"  *ngFor="let attendee of link.attendees.slice(0, 2); let i=index">
+        <div class="wrapper">
+          <img src="{{attendee.user.avatar}}" alt="{{ attendee.user?.firstName ?? '' }}" *ngIf="attendee.user.avatar">
+          <h3 *ngIf="!attendee.user.avatar">{{attendee.user?.firstName?.charAt(0) ?? ''}}</h3>
+        </div>
+      </li>
+      <li class="list-inline-item user-avatar counter" *ngIf="link.attendees.length > 2">
+        <div class="wrapper">
+          <h3>+{{link.attendees.length - 2}}</h3>
+        </div>
+      </li>
+    </ul>
+    <div class="sharable-link-info" id="sharableLinkInfo">
+      <h4 class="created-by">Created by <span>{{link.createdByMe ? 'me' : link.user.firstName}}</span></h4>
+      <h4 class="date" id="date">
+        {{ link.updatedOn | date }}
+      </h4>
+    </div>
+  </div>
+  <div class="sharable-link-container-footer">
+    <div class="url">
+      <img src="assets/link-icon.png" alt="link icon">
+      <button class="link">
+        {{ link.link }}
+      </button>
+    </div>
+
+    <ul class="list-unstyled list-inline actions">
+      <li class="list-inline-item">
+        <button class="copy" (click)="copyLink(link.link)">
+          <img src="assets/copy-icon.png" alt="trash icon">
+        </button>
+      </li>
+      <li class="list-inline-item" *ngIf="link.createdByMe">
+        <button class="delete" (click)="deleteLinkPopup()">
+          <img src="assets/trash-icon.png" alt="trash icon">
+        </button>
+      </li>
+      <li class="list-inline-item" *ngIf="link.createdByMe">
+        <button class="edit" routerLink="/calendar/sharable-link/{{link.id}}">
+          <img src="assets/edit-icon.png" alt="trash icon">
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- 
+  
   <div class="sharable-link-container-header">
     <ul class="list-unstyled list-inline users-avatars" id="usersAvatars">
       <ng-container *ngIf="link.attendees.length; else selfUser">
@@ -51,4 +107,4 @@
         </div>
       </li>
     </ul>
-  </div>
+  </div> -->

@@ -35,7 +35,7 @@ export class SharableLinkListComponent implements OnInit {
     const params: any = {
       'offset': this.page.offset,
       'limit': this.page.limit,
-      'isAttendees': this.isAttendees
+      'inAttendees': this.inAttendees
     }
     this.sharableLinkService.getLinks(params)
     .subscribe((res: any) => {
@@ -95,7 +95,7 @@ export class SharableLinkListComponent implements OnInit {
         });
       }
     });
-    
+
   }
 
   close() {
