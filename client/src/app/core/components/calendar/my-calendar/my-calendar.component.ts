@@ -87,7 +87,11 @@ export class MyCalendarComponent implements OnInit {
     events: [],
     eventContent: this.eventContent.bind(this),
     eventClassNames: function(arg) {
-      return 'event-block';
+      //TODO get contact availability times
+      if (true) {
+        return 'event';
+      }
+      return 'available-event';
     }
   };
 
@@ -96,6 +100,7 @@ export class MyCalendarComponent implements OnInit {
     let title = arg.event.title;
     let time = arg.timeText;
 
+    //TODO check if available event change background here.
     divEl.innerHTML = '<span>' + title + '</span><br/><span style="color: #047BDAFF">' + time + '</span>';
     return {html: divEl.innerHTML};
   }

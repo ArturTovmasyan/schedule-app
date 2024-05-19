@@ -77,10 +77,17 @@ h2#fc-dom-1 {
   margin: 0 10px 1px 10px;
 }
 
-.event-block {
+.event {
   text-align: center;
   border-left: 10px solid #7fb8ff !important;
   border-radius: 9px !important;
+}
+
+.available-event {
+  text-align: center;
+  border-left: 10px solid #B0EEB2 !important;
+  border-radius: 9px !important;
+  background-color: #D0EDD1 !important;
 }
 
 //bid table layout top padding
