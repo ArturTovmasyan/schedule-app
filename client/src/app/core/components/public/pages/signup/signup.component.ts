@@ -27,7 +27,7 @@ export class SignupComponent {
     private broadcaster: BroadcasterService
     ) {
     this.form = this.formBuilder.group({
-        fullName: ['', [ValidationService.fullNameValidator, Validators.required]],
+        fullName: ['', [Validators.required]],
         email: ['', [ValidationService.emailValidator, Validators.required]],
         password: ['', [ValidationService.passwordValidator, Validators.required]]
       },
