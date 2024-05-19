@@ -1,12 +1,23 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { first } from 'rxjs/operators';
-import { CalendarAccessibility } from '../../interfaces/calendar/accessibility.calendar.inteface';
-import { AccessibilityService } from '../../services/calendar/accessibility.service';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import {
+  first
+} from 'rxjs/operators';
+import {
+  CalendarAccessibility
+} from '../../interfaces/calendar/accessibility.calendar.inteface';
+import {
+  AccessibilityService
+} from '../../services/calendar/accessibility.service';
 
 enum AccessibilityType {
   PUBLIC = "public",
-  DOMAIN = "domain",
-  REQUEST = "request"
+    DOMAIN = "domain",
+    REQUEST = "request"
 }
 
 @Component({
@@ -18,7 +29,7 @@ export class ConfigurationComponent implements OnInit {
   @ViewChild('domainInput')
   domainInput!: ElementRef;
   currentAccessibility: CalendarAccessibility | null = null
-  currentDisplaySection: Section = Section.NONE;
+  isDomainSectionExpanded = false;
   error: any | null = null;
 
   constructor(private calendarAccessibilityService: AccessibilityService) {}
@@ -45,7 +56,7 @@ export class ConfigurationComponent implements OnInit {
   }
 
   updateAccessibility(type: AccessibilityType, checked: boolean, domains: string[] = []) {
-    if(checked) {
+    if (checked) {
       const data = {
         accessibilityType: type,
         domains: domains.length == 0 ? null : domains
@@ -63,10 +74,6 @@ export class ConfigurationComponent implements OnInit {
         })
     } else {
       this.deleteAccessibility();
-    }
-
-    if(type == AccessibilityType.DOMAIN) {
-      this.currentDisplaySection = checked ? Section.DOMAIN : Section.NONE;
     }
   }
 
@@ -90,19 +97,21 @@ export class ConfigurationComponent implements OnInit {
   }
 
   toggleSection(section: Section) {
-    this.currentDisplaySection = this.currentDisplaySection == section ? Section.NONE : section;
-  }
-
-  isVisible(section: Section): boolean {
-    return this.currentDisplaySection == Section.NONE || this.currentDisplaySection == section;
+    if (section == Section.DOMAIN) {
+      this.isDomainSectionExpanded = !this.isDomainSectionExpanded;
+    }
   }
 
   addDomain() {
     const domain = this.domainInput.nativeElement.value.replace('@', '');
-    if((this.currentAccessibility?.domains ?? []).indexOf(domain) < 0) {
+    if ((this.currentAccessibility?.domains ?? []).indexOf(domain) < 0) {
       const domains = [...this.currentAccessibility?.domains ?? [], domain];
       this.updateAccessibility(AccessibilityType.DOMAIN, true, domains);
     }
+    this.domainInput.nativeElement.value = "";
+  }
+
+  clearDomain() {
     this.domainInput.nativeElement.value = "";
   }
 

@@ -2,7 +2,7 @@ section.meeting-title {
   padding: 37px 16px 10px 14px;
   background-color: white;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
 
   span#no-calendar {
     font-size: 11px;
@@ -57,7 +57,7 @@ section.meeting-title {
     border: 1px dashed #B0B0B066;
     padding: 15px 10px 30px 10px;
     border-radius: 10px;
-    overflow: scroll;
+    overflow: auto;
 
     .form-control:focus {
       outline: none;

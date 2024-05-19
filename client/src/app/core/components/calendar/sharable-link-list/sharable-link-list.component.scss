@@ -158,7 +158,7 @@ section.sharable-links {
     justify-content: space-between;
 
     ul {
-      overflow: scroll;
+      overflow: auto;
 
       li.sharable-link-container {
         border: 1px solid #D3D3D3;

@@ -96,7 +96,7 @@ section.contacts {
     }
     ul.contacts-list {
       height: calc(100% - 160px);
-      overflow: scroll;
+      overflow: auto;
       margin-bottom: 0;
       li {
         display: flex;

@@ -30,7 +30,7 @@ section.sharable-link {
 
   form {
     height: 88%;
-    overflow: scroll;
+    overflow: auto;
     padding: 0 0 20px 0;
 
     .sharable-link-body {
@@ -282,7 +282,7 @@ section.sharable-link {
         padding: 7px 5px;
         border-radius: 10px;
         height: 350px;
-        overflow: scroll;
+        overflow: auto;
 
         li.time-slot {
           display: flex;
