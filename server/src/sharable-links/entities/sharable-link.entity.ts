@@ -41,6 +41,12 @@ export class SharableLinkEntity {
   @Column({ name: 'link' })
   link: string;
 
+  @Column({ name: 'phone_number', default: null })
+  phoneNumber?: string;
+
+  @Column({ name: 'address', default: null })
+  address?: string;
+
   @CreateDateColumn()
   createdOn?: Date;
 

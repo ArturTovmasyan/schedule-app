@@ -63,6 +63,12 @@ export class CalendarEvent {
   @CreateDateColumn({ nullable: true, precision: 3 })
   end!: Date;
 
+  @Column({ name: 'phone_number', default: null })
+  phoneNumber?: string;
+
+  @Column({ name: 'address', default: null })
+  address?: string;
+
   @CreateDateColumn()
   createdOn!: Date;
 

@@ -1,9 +1,11 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
   IsNotEmpty,
   IsString,
   IsArray,
   IsEmail,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateEventDto {
@@ -29,6 +31,16 @@ export class CreateEventDto {
 
   @IsString()
   syncWith: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  address?: string;
 
   @IsArray()
   @IsEmail({}, { each: true })

@@ -34,6 +34,16 @@ export class CreateSharableLinkDto {
   @IsEnum(MeetViaEnum)
   meetVia: MeetViaEnum;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  address?: string;
+
   @ApiProperty({ required: true })
   @ValidateNested({ each: true })
   @IsArray()

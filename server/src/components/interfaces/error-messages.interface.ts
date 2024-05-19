@@ -1,4 +1,6 @@
 export interface IErrorMessages {
+  phoneNumberNotSpecified: string;
+  addressNumberNotSpecified: string;
   cantChooseOwnSlot: string;
   slotIsBusy: string;
   zoomTokenNotFound: string;

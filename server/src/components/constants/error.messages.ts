@@ -1,6 +1,8 @@
 import { IErrorMessages } from '../interfaces/error-messages.interface';
 
 export const ErrorMessages: Readonly<IErrorMessages> = {
+  phoneNumberNotSpecified: 'Phone number not specified',
+  addressNumberNotSpecified: 'Address not specified',
   slotIsBusy: 'Slot(s) is/are busy',
   provideCustomDate: 'Please provide custom date',
   calendarNotFound: 'Calendar Not Found',

@@ -12,4 +12,6 @@ export class IResponseMessage {
   message: string;
   @ApiProperty()
   status: number;
+  @ApiProperty()
+  metadata?: {};
 }

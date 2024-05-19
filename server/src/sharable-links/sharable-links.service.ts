@@ -66,6 +66,25 @@ export class SharableLinksService {
       throw new BadRequestException({ message: ErrorMessages.slotIsBusy });
     }
 
+    if (
+      (createSharableLinkDto.meetVia === MeetViaEnum.InboundCall ||
+        createSharableLinkDto.meetVia === MeetViaEnum.OutboundCall) &&
+      !createSharableLinkDto.phoneNumber
+    ) {
+      throw new BadRequestException({
+        message: ErrorMessages.phoneNumberNotSpecified,
+      });
+    }
+
+    if (
+      createSharableLinkDto.meetVia === MeetViaEnum.PhysicalAddress &&
+      !createSharableLinkDto.address
+    ) {
+      throw new BadRequestException({
+        message: ErrorMessages.addressNumberNotSpecified,
+      });
+    }
+
     const sharableLinkId = randomUUID();
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -75,6 +94,8 @@ export class SharableLinksService {
       await queryRunner.manager.getRepository(SharableLinkEntity).insert({
         id: sharableLinkId,
         sharedBy: user.id,
+        phoneNumber: createSharableLinkDto.phoneNumber,
+        address: createSharableLinkDto.address,
         title: createSharableLinkDto.title,
         link: process.env.WEB_HOST + 'sharable-links/' + sharableLinkId,
       });
@@ -104,7 +125,7 @@ export class SharableLinksService {
 
       await queryRunner.commitTransaction();
 
-      return { message: 'Created', status: 1 };
+      return { message: 'Created', status: 1, metadata: { sharableLinkId } };
     } catch (error) {
       await queryRunner.rollbackTransaction();
 
@@ -350,6 +371,8 @@ export class SharableLinksService {
           title: slot.link.title,
           description: `Sharable link event with ${user.firstName} ${user.lastName}`,
           meetLink,
+          phoneNumber: slot.link.phoneNumber,
+          address: slot.link.address,
           start: moment(slot.startDate).format(),
           end: moment(slot.endDate).format(),
           syncWith: schedulerUserCalendar.calendarId,
