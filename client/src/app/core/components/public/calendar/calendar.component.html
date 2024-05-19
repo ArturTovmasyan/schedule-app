@@ -1,0 +1,26 @@
+<div class="container-fluid" id="container">
+  <div class="row h-100">
+    <div class="h-100 text-center col-12 col-sm-3" id="calendarLeftSide">
+      <div class="content" id="left-menu">
+        <section style="height: 100%">
+          <router-outlet></router-outlet>
+        </section>
+      </div>
+    </div>
+    <div class="col-12 h-100 text-center col-sm-9 ps-0" id="calendarRightSide" >
+      <div class="calendar" id="calendar">
+        <div class="calendar-header d-flex justify-content-between">
+          <div></div>
+          <div class="account-info">
+            <div class="timezone">
+              <h4 id="userTimezone">
+                {{ timezone }}
+              </h4>
+            </div>
+          </div>
+        </div>
+        <full-calendar id="calendar" #calendar [options]="calendarOptions" [deepChangeDetection]="true"></full-calendar>
+      </div>
+    </div>
+  </div>
+</div>

@@ -225,6 +225,10 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'sharable-link',
+    loadChildren: () => import('./core/components/public/public.module').then(m => m.PublicCalendarModule)
+  },
+  {
     path: '**', redirectTo: '/404'
   }
 ];
