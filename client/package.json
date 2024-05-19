@@ -23,6 +23,7 @@
     "@angular/router": "~13.3.0",
     "@fullcalendar/angular": "^5.11.2",
     "@fullcalendar/bootstrap": "^5.11.3",
+    "@fullcalendar/bootstrap5": "^5.11.3",
     "@fullcalendar/core": "^5.11.3",
     "@fullcalendar/daygrid": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",
