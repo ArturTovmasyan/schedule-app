@@ -33,6 +33,8 @@ export class SettingsComponent implements OnInit {
 
   setting_title = this.navOptions[0]['title'];
 
+  timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
+
   ngOnInit(): void {
   }
 

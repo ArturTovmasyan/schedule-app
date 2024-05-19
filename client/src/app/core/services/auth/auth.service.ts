@@ -113,6 +113,10 @@ export class AuthService {
     );
   }
 
+  setCurrentUser(values:any) {
+    this.currentUserSubject.next(values);
+  }
+
   get authorizationHeader(): { [header: string]: string } {
     const token: string = this.currentUserValue?.accessToken ?? ''
     return this.currentUserValue != null ? {'content-type': 'application/json', 'Authorization': `Bearer ${token}`} : {}
