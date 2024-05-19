@@ -20,27 +20,29 @@ import {StatusEnum} from "@user/enums/status.enum";
 
 @Injectable()
 export class UsersService {
-
   public readonly saltRounds = 10;
 
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(CalendarAccess)
+    private readonly calendarAccessRepo: Repository<CalendarAccess>,
   ) {}
 
   async create(userDto: UserCreateDto): Promise<UserDto> { // TODO add stripeCustomerId to userDTo
     const { email, firstName, lastName, password, stripeCustomerId } = userDto;
     const userInDb = await this.userRepo.findOne({
-      where: { email }, withDeleted: true
+      where: { email },
+      withDeleted: true,
     });
 
     if (userInDb) {
       throw new HttpException(
-          {
-            status: HttpStatus.FORBIDDEN,
-            message: ErrorMessages.userExist,
-          },
-          HttpStatus.FORBIDDEN,
+        {
+          status: HttpStatus.FORBIDDEN,
+          message: ErrorMessages.userExist,
+        },
+        HttpStatus.FORBIDDEN,
       );
     }
 
@@ -53,6 +55,12 @@ export class UsersService {
     });
 
     await this.userRepo.save(user);
+
+    await this.calendarAccessRepo.update(
+      { accessedUser: { id: user.id } },
+      { toEmail: user.email },
+    );
+
     return toUserDto(user);
   }
 
@@ -67,6 +75,12 @@ export class UsersService {
     user.status = StatusEnum.active;
     user.stripeCustomerId = userDto.stripeCustomerId;
     await this.userRepo.save(user);
+
+    await this.calendarAccessRepo.update(
+      { accessedUser: { id: user.id } },
+      { toEmail: user.email },
+    );
+
     return user;
   }
 
@@ -82,14 +96,19 @@ export class UsersService {
     user.stripeCustomerId = userDto.stripeCustomerId;
 
     await this.userRepo.save(user);
+
+    await this.calendarAccessRepo.update(
+      { accessedUser: { id: user.id } },
+      { toEmail: user.email },
+    );
+
     return user;
   }
 
   async update(id: string, userDto: UserUpdateDto): Promise<UserDto> {
-
     const { firstName, lastName, email } = userDto;
 
-    let user: User = await this.userRepo.findOne({ where: {id} });
+    let user: User = await this.userRepo.findOne({ where: { id } });
 
     if (!user) {
       throw new NotFoundException();

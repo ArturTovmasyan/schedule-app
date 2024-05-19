@@ -2,23 +2,23 @@ import * as moment from 'moment';
 import { ConfigService } from '@nestjs/config';
 import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { CalendarAccess } from 'src/calendar-access/entities/calendar-access.entity';
 import { CalendarAccessService } from 'src/calendar-access/calendar-access.service';
 import { TimeForAccessEnum } from 'src/calendar-access/enums/access-time.enum';
 import { AccessRequest } from './entities/access-request.entity';
-import {
-  RequestRedeemEnum,
-  RequestStatusEnum,
-} from './enums/requestStatus.enum';
 import { ErrorMessages } from '@shared/error.messages';
 import { MailService } from '../mail/mail.service';
 import { User } from '@user/entity/user.entity';
 import {
+  AccessRequestStatusEnum,
+  RequestStatusEnum,
+} from './enums/requestStatus.enum';
+import {
   AccessRequestQueryParams,
+  AccessRequestStatus,
   CreateAccessRequestDto,
-  RedeemAccessRequest,
 } from './dto/create-access-request.dto';
 
 @Injectable()
@@ -48,10 +48,23 @@ export class AccessRequestService {
   async create(
     user: User,
     createAccessRequestDto: CreateAccessRequestDto,
-  ): Promise<string> {
+  ): Promise<{ message: string; status: number }> {
     if (createAccessRequestDto.toEmail === user.email) {
       throw new BadRequestException({
         message: ErrorMessages.cantSentYourself,
+      });
+    }
+
+    const checkExists = await this.accessRequestRepo.count({
+      where: {
+        toEmail: createAccessRequestDto.toEmail,
+        applicant: { id: user.id },
+      },
+    });
+
+    if (checkExists) {
+      throw new BadRequestException({
+        message: ErrorMessages.alreadySentRequest,
       });
     }
 
@@ -94,13 +107,14 @@ export class AccessRequestService {
       <h3>Hello!</h3>
     ${
       findUserByEmail
-        ? `<p>${user.firstName} ${user.lastName} wants to access your calendar</p>`
-        : `<p>Register and approve the request from ${user.firstName} ${user.lastName}</p>`
+        ? `<p>${user.firstName} ${user.lastName} wants to access your calendar.
+        Please go to <a href='${process.env.WEB_HOST}'>homepage</a> to accept or decline request.</p>`
+        : `<p><a href='${process.env.WEB_HOST}register'>Register</a> and approve the request from ${user.firstName} ${user.lastName}</p>`
     }
   `,
     });
 
-    return 'Request is sent';
+    return { message: 'Request is sent', status: HttpStatus.OK };
   }
 
   /**
@@ -116,8 +130,6 @@ export class AccessRequestService {
     user: User,
     query: AccessRequestQueryParams,
   ): Promise<{ data: AccessRequest[]; count: number }> {
-    console.log(query.status);
-
     const [data, count] = await this.accessRequestRepo
       .createQueryBuilder('accessRequest')
       .select([
@@ -154,7 +166,7 @@ export class AccessRequestService {
    *
    * @param user - `Authorized user data`
    * @param id - `request id`
-   * @param redeemAccessRequest - `accept or decline`
+   * @param accessRequestStatus - `accept or decline`
    *
    * @returns `{accepted or declined message}`
    */
@@ -162,8 +174,8 @@ export class AccessRequestService {
   async update(
     user: User,
     id: string,
-    redeemAccessRequest: RedeemAccessRequest,
-  ): Promise<string> {
+    accessRequestStatus: AccessRequestStatus,
+  ): Promise<{ message: string; status: number }> {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -188,15 +200,16 @@ export class AccessRequestService {
         .createQueryBuilder()
         .update(AccessRequest)
         .set({
+          receiver: { id: user.id },
           status:
-            redeemAccessRequest.status === RequestRedeemEnum.Accept
+            accessRequestStatus.status === AccessRequestStatusEnum.Accept
               ? RequestStatusEnum.Accepted
               : RequestStatusEnum.Declined,
         })
         .where([{ receiver: { id: user.id } }, { toEmail: user.email }])
         .execute();
 
-      if (redeemAccessRequest.status === RequestRedeemEnum.Accept) {
+      if (accessRequestStatus.status === AccessRequestStatusEnum.Accept) {
         await this.calendarAccessRepo.upsert(
           {
             accessedUser: { id: data.applicant.id },
@@ -214,7 +227,10 @@ export class AccessRequestService {
 
       await queryRunner.commitTransaction();
 
-      return redeemAccessRequest.status;
+      return {
+        message: accessRequestStatus.status,
+        status: HttpStatus.ACCEPTED,
+      };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new BadRequestException({ message: error.message });
@@ -232,7 +248,10 @@ export class AccessRequestService {
    * @returns `{deleted message}`
    */
 
-  async remove(user: User, id: string): Promise<string> {
+  async remove(
+    user: User,
+    id: string,
+  ): Promise<{ message: string; status: number }> {
     const data = await this.accessRequestRepo
       .createQueryBuilder('accessRequest')
       .delete()
@@ -247,6 +266,6 @@ export class AccessRequestService {
       });
     }
 
-    return `Deleted`;
+    return { message: `Deleted`, status: HttpStatus.ACCEPTED };
   }
 }

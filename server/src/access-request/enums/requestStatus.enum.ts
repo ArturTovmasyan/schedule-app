@@ -4,7 +4,7 @@ export enum RequestStatusEnum {
   Declined = 'declined',
 }
 
-export enum RequestRedeemEnum {
+export enum AccessRequestStatusEnum {
   Accept = 'accept',
   Decline = 'decline',
 }

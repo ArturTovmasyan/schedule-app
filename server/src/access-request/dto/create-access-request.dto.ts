@@ -9,7 +9,7 @@ import {
 
 import { TimeForAccessEnum } from 'src/calendar-access/enums/access-time.enum';
 import {
-  RequestRedeemEnum,
+  AccessRequestStatusEnum,
   RequestStatusEnum,
 } from '../enums/requestStatus.enum';
 
@@ -34,8 +34,8 @@ export class AccessRequestQueryParams {
   status?: RequestStatusEnum;
 }
 
-export class RedeemAccessRequest {
+export class AccessRequestStatus {
   @IsNotEmpty()
-  @IsEnum(RequestRedeemEnum)
-  status: RequestRedeemEnum;
+  @IsEnum(AccessRequestStatusEnum)
+  status: AccessRequestStatusEnum;
 }

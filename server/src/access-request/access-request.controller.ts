@@ -16,11 +16,11 @@ import { AccessRequestService } from './access-request.service';
 import { User } from '@user/entity/user.entity';
 import {
   AccessRequestQueryParams,
+  AccessRequestStatus,
   CreateAccessRequestDto,
-  RedeemAccessRequest,
 } from './dto/create-access-request.dto';
 
-@Controller('access-request')
+@Controller('calendar/access-request')
 export class AccessRequestController {
   constructor(private readonly accessRequestService: AccessRequestService) {}
 
@@ -50,9 +50,9 @@ export class AccessRequestController {
   update(
     @Param('id') id: string,
     @GetUser() user: User,
-    @Body() redeemAccessRequest: RedeemAccessRequest,
+    @Body() accessRequestStatus: AccessRequestStatus,
   ) {
-    return this.accessRequestService.update(user, id, redeemAccessRequest);
+    return this.accessRequestService.update(user, id, accessRequestStatus);
   }
 
   @UseGuards(AuthGuard())

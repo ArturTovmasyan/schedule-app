@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { UpdateCalendarAccessDto } from './dto/update-calendar-access.dto';
@@ -35,7 +35,7 @@ export class CalendarAccessService {
   async create(
     user: User,
     createCalendarAccessDto: CreateCalendarAccessDto,
-  ): Promise<string> {
+  ): Promise<{ message: string; status: number }> {
     if (createCalendarAccessDto.toEmail === user.email) {
       throw new BadRequestException({
         message: ErrorMessages.cantSentYourself,
@@ -82,11 +82,17 @@ export class CalendarAccessService {
       subject: `${user.firstName} ${user.lastName} shared their calendar with you`,
       html: `
         <h3>Hello!</h3>
-        <p>${user.firstName} ${user.lastName} shared their calendar with you</p>
+        ${
+          findUserByEmail
+            ? `<p>${user.firstName} ${user.lastName} shared their calendar with you 
+            Please go to <a href='${process.env.WEB_HOST}'>homepage</a> to access calendar.</p>`
+            : `<p>${user.firstName} ${user.lastName} shared their calendar with you.
+             Please <a href='${process.env.WEB_HOST}register'>Register</a> and access to calendar.</p>`
+        }
     `,
     });
 
-    return 'shared successfully';
+    return { message: 'shared successfully', status: HttpStatus.CREATED };
   }
 
   /**
