@@ -105,10 +105,6 @@ export class ConnectCalendarComponent implements OnInit {
     return false
   }
 
-  notifyAvailable(type: CalendarType): boolean {
-    return false
-  }
-
   get CalendarType(): typeof CalendarType {
     return CalendarType;
   }

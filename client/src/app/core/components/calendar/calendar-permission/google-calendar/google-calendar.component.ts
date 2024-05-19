@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {CalendarPermissionService} from "../../../../services/calendar/permission.service";
 
 @Component({
-  selector: 'app-google-calendars',
+  selector: 'app-google-calendar',
   templateUrl: './google-calendar.component.html',
   styleUrls: ['./google-calendar.component.scss']
 })
