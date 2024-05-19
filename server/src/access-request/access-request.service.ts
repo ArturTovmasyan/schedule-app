@@ -257,7 +257,7 @@ export class AccessRequestService {
       .delete()
       .from(AccessRequest)
       .where('id = :id', { id })
-      .andWhere('toEmail =:email', { email: user.email })
+      .andWhere('toEmail = :email', { email: user.email })
       .execute();
 
     if (!data.affected) {

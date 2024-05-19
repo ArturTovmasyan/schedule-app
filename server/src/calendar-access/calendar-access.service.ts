@@ -98,7 +98,7 @@ export class CalendarAccessService {
   /**
    * @description `Void function,that validates does userA have access to userB's calendar`
    * @param user - `Authorized user data`
-   * @param email - `email address of accessable user`
+   * @param email - `email address of accessible user`
    */
 
   async checkAccess(user: User, email: string): Promise<void> {
@@ -121,7 +121,7 @@ export class CalendarAccessService {
   }
 
   /**
-   * @description `Find all accessable calendars`
+   * @description `Find all accessible calendars`
    * @param user - `Authorized user id`
    * @returns `{Array of calendarAccess entity data,count of results}`
    */

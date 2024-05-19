@@ -30,6 +30,7 @@ export class AccessRequestController {
     @GetUser() user: User,
     @Body() createAccessRequestDto: CreateAccessRequestDto,
   ) {
+    //TODO Don't create items in DB each time when submitting. Check if a user already exists (by toEmail field.)
     return this.accessRequestService.create(user, createAccessRequestDto);
   }
 
