@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'dotenv/config';
-import {ConfigService} from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error']
+    logger: ['error'],
   });
 
   const config = app.get(ConfigService);
@@ -18,4 +18,5 @@ async function bootstrap() {
   await app.listen(config.get<number>('PORT'));
   app.use(compression());
 }
+
 bootstrap();

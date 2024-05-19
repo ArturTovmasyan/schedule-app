@@ -1,45 +1,48 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-    Unique,
-    UpdateDateColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
 } from 'typeorm';
-import {User} from "@user/entity/user.entity";
-import {CalendarTypeEnum} from "../enums/calendarType.enum";
+import { User } from '@user/entity/user.entity';
+import { CalendarTypeEnum } from '../enums/calendarType.enum';
 
 @Entity()
 @Unique(['calendarType', 'owner'])
 export class CalendarToken {
-    @PrimaryGeneratedColumn('uuid')
-    id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: number;
 
-    @ManyToOne(() => User, user => user.id, {nullable: false})
-    @JoinColumn()
-    owner!: User;
+  @ManyToOne(() => User, (user) => user.id, { nullable: false })
+  @JoinColumn()
+  owner!: User;
 
-    @Column({type: 'varchar', nullable: false})
-    accessToken!: string;
+  @Column({ type: 'varchar', nullable: false })
+  accessToken!: string;
 
-    @Column({type: 'varchar', nullable: true})
-    refreshToken!: string;
+  @Column({ type: 'varchar', nullable: true })
+  refreshToken!: string;
 
-    @CreateDateColumn()
-    createdOn!: Date;
+  @CreateDateColumn()
+  createdOn!: Date;
 
-    @UpdateDateColumn()
-    updatedOn!: Date;
+  @UpdateDateColumn()
+  updatedOn!: Date;
 
-    @Column({type: "bigint", nullable: false})
-    expiryDate!: number;
+  @CreateDateColumn({ nullable: false, precision: 3 })
+  expiryDate!: Date;
 
-    @Column({
-        type: 'enum',
-        enum: CalendarTypeEnum,
-        nullable: false,
-    })
-    calendarType!: CalendarTypeEnum;
+  @CreateDateColumn({ nullable: true, precision: 3 })
+  extExpiryDate!: Date;
+
+  @Column({
+    type: 'enum',
+    enum: CalendarTypeEnum,
+    nullable: false,
+  })
+  calendarType!: CalendarTypeEnum;
 }

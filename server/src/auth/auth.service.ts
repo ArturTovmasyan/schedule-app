@@ -1,11 +1,11 @@
 import {
-    BadRequestException,
-    ForbiddenException,
-    HttpException,
-    HttpStatus,
-    Injectable,
-    InternalServerErrorException,
-    NotFoundException
+  BadRequestException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import {UsersService} from '@user/users.service';
 import {JwtService} from '@nestjs/jwt';
@@ -29,10 +29,9 @@ import {PaymentService} from "../payment/payment.service";
 
 @Injectable()
 export class AuthService {
-
-    private readonly appHost: string;
-    private readonly REMEMBER_ME_LIFETIME = '30d';
-    private readonly CONFIRMATION_TOKEN_TIME = '6h';
+  private readonly appHost: string;
+  private readonly REMEMBER_ME_LIFETIME = '30d';
+  private readonly CONFIRMATION_TOKEN_TIME = '6h';
 
     constructor(
         private readonly usersService: UsersService,
@@ -129,62 +128,67 @@ export class AuthService {
                 <h3>Hello ${user.firstName}!</h3>
                 <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
             `,
-        });
+    });
+  }
+
+  async resetPassword(email: string): Promise<boolean> {
+    const user = await this.userRepo.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
     }
 
-    async resetPassword(email: string): Promise<boolean> {
-        const user = await this.userRepo.findOne({where: {email}});
+    if (user.provider) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.socialAccountExistError,
+      });
+    }
 
-        if (!user) {
-            throw new NotFoundException({
-                status: HttpStatus.NOT_FOUND,
-                message: ErrorMessages.userNotFound,
-            });
-        }
+    const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
+    const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
 
-        if (user.provider) {
-            throw new NotFoundException({
-                status: HttpStatus.NOT_FOUND,
-                message: ErrorMessages.socialAccountExistError,
-            });
-        }
-
-        const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
-        const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
-
-        this.mailService.send({
-            from: this.configService.get<string>('NO_REPLY_EMAIL'),
-            to: user.email,
-            subject: 'Reset Handshake Account Password',
-            html: `
+    this.mailService.send({
+      from: this.configService.get<string>('NO_REPLY_EMAIL'),
+      to: user.email,
+      subject: 'Reset Handshake Account Password',
+      html: `
                 <h3>Hello ${user.firstName}!</h3>
                 <p>Please use this <a href="${changeLink}">link</a> to reset your password.</p>
             `,
-        });
+    });
 
-        return true;
+    return true;
+  }
+
+  async confirmRegistration(token: string): Promise<boolean> {
+    const user: Pick<UserDto, 'id' | 'status'> = await this.verifyToken(token);
+
+    if (user && user.status === StatusEnum.pending) {
+      user.status = StatusEnum.active;
+      const data = await this.userRepo.update(user.id, user);
+      return data.affected > 0;
     }
 
-    async confirmRegistration(token: string): Promise<boolean> {
-        const user: Pick<UserDto, 'id' | 'status'> = await this.verifyToken(token);
+    throw new BadRequestException({
+      status: HttpStatus.BAD_REQUEST,
+      message: ErrorMessages.confirmError,
+    });
+  }
 
-        if (user && user.status === StatusEnum.pending) {
-            user.status = StatusEnum.active;
-            const data = await this.userRepo.update(user.id, user);
-            return data.affected > 0;
-        }
-
-        throw new BadRequestException({
-            status: HttpStatus.BAD_REQUEST,
-            message: ErrorMessages.confirmError,
-        });
-    }
-
-    async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<boolean> {
-        const password = await this.usersService.hashPassword(changePasswordDto.password);
-        await this.userRepo.update(userId, {password});
-        return true;
-    }
+  async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    const password = await this.usersService.hashPassword(
+      changePasswordDto.password,
+    );
+    await this.userRepo.update(userId, { password });
+    return true;
+  }
 
     async validateGoogleLogin(data: any): Promise<any> {
         let {sub, email} = data;
