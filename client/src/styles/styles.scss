@@ -3,7 +3,8 @@
 //@import "~bootstrap/scss/bootstrap.scss";
 
 /* You can add global styles to this file, and also import other style files */
-html, body {
+html,
+body {
   height: calc(100% - 8px);
   font-family: 'Lexend Deca', sans-serif;
 }
@@ -20,20 +21,20 @@ html, body {
   }
 
   &.flex-full {
-    > * {
+    >* {
       flex: 1;
     }
   }
 
   &.flex-full-last {
-    > *:last-child {
+    >*:last-child {
       flex: 1;
     }
   }
 
   @for $i from 1 through 20 {
     &.flex-full-#{$i} {
-      > *:nth-child(#{$i}) {
+      >*:nth-child(#{$i}) {
         flex: 1;
       }
     }
@@ -101,15 +102,15 @@ input[type="checkbox"]:disabled {
     width: 0;
     height: 0;
 
-    &:checked + .slider {
+    &:checked+.slider {
       background-color: #1eac43;
     }
 
-    &:focus + .slider {
+    &:focus+.slider {
       box-shadow: 0 0 1px #1eac43;
     }
 
-    &:checked + .slider:before {
+    &:checked+.slider:before {
       -webkit-transform: translateX(33px);
       -ms-transform: translateX(33px);
       transform: translateX(33px);
@@ -147,5 +148,28 @@ input[type="checkbox"]:disabled {
         border-radius: 50%;
       }
     }
+  }
+}
+
+.btn {
+  width: 260px;
+  height: 50px;
+  margin-top: 45px;
+  font-size: 22px;
+  line-height: 28px;
+  color: white;
+  background-color: #7B9666;
+  font-weight: medium;
+  /* UI Properties */
+  border-radius: 33px;
+  border: none;
+
+  &.btn-primary {
+    background: transparent linear-gradient(348deg, #CCD839 0%, #7B9666 100%) 0% 0% no-repeat padding-box;
+  }
+
+  &.btn-secondary {
+    background-color: white;
+    color: #7B9666;
   }
 }

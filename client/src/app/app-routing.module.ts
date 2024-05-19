@@ -28,6 +28,10 @@ const routes: Routes = [
             component: OnboardingCalendarComponent
           },
           {
+            path: 'configuration',
+            component: OnboardingConfigurationComponent
+          },
+          {
             path: 'availability',
             component: OnboardingAvailabilityComponent
           }
