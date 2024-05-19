@@ -20,6 +20,8 @@
         class="mb-3"
         [items]="availableTimezones" 
         [ngModel]="selectedTimezone"
+        bindLabel="label"
+        bindValue="value"
         [clearable]="false"
         (change)="onTimezoneSelected($event)">
       </ng-select>

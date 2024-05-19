@@ -29,7 +29,13 @@ export class AvailabilityComponent implements OnInit {
   }
   error: any | null = null;
 
-  availableTimezones = moment.tz.names();
+  availableTimezones = moment.tz.names().map((zone: string) => {
+    const data = zone.split('/')
+    return {
+      label: data.map((text: string) => text.trim().charAt(0).toUpperCase() + text.replaceAll('_', ' ').slice(1)).join(' / '),
+      value: zone
+    }
+  });
 
   private _isFromAm = true
   private _isToAm = false
@@ -152,12 +158,11 @@ export class AvailabilityComponent implements OnInit {
       })
   }
 
-  onTimezoneSelected(timezone: string) {
-    if (this.tempAvailability.timezone === timezone) {
+  onTimezoneSelected(timezone: { value: string, label: string }) {
+    if (this.tempAvailability.timezone === timezone.value) {
       return;
     }
-    console.log(timezone);
-    this.tempAvailability.timezone = timezone;
+    this.tempAvailability.timezone = timezone.value;
     this.updateAccessibility();
   }
 
