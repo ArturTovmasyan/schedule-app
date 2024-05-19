@@ -11,7 +11,7 @@ import {
 import { User } from '@user/entity/user.entity';
 import { EventTypeEnum } from '../enums/eventType.enum';
 import { Calendar } from './calendar.entity';
-import { EventRecurrenceEntity } from './eventRecurrence.entity';
+import { EventRecurrence } from './eventRecurrence.entity';
 
 @Entity()
 export class CalendarEvent {
@@ -59,11 +59,11 @@ export class CalendarEvent {
   @CreateDateColumn({ nullable: true, precision: 3 })
   end!: Date;
 
-  @OneToOne(() => EventRecurrenceEntity, {
+  @OneToOne(() => EventRecurrence, {
     nullable: true,
   })
   @JoinColumn()
-  recurrence: EventRecurrenceEntity;
+  recurrence: EventRecurrence;
 
   @CreateDateColumn()
   createdOn!: Date;
