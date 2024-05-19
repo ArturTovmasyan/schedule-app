@@ -76,7 +76,7 @@ export class CalendarEvent {
   @Column({
     type: 'enum',
     enum: EventRecurrenceTypeEnum,
-    nullable: false,
+    nullable: true,
   })
   recurrenceType!: EventRecurrenceTypeEnum;
 
