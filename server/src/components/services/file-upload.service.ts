@@ -24,7 +24,7 @@ export class FileUploadService {
    *
    * @param param0
    *
-   * @returns returnes url
+   * @returns returns url
    */
 
   async uploadPublicFile({
