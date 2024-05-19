@@ -132,7 +132,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.choosedLocationObj = savedDataArr.choosedLocationObj;
       this.data = savedDataArr.data;
       this.selectedAttendees = savedDataArr.selectedAttendees ?? [];
-      console.log(this.data);
       this.broadcaster.broadcast('selectUnselectDate', {'startDate': this.data.start, 'endDate': this.data.end});
       if (this.selectedAttendees.length) {
         for (let i=0; i < this.selectedAttendees.length; i++) {
