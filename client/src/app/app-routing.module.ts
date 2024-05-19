@@ -56,7 +56,7 @@ import { RecoveryPasswordComponent } from './core/components/public/pages/recove
 
 const routes: Routes = [
   // {path: '', redirectTo: 'calendar/access-request', pathMatch: 'full'},
-  {path: 'calendar', redirectTo: 'calendar/suggest-contact', pathMatch: 'full'},
+  {path: 'calendar', redirectTo: 'calendar/contacts', pathMatch: 'full'},
   {path: '404', component: P404Component, data: {title: 'Page 404'}},
   {path: '500', component: P500Component, data: {title: 'Page 500'}},
   {
@@ -219,11 +219,11 @@ const routes: Routes = [
         component: SuggestContactComponent
       },
       {
-        path: 'sharable-link',
+        path: 'sharable-link/create',
         component: SharableLinkComponent
       },
       {
-        path: 'sharable-links',
+        path: 'sharable-link',
         component: SharableLinkListComponent
       },
       {
