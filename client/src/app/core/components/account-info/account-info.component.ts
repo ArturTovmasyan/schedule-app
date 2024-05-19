@@ -11,9 +11,10 @@ export class AccountInfoComponent implements OnInit {
 
   @ViewChild('fileInput', { static: false })
   fileInput!: ElementRef;
-  userName:string = '';
-  email:string = '';
-  avatar:string = '';
+  firstName = '';
+  lastName = '';
+  email = '';
+  avatar = '';
   error:any = null;
   acceptedFileExtensions = 'image/*';
 
@@ -23,7 +24,8 @@ export class AccountInfoComponent implements OnInit {
     this.authService.hasAccess().subscribe({
       next: ({ user }) => {
         if (user) {
-            this.userName = user.firstName+ ' ' + user.lastName;
+            this.firstName = user.firstName;
+            this.lastName = user.lastName;
             this.email = user.email;
             this.avatar = user.avatar;
         }
