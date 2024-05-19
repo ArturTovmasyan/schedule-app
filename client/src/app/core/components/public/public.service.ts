@@ -8,8 +8,6 @@ import { MeetViaEnum } from '../calendar/enums/sharable-links.enum';
 @Injectable()
 export class PublicCalendarService {
 
-  calendarData$: BehaviorSubject<any> = new BehaviorSubject(undefined);
-  calendarData$$ = this.calendarData$.asObservable();
   calendarData: any;
   selectedWeek = new Subject();
   _selectedTimeSlot = null;
@@ -69,9 +67,7 @@ export class PublicCalendarService {
         return this.http.get<ApiResponse<any>>(`/api/sharable-links/${id}`)
           .pipe(
             map((res: any) => {
-              this.calendarData = res.data;
-              this.calendarData$.next(res.data)
-              return res;
+              return res.data;
             }),
             catchError((error) => {
               return throwError(() => new Error(error));

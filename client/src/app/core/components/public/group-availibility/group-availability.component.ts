@@ -1,11 +1,12 @@
-import { Component, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
+import { BroadcasterService } from 'src/app/shared/services';
 import { MeetViaEnum } from '../../calendar/enums/sharable-links.enum';
 import { PublicCalendarService } from '../public.service';
 
@@ -22,13 +23,13 @@ type ComponentData = {
 })
 export class GroupAvailabilityComponent implements OnInit, OnDestroy {
 
-  @Input() componentData: ComponentData = {
+  componentData: ComponentData = {
     timeslotSelected: false,
     selectedTimeSlot: null,
     timezone: ''
   };
   readonly MeetViaEnum = MeetViaEnum;
-  destroySubscription = new Subject();
+  destroy$ = new Subject();
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin],
@@ -103,7 +104,6 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
       return 'eventooo';
     },
     select: (info) => {
-      console.log('info', info);
       this.changeWeek(info.start);
     },
     selectOverlap: function (info) {
@@ -111,7 +111,6 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     }
   }
   linkId: string;
-  calendarData$ = this.calendarService.calendarData$$;
   attendees: any;
   location: Location | undefined;
   form!: FormGroup;
@@ -121,7 +120,8 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    public calendarService: PublicCalendarService
+    private calendarService: PublicCalendarService,
+    private broadcaster: BroadcasterService
   ) {
     this.linkId = route.snapshot.params['id'];
     this.initForm();
@@ -132,29 +132,38 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.calendarData$
-    .pipe(takeUntil(this.destroySubscription))
-    .subscribe((data: any) => {
-      if (data?.slots) {
-        console.log(data, 'dataaaa');
-        // location
-        this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
-        if (data['meetVia'] == MeetViaEnum.InboundCall) {
-          this.addValidation('phone');
+    this.calendarService.getDetails(this.linkId)
+      .subscribe((data: any) => {
+        if (data?.slots) {
+          // load available timeslots on calendar
+          this.broadcaster.broadcast('loadAvailableTimeslots', data);
+          // location
+          this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
+          if (data['meetVia'] == MeetViaEnum.InboundCall) {
+            this.addValidation('phone');
+          }
+          const datas = [];
+          for (const date of data.slots) {
+            datas.push({
+              start: date.startDate,
+              end: date.endDate
+            });
+          }
+          this.calendarOptions.events = datas;
         }
-        const datas = [];
-        for (const date of data.slots) {
-          datas.push({
-            start: date.startDate,
-            end: date.endDate
-          });
+        if (data?.attendees?.length > 0) {
+          this.attendees = data.attendees;
         }
-        this.calendarOptions.events = datas;
-      }
-      if (data?.attendees?.length > 0) {
-        this.attendees = data.attendees;
-      }
-    })
+      });
+
+      this.onTimeSlotSelected();
+  }
+
+  onTimeSlotSelected() {
+    this.destroy$ = this.broadcaster.on('timeSlotSelected')
+      .subscribe((data: any) => {
+        this.componentData = data;
+      });
   }
 
   initForm() {
@@ -168,7 +177,6 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
 
   changeWeek(date:any) {
     this.calendarService.selectedWeek.next(date);
-
   }
 
   submit() {
@@ -192,8 +200,8 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroySubscription.next(true);
-    this.destroySubscription.complete();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
 }

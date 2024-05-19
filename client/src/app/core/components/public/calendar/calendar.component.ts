@@ -1,9 +1,12 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Calendar, CalendarOptions, DateSelectArg, FullCalendarComponent } from '@fullcalendar/angular';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
+import { Subject, takeUntil } from 'rxjs';
 import { PublicCalendarService } from '../public.service';
 import { AVAILABILITY_EVENT_CLASS } from "../../../interfaces/constant/calendar.constant";
+import { BroadcasterService } from 'src/app/shared/services';
+import * as moment from 'moment';
+import { CommonService } from 'src/app/core/services/common.service';
 
 @Component({
   selector: 'app-public-calendar',
@@ -11,6 +14,7 @@ import { AVAILABILITY_EVENT_CLASS } from "../../../interfaces/constant/calendar.
   styleUrls: ['./calendar.component.scss']
 })
 export class PublicCalendarComponent implements OnDestroy {
+  destroy$ = new Subject();
   timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
   @ViewChild("calendar") calendar!: FullCalendarComponent;
   componentData = {
@@ -76,24 +80,23 @@ export class PublicCalendarComponent implements OnDestroy {
     select: (info) => {
       this.componentData['selectedTimeSlot'] = info as any;
       this.componentData['timeslotSelected'] = true;
-      console.log(info);
+      this.broadcaster.broadcast('timeSlotSelected', this.componentData);
     },
     selectOverlap: function (info) {
-      return true;
+      return info._def.ui.classNames[0] == AVAILABILITY_EVENT_CLASS;
     }
   }
 
   linkId: string;
-  destroySubscription = new Subject();
-  calendarData$ = this.calendarService.calendarData$$;
-  openSelectedWeek$ = new Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private readonly calendarService: PublicCalendarService,
+    private broadcaster: BroadcasterService,
+    private readonly commonService: CommonService,
   ) {
     this.linkId = this.route.snapshot.params['id'];
-    this.calendarService.getDetails(this.linkId).subscribe();
+
     this.openSelectedWeek();
   }
 
@@ -111,11 +114,19 @@ export class PublicCalendarComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-    this.calendarData$
-      .pipe(takeUntil(this.destroySubscription))
+    // load for group availability only
+    this.loadBroadcastEvents();
+    this.componentData['timezone'] = this.timezone as string;
+  }
+
+  ngAfterViewChecked() {
+    this.calendarApi = this.calendar.getApi();
+  }
+
+  loadBroadcastEvents() {
+    this.destroy$ = this.broadcaster.on('loadAvailableTimeslots')
       .subscribe((data: any) => {
         if (data?.slots) {
-          console.log(data);
           const datas = [];
           for (const date of data.slots) {
             datas.push({
@@ -126,16 +137,14 @@ export class PublicCalendarComponent implements OnDestroy {
           this.calendarOptions.selectable = true;
           this.calendarOptions.slotDuration = '00:30:00';
           this.calendarOptions.slotLabelInterval = 30;
-          this.calendarOptions.businessHours = this.getAvailableSlots(datas)[0];
-          this.calendarOptions.selectConstraint = "businessHours";
+          this.calendarOptions.selectConstraint = "availableSlot";
           this.calendarOptions.events = this.getAvailableSlots(datas)[1];
+          // this.calendarOptions.validRange = {
+          //   start: moment().toDate(),
+          //   end: moment().add(2, 'year').toDate()
+          // }
         }
       });
-    this.componentData['timezone'] = this.timezone as string;
-  }
-
-  ngAfterViewChecked() {
-    this.calendarApi = this.calendar.getApi();
   }
 
   getAvailableSlots(dates: any){
@@ -149,26 +158,33 @@ export class PublicCalendarComponent implements OnDestroy {
         endTime: dates[key].end
       })
       availabilityEvents.push({
-        start: dates[key].start,
-        end: dates[key].end,
+        groupId: 'availableSlot',
+        start: new Date(dates[key].start),
+        end: new Date(dates[key].end),
         className: AVAILABILITY_EVENT_CLASS
       })
     }
     return [availabilitySlots, availabilityEvents];
   }
 
+  // TODO: to be used if timezone related error
+  getLocaleTime(date: string): string {
+    const offset = moment().utcOffset() / 60;
+    const utcTime = moment(date).add(offset, 'hour');
+    return this.commonService.getFormattedDateString(utcTime, 'HH:mm') ?? "";
+  }
+
   openSelectedWeek() {
-    this.openSelectedWeek$ = this.calendarService.openSelectedWeek()
+    this.calendarService.openSelectedWeek()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         this.calendarApi.gotoDate(res);
-        console.log('subscription res', res);
       });
   }
 
   ngOnDestroy(): void {
-    this.destroySubscription.next(true);
-    this.destroySubscription.complete();
-    this.openSelectedWeek$.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
 }
