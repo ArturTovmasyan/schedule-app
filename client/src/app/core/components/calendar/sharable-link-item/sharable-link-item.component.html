@@ -10,7 +10,8 @@
     <ul class="list-unstyled list-inline users-avatars" id="usersAvatars">
       <li class="list-inline-item user-avatar">
         <div class="wrapper">
-          <img src="{{link.user.avatar}}" alt="{{ link.user.firstName }}">
+          <img src="{{link.user.avatar}}" alt="{{ link.user?.firstName ?? '' }}" *ngIf="link.user.avatar">
+          <h3 *ngIf="!link.user.avatar">{{link.user?.firstName?.charAt(0) ?? ''}}</h3>
         </div>
       </li>
       <li class="list-inline-item user-avatar"  *ngFor="let attendee of link.attendees.slice(0, 2); let i=index">

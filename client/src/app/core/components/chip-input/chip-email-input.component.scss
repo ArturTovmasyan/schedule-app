@@ -4,6 +4,7 @@
   text-align: left;
   background-color: #E9F6FD;
   ul.emails-list {
+    overflow-x: scroll;
     text-align: left;
     display: -webkit-inline-box;
     width: 100%;
@@ -59,8 +60,10 @@
 
     }
     li.user-email-input{
+      width: 100%;
       input{
         background-color: #E9F6FD;
+        
       }
     }
   }
