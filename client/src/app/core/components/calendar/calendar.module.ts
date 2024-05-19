@@ -13,11 +13,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
-<<<<<<< HEAD
-=======
-import { ChipEmailInputComponent } from '../chip-input/chip-email-input.component';
-import { InviteAndConnectComponent } from './invite-and-connect/invite-and-connect.component';
->>>>>>> 8a0cab6 (Add invite and connect component)
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -34,18 +29,13 @@ FullCalendarModule.registerPlugins([
     ContactsComponent,
     MeetingComponent,
     ProposeTimeSlotComponent,
-<<<<<<< HEAD
     MyCalendarComponent
-=======
-    ChipEmailInputComponent,
-    MyCalendarComponent,
-    InviteAndConnectComponent
->>>>>>> 8a0cab6 (Add invite and connect component)
   ],
   imports: [
     CommonModule,
     RouterModule,
-    FullCalendarModule
+    FullCalendarModule,
+    SharedModule
   ],
   providers: [DatePipe]
 })
