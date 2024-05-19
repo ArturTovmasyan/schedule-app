@@ -30,10 +30,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   @ViewChild('contactInput') input!: ElementRef;
   subscription: BehaviorSubject<boolean>;
   selectedDates$: BehaviorSubject<any> = new BehaviorSubject([]);
-  selectedDates:any = []
+  selectedDates: any = []
   showLocation = false;
   choosedLocationObj: Location | null = null;
-  connectMessage = {'title': '', 'type': ''};
+  connectMessage = { 'title': '', 'type': '' };
   // for location: incoming call and address
   phoneNumber = null;
   address = null;
@@ -52,6 +52,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   sharableLink = '';
   showCopiedText = false;
+  showJointAvailibility = false;
   private readonly _document: Document;
 
   locations: Location[] = [];
@@ -72,7 +73,15 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   ) {
     this.getLocations();
     const linkId = this.route.snapshot.params['id'];
-    this.loadSharableLinkDetails(linkId);
+    // load from api if link id is sent to parameters ie used for edit page
+    if (linkId) {
+      this.loadSharableLinkDetails(linkId);
+    }
+    // load from saved Data of localstorage after connect redirection
+    if (localStorage.getItem('savedData')) {
+      this.runAfterRedirect();
+    }
+
     this._document = document;
     this.subscription = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
       const startdate = moment.utc(dates.start).local().format('ddd, MMM Do');
@@ -81,7 +90,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       } else {
         this.selectedDates[startdate] = [dates];
       }
-      this.selectedDates[startdate].sort(function (left:any, right:any) {
+      this.selectedDates[startdate].sort(function (left: any, right: any) {
         return moment.utc(left.start).diff(moment.utc(right.start))
       });
       const sortedObject = Object.fromEntries(
@@ -90,8 +99,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
         })
       )
       this.selectedDates$.next(sortedObject);
-
-
     });
   }
 
@@ -105,48 +112,100 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.initFilterContact();
   }
 
+  runAfterRedirect() {
+    const savedData = localStorage.getItem('savedDatas') as string;
+    if (savedData) {
+      const savedDataArr = JSON.parse(savedData);
+      this.choosedLocationObj = savedDataArr.choosedLocationObj;
+      this.selectedDates = savedDataArr.selectedDates;
+      this.selectedDates$.next(this.selectedDates);
+      this.selectedContacts = savedDataArr.selectedContacts;
+      this.selectedContacts$.next(this.selectedContacts);
+      if (this.selectedContacts.length > 0) this.showJointAvailibility = true;
+      const selectedDatesNew: any = [];
+      for (const key in this.selectedDates) {
+        const value = this.selectedDates[key];
+        for (const val of value) {
+          selectedDatesNew.push({
+            'startDate': val['start'],
+            'endDate': val['end']
+          });
+        }
+      }
+      setTimeout(() => {
+        this.broadcaster.broadcast('addSharableLinkTimeSlot', selectedDatesNew);
+      }, 2000);
+    }
+  }
+
   loadSharableLinkDetails(linkId: string | null) {
     if (!linkId) return;
-
     this.sharableLinkService.getDetails(linkId)
-    .subscribe({
-      next: (res) => {
-        this.choosedLocationObj = this.locations.find((loc) => loc.value == res.data.meetVia) as Location;
-        this.sharableLink = res.data.id;
-        for (const date of res.data.slots) {
-          const startdate = moment.utc(date.startDate).local().format('ddd, MMM Do');
-          if (this.selectedDates[startdate]) {
-            this.selectedDates[startdate].push({ 'start': date.startDate, 'end': date.endDate });
-          } else {
-            this.selectedDates[startdate] = [{ 'start': date.startDate, 'end': date.endDate }];
+      .subscribe({
+        next: (res) => {
+          this.choosedLocationObj = this.locations.find((loc) => loc.value == res.data.meetVia) as Location;
+          this.sharableLink = res.data.id;
+          for (const date of res.data.slots) {
+            const startdate = moment.utc(date.startDate).local().format('ddd, MMM Do');
+            if (this.selectedDates[startdate]) {
+              this.selectedDates[startdate].push({ 'start': date.startDate, 'end': date.endDate });
+            } else {
+              this.selectedDates[startdate] = [{ 'start': date.startDate, 'end': date.endDate }];
+            }
           }
+          const sortedObject = Object.fromEntries(
+            Object.entries(this.selectedDates).sort(([a,], [b,]) => {
+              return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
+            })
+          )
+          this.selectedDates$.next(sortedObject);
+
+          // for preselect events on calendar
+          setTimeout(() => {
+            this.broadcaster.broadcast('addSharableLinkTimeSlot', res.data.slots);
+          }, 2000);
+
+          // for attendees
+          const attendees = res.data.attendees;
+          if (attendees.length > 0) {
+            this.showJointAvailibility = true;
+            for (const attendee of attendees) {
+              const cc: CalendarAccess = {
+                id: '',
+                comment: '',
+                timeForAccess: null,
+                owner: {
+                  id: attendee.user.id,
+                  email: attendee.user.email,
+                  firstName: attendee.user.firstName,
+                  lastName: attendee.user.lastName,
+                  avatar: attendee.user.avatar
+                }
+              }
+              // const cc = this.contacts.find((cont) => cont.owner.id == attendee.user.id) as CalendarAccess;
+              this.selectedContacts.push(cc);
+              this.selectedEmails.push(cc.owner.email);
+              this.getContactAvailability(cc);
+            }
+            this.selectedContacts$.next(this.selectedContacts);
+            this.filteredContacts$.next([]);
+
+          }
+
         }
-        const sortedObject = Object.fromEntries(
-          Object.entries(this.selectedDates).sort(([a,], [b,]) => {
-            return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
-          })
-        )
-        this.selectedDates$.next(sortedObject);
-
-        // for preselect events on calendar
-        setTimeout(() => {
-          this.broadcaster.broadcast('addSharableLinkTimeSlot', res.data.slots);
-        }, 2000);
-
-      }
-    });
+      });
   }
 
   getLocations() {
     this.sharableLinkService.getLocations()
-    .subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.locations = res;
-      }
-    })
+      .subscribe({
+        next: (res: any) => {
+          this.locations = res;
+        }
+      })
   }
 
+  // remove from selected timeslots
   removeTime(date: any, i: any) {
     const selectedDate = this.selectedDates[date].splice(i, 1);
     if (this.selectedDates[date].length == 0) {
@@ -157,7 +216,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   chooseLocation(loc: Location) {
-
     this.choosedLocationObj = loc;
     this.showLocation = false;
     if (!['zoom', 'gmeet', 'teams'].includes(loc.value)) {
@@ -178,11 +236,22 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   // connect to zoom, meet or teams if not connected
   // type could be zoom, teams or gmeet
   connect(type: string) {
+    const savedData = {
+      selectedContacts: this.selectedContacts,
+      selectedDates: this.selectedDates$.value,
+      choosedLocationObj: this.choosedLocationObj
+    }
+
+    localStorage.setItem('savedDatas', JSON.stringify(savedData));
+
     if (type == 'zoom') {
       this.sharableLinkService.getZoomOauthUrl()
         .subscribe({
-          next: (res: any) => {
-            window.location.href = res['url'];
+          next: (res: string) => {
+            console.log(res);
+            // TODO: redirect to zoom url with state of page
+            // state is used to redirect after hitting callback url default state is null
+            // window.location.href = `${res['url']}&state=sharable-links`;
           }
         });
     }
@@ -192,11 +261,11 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     const selectedDates = this.selectedDates$.value;
     if (selectedDates.length == 0) {
       this.errorMessage = 'Please select at least one available time slot';
-    }else if (!this.choosedLocationObj) {
+    } else if (!this.choosedLocationObj) {
       this.errorMessage = 'Please select the Location';
-    }else if (this.choosedLocationObj?.value == 'incoming-call' && !this.phoneNumber) {
+    } else if (this.choosedLocationObj?.value == 'incoming-call' && !this.phoneNumber) {
       this.errorMessage = 'Please enter Phone Number';
-    }else if (this.choosedLocationObj?.value == 'address' && !this.address) {
+    } else if (this.choosedLocationObj?.value == 'address' && !this.address) {
       this.errorMessage = 'Please enter Address';
     }
 
@@ -242,6 +311,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res: any) => {
           if (res.status) {
+            if (localStorage.getItem('savedData')) localStorage.removeItem('savedData');
+
             this.sharableLink = `https://entangles.io/share/${res.data.id}`;
           }
         },
@@ -269,26 +340,26 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   initFilterContact() {
-      // initializze keyup event to get filtered contacts
-      fromEvent(this.input.nativeElement, 'keyup')
-        .pipe(
-          map((event: any) => {
-            return event.target.value;
-          }),
-          filter(res => res.length >= 1),
-          debounceTime(500),
-          distinctUntilChanged(),
-          tap((searchedString) => {
-            const filteredContact = this.contacts.filter(contact => this.filterContact(contact, searchedString));
-            this.filteredContacts$.next(filteredContact);
-          })
-        )
-        .subscribe();
+    // initializze keyup event to get filtered contacts
+    fromEvent(this.input.nativeElement, 'keyup')
+      .pipe(
+        map((event: any) => {
+          return event.target.value;
+        }),
+        filter(res => res.length >= 1),
+        debounceTime(500),
+        distinctUntilChanged(),
+        tap((searchedString) => {
+          const filteredContact = this.contacts.filter(contact => this.filterContact(contact, searchedString));
+          this.filteredContacts$.next(filteredContact);
+        })
+      )
+      .subscribe();
   }
 
   filterContact(item: any, query: any) {
     return (item.owner.firstName.toLowerCase().startsWith(query) ||
-          item.owner.lastName.toLowerCase().startsWith(query) ||
+      item.owner.lastName.toLowerCase().startsWith(query) ||
       item.owner.email.toLowerCase().startsWith(query));
   }
 
@@ -310,7 +381,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.availabilityService.getByUserId([contactId])
       .pipe(first())
       .subscribe({
-        next: (data: any | null) => {
+        next: (data: any) => {
           const availabilityData = data?.availabilityData;
           this.emailsWithAvailabilityMap.set(contactEmail, availabilityData);
           this.broadcastContactData();
@@ -327,7 +398,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.broadcaster.broadcast('contact_calendar_data', contacts);
   }
 
-  removeSingleContact(contact: CalendarAccess ) {
+  removeSingleContact(contact: CalendarAccess) {
     this.selectedContacts = this.selectedContacts.filter((res: CalendarAccess) => {
       return res.owner.email != contact.owner.email
     });
@@ -339,7 +410,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.broadcastContactData();
   }
 
-  copyLink(text: any) {
+  copyLink(text: string) {
     // after link copied show copied
     const textarea = this._document.createElement('textarea');
     const styles = textarea.style;

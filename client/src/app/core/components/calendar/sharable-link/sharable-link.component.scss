@@ -392,6 +392,10 @@ section.sharable-link {
           background: #ffffff;
           cursor: pointer;
 
+          .custom-option {
+              line-height: 1rem;
+          }
+
         }
 
         .custom-options {

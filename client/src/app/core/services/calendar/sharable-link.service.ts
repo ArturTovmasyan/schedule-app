@@ -34,4 +34,13 @@ export class SharableLinkService {
       );
   }
 
+  loadContacts() {
+    return this.http.get<ApiResponse<any>>('/api/contacts')
+      .pipe(
+        map((response) => {
+          return response.data
+        })
+      );
+  }
+
 }
