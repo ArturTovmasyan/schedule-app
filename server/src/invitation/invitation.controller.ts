@@ -42,6 +42,11 @@ export class InvitationController {
     return this.invitationService.update(id);
   }
 
+  @Patch('pre-social-login/:id')
+  setToPreSocialLogin(@Param('id') id: string) {
+    return this.invitationService.setToPreSocialLogin(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.invitationService.remove(+id);

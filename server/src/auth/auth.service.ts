@@ -190,7 +190,7 @@ export class AuthService {
     return true;
   }
 
-    async validateGoogleLogin(data: any,invitationId?:string): Promise<any> {
+    async validateGoogleLogin(data: any): Promise<any> {
         let {sub, email} = data;
         let oauthId = sub;
         let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
@@ -211,7 +211,7 @@ export class AuthService {
             const customerData = await this.stripeService.createCustomer(fullName, data.email);
             data.stripeCustomerId = customerData.id;
             data.provider = OauthProvider.GOOGLE;
-            user = await this.usersService.registerGoogleUser(data,invitationId);
+            user = await this.usersService.registerGoogleUser(data);
         }
 
         return this._createToken(user, '30d');
@@ -238,7 +238,7 @@ export class AuthService {
                 const customerData = await this.stripeService.createCustomer(data.displayName, data.mail);
                 data.stripeCustomerId = customerData.id;
                 data.provider = OauthProvider.MICROSOFT;
-                user = await this.usersService.registerMicrosoftUser(data,invitationId);
+                user = await this.usersService.registerMicrosoftUser(data);
             }
 
             return this._createToken(user, '30d');

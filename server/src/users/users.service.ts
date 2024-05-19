@@ -28,6 +28,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Invitation)
+    private readonly invitationRepo: Repository<Invitation>,
     @InjectRepository(CalendarAccess)
     private readonly calendarAccessRepo: Repository<CalendarAccess>,
     private readonly invitationService: InvitationService,
@@ -72,10 +74,7 @@ export class UsersService {
     return toUserDto(user);
   }
 
-  async registerGoogleUser(
-    userDto: any,
-    invitationId?: string,
-  ): Promise<OauthUserDto> {
+  async registerGoogleUser(userDto: any): Promise<OauthUserDto> {
     const user = new User();
     user.email = userDto.email;
     user.oauthId = userDto.sub;
@@ -87,22 +86,21 @@ export class UsersService {
     user.stripeCustomerId = userDto.stripeCustomerId;
     await this.userRepo.save(user);
 
-    await this.calendarAccessRepo.update(
-      { accessedUser: { id: user.id } },
-      { toEmail: user.email },
-    );
-
-    if (invitationId) {
-      await this.invitationService.update(invitationId);
-    }
+    await Promise.all([
+      this.calendarAccessRepo.update(
+        { accessedUser: { id: user.id } },
+        { toEmail: user.email },
+      ),
+      this.invitationRepo.update(
+        { toEmail: user.email, status: InvitationStatusEnum.PreSocialLogin },
+        { status: InvitationStatusEnum.Accepted },
+      ),
+    ]);
 
     return user;
   }
 
-  async registerMicrosoftUser(
-    userDto: any,
-    invitationId?: string,
-  ): Promise<OauthUserDto> {
+  async registerMicrosoftUser(userDto: any): Promise<OauthUserDto> {
     const user = new User();
     user.email = userDto.mail;
     user.oauthId = userDto.id;
@@ -115,14 +113,16 @@ export class UsersService {
 
     await this.userRepo.save(user);
 
-    await this.calendarAccessRepo.update(
-      { accessedUser: { id: user.id } },
-      { toEmail: user.email },
-    );
-
-    if (invitationId) {
-      await this.invitationService.update(invitationId);
-    }
+    await Promise.all([
+      this.calendarAccessRepo.update(
+        { accessedUser: { id: user.id } },
+        { toEmail: user.email },
+      ),
+      this.invitationRepo.update(
+        { toEmail: user.email, status: InvitationStatusEnum.PreSocialLogin },
+        { status: InvitationStatusEnum.Accepted },
+      ),
+    ]);
 
     return user;
   }

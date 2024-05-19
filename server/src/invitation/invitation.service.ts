@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, In, Repository } from 'typeorm';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 import { CalendarAccess } from 'src/calendar-access/entities/calendar-access.entity';
@@ -150,6 +150,20 @@ export class InvitationService {
       { id },
       { status: InvitationStatusEnum.Accepted },
     );
+  }
+
+  /**
+   * @description `Set invitation status as pre social login for accepting invitation using social login`
+   * @param id - `ID of invitation`
+   */
+
+  async setToPreSocialLogin(id: string): Promise<IResponseMessage> {
+    await this.invitationRepo.update(
+      { id },
+      { status: InvitationStatusEnum.PreSocialLogin },
+    );
+
+    return { message: 'updated', status: HttpStatus.ACCEPTED };
   }
 
   remove(id: number) {

@@ -5,7 +5,7 @@ export class invitation1662478408189 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TYPE invitation_status AS ENUM 
-            ('${InvitationStatusEnum.Accepted}', '${InvitationStatusEnum.Declined}','${InvitationStatusEnum.Pending}');
+  ('${InvitationStatusEnum.Accepted}','${InvitationStatusEnum.Pending}','${InvitationStatusEnum.PreSocialLogin}');
                       CREATE TABLE IF NOT EXISTS "invitation"
                        ("id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                         "user_id" uuid NOT NULL,

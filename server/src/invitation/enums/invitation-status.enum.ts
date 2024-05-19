@@ -1,5 +1,5 @@
 export enum InvitationStatusEnum {
   Pending = 'pending',
   Accepted = 'accepted',
-  Declined = 'declined',
+  PreSocialLogin = 'pre_social_login',
 }
