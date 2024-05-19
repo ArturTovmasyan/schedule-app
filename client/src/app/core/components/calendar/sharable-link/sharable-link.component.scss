@@ -534,5 +534,17 @@ section.sharable-link {
         transition: 0.4s ease;
       }
     }
+    .error {
+      -moz-transition: min-height .5s;
+      -ms-transition: min-height .5s;
+      -o-transition: min-height .5s;
+      -webkit-transition: min-height .5s;
+      transition: min-height .5s;
+      height: 0;
+      min-height: 0;
+    }
+    .animate {
+      min-height: 50px;
+    }
   }
 }
