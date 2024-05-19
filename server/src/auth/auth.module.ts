@@ -10,6 +10,7 @@ import {MailModule} from "../mail/mail.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {User} from "@user/entity/user.entity";
 import {ConfigModule} from "@nestjs/config";
+import {GoogleStrategy} from "./google.strategy";
 dotenv.config();
 
 @Module({
@@ -28,7 +29,8 @@ dotenv.config();
         expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
-      ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    GoogleStrategy
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

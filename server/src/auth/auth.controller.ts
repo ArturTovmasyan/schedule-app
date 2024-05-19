@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Patch,
-  Post, Query,
+  Post, Query, Req, Res,
   UseGuards, ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -57,5 +57,24 @@ export class AuthController {
   @Get('confirm')
   async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto): Promise<boolean> {
     return await this.authService.confirmRegistration(query.token);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  googleLogin()
+  {
+    // initiates the Google OAuth2 login flow
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  googleLoginCallback(@Req() req, @Res() res)
+  {
+    // handles the Google OAuth2 callback
+    const jwt: string = req.user.jwt;
+    if (jwt)
+      res.redirect('http://localhost:4200/login/succes/' + jwt);
+    else
+      res.redirect('http://localhost:4200/login/failure');
   }
 }

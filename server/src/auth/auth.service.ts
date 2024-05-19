@@ -3,6 +3,7 @@ import {
     HttpException,
     HttpStatus,
     Injectable,
+    InternalServerErrorException,
     NotFoundException,
     UnauthorizedException
 } from '@nestjs/common';
@@ -24,6 +25,11 @@ import {ChangePasswordDto} from "./dto/change-password.dto";
 import {UserUpdateDto} from "@user/dto/user-update.dto";
 import {ConfigService} from "@nestjs/config";
 
+enum Provider {
+    GOOGLE = 'google'
+}
+
+
 @Injectable()
 export class AuthService {
 
@@ -39,7 +45,7 @@ export class AuthService {
         @InjectRepository(User)
         private readonly userRepo: Repository<User>,
     ) {
-      this.appHost = configService.get<string>('WEB_HOST');
+        this.appHost = configService.get<string>('WEB_HOST');
     }
 
     async register(userDto: UserCreateDto): Promise<RegistrationStatus> {
@@ -173,5 +179,24 @@ export class AuthService {
         const password = await this.usersService.hashPassword(changePasswordDto.password);
         await this.userRepo.update(userId, {password});
         return true;
+    }
+
+    async validateOAuthLogin(googleId: string, provider: Provider): Promise<string> {
+        try {
+            // TODO create repo. method
+            // let user: User = await this.usersService.findOneByThirdPartyId(googleId, provider);
+
+            const payload = {
+                googleId,
+                provider
+            }
+
+            return this.jwtService.sign(payload, {expiresIn: '30d'});
+        } catch (err) {
+            throw new InternalServerErrorException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: err.message,
+            });
+        }
     }
 }
