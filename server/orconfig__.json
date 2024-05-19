@@ -1,0 +1,19 @@
+{
+  "name": "development",
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5445,
+  "username": "handshake",
+  "password": "password123",
+  "database": "handshake_db",
+  "synchronize": false,
+  "logging": true,
+  "entities": ["dist/**/*.entity.js"],
+  "migrations": ["dist/db/migrations/**/*.js"],
+  "subscribers": ["dist/subscriber/**/*.js"],
+  "cli": {
+    "entitiesDir": "src",
+    "migrationsDir": "src/db/migrations",
+    "subscribersDir": "src/subscriber"
+  }
+}
