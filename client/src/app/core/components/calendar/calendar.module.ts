@@ -13,7 +13,8 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
-import rrulePlugin from '@fullcalendar/rrule'
+import rrulePlugin from '@fullcalendar/rrule';
+import { SharableLinkComponent } from './sharable-link/sharable-link.component'
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
