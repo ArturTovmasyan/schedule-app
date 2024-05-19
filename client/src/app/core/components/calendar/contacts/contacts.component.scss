@@ -1,0 +1,226 @@
+section.contacts {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  height: 100%;
+
+  .header {
+    margin-bottom: 30px;
+
+    h2.section-title {
+      font-size: 22px;
+      font-weight: bold;
+      font-family: 'Lexend Deca', sans-serif;
+      line-height: 28px;
+    }
+  }
+
+  .contacts-wrapper {
+    padding: 0 10px;
+    height: calc(100vh - 100px);
+
+    label {
+      position: relative;
+      width: 100%;
+      margin-bottom: 40px;
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 22px;
+        background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAAFQUlEQVRoge2ZT2wUZRjGn2d2Wcq2YsKFNIp4IIaEAwcSo4lCN5TddmaSSsFeMF4J0UYPGDxoLHpCLmqIIeFkIkYrBNfdnZ2tjSuYGBVjvCDhAFHBf1FiituWLrvzeuifzMzubOebXUJN+rt97/d9z/c++/2bmQVWWeWuwHY627bdy1pNJ7lLyG0ANkNkPQAIMEXgZwCXQJ6viViGYfzRiaSbEclIMZfri2naYQEGAMRCdqsBsAEczxjGhSjjtkLJiG3bW+A4JyiSaXPcYp0c1XX9aps6S4Q2YlvWsxR5F0B3R0YWqRA4lDbN9zshF8qInc+/TvLVgOrLALLUtMk6cEPTtBsAgGp1E+PxByCyR0SGAGwN6H80Yxhjypn7WNZIqVB4A8ArTaq+FZGXB0yzHGagYi73OMk3ST7RpLptMy2NLCyn93zhKkRG04ZxiqSoDCYiLFnWQQJvA0h4M+EzGV0/raLn6R5UYdv2FtbrP8C9J8ib4jh7B0zzy6gDAkCpUNgJ4ByADUtBkUoM2N5vmteiaGqBNY5zAt6NXe2ECQDIGMYFksMA7iwFyR6HfCeqZlMjxVyur+GIFRnthIlF0rp+HuQLniEAw87nn4yi19RITNMO+0LfpA3jVJQBWpEeHDxJ4KI7RvKlKFoNRmzb7hXAMxskj6hu7DCQFEfkiC88OJnNblTVajDCWk0HEF8qAz+mdf28eprhWDi+r7hCcSceH1TVaTRC7nKXBfhUPT01BMh6ymSfqkaDkYWn2CWoaZPqqalBwDuGyLaApoE02+ybPQ0c57qqqCqOpv3SKocwNBoRuc9djCWTv6mKqtLV1fWrL7ReVSP4Qlzg1q1bbb18hWF2dtabh8idgKaBNBoh/3UXu+PxXlVRVUj2+gJ/qWo0W1o/uYuOpm1SFVVOwnEe8oX+VNZoErvkKYnsURWNgH+M71UFms3IBW9RhlRFVRFgyFf+XFWjwUiNLGD+Q8EiW4u5nPIFFZaJYnE3gUdcoWp8bu4LVZ0GIwufbGxPI007JiIdP71EhOI4x3zhD/uHh2+qagUdv8d95UdLlnVQVXw5SsXicwB2eBIi34qiFfgrlwoFC4D74e0OgP5OfZOy8/kUyRKANa7wBxnDOBBFL/BCrJOjEKm4QmsAnJuwrF1BfcJSzOX6SJ6By4QAf9fJF6NqBhrRdf0qgUO+8AYR+axkWYei7BkRoW1Zz2uaNgH3+zoAApcrlcqUqqarf2tKhcIYgNeaVH0H8khG10MdlRPF4u6Fjb2jRbNiIpkcTqVSt8Nougn1q7YwAwBXBMgSmITjXE/09NwAgGql8iDmnwr2CDDkO2JbkZuant4/MjJSDdkegMIn05JlHYDjnATZozJARPJ1cr+u63NhOyz79LtIRtdPx4DtBArRcltCQH4MYKJFGzMmcsayrLVhRUMbAYB+07yWNgxTRHYCyMH7BLActwF8JI7zWEbXRxLJ5BB8F68PMy5yNqyZtm7ryWx2oxOPDwrZB5FtAjzM+ZeiOoCbBH4X4KIAX9dE8qZp/uPuXy6Xu6ozM+cw/z9LUIKFGrlvuWV211+almN8fDxxf3f3WQBmi2Z2Ipnc2+o0U1pad4ORkZHq1PT0PgD5Fs0G5mZnPymXy11BDe75jCwSZmaELK1dt+6pZjOzYowA7Zm550vLTZhlRpFMdWYm+9X4+Dp3fEUZAebNJJLJp9H6aE5Xksl97sCKMwIAqVTq9tT09BCCZ2bM/yfqitojfgL2zFjGMI76265oI0CDmaYm/jeUy+WukmVFenNcZZU2+Q83mt870GtflgAAAABJRU5ErkJggg==") center / contain no-repeat;
+
+      }
+
+      input {
+        padding: 10px 30px 10px 42px;
+        height: 45px;
+        border: 1px solid #70707052;
+        border-radius: 12px;
+        width: 100%;
+      }
+
+      input::placeholder {
+        font-size: 14px;
+        font-family: 'Lexend Deca', sans-serif;
+        color: #B9B5B5;
+      }
+    }
+
+    ul.contacts-list {
+      overflow: hidden;
+      overflow-y: scroll;
+      height: calc(100vh - 250px);
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        padding: 15px 10px 15px 0;
+        //&:last-child {
+        //  .dropdown-content{
+        //    top: -65px !important;
+        //  }
+        //}
+        &:after {
+          content: "";
+          background: #70707052;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 1px;
+          width: 70%;
+        }
+
+        .contact-info {
+          display: flex;
+
+          .contact-portrait {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+
+            img {
+              height: 100%;
+              width: 100%;
+              border-radius: 50%;
+            }
+          }
+
+          .contact-bio {
+            align-items: flex-start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            h5.full-name {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 15px;
+              margin-bottom: 3px;
+              color: #000;
+            }
+
+            h6.contact-company {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 12px;
+              margin-bottom: 0;
+              color: #360989;
+            }
+          }
+        }
+
+        .more-dots {
+        //"more" dropdown
+
+          .dropbtn {
+            border-radius: 50%;
+            height: 30px;
+            width: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            border: none;
+            cursor: pointer;
+            &:hover {
+              transition: 0.4s ease;
+              background-color: #fafafa;
+            }
+            img{
+              width: 17px;
+              height: auto;
+            }
+          }
+
+          .dropdown {
+            position: relative;
+            display: inline-block;
+            &:hover{
+              .dropdown-content {
+                display: block;
+              }
+            }
+          }
+
+          .dropdown-content {
+            display: none;
+            position: absolute;
+            left: -115px !important;
+            top: 20px;
+            min-width: 120px;
+            background-color: #fff;
+            border: 1px solid #70707052;
+            z-index: 1;
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            ul{
+              li{
+                padding: 4px 0;
+                &:nth-child(2) {
+                  padding: 5px 14px 4px 0;
+                }
+                &:after {
+                  content: "";
+                  background: #70707052;
+                  position: absolute;
+                  bottom: 0;
+                  left: 0;
+                  height: 1px;
+                  width: 100%;
+                }
+                a{
+                  font-family: 'Lexend Deca', sans-serif;
+                  font-size: 13px;
+                  color: #1d1d1d;
+                  text-decoration: none;
+                }
+                button.close-button {
+                  border-radius: 50%;
+                  border: 0;
+                  background: #f1f1f1;
+                  height: 20px;
+                  width: 20px;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  color: #707070;
+
+                  img {
+                    height: 9px;
+                  }
+
+                  &:hover {
+                    background-color: #e9e9e9;
+                    transition: 0.2s ease;
+                  }
+                }
+              }
+            }
+          }
+
+        //  end of "more" dropdown
+
+
+
+
+
+
+        }
+      }
+
+      li:last-child {
+        &:after {
+          display: none;
+        }
+      }
+    }
+
+
+  }
+}
