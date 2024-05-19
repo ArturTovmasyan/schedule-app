@@ -48,7 +48,6 @@ export class AvailabilityComponent implements OnInit {
 
   set tempAvailability(value) {
     this._availability = value;
-    console.log(this._availability)
   }
 
   get fromText() {
@@ -154,7 +153,6 @@ export class AvailabilityComponent implements OnInit {
     } else {
       hoursInt = (!isAM) ? hoursInt + 12 : hoursInt;
     }
-    console.log(inMeridian, isAM, hoursInt)
     return `${hoursInt}`.padStart(2, '0');
   }
 

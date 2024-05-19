@@ -10,6 +10,7 @@
   }
 
   #picker {
+    position: relative;
     border-right: 1px solid #E5E5E5;
     display: flex;
     justify-content: space-between;
@@ -36,6 +37,58 @@
       align-self: stretch;
       border: 1px solid #E5E5E5;
       text-align: center;
+    }
+
+    #dropdown {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      right: 30%;
+      gap: 5px;
+      max-height: 200px;
+      padding: 0 20px 0 10px;
+      overflow-y: scroll;
+      background-color: white;
+      box-shadow: 0px 0px 15px #0000004D;
+      border-radius: 5px;
+
+      /* width */
+      &::-webkit-scrollbar {
+        width: 4px;
+        border-radius: 5px;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 5px;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 5px;
+      }
+
+      /* Handle on hover */
+      &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+
+      span {
+        font-size: 18px;
+        line-height: 22px;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+        color: #272727;
+        padding: 3px 5px;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &.selected {
+          background-color: #EBEBEB;
+        }
+      }
     }
   }
 

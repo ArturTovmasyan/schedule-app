@@ -1,4 +1,6 @@
+import { ViewportScroller } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import * as moment from 'moment';
 
 @Component({
@@ -14,6 +16,34 @@ export class TimepickerComponent {
   @Input() inAM = true
   @Output() inAMChange = new EventEmitter<boolean>();
 
+  showDropdown = false;
+
+  constructor(private scroller: ViewportScroller, private router: Router) {}
+
+  get timeSlots() {
+    const startIndex = 0;
+    const endIndex = this.meridian ? 12 : 24;
+    const slots: string[] = [];
+    for(let i=startIndex; i<endIndex; i++) {
+      slots.push(`${i}:00`.padStart(5, '0'));
+    }
+    return slots;
+  }
+
+  isSelected(slot: string) {
+    return slot == this.time;
+  }
+
+  selectSlot(slot: string) {
+    this.time = slot;
+    this.timeChange.emit(this.time);
+    this.toggleDropdown();
+  }
+
+  generateSlotId(slot: string) {
+    if(slot == "08:00") return "target";
+    return slot.replace(':', '-');
+  }
 
   timeUpdated(event: any) {
     const text = this.formatTime(event.target.innerText);
@@ -23,6 +53,16 @@ export class TimepickerComponent {
     if(text.length == 5) {
       this.timeChange.emit(text);
     } 
+  }
+
+  toggleDropdown() {
+    this.showDropdown = !this.showDropdown
+    if(this.showDropdown) {
+      setTimeout(() => {
+        console.log(this.generateSlotId(this.time));
+        this.scroller.scrollToAnchor(this.generateSlotId(this.time));
+      }, 1000)
+    }
   }
 
   inAMUpdated(flag: boolean) {
