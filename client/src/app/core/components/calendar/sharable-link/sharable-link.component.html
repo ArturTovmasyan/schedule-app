@@ -49,107 +49,24 @@
       </h3>
 
       <ul class="list-unstyled time-slots">
-        <li class="time-slot" id="timeSlot">
+        <li class="time-slot" id="timeSlot" *ngFor="let date of selectedDates$ | async | keyvalue">
           <div class="date">
             <input type="text" id="availableDate" name="availableDate"
-                   placeholder="Tue, Oct 08th" readonly>
+                   placeholder="{{ date.key }}" readonly>
           </div>
-          <ul class="available-times list-unstyled" id="availableTimes">
-            <li class="available-timeframe" id="availableTimeframe">
+          <ul class="available-times list-unstyled" id="availableTimes" >
+            <li class="available-timeframe" id="availableTimeframe" *ngFor="let time of $any(date.value); let i = index" >
               <div class="list-inline-item timeframe">
                 <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="09:30AM" readonly>
+                       placeholder="{{ time.start | parseTime:'hh:mmA' }}" readonly>
                 <p> - </p>
                 <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="10:00AM" readonly>
+                       placeholder="{{ time.end | parseTime:'hh:mmA' }}" readonly>
               </div>
               <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
+                <span class="timezoneText">{{ timezone }}</span>
               </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="10:30AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="11:00AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="11:00AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="11:30AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-          </ul>
-
-        </li>
-        <li class="time-slot" id="timeSlot">
-          <div class="date">
-            <input type="text" id="availableDate" name="availableDate"
-                   placeholder="Wed, Oct 09th" readonly>
-          </div>
-          <ul class="available-times list-unstyled" id="availableTimes">
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="10:00AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="10:30AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-          </ul>
-
-        </li>
-        <li class="time-slot" id="timeSlot">
-          <div class="date">
-            <input type="text" id="availableDate" name="availableDate"
-                   placeholder="Thu, Oct 10th" readonly>
-          </div>
-          <ul class="available-times list-unstyled" id="availableTimes">
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="10:15AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="10:45AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
+              <button class="remove-button" id="removeButton" (click)="removeTime(date.key, i)">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </li>
@@ -157,164 +74,7 @@
           </ul>
 
         </li>
-        <li class="time-slot" id="timeSlot">
-          <div class="date">
-            <input type="text" id="availableDate" name="availableDate"
-                   placeholder="Fri, Oct 11th" readonly>
-          </div>
-          <ul class="available-times list-unstyled" id="availableTimes">
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="11:00AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="11:30AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="12:00PM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="12:30PM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
 
-          </ul>
-
-        </li>
-        <li class="time-slot" id="timeSlot">
-          <div class="date">
-            <input type="text" id="availableDate" name="availableDate"
-                   placeholder="Mon, Oct 14th" readonly>
-          </div>
-          <ul class="available-times list-unstyled" id="availableTimes">
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="10:00AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="10:30AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="10:30AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="11:00AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="11:00AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="11:30AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="11:30AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="12:00PM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-
-          </ul>
-
-        </li>
-        <li class="time-slot" id="timeSlot">
-          <div class="date">
-            <input type="text" id="availableDate" name="availableDate"
-                   placeholder="Fri, Oct 11th" readonly>
-          </div>
-          <ul class="available-times list-unstyled" id="availableTimes">
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="11:00AM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="11:30AM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-            <li class="available-timeframe" id="availableTimeframe">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="12:00PM" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="12:30PM" readonly>
-              </div>
-              <div class="timezone">
-                <img src="assets/canada-flag.png" alt="canada flag">
-                <span class="timezoneText">Toronto, EST</span>
-              </div>
-              <button class="remove-button" id="removeButton">
-                <img src="assets/close-icon.svg" alt="remove button">
-              </button>
-            </li>
-
-          </ul>
-
-        </li>
       </ul>
 
       <h3 class="section-title-secondary mt-4 mb-2">
