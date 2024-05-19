@@ -4,7 +4,7 @@ export const ErrorMessages: Readonly<IErrorMessages> = {
   provideCustomDate: 'Please provide custom date',
   calendarNotFound:'Calendar Not Found',
   userExist: 'User already exists',
-  userNotFound: 'User not found',
+  userNotFound: 'If your account exists you will receive an email',
   incorrectPassword: 'Current password is not correct',
   passwordDoesNotMatch: 'Password does not match',
   confirmError: 'Account confirmation error',

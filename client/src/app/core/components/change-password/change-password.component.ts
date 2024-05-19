@@ -28,9 +28,9 @@ export class ChangePasswordComponent implements OnInit {
   constructor(private settingService: SettingService, private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
     this.form = this.formBuilder.group({
       'currentPassword': ['', this.currentPasswordOption],
-      'newPassword': ['', [ValidationService.passwordValidator, Validators.required]],
+      'newPassword': ['', {validators: [ValidationService.passwordValidator, Validators.required], updateOn: 'blur'}],
       'confirmPassword': ['', [Validators.required]]
-    }, {validator: ValidationService.passwordsEqualValidator})
+    }, {validator: ValidationService.passwordsEqualValidator('newPassword', 'confirmPassword')})
   }
 
   ngOnInit(): void {

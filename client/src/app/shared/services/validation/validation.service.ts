@@ -1,4 +1,4 @@
-import { FormControl } from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 
 export type AssociativeArray<T = unknown> = {[key: string]: T } | T[];
 
@@ -94,17 +94,23 @@ export class ValidationService {
     }
   }
 
-  static passwordsEqualValidator(c: FormControl) {
-    if (c.value.newPassword.length > 0 &&
-      (c.value.confirmPassword.length > 0 &&
-        c.value.newPassword !== c.value.confirmPassword)) {
-      return {'invalidConfirmPassword': true};
-    } else {
-      return null;
-    }
+  static passwordsEqualValidator(password: string, confirmPassword: string) {
+    return (formGroup: FormGroup) => {
+      let c = formGroup.controls[password];
+      let cm = formGroup.controls[confirmPassword]
+
+        if (c.value && cm.value && c.value !== cm.value) {
+          cm.setErrors({ invalidConfirmPassword: true });
+          return {'invalidConfirmPassword': true};
+        } else {
+          return null;
+        }
+    };
   }
 
   static maxLength(): string {
     return "javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);";
   }
 }
+
+

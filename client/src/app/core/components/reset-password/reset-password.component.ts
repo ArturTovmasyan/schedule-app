@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth/auth.service";
 import {BroadcasterService, ValidationService} from "../../../shared/services";
@@ -16,6 +16,9 @@ export class ResetPasswordComponent implements OnInit {
   errorMessage: string | undefined;
   email: string |undefined;
   error?: ErrorResponse;
+  showRequiredErrors = false;
+
+  @ViewChild("focusField") focusField:any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -24,7 +27,8 @@ export class ResetPasswordComponent implements OnInit {
   ) {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]]
-    });
+    }, {updateOn: 'blur'}
+      );
   }
 
   ngOnInit(): void {
@@ -33,6 +37,8 @@ export class ResetPasswordComponent implements OnInit {
 
   resetPassword() {
     if (this.form.invalid) {
+      this.focusField.nativeElement.focus();
+      this.showRequiredErrors = true;
       return;
     }
 

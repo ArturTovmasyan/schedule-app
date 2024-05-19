@@ -30,10 +30,10 @@ export class RecoveryPasswordComponent {
     this.confirmToken = this.route.snapshot.queryParams['token'];
 
     this.form = this.formBuilder.group({
-      'newPassword': ['', [ValidationService.passwordValidator, Validators.required]],
+      'newPassword': ['', {validators: [ValidationService.passwordValidator, Validators.required], updateOn: 'blur'}],
       'confirmPassword': ['', [Validators.required]]
     },
-      {updateOn: 'blur', validator: ValidationService.passwordsEqualValidator})
+      {validator: ValidationService.passwordsEqualValidator('newPassword', 'confirmPassword')})
   }
 
   toggleNewPasswordType() {
