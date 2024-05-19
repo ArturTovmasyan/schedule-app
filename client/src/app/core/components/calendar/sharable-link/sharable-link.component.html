@@ -9,7 +9,7 @@
         <input type="checkbox" name="collapse" id="handle1" [(ngModel)]="showJointAvailibility">
         <h2 class="handle" (click)="loadContacts()">
           <label for="handle1">
-            <app-avatar class="avatar"></app-avatar>
+            <app-avatar class="avatar" [showDropdown]="false"></app-avatar>
             <span class="no-avatar">Joint availability</span>
           </label>
         </h2>
