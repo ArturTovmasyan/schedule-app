@@ -2,18 +2,20 @@ import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
 import { PublicCalendarService } from '../calendar.service';
+import interactionPlugin from "@fullcalendar/interaction";
+
 
 export class PublicSidebarCalendarComponent  {
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin],
+    plugins: [dayGridPlugin, interactionPlugin],
     height: 'auto',
     nowIndicator: true,
     direction: 'ltr',
     themeSystem: 'bootstrap',
     dayHeaders: true,
-    editable: false,
+    editable: true,
     eventOrderStrict: true,
     stickyHeaderDates: true,
     windowResizeDelay: 100,
@@ -27,7 +29,7 @@ export class PublicSidebarCalendarComponent  {
     eventStartEditable: false,
     slotMinWidth: 1,
     eventDurationEditable: false,
-    dayHeaderFormat: { weekday: 'narrow' },
+    dayHeaderFormat: { weekday: 'short' },
     windowResize: (view) => {
       view.view.calendar.updateSize();
     },
@@ -59,13 +61,8 @@ export class PublicSidebarCalendarComponent  {
         separator: '.'
       }
     ],
-    views: {
-      month: {
-        columnHeaderFormat: 'dd'
-      },
-    },
     titleFormat: {
-      month: 'short', day: 'numeric'
+      month: 'long', day: 'numeric'
     },
     eventTimeFormat: {
       hour: 'numeric',
@@ -82,11 +79,12 @@ export class PublicSidebarCalendarComponent  {
       return 'evento';
     },
     select: (info: any) => {
+      console.log('selectsdfsdfdfsdf');
       this.changeWeek(info.start);
     },
-    selectOverlap: function (info) {
-      return true;
-    }
+    // selectOverlap: function (info) {
+    //   return true;
+    // }
   }
 
   constructor( public calendarService: PublicCalendarService) { }

@@ -24,18 +24,18 @@
       </div>
 
       <div class="meeting-title">
-        <h3 class="section-title-secondary mb-2"> Meeting title </h3>
+        <h3 class="meeting-title-secondary mb-2"> Meeting title </h3>
         <div>{{ meetingTitle }}</div>
       </div>
 
       <div class="calendar w-100" [style.display]="componentData.isTimeslotSelected ? 'none' : ''">
-        <div class="calendar-header"></div>
+        
         <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
         </full-calendar>
       </div>
       <ng-container *ngIf="componentData.isTimeslotSelected">
         <h3 class="section-title-secondary">
-          Date/Time
+          Current Meeting
         </h3>
         <div class="date-time-container">
           <ul class="list-unstyled list-inline">
@@ -47,9 +47,6 @@
               <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}" readonly>
               <p> - </p>
               <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}" readonly>
-            </li>
-            <li class="list-inline-item timezone">
-              <span id="timezoneText">{{ timezone }}</span>
             </li>
           </ul>
         </div>
@@ -84,8 +81,10 @@
             {{error}}
           </span>
         </div>
-        <div class="form-group mb-0">
-          <label for="yourName">Your name</label>
+        <h3 class="section-title-secondary">
+          Your Name
+        </h3>
+        <div class="other-details">
           <input type="text" class="form-control" id="yourName" placeholder="Please type your name" formControlName="name">
           <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)">
             <span class="error">
@@ -93,8 +92,11 @@
             </span>
           </div>
         </div>
-        <div class="form-group mb-0">
-          <label for="yourEmail">Your email</label>
+
+        <h3 class="section-title-secondary">
+          Your Email
+        </h3>
+        <div class="other-details">
           <input type="email" class="form-control" id="yourEmail" placeholder="Please provide your email and guest's emails" formControlName="email">
           <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)">
             <span class="error">
@@ -102,10 +104,16 @@
             </span>
           </div>
         </div>
-        <div class="form-group mb-0">
-          <label for="optionalNotes">Optional notes</label>
+
+        <h3 class="section-title-secondary">
+          Optional notes
+        </h3>
+        <div class="other-details">
           <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add notes and comments" formControlName="note"></textarea>
         </div>
+       
+        
+        
         <button type="submit" id="scheduleButton">Schedule</button>
       </ng-container>
     </form>

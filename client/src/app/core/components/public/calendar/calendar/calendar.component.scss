@@ -52,6 +52,7 @@
 
 :host ::ng-deep {
 
+
   #calendarRightSide {
     h2.fc-toolbar-title {
       width: unset;
@@ -62,9 +63,19 @@
     }
   }
 
-  .meeting-title{
+  .section-title-secondary{
+    font-size: 16px;
+    text-align: left;
+    font-family: "Open Sans", sans-serif;
+    color: #747474;
     margin-bottom: 20px;
-    .section-title-secondary{
+  }
+  .date-time-container {
+    margin-bottom: 20px;
+  }
+
+  .meeting-title{
+    .meeting-title-secondary{
       font-family: "Open Sans", sans-serif;
       font-size: 16px;
       color: #747474;
@@ -118,7 +129,7 @@
       //Start of: Sharable link- external user: Selecting time slot from sharable link (inbound phone call)
       //Start of: Sharable link- external user: Selecting time slot from sharable link (outbound phone call)
       .group-availability-content {
-        border: 1px solid #e3dddd;
+        // border: 1px solid #e3dddd;
         padding: 15px 10px 35px;
         border-radius: 10px;
 
@@ -255,9 +266,10 @@
             ul {
               display: flex;
               align-items: initial;
-              justify-content: space-between;
+              justify-content: start;
               margin-bottom: 0;
               max-width: 100%;
+              gap: 1rem;
 
               li {
                 margin-right: 0;
@@ -299,37 +311,20 @@
                 color: #656565;
               }
 
-              li.timezone {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                span {
-                  font-family: 'Lexend Deca', sans-serif;
-                  font-size: 13px;
-                  color: #656565;
-                  width: 100%;
-                  text-align: center;
-                  margin-top: 4px;
-                }
-
-                img {
-                  height: 20px;
-                  margin-right: 5px;
-                }
-              }
 
               li.timeframe {
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                width: 38%;
+                /* width: 50%; */
                 margin-left: 0 !important;
                 padding-left: 2px !important;
                 color: #4A8638;
-                font-family: 'Lexend Deca', sans-serif;
+                font-family: "Lexend Deca", sans-serif;
                 font-size: 13px;
                 text-align: center;
+                flex-grow: 1;
+                justify-content: center;
 
                 p {
                   margin: 0 2px;
@@ -377,7 +372,45 @@
             border-radius: 12px;
             border: 1px solid #d8d8d8;
             padding: 4px 6px;
+            margin-bottom: 20px;
 
+            .logo {
+              margin-right: 20px;
+
+              img {
+                height: 30px;
+              }
+            }
+
+            .text {
+              text-align: left;
+              display: flex;
+              flex-direction: column;
+
+              h2 {
+                font-family: 'Lexend Deca', sans-serif;
+                font-size: 17px;
+                margin-bottom: 0;
+              }
+
+              p {
+                font-family: 'Lexend Deca', sans-serif;
+                font-size: 12px;
+                color: #939292;
+                margin-bottom: 0;
+                font-weight: 400;
+              }
+            }
+          }
+
+          .other-details {
+
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 0.5rem;
             .logo {
               margin-right: 20px;
 
@@ -467,11 +500,14 @@
         }
 
         .fc-daygrid-day-frame {
-          height: 50px;
+          height: 40px;
         }
 
         .fc-daygrid-day-number {
           text-decoration: unset;
+          color: #8E8E8E !important;
+          font-size: 14px;
+          font-family: "Lexend Deca", sans-serif;
         }
 
         .fc-daygrid-day {
@@ -486,7 +522,57 @@
           justify-content: center;
           flex-direction: unset;
         }
+
+        .fc-header-toolbar {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 1rem;
+
+          h2 {
+            font-size: 16px!important;
+          }
+          .fc-button {
+            transition: all 0.2s ease!important;
+            padding: 0!important;
+            cursor: pointer;
+            line-height: 1!important;
+           
+            border: 0!important;
+            
+            background-color: transparent!important;
+            &:focus {
+              box-shadow: none!important;
+            }
+          }
+         
+          .fc .fc-button .fc-icon {
+            font-size: 1rem;
+            vertical-align: middle;
+        }
+        
+        }
+        .fc-col-header thead th {
+          border: 0!important;
+        }
+        .fc-col-header thead{
+          background-color: transparent!important;
+        }
+         td, th {
+          border-style: none !important;
+        }
+        .fc-scrollgrid {
+          border: none!important;
+        }
+
+        .fc-scrollgrid-section-header {
+          th {
+            border-bottom: 1px solid #d9d9d9!important;
+          }
+        }
+        
       }
+      
 
       .fc-event-div {
         &.current-week {
