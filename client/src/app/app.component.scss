@@ -3,3 +3,69 @@
   flex-direction: column;
   height: 100%;
 }
+
+
+
+:host ::ng-deep {
+  .hover-scale {
+    // cursor: pointer;
+    transition: all 0.2s ease;
+    // box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 8px 10px 10px #0000003B;
+    
+    }
+  }
+  .text-hover-scale, .fc-toolbar-title, .fc-timegrid-slot {
+    transition: all 0.2s ease;
+    &:hover {
+      transform: scale(1.05);
+      text-shadow: 8px 10px 10px #0000003B;
+    
+    }
+  }
+
+  .fc-col-header-cell {
+    transition: all 0.2s ease;
+    &:hover {
+      transform: scale(1.2);
+      text-shadow: 8px 10px 10px #0000003B;
+    
+    }
+  }
+
+  .fc-prev-button {
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 8px 10px 10px #0000003B;
+    }
+  }
+  .fc-next-button{
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 8px 10px 10px #0000003B;
+    }
+  }
+
+  .fc-time-grid-container .fc-slats .fc-minor {
+    transition: transform 0.3s;
+  }
+  
+  .fc-time-grid-container .fc-slats .fc-minor:hover {
+    transform: scale(1.1);
+  }
+
+  .current-time {
+    background-color: rgba(20, 20, 20, 0.10);
+    color: #181818;
+    position: relative;
+    cursor: pointer;
+    padding-right: 5px;
+    text-align: right;
+} 
+}

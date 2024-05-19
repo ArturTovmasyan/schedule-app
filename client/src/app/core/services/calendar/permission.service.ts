@@ -4,7 +4,7 @@ import {map} from 'rxjs/operators';
 import {ApiResponse} from '../../interfaces/response/api.response.interface';
 import {CalendarPermission} from "../../interfaces/calendar/permission.calendar.inteface";
 import {CalendarType} from "../../components/calendar/connect-calendar/connect-calendar.component";
-import { CalendarData } from '@fullcalendar/core';
+// import { any } from '@fullcalendar/core';
 
 @Injectable({
   providedIn: 'root'
@@ -29,8 +29,8 @@ export class CalendarPermissionService {
   }
 
   fetchCalendars() {
-    return this.http.get<ApiResponse<CalendarData>>(`${this.url}/calendars`, {}).pipe(
-      map((response: ApiResponse<CalendarData>) => {
+    return this.http.get<ApiResponse<any>>(`${this.url}/calendars`, {}).pipe(
+      map((response: ApiResponse<any>) => {
         return response;
       })
     )

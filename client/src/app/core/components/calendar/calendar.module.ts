@@ -21,13 +21,13 @@ import { SharableLinkListComponent } from './sharable-link-list/sharable-link-li
 import { SharableLinkItemComponent } from './sharable-link-item/sharable-link-item.component';
 import { ChipUserInputComponent } from '../chip-user-input/chip-user-input.component';
 
-FullCalendarModule.registerPlugins([
-  dayGridPlugin,
-  bootstrapPlugin,
-  interactionPlugin,
-  timeGridPlugin,
-  rrulePlugin
-]);
+// FullCalendarModule.registerPlugins([
+//   dayGridPlugin,
+//   bootstrapPlugin,
+//   interactionPlugin,
+//   timeGridPlugin,
+//   rrulePlugin
+// ]);
 
 @NgModule({
   declarations: [

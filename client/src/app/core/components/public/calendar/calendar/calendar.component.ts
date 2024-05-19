@@ -1,13 +1,18 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
+import {  FullCalendarComponent } from '@fullcalendar/angular';
+import { Calendar, CalendarOptions } from '@fullcalendar/core';
 import { Subject, takeUntil } from 'rxjs';
 import { PublicCalendarService } from '../calendar.service';
 import { AVAILABILITY_EVENT_CLASS } from "../../../../interfaces/constant/calendar.constant";
 import { BroadcasterService } from 'src/app/shared/services';
 import * as moment from 'moment';
 import { CommonService } from 'src/app/core/services/common.service';
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from '@fullcalendar/timegrid';
+import bootstrapPlugin from '@fullcalendar/bootstrap';
+import rrulePlugin from '@fullcalendar/rrule';
 
 @Component({
   selector: 'app-public-calendar',
@@ -25,7 +30,7 @@ export class PublicCalendarComponent implements OnDestroy {
   calendarApi!: Calendar;
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
-    plugins: [interactionPlugin],
+    plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, bootstrapPlugin, rrulePlugin],
     dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },
     direction: 'ltr',
     themeSystem: 'bootstrap',
@@ -43,7 +48,7 @@ export class PublicCalendarComponent implements OnDestroy {
     showNonCurrentDates: true,
     lazyFetching: false,
     firstDay: 1,
-    windowResize: (view) => {
+    windowResize: (view: any) => {
       view.view.calendar.updateSize();
     },
     // eventClick: function (eventInfo: any) {
@@ -78,7 +83,7 @@ export class PublicCalendarComponent implements OnDestroy {
     eventClassNames: function () {
       return 'event';
     },
-    select: (info) => {
+    select: (info: any) => {
       this.componentData['selectedTimeSlot'] = info as any;
       this.componentData['isTimeslotSelected'] = true;
       this.broadcaster.broadcast('timeSlotSelected', this.componentData);

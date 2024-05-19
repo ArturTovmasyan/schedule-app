@@ -11,22 +11,22 @@ import { PublicCalendarService } from './calendar.service';
 import { FullCalendarModule } from '@fullcalendar/angular';
 
 //PLUGINS
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from '@fullcalendar/timegrid';
-import bootstrapPlugin from '@fullcalendar/bootstrap';
-import rrulePlugin from '@fullcalendar/rrule';
+// import dayGridPlugin from "@fullcalendar/daygrid";
+// import interactionPlugin from "@fullcalendar/interaction";
+// import timeGridPlugin from '@fullcalendar/timegrid';
+// import bootstrapPlugin from '@fullcalendar/bootstrap';
+// import rrulePlugin from '@fullcalendar/rrule';
 import { BroadcasterService } from 'src/app/shared/services';
 import { CancelMeetingComponent } from './cancel-meeting/cancel-meeting.component';
 import { RescheduleMeetingComponent } from './reschedule-meeting/reschedule-meeting.component';
 
-FullCalendarModule.registerPlugins([
-  dayGridPlugin,
-  bootstrapPlugin,
-  interactionPlugin,
-  timeGridPlugin,
-  rrulePlugin
-]);
+// FullCalendarModule.registerPlugins([
+//   dayGridPlugin,
+//   bootstrapPlugin,
+//   interactionPlugin,
+//   timeGridPlugin,
+//   rrulePlugin
+// ]);
 
 @NgModule({
   declarations: [

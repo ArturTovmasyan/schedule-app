@@ -1,2 +1,12 @@
 <full-calendar id="calendar" #calendar [options]="calendarOptions"
-[deepChangeDetection]="true"></full-calendar>
+(eventMouseEnter)="handleEventMouseEnter($event)"
+      (eventMouseLeave)="handleEventMouseLeave($event)"
+[deepChangeDetection]="true">
+    <ng-template #eventContent let-arg>
+        <div>
+            <span>{{arg.event.title ?? ''}}</span>
+            <br/>
+            <span style="color: #047BDAFF; font-size: 8pt; text-wrap: avoid"> {{arg.timeText}}</span>
+        </div>
+    </ng-template>
+</full-calendar>

@@ -9,7 +9,8 @@ import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interfa
 
 @Component({
   selector: 'app-my-calendar',
-  templateUrl: './my-calendar.component.html'
+  templateUrl: './my-calendar.component.html',
+  styleUrls: ['./my-calendar.component.scss']
 })
 export class MyCalendarComponent implements OnInit, OnDestroy {
   events: any = [];
@@ -116,6 +117,14 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   }
 
   calendarOptions: CalendarOptions = {
+    plugins: [
+      dayGridPlugin,
+      bootstrapPlugin,
+      interactionPlugin,
+      timeGridPlugin,
+      rrulePlugin,
+      interactionPlugin
+    ],
     initialView: 'timeGridWeek',
     dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },
     direction: 'ltr',
