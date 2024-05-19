@@ -19,6 +19,16 @@ const routes: Routes = [
   {path: '404', component: P404Component, data: {title: 'Page 404'}},
   {path: '500', component: P500Component, data: {title: 'Page 500'}},
   {
+    path: 'privacy-policy',
+    component: PrivacyPolicyComponent,
+    data: {title: 'Privacy Policy'}
+  },
+  {
+    path: 'terms-conditions',
+    component: TermsConditionsComponent,
+    data: {title: 'Terms & Conditions'}
+  },
+  {
     path: '',
     children: [
       {
