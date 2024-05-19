@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {SettingService} from "../../services/setting/setting.service";
 import {Router} from "@angular/router";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -17,10 +17,13 @@ export class ChangePasswordComponent implements OnInit {
   error?: ErrorResponse|null;
   errorMessage: undefined;
   changeCurrentPassword = true;
-  currentPasswordOption = [];
+  currentPasswordOption = [Validators.required];
   showCurrentPassword: boolean = false;
   showNewPassword: boolean = false;
   showConfirmPassword: boolean = false;
+  showRequiredErrors = false;
+
+  @ViewChild("focusField") focusField:any;
 
   constructor(private settingService: SettingService, private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
     this.form = this.formBuilder.group({
@@ -28,7 +31,6 @@ export class ChangePasswordComponent implements OnInit {
       'newPassword': ['', [ValidationService.passwordValidator, Validators.required]],
       'confirmPassword': ['', [Validators.required]]
     }, {validator: ValidationService.passwordsEqualValidator})
-
   }
 
   ngOnInit(): void {
@@ -47,6 +49,8 @@ export class ChangePasswordComponent implements OnInit {
   changePassword() {
 
     if (this.form.invalid) {
+      this.focusField.nativeElement.focus();
+      this.showRequiredErrors = true;
       return;
     }
 

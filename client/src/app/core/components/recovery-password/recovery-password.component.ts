@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 import {ValidationService} from "../../../shared/services";
@@ -19,6 +19,8 @@ export class RecoveryPasswordComponent {
   readonly confirmToken: string = '';
   showNewPassword: boolean = false;
   showConfirmPassword: boolean = false;
+  showRequiredErrors = false;
+  @ViewChild("focusField") focusField:any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,6 +47,8 @@ export class RecoveryPasswordComponent {
   setNewPassword() {
 
     if (this.form.invalid) {
+      this.focusField.nativeElement.focus();
+      this.showRequiredErrors = true;
       return;
     }
 

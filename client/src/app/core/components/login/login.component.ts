@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {first} from 'rxjs/operators';
@@ -24,7 +24,10 @@ export class LoginComponent implements OnInit {
   errorMessage: string | undefined;
   error?: ErrorResponse;
   showPassword: boolean = false;
+  showRequiredErrors = false;
   private readonly _destroying$ = new Subject<void>();
+
+  @ViewChild("focusField") focusField:any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -55,6 +58,8 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.form.invalid) {
+      this.focusField.nativeElement.focus();
+      this.showRequiredErrors = true;
       return;
     }
 

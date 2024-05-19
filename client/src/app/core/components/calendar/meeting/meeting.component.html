@@ -58,8 +58,6 @@
         >
         </ng-multiselect-dropdown>
 
-        <app-control-messages [control]="f['attendees']"></app-control-messages>
-
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">
@@ -109,7 +107,7 @@
         </h3>
         <input class="form-control" type="text" name="meetingLocation" formControlName="meetingLocation"
                id="meetingLocation" placeholder="">
-        <app-control-messages [control]="f['meetingLocation']"></app-control-messages>
+        <app-control-messages [control]="f['meetingLocation']" [showRequiredErrors]="showRequiredErrors"></app-control-messages>
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">
@@ -119,7 +117,7 @@
                   placeholder="Add your message here..."></textarea>
       </div>
       <div class="d-flex justify-content-end">
-        <button class="send-request" [disabled]="!form.valid || error || !selectEvent">
+        <button class="send-request" [disabled]="!selectEvent">
           Send
         </button>
       </div>

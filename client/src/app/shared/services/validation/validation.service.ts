@@ -4,15 +4,15 @@ export type AssociativeArray<T = unknown> = {[key: string]: T } | T[];
 
 export class ValidationService {
 
-  static getValidatorErrorMessage(validatorName: string, validatorValue?: any) {
+  static getValidatorErrorMessage(validatorName: string = 'required', validatorValue: any = '') {
       const config: AssociativeArray = {
-          'required': 'Required',
+          'required': 'This field cannot be blank',
           'invalidEmailAddress': 'Invalid email address',
           'invalidFullName': 'Invalid Full Name',
           'currentPassword': 'Invalid current password',
           'addEmail': 'This email already exists',
           'invalidConfirmPassword': 'Passwords do not match, please retype',
-          'invalidPassword': 'Invalid password. Password must be at least 8 characters long, and contain a number and symbol',
+          'invalidPassword': 'Password must be at least 8 characters long, containing at least one number and a symbol.',
           'minlength': `Minimum length ${validatorValue ? validatorValue.requiredLength : 0}`,
           'maxlength': `Maximum length ${validatorValue ? validatorValue.requiredLength : 0}`,
           'invalidCreditCardNumber': 'Not a valid credit card number',
@@ -87,7 +87,7 @@ export class ValidationService {
   }
 
   static fullNameValidator(c: FormControl)  {
-    if (c.value && c.value.match(/^(\w{3,})+\s+([\w\s]{3,})+$/i)) {
+    if (c.value && c.value.match(/^(\D{3,})+\s+([\D\s]{3,})+$/i)) {
       return null;
     } else {
       return {'invalidFullName': true};

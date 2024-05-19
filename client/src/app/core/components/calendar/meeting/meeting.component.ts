@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import * as moment from 'moment-timezone';
 import {BehaviorSubject, first} from 'rxjs';
@@ -43,6 +43,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
   selectEvent = false;
   error = false;
 
+  showRequiredErrors = false;
+  @ViewChild("focusField") focusField:any;
+
   constructor(
     private readonly router: Router,
     private readonly calendarService: CalendarService,
@@ -58,8 +61,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       meetTitle: ['', [Validators.required, Validators.minLength(5)]],
       attendees: ['', [Validators.required]],
-      meetingLocation: ['', [ValidationService.urlValidator]],
-    });
+      meetingLocation: [''],
+    }, {updateOn: 'blur'});
 
     this.subscription = this.broadcaster.on('meet_date_range').subscribe((eventData: any) => {
       if (eventData.contact_email) {
@@ -160,6 +163,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   scheduleEvent() {
     if (this.form.invalid) {
+      this.focusField.nativeElement.focus();
+      this.showRequiredErrors = true;
       return;
     }
 

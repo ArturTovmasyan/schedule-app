@@ -17,11 +17,11 @@ export class SignupComponent {
   firstName: string | undefined;
   email: string | undefined;
   password: string | undefined;
-  register = false;
-  error?: ErrorResponse;
-  errorMessage: string = '';
   showPassword: boolean = false;
-  @ViewChild("firstNameField") firstNameField:any;
+  register = false;
+  showRequiredErrors = false;
+  error?: ErrorResponse;
+  @ViewChild("focusField") focusField:any;
 
   constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
@@ -33,28 +33,15 @@ export class SignupComponent {
     );
   }
 
-  focusOnFirstName() {
-    debugger;
-    let firsNameValue = this.form.get('fullName')?.value;
-    if (!firsNameValue) {
-      this.firstNameField.nativeElement.focus();
-      this.error = {message: 'Pleas fill form fields', status: 200};
-    } else {
-      // @ts-ignore
-      delete this.error?.message;
-      // @ts-ignore
-      delete this.error?.status;
-    }
-  }
-
   get f() {
     return this.form.controls;
   }
 
   signup() {
-
     if (this.form.invalid) {
-      this.focusOnFirstName();
+      this.focusField.nativeElement.focus();
+      this.showRequiredErrors = true;
+
       return;
     }
 
@@ -79,8 +66,7 @@ export class SignupComponent {
           this.form.reset();
         },
         error: (error) => {
-          debugger;
-          this.error = error;
+          this.error = error.message;
         }
       })
   }

@@ -8,9 +8,9 @@
       <label for="email">Email</label>
       <div class="input-group">
         <img src="assets/envelope.png" alt="email">
-        <input type="email" id="email" formControlName="email" placeholder="Email" />
+        <input #focusField type="email" id="email" formControlName="email" placeholder="Email" />
       </div>
-      <app-control-messages [control]="f['email']"></app-control-messages>
+      <app-control-messages [control]="f['email']" [showRequiredErrors]="showRequiredErrors"></app-control-messages>
     </div>
     <div class="form-group">
       <label for="password">Password</label>
@@ -19,7 +19,7 @@
         <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" placeholder="Password" />
         <i class="fa" [ngClass]="{'fa-eye-slash': !showPassword,'fa-eye': showPassword}" (click)="togglePasswordType()"></i>
       </div>
-      <app-control-messages [control]="f['password']"></app-control-messages>
+      <app-control-messages [control]="f['password']" [showRequiredErrors]="showRequiredErrors"></app-control-messages>
       <span *ngIf="error" class="error"><i class="fa fa-exclamation-triangle"></i>{{ error.message }}</span>
     </div>
     <div id="actions">
