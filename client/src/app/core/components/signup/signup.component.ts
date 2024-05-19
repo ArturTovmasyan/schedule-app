@@ -66,7 +66,7 @@ export class SignupComponent {
           this.form.reset();
         },
         error: (error) => {
-          this.error = error.message;
+          this.error = error;
         }
       })
   }

@@ -3,6 +3,7 @@ export interface IErrorMessages {
   passwordDoesNotMatch: string;
   calendarNotFound: string;
   userExist: string;
+  resetPassword: string;
   userNotFound: string;
   incorrectPassword: string;
   confirmError: string;

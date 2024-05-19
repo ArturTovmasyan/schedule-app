@@ -120,7 +120,7 @@ export class AuthService {
         if (!user) {
             throw new NotFoundException({
                 status: HttpStatus.NOT_FOUND,
-                message: ErrorMessages.userNotFound,
+                message: ErrorMessages.resetPassword,
             });
         }
 
