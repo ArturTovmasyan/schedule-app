@@ -5,6 +5,7 @@ import { User } from '@user/entity/user.entity';
 import { ZoomOAuthToken } from './zoom/entity/zoom-oauth-token.entity';
 import { CalendarToken } from 'src/calendar/calendar-permissions/entity/calendarToken.entity';
 import { ILinkedIntegrations } from './zoom/interfaces/zoom.interface';
+import { CalendarTypeEnum } from 'src/calendar/calendar-permissions/enums/calendarType.enum';
 
 @Injectable()
 export class IntegrationsService {
@@ -20,11 +21,6 @@ export class IntegrationsService {
     user: User,
   ): Promise<IResponse<ILinkedIntegrations[]>> {
     const linkedData: ILinkedIntegrations[] = [
-      {
-        title: 'Microsoft Teams',
-        sub_title: 'Web Conference',
-        available: true,
-      },
       {
         title: 'Inbound phone call',
         sub_title: 'You will receive a phone call',
@@ -42,13 +38,22 @@ export class IntegrationsService {
       },
     ];
 
-    const [zoomToken, googleToken] = await Promise.all([
+    const [zoomToken, googleToken, MSToken] = await Promise.all([
       this.connection
         .getRepository(ZoomOAuthToken)
         .count({ where: { user: { id: user.id } } }),
-      this.connection
-        .getRepository(CalendarToken)
-        .count({ where: { owner: { id: user.id } } }),
+      this.connection.getRepository(CalendarToken).count({
+        where: {
+          owner: { id: user.id },
+          calendarType: CalendarTypeEnum.GoogleCalendar,
+        },
+      }),
+      this.connection.getRepository(CalendarToken).count({
+        where: {
+          owner: { id: user.id },
+          calendarType: CalendarTypeEnum.Office365Calendar,
+        },
+      }),
     ]);
 
     linkedData.push(
@@ -61,6 +66,11 @@ export class IntegrationsService {
         title: 'Google Meet',
         sub_title: 'Web Conference',
         available: !!googleToken,
+      },
+      {
+        title: 'Microsoft Teams',
+        sub_title: 'Web Conference',
+        available: !!MSToken,
       },
     );
 
