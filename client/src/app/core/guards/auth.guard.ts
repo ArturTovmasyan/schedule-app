@@ -36,10 +36,16 @@ export class AuthGuard implements CanActivate {
           if (user && !user.stripeSubscriptionId) {
 =======
       this.authService.hasAccess().subscribe({
+<<<<<<< HEAD
         next: ({ isActive, user }) => {
           if (user && !isActive) {
 >>>>>>> 2cd4f4b (Finish payment integration)
             this.router.navigate(['/onboarding/subscription-plan'])
+=======
+        next: ({ user }) => { //isActive
+          if (!user) { // && !isActive
+            this.router.navigate(['/logout'])
+>>>>>>> 0eaf580 (Disable payment functionality)
           }
         }
       });
