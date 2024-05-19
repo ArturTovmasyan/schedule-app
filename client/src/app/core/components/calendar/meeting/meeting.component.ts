@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import * as moment from 'moment-timezone';
 import {BehaviorSubject, first} from 'rxjs';
@@ -422,10 +422,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     
   }
 
-  close() {
-    this.broadcaster.broadcast('calendar_full_size', true);
-  }
-  
   autoHideErrorMessage(time=3000) {
     setTimeout(() => {
         this.errorMessages = [];

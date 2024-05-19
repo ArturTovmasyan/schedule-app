@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import * as moment from 'moment';
 import {Moment} from 'moment';
@@ -103,9 +103,15 @@ export class AccessRequestComponent implements OnInit, OnDestroy {
       });
   }
 
+  
   close() {
     this.broadcaster.broadcast('calendar_full_size', true);
   }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: 
+    KeyboardEvent) {
+    this.close();
+   }
 
   ngOnDestroy(): void {
     this.subscription$.unsubscribe();
