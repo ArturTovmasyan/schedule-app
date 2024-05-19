@@ -46,23 +46,32 @@ export class MyCalendarComponent implements OnInit {
 
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
-    dayHeaderFormat: {weekday: 'short', day: 'numeric', omitCommas: true},
+    dayHeaderFormat: {weekday: 'short', day: '2-digit', omitCommas: true},
     direction: 'ltr',
     themeSystem: 'bootstrap',
-    selectable: true,
+    dayHeaders:true,
     allDaySlot: false,
-    droppable: true,
     eventTextColor: 'black',
     eventBackgroundColor: '#E9F6FD',
     eventOrderStrict: true,
     stickyHeaderDates: true,
+    slotLabelFormat: [
+      {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12:true,
+        meridiem: 'lowercase',
+        separator: '.'
+      }
+    ],
     titleFormat: {
-      year: 'numeric', month: 'long', day: 'numeric'
+     month: 'long', day: 'numeric'
     },
     eventTimeFormat: {
       hour: 'numeric',
       minute: '2-digit',
-      meridiem: 'short'
+      meridiem: 'short',
+      hour12: true
     },
     headerToolbar: {
       left: '',
