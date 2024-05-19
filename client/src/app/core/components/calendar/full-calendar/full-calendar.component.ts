@@ -22,13 +22,16 @@ export class FullCalendarComponent implements OnInit {
     allDaySlot: false,
     droppable: true,
     dateClick: this.handleDateClick.bind(this),
+    titleFormat: {
+      year: 'numeric', month: 'long', day: 'numeric'
+    },
     headerToolbar: {
       left: '',
       center: 'prev,title,next',
       right: 'today'
     },
     events: [
-      { title: 'event 1', date: '2022-09-25T05:45:00' },
+      { title: 'event 1', start: '2022-09-25T05:45:00', end: '2022-09-25T06:45:00' },
       { title: 'event 111', date: '2022-09-25T06:43:00' },
       { title: 'event 1', date: '2022-09-26T08:22:00' },
       { title: 'event 1', date: '2022-09-27T12:30:00' },
