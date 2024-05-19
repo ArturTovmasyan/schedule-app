@@ -13,7 +13,8 @@ import {
   ApiTags,
   ApiResponse,
   ApiOperation,
-  ApiExcludeEndpoint, ApiBearerAuth,
+  ApiExcludeEndpoint,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 

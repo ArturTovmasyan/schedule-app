@@ -29,8 +29,10 @@
   },
   "dependencies": {
     "@azure/msal-node": "^1.12.1",
+    "@giorgosavgeris/passport-zoom-oauth2": "^1.1.0",
     "@google-cloud/local-auth": "^2.1.0",
     "@microsoft/microsoft-graph-client": "^3.0.2",
+    "@nestjs/axios": "^1.0.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",

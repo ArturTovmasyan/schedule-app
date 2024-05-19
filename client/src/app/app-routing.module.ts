@@ -34,18 +34,18 @@ const routes: Routes = [
       {
         path: 'payment-success',
         component: PaymentSuccessComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard]
       },
       {
         path: 'google-calendar-callback',
         component: GoogleCalendarComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard]
       },
       {
         path: 'ms-calendar-callback',
         component: MsCalendarComponent,
-        canActivate: [AuthGuard],
-      },
+        canActivate: [AuthGuard]
+      }
     ]
   },
   {
@@ -159,6 +159,21 @@ const routes: Routes = [
       {
         path: '**',
         redirectTo: '/settings/availability'
+      }
+    ]
+  },
+  {
+    path: 'integrations/zoom',
+    component: ZoomOauthComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        component: ZoomSetupComponent
+      },
+      {
+        path: 'callback',
+        component: ZoomCallbackComponent
       }
     ]
   },
