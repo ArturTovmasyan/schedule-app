@@ -12,7 +12,6 @@ import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
 import {RedirectGuard} from "./core/guards/redirect.guard";
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
-import {PaymentComponent} from "./core/components/payment/payment.component";
 
 const routes: Routes = [
   {
@@ -57,12 +56,6 @@ const routes: Routes = [
         component: OauthLoginComponent
       }
     ]
-  },
-  {
-    path: 'payment',
-    component: PaymentComponent,
-    data: {title: 'Payment'},
-    canActivate: [AuthGuard]
   },
   {path: '404', component: P404Component, data: {title: 'Page 404'}},
   {path: '500', component: P500Component, data: {title: 'Page 500'}},

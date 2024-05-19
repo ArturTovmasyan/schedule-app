@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs/operators';
-import { AuthService } from 'src/app/core/services/auth/auth.service';
+import {Component, Inject, OnInit} from '@angular/core';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {first} from 'rxjs/operators';
+import {AuthService} from 'src/app/core/services/auth/auth.service';
 import {BroadcasterService, ValidationService} from "../../../shared/services";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 import {environment} from "../../../../environments/environment";
+import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'lib-login',
@@ -17,13 +19,18 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   errorMessage: string | undefined;
   error?: ErrorResponse;
+  loginDisplay = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-    private broadcaster: BroadcasterService
+    private broadcaster: BroadcasterService,
+    private broadcastService: MsalBroadcastService,
+    private msService: MsalService,
+    private http: HttpClient,
+    @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration
   ) {
     this.form = this.formBuilder.group({
       email: ['', [ValidationService.emailValidator, Validators.required]],
@@ -32,6 +39,7 @@ export class LoginComponent implements OnInit {
     });
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
+
 
   ngOnInit(): void {
     this.authService.logout();
@@ -53,7 +61,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: () => {
           this.form.reset();
-          this.router.navigate(['/payment']);
+          this.router.navigate(['/']);
         },
         error: (error) => {
           this.error = error;
@@ -62,10 +70,21 @@ export class LoginComponent implements OnInit {
   }
 
   googleLogin() {
-    window.location.href = environment.host+"api/auth/google";
+    window.location.href = environment.host + "api/auth/google";
   }
 
   microsoftLogin() {
-    window.location.href = environment.host+"api/auth/microsoft";
+    this.msService.loginPopup()
+      .subscribe({
+        next: (result) => {
+          console.log(result);
+          this.setLoginDisplay();
+        },
+        error: (error) => console.log(error)
+      });
+  }
+
+  setLoginDisplay() {
+    this.loginDisplay = this.msService.instance.getAllAccounts().length > 0;
   }
 }

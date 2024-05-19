@@ -11,13 +11,9 @@ describe('PaymentComponent', () => {
       declarations: [ PaymentComponent ]
     })
     .compileComponents();
-<<<<<<< HEAD
   });
 
   beforeEach(() => {
-=======
-
->>>>>>> 6b35d68 (Create Goolge Login Functionality, Change in Auth systems)
     fixture = TestBed.createComponent(PaymentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

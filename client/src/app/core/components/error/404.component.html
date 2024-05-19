@@ -1,13 +1,35 @@
-<div class="app flex-row align-items-center">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="clearfix">
-          <h1 class="float-left display-3 mr-4">404</h1>
-          <h4 class="pt-3">Oops! You're lost.</h4>
-          <p class="text-muted">The page you are looking for was not found.</p>
-        </div>
+<div class="box">
+  <div class="box__ghost">
+    <div class="symbol"></div>
+    <div class="symbol"></div>
+    <div class="symbol"></div>
+    <div class="symbol"></div>
+    <div class="symbol"></div>
+    <div class="symbol"></div>
+
+    <div class="box__ghost-container">
+      <div class="box__ghost-eyes">
+        <div class="box__eye-left"></div>
+        <div class="box__eye-right"></div>
+      </div>
+      <div class="box__ghost-bottom">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
       </div>
     </div>
+    <div class="box__ghost-shadow"></div>
+  </div>
+
+  <div class="box__description">
+    <div class="box__description-container">
+      <div class="box__description-title">Whoops!</div>
+      <div class="box__description-text">It seems like we couldn't find the page you were looking for</div>
+    </div>
+
+    <a [routerLink]="['/']" class="box__button">Go back</a>
+
   </div>
 </div>

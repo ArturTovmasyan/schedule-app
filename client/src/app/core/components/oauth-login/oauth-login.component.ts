@@ -20,6 +20,6 @@ export class OauthLoginComponent implements OnInit {
   loginOauthUser() {
     const token = this.route.snapshot.queryParams['token'];
     localStorage.setItem('cu', JSON.stringify({accessToken: token}));
-    this.router.navigate(['/payment']);
+    this.router.navigate(['/']);
   }
 }

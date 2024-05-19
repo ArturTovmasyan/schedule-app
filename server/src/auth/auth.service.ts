@@ -4,8 +4,7 @@ import {
     HttpStatus,
     Injectable,
     InternalServerErrorException,
-    NotFoundException,
-    UnauthorizedException
+    NotFoundException
 } from '@nestjs/common';
 import {UsersService} from '@user/users.service';
 import {JwtService} from '@nestjs/jwt';
@@ -97,7 +96,7 @@ export class AuthService {
         return user;
     }
 
-    public async verifyToken(token): Promise<User> {
+    public async verifyToken(token): Promise<User>|null {
         const data = this.jwtService.verify(token) as JwtPayload;
         const user = await this.userRepo.findOne({where: {id: data.id}});
 
@@ -105,11 +104,7 @@ export class AuthService {
             return user;
         }
 
-        throw new UnauthorizedException({
-                status: HttpStatus.UNAUTHORIZED,
-                message: ErrorMessages.userNotFound,
-            }
-        );
+        return null;
     }
 
      sendConfirmation(user: UserDto) {
@@ -147,7 +142,7 @@ export class AuthService {
         const token = await this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
         const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
 
-        await this.mailService.send({
+        this.mailService.send({
             from: this.configService.get<string>('NO_REPLY_EMAIL'),
             to: user.email,
             subject: 'Reset Handshake Account Password',
@@ -156,6 +151,7 @@ export class AuthService {
                 <p>Please use this <a href="${changeLink}">link</a> to reset your password.</p>
             `,
         });
+
         return true;
     }
 
@@ -189,7 +185,7 @@ export class AuthService {
             if (!user) {
                 user = await this.userRepo.findOne({where: [{email: data.email}]});
                 if (user) {
-                    throw new ForbiddenException(
+                     new ForbiddenException(
                         {
                             message: "User already exists, but Social account was not connected to user's account",
                             status: HttpStatus.FORBIDDEN

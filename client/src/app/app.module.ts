@@ -46,13 +46,20 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    SharedModule
+    SharedModule,
+    MsAuthModule
   ],
   providers: [
     jwtInterceptorProvider,
     errorInterceptorProvider,
     ValidationService,
     BroadcasterService
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: MsalInterceptor,
+    //   multi: true
+    // },
+    // MsalGuard
   ],
   bootstrap: [AppComponent]
 })
