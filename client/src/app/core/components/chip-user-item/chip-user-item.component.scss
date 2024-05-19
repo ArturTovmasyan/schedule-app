@@ -5,6 +5,14 @@
   gap: 5px;
   background-color: white;
   align-items: center;
+
+  &.selected {
+    border: 1px solid #17B326;
+  }
+
+  &.rejected {
+    border: 1px solid #F71818;
+  }
   
   img, span#initials {
     width: 32px;
@@ -60,5 +68,38 @@
     background-image: url('/assets/ic_close_chip.svg');
     background-repeat: no-repeat;
     cursor: pointer;
+  }
+
+  &.mini {
+    padding: 1px 4px 1px 2px;
+    border-radius: 14px;
+
+    img, span#initials {
+      width: 26px;
+      height: 26px;
+    }
+
+    span#remove-button {
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+  
+      &#initials {
+        font-size: 12px;
+        line-height: 26px;
+      }
+  
+      span:first-child {
+        font-size: 14px;
+        line-height: 16px;
+      }
+  
+      span:last-child {
+        font-size: 10px;
+        line-height: 12px;
+      }
+    }
   }
 }

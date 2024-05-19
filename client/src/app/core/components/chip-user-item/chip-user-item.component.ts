@@ -14,6 +14,9 @@ export class ChipUserItemComponent implements OnInit {
     removable: false
   };
 
+  @Input() mini: boolean = false
+  @Input() borderClass: string = ""
+
   @Output() onRemove = new EventEmitter<void>();
   
   constructor() { }

@@ -18,12 +18,12 @@
       <span class="time">Friday, February 11 6:00 AM - 6:30 AM</span>
       <label>Attendees</label>
       <div class="chip-container">
-        <app-chip-user-item [user]="user"></app-chip-user-item>
+        <app-chip-user-item [mini]="true" [borderClass]="'selected'" [user]="user"></app-chip-user-item>
       </div>
 
       <label>Optional</label>
       <div class="chip-container">
-        <app-chip-user-item [user]="user"></app-chip-user-item>
+        <app-chip-user-item [mini]="true" [borderClass]="'rejected'" [user]="user"></app-chip-user-item>
 
       </div>
 

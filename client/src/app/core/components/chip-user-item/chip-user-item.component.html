@@ -1,4 +1,4 @@
-<div class="chip-item">
+<div class="chip-item {{borderClass}}" [ngClass]="{mini: mini}">
   <img src="{{user.avatar}}" alt="user icon" *ngIf="user.avatar">
   <span id="initials" *ngIf="!user.avatar">{{ user?.name?.charAt(0) ?? '' }}</span>
   <span class="info">
