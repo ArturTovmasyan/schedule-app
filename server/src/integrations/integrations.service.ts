@@ -20,24 +20,6 @@ export class IntegrationsService {
   async getLinkedIntegrations(
     user: User,
   ): Promise<IResponse<ILinkedIntegrations[]>> {
-    const linkedData: ILinkedIntegrations[] = [
-      {
-        title: 'Inbound phone call',
-        sub_title: 'You will receive a phone call',
-        available: true,
-      },
-      {
-        title: 'Outbound phone call',
-        sub_title: 'You will be making a phone call',
-        available: true,
-      },
-      {
-        title: 'Physical address',
-        sub_title: 'You will meet face to face',
-        available: true,
-      },
-    ];
-
     const [zoomToken, googleToken, MSToken] = await Promise.all([
       this.connection
         .getRepository(ZoomOAuthToken)
@@ -56,23 +38,50 @@ export class IntegrationsService {
       }),
     ]);
 
-    linkedData.push(
+    const linkedData: ILinkedIntegrations[] = [
       {
         title: 'Zoom',
         sub_title: 'Web Conference',
         available: !!zoomToken,
+        image: 'assets/zoom.png',
+        value: 'zoom',
       },
       {
         title: 'Google Meet',
         sub_title: 'Web Conference',
         available: !!googleToken,
+        image: 'assets/google-meet.png',
+        value: 'gmeet',
       },
       {
         title: 'Microsoft Teams',
         sub_title: 'Web Conference',
         available: !!MSToken,
+        image: 'assets/microsoft-teams.png',
+        value: 'teams',
       },
-    );
+      {
+        title: 'Inbound phone call',
+        sub_title: 'You will receive a phone call',
+        available: true,
+        image: 'assets/incoming-call.png',
+        value: 'incoming-call',
+      },
+      {
+        title: 'Outbound phone call',
+        sub_title: 'You will be making a phone call',
+        available: true,
+        image: 'assets/outgoing-call.png',
+        value: 'outgoing-call',
+      },
+      {
+        title: 'Physical address',
+        sub_title: 'You will meet face to face',
+        available: true,
+        image: 'assets/location.png',
+        value: 'address',
+      },
+    ];
 
     return { data: linkedData, metadata: {} };
   }

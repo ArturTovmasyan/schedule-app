@@ -13,10 +13,10 @@ import { ActivatedRoute } from '@angular/router';
 export interface Location {
   id?: string;
   title: string;
-  subTitle?: string;
+  sub_title?: string;
   image: string;
-  active: boolean;
   value: string;
+  available: boolean;
 }
 
 
@@ -33,7 +33,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   selectedDates:any = []
   showLocation = false;
   choosedLocationObj: Location | null = null;
-  connectMessage = '';
+  connectMessage = {'title': '', 'type': ''};
   // for location: incoming call and address
   phoneNumber = null;
   address = null;
@@ -54,14 +54,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   showCopiedText = false;
   private readonly _document: Document;
 
-  locations: Location[] = [
-    { title: 'ZOOM', subTitle: 'Web conference', image:'assets/zoom.png', active: false, value: 'zoom'},
-    { title: 'Microsoft Teams', subTitle: 'Web conference', image: 'assets/microsoft-teams.png', active: false, value: 'teams' },
-    { title: 'Google Meet', subTitle: 'Web conference', image: 'assets/google-meet.png', active: false, value: 'gmeet' },
-    { title: 'Inbound phone call', subTitle: 'You will receive a phone call', image: 'assets/incoming-call.png', active: false, value: 'incoming-call' },
-    { title: 'Outbound phone call', subTitle: 'You will be making a phone calling', image: 'assets/outgoing-call.png', active: false, value: 'outgoing-call' },
-    { title: 'Physical address', subTitle: 'You will meet face to face', image: 'assets/location.png', active: false, value: 'address' }
-  ]
+  locations: Location[] = [];
 
   get timezone(): string {
     return this.commonService.localTimezone;
@@ -77,6 +70,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) document: any
 
   ) {
+    this.getLocations();
     const linkId = this.route.snapshot.params['id'];
     this.loadSharableLinkDetails(linkId);
     this._document = document;
@@ -143,6 +137,16 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     });
   }
 
+  getLocations() {
+    this.sharableLinkService.getLocations()
+    .subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.locations = res;
+      }
+    })
+  }
+
   removeTime(date: any, i: any) {
     const selectedDate = this.selectedDates[date].splice(i, 1);
     if (this.selectedDates[date].length == 0) {
@@ -156,25 +160,32 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
     this.choosedLocationObj = loc;
     this.showLocation = false;
-    this.connectMessage = '';
     if (!['zoom', 'gmeet', 'teams'].includes(loc.value)) {
       // if incoming and outgoing and address is choosed from location option
-      // no need to check for connecttion of location choosed
+      // no need to check for connection of location choosed
       return;
     }
 
-    // TODO: fetch if location is connected here
-    setTimeout(() => {
-        // connected var value got from server
-        const connected = false;
-        this.connectMessage = '';
-        if (!connected) {
-          this.connectMessage = `Please <a href="javascript:void(0)">connect </a><span class="">${loc.title}</span>
-        to your account`;
-        }
-    }, 1000);
-    // end
+    if (!loc.available) {
+      // if not connected show connect message
+      this.connectMessage = {
+        title: loc.title,
+        type: loc.value
+      };
+    }
+  }
 
+  // connect to zoom, meet or teams if not connected
+  // type could be zoom, teams or gmeet
+  connect(type: string) {
+    if (type == 'zoom') {
+      this.sharableLinkService.getZoomOauthUrl()
+        .subscribe({
+          next: (res: any) => {
+            window.location.href = res['url'];
+          }
+        });
+    }
   }
 
   createSharableLink() {
@@ -185,7 +196,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Please select the Location';
     }else if (this.choosedLocationObj?.value == 'incoming-call' && !this.phoneNumber) {
       this.errorMessage = 'Please enter Phone Number';
-    }else if (this.choosedLocationObj?.value == 'address' && !this.phoneNumber) {
+    }else if (this.choosedLocationObj?.value == 'address' && !this.address) {
       this.errorMessage = 'Please enter Address';
     }
 
@@ -206,8 +217,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
         });
       }
     }
+
     const requestParams = {
-      'title': 'Sharable Link',
+      'title': this.choosedLocationObj?.title,
       'slots': selectedDatesNew,
       'meetVia': this.choosedLocationObj?.value,
       'attendees': [] as any,
@@ -311,9 +323,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   broadcastContactData() {
-    let contacts = [...this.emailsWithAvailabilityMap.values()].flat();
-    console.log([...new Set(contacts)]);
-    contacts = {...contacts};
+    const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
     this.broadcaster.broadcast('contact_calendar_data', contacts);
   }
 

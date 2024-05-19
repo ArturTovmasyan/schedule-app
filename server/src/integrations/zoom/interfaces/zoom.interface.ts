@@ -7,6 +7,8 @@ export interface IZoomTokenResponse {
 export interface ILinkedIntegrations {
   title: string;
   sub_title: string;
+  image: string;
+  value: string;
   available: boolean;
 }
 

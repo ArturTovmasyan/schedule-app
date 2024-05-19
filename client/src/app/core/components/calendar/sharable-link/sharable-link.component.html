@@ -41,22 +41,22 @@
               <li class="user-input">
                 <input type="text" #contactInput>
                 <ul>
-                  <ng-container *ngFor="let contact of filteredContacts$|async" >
-                  <li (click)="selectContact(contact)">
-                    <div class="user-info-wrapper">
-                      <div class="user-portrait">
-                        <img *ngIf="contact.owner.avatar;" src="{{contact.owner.avatar}}" alt="brian chesky">
+                  <ng-container *ngFor="let contact of filteredContacts$|async">
+                    <li (click)="selectContact(contact)">
+                      <div class="user-info-wrapper">
+                        <div class="user-portrait">
+                          <img *ngIf="contact.owner.avatar;" src="{{contact.owner.avatar}}" alt="brian chesky">
+                        </div>
+                        <div class="user-bio">
+                          <h5 class="full-name">{{ contact | getContactName }}</h5>
+                          <h6 class="contact-company">
+                            {{ contact | getContactCompany }}
+                          </h6>
+                        </div>
                       </div>
-                      <div class="user-bio">
-                        <h5 class="full-name">{{ contact | getContactName }}</h5>
-                        <h6 class="contact-company">
-                          {{ contact | getContactCompany }}
-                        </h6>
-                      </div>
-                    </div>
 
-                    <div class="contact-border-line"></div>
-                  </li>
+                      <div class="contact-border-line"></div>
+                    </li>
                   </ng-container>
                 </ul>
               </li>
@@ -76,8 +76,9 @@
             <input type="text" id="availableDate" name="availableDate"
                    placeholder="{{ date.key }}" readonly>
           </div>
-          <ul class="available-times list-unstyled" id="availableTimes" >
-            <li class="available-timeframe" id="availableTimeframe" *ngFor="let time of $any(date.value); let i = index" >
+          <ul class="available-times list-unstyled" id="availableTimes">
+            <li class="available-timeframe" id="availableTimeframe"
+                *ngFor="let time of $any(date.value); let i = index">
               <div class="list-inline-item timeframe">
                 <input type="text" id="availableStartTime" name="availableStartTime"
                        placeholder="{{ time.start | parseTime:'hh:mmA' }}" readonly>
@@ -137,7 +138,9 @@
         <input type="text" class="form-control" [(ngModel)]="address" name="address">
       </ng-container>
 
-      <div class="connect-message" [innerHtml]="connectMessage">
+      <div class="connect-message" *ngIf="connectMessage.title != ''">
+        Please <a (click)="connect(connectMessage.type)">connect</a><span class=""> {{ connectMessage.title }}</span>
+        to your account
       </div>
 
 
@@ -161,12 +164,12 @@
         </div>
         <p class="copy-send">Copy and send this link to anyone you want</p>
       </div>
-    </div>
-    <div class="error w-100 {{errorMessage ? 'animate' : ''}}">{{ errorMessage }}</div>
-    <div class="d-flex justify-content-end">
-      <button class="request-button" (click)="createSharableLink()">
-        Create
-      </button>
-    </div>
+          </div>
+          <div class="error w-100 {{errorMessage ? 'animate' : ''}}">{{ errorMessage }}</div>
+          <div class="d-flex justify-content-end">
+            <button class="request-button" (click)="createSharableLink()">
+              Create
+            </button>
+          </div>
   </form>
 </section>
