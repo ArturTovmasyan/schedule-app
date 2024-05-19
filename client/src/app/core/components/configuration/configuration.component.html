@@ -30,7 +30,9 @@
           <span class="slider round"></span>
         </label>
 
-        <span (click)="toggleSection(Section.DOMAIN)">Details <img src="assets/ic_close.svg"></span>
+        <span *ngIf="currentAccessibility?.accessibilityType == AccessibilityType.DOMAIN.valueOf()" (click)="toggleSection(Section.DOMAIN)">
+          Details <img [src]="currentDisplaySection == Section.DOMAIN ? 'assets/ic_close_circle.svg' : 'assets/ic_open_circle.svg'">
+        </span>
       </div>
     </div>
     <div class="details" *ngIf="currentDisplaySection === Section.DOMAIN">
@@ -63,8 +65,6 @@
             (change)="updateAccessibility(AccessibilityType.REQUEST, request.checked)">
           <span class="slider round"></span>
         </label>
-
-        <span (click)="toggleSection(Section.REQUEST)">Details <img src="assets/ic_close.svg"></span>
       </div>
     </div>
   </section>

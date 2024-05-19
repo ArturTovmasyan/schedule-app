@@ -10,7 +10,7 @@ import { CalendarAccessibility } from '../../interfaces/calendar/accessibility.c
 export class AccessibilityService {
 
   constructor(
-    private readonly http: HttpClient,
+    private readonly http: HttpClient
   ) {
   }
 

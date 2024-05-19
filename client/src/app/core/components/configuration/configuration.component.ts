@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { CalendarAccessibility } from '../../interfaces/calendar/accessibility.calendar.inteface';
 import { AccessibilityService } from '../../services/calendar/accessibility.service';
@@ -18,10 +18,11 @@ export class ConfigurationComponent implements OnInit {
   @ViewChild('domainInput')
   domainInput!: ElementRef;
   currentAccessibility: CalendarAccessibility | null = null
-  currentDisplaySection: Section = Section.DOMAIN;
+  currentDisplaySection: Section = Section.NONE;
   error: any | null = null;
 
-  constructor(private calendarAccessibilityService: AccessibilityService) {}
+  constructor(private calendarAccessibilityService: AccessibilityService,
+    private readonly changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.fetchAccessibility();
@@ -46,13 +47,11 @@ export class ConfigurationComponent implements OnInit {
 
   updateAccessibility(type: AccessibilityType, checked: boolean, domains: string[] = []) {
     if(checked) {
-      const observable = this.currentAccessibility != null ? this.calendarAccessibilityService.update({
+      const data = {
         accessibilityType: type,
-        domains: domains
-      }) : this.calendarAccessibilityService.create({
-        accessibilityType: type,
-        domains: domains
-      })
+        domains: domains.length == 0 ? null : domains
+      };
+      const observable = this.currentAccessibility != null ? this.calendarAccessibilityService.update(data) : this.calendarAccessibilityService.create(data)
 
       observable.pipe(first())
         .subscribe({
@@ -65,6 +64,10 @@ export class ConfigurationComponent implements OnInit {
         })
     } else {
       this.deleteAccessibility();
+    }
+
+    if(type == AccessibilityType.DOMAIN) {
+      this.currentDisplaySection = checked ? Section.DOMAIN : Section.NONE;
     }
   }
 

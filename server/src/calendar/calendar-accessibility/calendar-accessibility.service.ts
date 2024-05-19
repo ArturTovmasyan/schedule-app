@@ -43,15 +43,6 @@ export class CalendarAccessibilityService {
       });
     }
 
-    if (
-      createCalendarAccessibilityDto.accessibilityType ===
-        AccessibilityTypeEnum.Domain &&
-      (!createCalendarAccessibilityDto.domains ||
-        createCalendarAccessibilityDto.domains.length < 1)
-    ) {
-      throw new BadRequestException({ message: ErrorMessages.domainNotExists });
-    }
-
     await this.calendarAccessibilityRepo.save({
       user: { id: user.id },
       accessibilityType: createCalendarAccessibilityDto.accessibilityType,

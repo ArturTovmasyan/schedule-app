@@ -1,4 +1,4 @@
 export interface CalendarAccessibility {
   accessibilityType: string;
-  domains: string[];
+  domains: string[] | null;
 }
