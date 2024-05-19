@@ -683,6 +683,7 @@ export class CalendarEventService {
                 expirationDateTime: new Date(Date.now() + 250560000).toISOString(),
             });
 
+
         const webhookChannel = new CalendarWebhookChannel();
         webhookChannel.channelId = watchResponse.id;
         webhookChannel.expirationDate = new Date(watchResponse.expirationDateTime);
