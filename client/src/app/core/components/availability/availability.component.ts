@@ -14,7 +14,7 @@ export class AvailabilityComponent implements OnInit {
   _availability: CalendarAvailability = {
     from: "09:00",
     to: "05:00",
-    clockType: ClockType.MILITARY.valueOf(),
+    clockType: ClockType.NORMAL.valueOf(),
     sunday: false,
     monday: true,
     tuesday: true,
