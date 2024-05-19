@@ -43,11 +43,16 @@ export class InviteAndConnectComponent implements OnInit {
     return this.inviteForm.controls;
   }
 
-  initFormValue() {
-    this.inviteForm.patchValue({
-      'duration': 2,
-      'message': 'Hey All, \n\nPlease share your calendars with me so I can schedule with ease.'
-    });
+  initFormValue(defaultValues: any = null) {
+    if (!defaultValues) {
+      defaultValues = {
+        'duration': 2,
+        'message': 'Hey All, \n\nPlease share your calendars with me so I can schedule with ease.',
+        'shareMyCalendar': true,
+        'requestCalendarView': true,
+      }
+    }
+    this.inviteForm.patchValue(defaultValues);
   }
 
   onCustomDateUpdate(event: Event) {
@@ -93,9 +98,11 @@ export class InviteAndConnectComponent implements OnInit {
     .pipe(first())
     .subscribe({
       next: () => {
+        const formValues = this.inviteForm.value;
         this.formSubmitted = true;
         this.resetForm();
-        this.initFormValue();
+        
+        this.initFormValue(formValues);
       },
       error: (error) => {
         this.error = error;
@@ -105,6 +112,7 @@ export class InviteAndConnectComponent implements OnInit {
 
   resetForm() {
     this.inviteForm.reset();
+    this.emails = [];
     for (const control in this.inviteForm.controls) {
       this.inviteForm.controls[control].setErrors(null);
     }
