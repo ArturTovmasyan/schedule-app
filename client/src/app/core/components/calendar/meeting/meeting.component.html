@@ -1,13 +1,20 @@
-<section class="meeting-title" id="meetingTitle">
+<section class="meeting-title">
   <div class="header">
     <h2 class="section-title text-center">
-      Meeting title
+      Meeting
     </h2>
     <button class="close-button" id="closeButton">
       <img src="assets/close-icon.svg" alt="close button" (click)="close()">
     </button>
   </div>
   <form id="meetingTitle" action="">
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Title
+      </h3>
+      <input class="form-control" type="text" name="title" id="title">
+
+    </div>
     <div class="form-group">
       <h3 class="section-title-secondary">
         Duration
@@ -43,56 +50,56 @@
       </h3>
       <div class="attendees-container">
         <ul class="attendees-list list-unstyled list-inline" id="attendeesList">
-          <li class="attendee-info list-inline-item" id="attendeeInfo">
+          <li class="attendee-info list-inline-item">
             <div class="attendee-info-wrapper">
               <div class="attendee-portrait">
                 <img src="assets/brianchesky.jpg" alt="attendee portrait">
               </div>
               <div class="attendee-bio">
-                <h5 class="full-name" id="fullName">
+                <h5 class="full-name">
                   Brian Chesky
                 </h5>
-                <h6 class="contact-company" id="contactCompany">
+                <h6 class="contact-company">
                   AirBnb
                 </h6>
               </div>
-              <button class="remove-button" id="removeButton">
+              <button class="remove-button">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </div>
           </li>
-          <li class="attendee-info list-inline-item" id="attendeeInfo">
+          <li class="attendee-info list-inline-item">
             <div class="attendee-info-wrapper">
               <div class="attendee-portrait">
                 <img src="assets/alexisohanian.jpeg" alt="attendee portrait">
               </div>
               <div class="attendee-bio">
-                <h5 class="full-name" id="fullName">
+                <h5 class="full-name">
                   Alexis Ohanian
                 </h5>
-                <h6 class="contact-company" id="contactCompany">
+                <h6 class="contact-company">
                   Reddit
                 </h6>
               </div>
-              <button class="remove-button" id="removeButton">
+              <button class="remove-button">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </div>
           </li>
-          <li class="attendee-info list-inline-item" id="attendeeInfo">
+          <li class="attendee-info list-inline-item">
             <div class="attendee-info-wrapper">
               <div class="attendee-portrait">
                 <img src="assets/patrickcollison.png" alt="attendee portrait">
               </div>
               <div class="attendee-bio">
-                <h5 class="full-name" id="fullName">
+                <h5 class="full-name">
                   Patrick Collison
                 </h5>
-                <h6 class="contact-company" id="contactCompany">
+                <h6 class="contact-company">
                   Stripe
                 </h6>
               </div>
-              <button class="remove-button" id="removeButton">
+              <button class="remove-button">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </div>
@@ -103,14 +110,14 @@
                 <img src="assets/wadefoster.jpeg" alt="attendee portrait">
               </div>
               <div class="attendee-bio">
-                <h5 class="full-name" id="fullName">
+                <h5 class="full-name">
                   Wade Foster
                 </h5>
-                <h6 class="contact-company" id="contactCompany">
+                <h6 class="contact-company">
                   Zapier
                 </h6>
               </div>
-              <button class="remove-button" id="removeButton">
+              <button class="remove-button">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </div>
@@ -140,7 +147,7 @@
                   YC
                 </h6>
               </div>
-              <button class="remove-button" id="removeButton">
+              <button class="remove-button">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </div>
