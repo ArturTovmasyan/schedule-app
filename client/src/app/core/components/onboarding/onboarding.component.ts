@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-onboarding',
@@ -8,49 +7,36 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class OnboardingComponent implements OnInit {
 
-  constructor(private activatedRoute: ActivatedRoute) {
-  }
+  navOptions: NavOption[] = [
+    {
+      id: 'calendar-setup',
+      title: 'Calendar Setup',
+      route: '/onboarding/calendar'
+    },
+    {
+      id: 'configuration',
+      title: 'Configuration',
+      route: '/onboarding/configuration'
+    },
+    {
+      id: 'availability',
+      title: 'Availability',
+      route: '/onboarding/availability'
+    }
+  ];
+
+  onboard_title = this.navOptions[0]['title'];
 
   ngOnInit(): void {
   }
 
-  get onboardingTitle(): OnboardingTitle {
-    return {
-      "subscription-plan": {
-        primary: "Start for free.",
-        secondary: "Scheduling should be easy."
-      },
-      "calendar": {
-        primary: "Let's get you set up and connected.",
-        secondary: ""
-      },
-      "configuration": {
-        primary: "Let's get you set up and connected.",
-        secondary: ""
-      },
-      "availability": {
-        primary: "Set Your Availability",
-        secondary: ""
-      }
-    }
+  changeTitle(title: string) {
+    this.onboard_title = title;
   }
-
-  get title(): { primary: string, secondary: string } {
-    const routePath: string | undefined = this.activatedRoute.firstChild?.snapshot.routeConfig?.path;
-    if (routePath != null) {
-      return this.onboardingTitle[routePath];
-    } else {
-      return {
-        primary: "",
-        secondary: ""
-      };
-    }
-  }  
 }
 
-interface OnboardingTitle {
-  [key: string]: {
-    primary: string,
-    secondary: string
-  }
+interface NavOption {
+  id: string;
+  title: string;
+  route: string;
 }

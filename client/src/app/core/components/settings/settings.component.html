@@ -5,13 +5,13 @@
         <div class="col-12 col-sm-3 h-100" style="width: 20%">
           <div class="aside-navbar">
             <div class="aside-navbar-header">
-              <label id="title">Settings</label>
+              <label id="title">{{ setting_title }}</label>
               <div class="close-image" routerLink="/calendar">
                 <img src="assets/ic_close.svg">
               </div>
             </div>
             <div id="menu-nav" class="flex flex-column justify-content-stretch">
-              <span class="menu-item" *ngFor="let nav of navOptions" id="{{ nav.id }}" routerLink="{{ nav.route }}"
+              <span (click)="changeTitle(nav.title)" class="menu-item" *ngFor="let nav of navOptions" id="{{ nav.id }}" routerLink="{{ nav.route }}"
                     [routerLinkActive]="['active']">{{ nav.title }}</span>
             </div>
           </div>

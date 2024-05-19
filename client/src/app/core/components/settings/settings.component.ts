@@ -41,9 +41,15 @@ export class SettingsComponent implements OnInit {
     route: '/settings/terms-conditions'
   }];
 
+  setting_title = this.navOptions[0]['title'];
+
   ngOnInit(): void {
   }
 
+  changeTitle(title: string) {
+    debugger;
+    this.setting_title = title;
+  }
 }
 
 interface NavOption {
