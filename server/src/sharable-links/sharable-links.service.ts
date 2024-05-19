@@ -408,12 +408,12 @@ export class SharableLinksService {
         {
           title: slot.link.title,
           description: `Sharable link event with ${user.firstName} ${user.lastName}`,
-          meetLink,
+          entanglesLocation: null,
           phoneNumber: slot.link.phoneNumber,
           address: slot.link.address,
           start: moment(slot.startDate).format(),
           end: moment(slot.endDate).format(),
-          syncWith: schedulerUserCalendar.calendarId,
+          calendarId: schedulerUserCalendar.calendarId,
           attendees: [user.email],
         },
       );
@@ -527,7 +527,7 @@ export class SharableLinksService {
             ? `Note: ${body.note}
             `
             : '' + `Sharable link event with ${body.name}`,
-          meetLink,
+          entanglesLocation: null,
           phoneNumber:
             slot.link.meetVia === MeetViaEnum.InboundCall
               ? slot.link.phoneNumber
@@ -535,7 +535,7 @@ export class SharableLinksService {
           address: slot.link.address,
           start: moment(slot.startDate).format(),
           end: moment(slot.endDate).format(),
-          syncWith: schedulerUserCalendar.calendarId,
+          calendarId: schedulerUserCalendar.calendarId,
           attendees: [body.email],
         },
       );
@@ -743,8 +743,7 @@ export class SharableLinksService {
 
       await this._deleteTimeslotEvents(slot, schedulerUser, calendar);
 
-      let meetLink: string;
-      let meetingId: string;
+      let entanglesLocation: MeetViaEnum|null = null;
 
       if (slot.link.meetVia === MeetViaEnum.Zoom) {
         const zoomMeet = await this.zoomService.createMeeting(schedulerUser, {
@@ -757,9 +756,9 @@ export class SharableLinksService {
             email_notification: true,
           },
         });
-
-        meetLink = zoomMeet.data.join_url;
-        meetingId = zoomMeet.data.id.toString();
+        entanglesLocation = MeetViaEnum.Zoom
+        // meetLink = zoomMeet.data.join_url;
+        // meetingId = zoomMeet.data.id.toString();
       } else if (slot.link.meetVia === MeetViaEnum.GMeet) {
         const gMeet = await this.calendarEventService.createGoogleMeetLink(
           schedulerUser,
@@ -770,9 +769,9 @@ export class SharableLinksService {
             attendees: [email],
           },
         );
-
-        meetLink = gMeet.meetLink;
-        meetingId = gMeet.meetingId;
+        entanglesLocation = MeetViaEnum.GMeet
+        // meetLink = gMeet.meetLink;
+        // meetingId = gMeet.meetingId;
       }
 
       const event = await this.calendarEventService.createUserCalendarEvent(
@@ -788,12 +787,12 @@ export class SharableLinksService {
               ? slot.user.firstName + ' ' + slot.user.lastName
               : slot.metadata.name
           }`,
-          meetLink,
+          entanglesLocation,
           phoneNumber: slot.link.phoneNumber,
           address: slot.link.address,
           start: moment(newSlot.startDate).format(),
           end: moment(newSlot.endDate).format(),
-          syncWith: calendar.calendarId,
+          calendarId: calendar.calendarId,
           attendees: [email],
         },
       );
@@ -814,7 +813,7 @@ export class SharableLinksService {
           {
             choosedBy: slot.user ? slot.user.id : null,
             choosedByEmail: slot.metadata.email ?? null,
-            meetingId,
+            meetingId: '123',
             calendarEventId: event.id,
             metadata: slot.metadata,
           },

@@ -13,6 +13,7 @@ import { Calendar } from './calendar.entity';
 import { EventRecurrenceTypeEnum } from '../enums/eventRecurrenceType.enum';
 import { WeekDaysEnum } from '../enums/weekDays.enum';
 import { IndexOfWeekEnum } from '../enums/indexOfWeek.enum';
+import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
 
 @Entity()
 export class CalendarEvent {
@@ -20,10 +21,7 @@ export class CalendarEvent {
   id!: string;
 
   @Column({ type: 'varchar', nullable: true, default: null })
-  googleId!: string;
-
-  @Column({ type: 'varchar', nullable: true, default: null })
-  outlookId!: string;
+  externalId!: string;
 
   @ManyToOne(() => User, (user) => user.id, { nullable: false })
   @JoinColumn()
@@ -37,22 +35,13 @@ export class CalendarEvent {
   calendar!: Calendar;
 
   @Column({ type: 'varchar', nullable: true })
-  creator: string;
-
-  @Column({ type: 'varchar', nullable: true })
-  creatorFromGoogle: string;
-
-  @Column({ type: 'varchar', nullable: true })
-  creatorFromOutlook: string;
-
-  @Column({ type: 'varchar', nullable: true })
   title: string;
 
   @Column({ type: 'varchar', nullable: true })
   description: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  meetLink: string;
+  @Column({ type: 'enum', enum: MeetViaEnum, nullable: true })
+  entanglesLocation: MeetViaEnum;
 
   @Column({ type: 'jsonb', default: [] })
   attendees: string;

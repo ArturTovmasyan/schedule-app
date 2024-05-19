@@ -74,20 +74,21 @@ export class ContactsService {
 
       const emails: string[] = [];
 
-      for (let i in eventEmails) {
-        if (
-          !eventEmails[i].creatorFromGoogle &&
-          !eventEmails[i].creatorFromOutlook
-        ) {
-          break;
-        }
-        if (eventEmails[i].creatorFromGoogle) {
-          emails.push(eventEmails[i].creatorFromGoogle);
-        }
-        if (eventEmails[i].creatorFromOutlook) {
-          emails.push(eventEmails[i].creatorFromOutlook);
-        }
-      }
+      //TODO: check this later
+      // for (const i in eventEmails) {
+      //   if (
+      //     !eventEmails[i].creatorFromGoogle &&
+      //     !eventEmails[i].creatorFromOutlook
+      //   ) {
+      //     break;
+      //   }
+      //   if (eventEmails[i].creatorFromGoogle) {
+      //     emails.push(eventEmails[i].creatorFromGoogle);
+      //   }
+      //   if (eventEmails[i].creatorFromOutlook) {
+      //     emails.push(eventEmails[i].creatorFromOutlook);
+      //   }
+      // }
 
       if (!emails.length) {
         throw new NotFoundException({

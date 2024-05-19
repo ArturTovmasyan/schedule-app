@@ -7,6 +7,7 @@ import {
   IsEmail,
   IsOptional,
 } from 'class-validator';
+import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
 
 export class CreateEventDto {
   @IsString()
@@ -16,8 +17,13 @@ export class CreateEventDto {
   @IsString()
   description: string;
 
-  @IsString()
-  meetLink: string;
+  @IsArray()
+  @IsEmail({}, { each: true })
+  attendees?: string[] = [];
+
+  @IsArray()
+  @IsEmail({}, { each: true })
+  optionalAttendees?: string[];
 
   @IsString()
   @IsDateString()
@@ -30,7 +36,10 @@ export class CreateEventDto {
   end: string;
 
   @IsString()
-  syncWith: string;
+  calendarId: string;
+
+  @IsString()
+  entanglesLocation: MeetViaEnum;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -41,15 +50,6 @@ export class CreateEventDto {
   @IsOptional()
   @IsString()
   address?: string;
-
-  @IsArray()
-  @IsEmail({}, { each: true })
-  @IsNotEmpty()
-  attendees?: string[] = [];
-
-  @IsArray()
-  @IsEmail({}, { each: true })
-  optionalAttendees?: string[];
 }
 
 export default CreateEventDto;

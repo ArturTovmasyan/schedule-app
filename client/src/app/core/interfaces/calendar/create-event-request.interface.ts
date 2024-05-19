@@ -1,10 +1,10 @@
 export interface CreateEventRequest {
   title: string,
   description: string,
-  meetLink: string,
   start: string,
   end: string,
-  syncWith: string,
+  calendarId: string,
+  entanglesLocation?: string,
   attendees?: string[],
   optionalAttendees?: string[],
   duration?: number,

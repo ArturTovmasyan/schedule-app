@@ -5,6 +5,7 @@ import {ApiResponse} from '../../interfaces/response/api.response.interface';
 import {DatePipe} from "@angular/common";
 import * as moment from 'moment';
 import { CreateEventRequest } from '../../interfaces/calendar/create-event-request.interface';
+import { pipe } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,7 @@ export class CalendarService {
     )
   }
 
+<<<<<<< HEAD
   fetchContactEvents(contactId: string) {
     let initDate = moment().subtract(1, 'week').toDate(); //TODO add event for contact and test
     let startDate = this.datePipe.transform(initDate, 'yyyy-MM-dd');
@@ -40,6 +42,20 @@ export class CalendarService {
     return this.http.get<ApiResponse<any>>(this.url+'/'+contactId+'?startDate='+startDate+'&dateEnd='+endDate, {}).pipe(
       map((response: ApiResponse<any>) => {
         return response;
+=======
+  fetchEventDetail(id: string) {
+    return this.http.get<any>(`${this.url}/${id}`, {})
+      .pipe(map((response) => {
+        return response;
+      }
+      ));
+  }
+
+  scheduleEvent(data: CreateEventRequest) {
+    return this.http.post<ApiResponse<any>>(this.url, data).pipe(
+      map((response) => {
+        return response.data
+>>>>>>> 3424aad (refacor calendar-event model/controller/service)
       })
     )
   }

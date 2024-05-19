@@ -1,4 +1,5 @@
 import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
 
 export class UpdateEventDto {
   @IsString()
@@ -11,7 +12,7 @@ export class UpdateEventDto {
 
   @IsString()
   @IsOptional()
-  meetLink: string;
+  meetLink: MeetViaEnum;
 
   @IsString()
   @IsDateString()

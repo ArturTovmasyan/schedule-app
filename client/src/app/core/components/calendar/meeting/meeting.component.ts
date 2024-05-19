@@ -1,40 +1,43 @@
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment-timezone';
-import {BehaviorSubject, first} from 'rxjs';
-import {Calendar, CalendarData} from 'src/app/core/interfaces/calendar/calendar-data.interface';
-import {CreateEventRequest} from 'src/app/core/interfaces/calendar/create-event-request.interface';
-import {CalendarService} from 'src/app/core/services/calendar/calendar.service';
-import {CalendarPermissionService} from 'src/app/core/services/calendar/permission.service';
-import {CommonService} from 'src/app/core/services/common.service';
-import {CalendarType} from '../connect-calendar/connect-calendar.component';
-import {AvailabilityService} from "../../../services/calendar/availability.service";
-import {BroadcasterService} from "../../../../shared/services";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {CalendarAccess} from "../../../interfaces/calendar/calendar-access.interface";
-import {CalendarAccessService} from "../../../services/calendar/access.service";
+import { BehaviorSubject, first } from 'rxjs';
+import {
+  Calendar,
+  CalendarData,
+} from 'src/app/core/interfaces/calendar/calendar-data.interface';
+import { CreateEventRequest } from 'src/app/core/interfaces/calendar/create-event-request.interface';
+import { CalendarService } from 'src/app/core/services/calendar/calendar.service';
+import { CalendarPermissionService } from 'src/app/core/services/calendar/permission.service';
+import { CommonService } from 'src/app/core/services/common.service';
+import { CalendarType } from '../connect-calendar/connect-calendar.component';
+import { AvailabilityService } from '../../../services/calendar/availability.service';
+import { BroadcasterService } from '../../../../shared/services';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CalendarAccess } from '../../../interfaces/calendar/calendar-access.interface';
+import { CalendarAccessService } from '../../../services/calendar/access.service';
 import { UserData } from '../../chip-user-input/chip-user-input.component';
 import { SharableLinkService } from 'src/app/core/services/calendar/sharable-link.service';
 import { MeetViaEnum } from '../enums/sharable-links.enum';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
+import { ApiResponse } from 'src/app/core/interfaces/response/api.response.interface';
 
 @Component({
   selector: 'app-meeting',
   templateUrl: './meeting.component.html',
-  styleUrls: ['./meeting.component.scss']
+  styleUrls: ['./meeting.component.scss'],
 })
 export class MeetingComponent implements OnInit, OnDestroy {
-
   data: CreateEventRequest = {
-    title: "",
-    description: "",
-    meetLink: "",
-    start: "",
-    end: "",
-    syncWith: "",
+    title: '',
+    description: '',
+    start: '',
+    end: '',
+    entanglesLocation: '',
+    calendarId: '',
     attendees: [],
     optionalAttendees: [],
-    duration: 1
+    duration: 1,
   };
   myCalendar: CalendarData | null = null;
   selectedCalendar: Calendar | null = null;
@@ -49,13 +52,15 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   showRequiredErrors = false;
 
+  currentEventId: string|null = null;
+
   // manoj
   emailsWithAvailabilityMap = new Map();
   linkId = '';
   locations: Location[] = [];
   choosedLocationObj: Location | null = null;
   showLocation = false;
-  connectMessage = { 'title': '', 'type': '' };
+  connectMessage = { title: '', type: '' };
   address = null;
   phoneNumber = null;
   readonly MeetViaEnum = MeetViaEnum;
@@ -70,42 +75,18 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private readonly sharableLinkService: SharableLinkService,
     private formBuilder: FormBuilder,
     private readonly calendarPermissionService: CalendarPermissionService,
-    private readonly calendarService: CalendarService
+    private readonly calendarService: CalendarService,
+    private readonly route: ActivatedRoute
   ) {
-    this.fetchMyAttendees();
-    this.getLocations();
-
-    this.form = this.formBuilder.group({
-      meetTitle: ['', [Validators.required, Validators.minLength(5)]],
-      attendees: ['', [Validators.required]],
-      duration: ['', [Validators.required]],
-      meetingLocation: [''],
-    }, {updateOn: 'blur'});
-
-    this.subscription = this.broadcaster.on('meet_date_range').subscribe((eventData: any) => {
-      if (eventData.contact_email) {
-        this.selectedAttendees = [
-          eventData
-        ]
-        this.data.attendees?.push(eventData.contact_email);
-      }
-
-      this.data.start = eventData.start;
-      this.data.end = eventData.end;
-    });
-  }
-
-  ngOnInit(): void {
-    this.permissionService.fetchCalendars()
-      .pipe(first())
-      .subscribe({
-        next: (data: CalendarData | any) => {
-          this.myCalendar = data;
-          if (this.myCalendars.length > 0) {
-            this.selectCalendar(this.myCalendars[0]);
-          }
-        }
-      });
+    this.form = this.formBuilder.group(
+      {
+        meetTitle: ['', [Validators.required, Validators.minLength(5)]],
+        attendees: ['', [Validators.required]],
+        duration: ['', [Validators.required]],
+        meetingLocation: [''],
+      },
+      { updateOn: 'blur' }
+    );
 
     this.dropdownSettings = {
       singleSelection: false,
@@ -116,14 +97,79 @@ export class MeetingComponent implements OnInit, OnDestroy {
       limitSelection: 10,
       allowSearchFilter: true,
     };
-    this.initFormValue();
+
+    this.subscription = this.broadcaster
+      .on('meet_date_range')
+      .subscribe((eventData: any) => {
+        if (eventData.contact_email) {
+          this.selectedAttendees = [eventData];
+          this.data.attendees?.push(eventData.contact_email);
+        }
+
+        this.data.start = eventData.start;
+        this.data.end = eventData.end;
+      });
+  }
+
+  ngOnInit(): void {
+    this.fetchMyAttendees();
+    this.getLocations();
+    this.permissionService
+      .fetchCalendars()
+      .pipe(first())
+      .subscribe({
+        next: (data: CalendarData | any) => {
+          this.myCalendar = data;
+          if (this.myCalendars.length > 0) {
+            this.selectCalendar(this.myCalendars[0]);
+          }
+        },
+      });
+    this.route.paramMap.subscribe((paramMap) => {
+      this.currentEventId = paramMap.get('id');
+      if (this.currentEventId != null) this.fetchEventDetail(this.currentEventId);
+      else this.initializeForm(); // this.initFormValue();
+    });
 
     // load from saved Data of localstorage after connect redirection
     if (localStorage.getItem('meetingDatas')) {
       this.runAfterRedirect();
     }
   }
-  
+
+  fetchEventDetail(id: string) {
+    this.calendarService.fetchEventDetail(id)
+      .pipe(first())
+      .subscribe({
+        next: (event) => {
+          this.resetData();
+          this.initializeForm(event);
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
+  }
+
+  initializeForm(event: any|null = null) {
+    if (event) {
+      this.data = {
+        title: event.title,
+        description: event.description ?? "",
+        start: event.start,
+        end: event.end,
+        entanglesLocation: event.entanglesLocation,
+        calendarId: event.externalId,
+        attendees: [],
+        optionalAttendees: [],
+        phoneNumber: event.phoneNumber,
+        address: event.address,
+        duration: 1,
+      }
+      this.form.setValue(this.data);
+    }
+  }
+
   // run after connect button is clicked on Location to connect to zoom, meet or teams
   runAfterRedirect() {
     const savedData = localStorage.getItem('meetingDatas') as string;
@@ -132,9 +178,12 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.choosedLocationObj = savedDataArr.choosedLocationObj;
       this.data = savedDataArr.data;
       this.selectedAttendees = savedDataArr.selectedAttendees ?? [];
-      this.broadcaster.broadcast('selectUnselectDate', {'startDate': this.data.start, 'endDate': this.data.end});
+      this.broadcaster.broadcast('selectUnselectDate', {
+        startDate: this.data.start,
+        endDate: this.data.end,
+      });
       if (this.selectedAttendees.length) {
-        for (let i=0; i < this.selectedAttendees.length; i++) {
+        for (let i = 0; i < this.selectedAttendees.length; i++) {
           this.getContactsAvailability(this.selectedAttendees[i]);
         }
       }
@@ -143,17 +192,17 @@ export class MeetingComponent implements OnInit, OnDestroy {
         // if not connected show connect message
         this.connectMessage = {
           title: this.choosedLocationObj?.title as string,
-          type: this.choosedLocationObj?.value as string
+          type: this.choosedLocationObj?.value as string,
         };
       }
     }
   }
 
   initFormValue(defaultValues: any = null) {
-    if (!defaultValues) { 
+    if (!defaultValues) {
       defaultValues = {
-        'duration': 1 // 1 hour
-      }
+        duration: 1, // 1 hour
+      };
     }
     this.form.patchValue(defaultValues);
   }
@@ -169,12 +218,13 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (localStorage.getItem('meetingDatas')) localStorage.removeItem('meetingDatas');
+    if (localStorage.getItem('meetingDatas'))
+      localStorage.removeItem('meetingDatas');
     this.subscription.unsubscribe();
   }
 
   selectCalendar(calendar: Calendar) {
-    this.data.syncWith = calendar.id;
+    this.data.calendarId = calendar.id;
     this.selectedCalendar = calendar;
     this.showCalendars = false;
   }
@@ -202,18 +252,24 @@ export class MeetingComponent implements OnInit, OnDestroy {
   scheduleEvent() {
     this.errorMessages = [];
     if (this.data.title == '') {
-      this.errorMessages.push('Message title is required.')
+      this.errorMessages.push('Message title is required.');
     }
 
     if (this.data.start == '') {
-      this.errorMessages.push('Date/Time cannot be empty')
+      this.errorMessages.push('Date/Time cannot be empty');
     }
 
     if (!this.choosedLocationObj) {
       this.errorMessages.push('Please select the Location');
-    } else if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall && !this.phoneNumber) {
+    } else if (
+      this.choosedLocationObj?.value == MeetViaEnum.InboundCall &&
+      !this.phoneNumber
+    ) {
       this.errorMessages.push('Please enter Phone Number');
-    } else if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress && !this.address) {
+    } else if (
+      this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress &&
+      !this.address
+    ) {
       this.errorMessages.push('Please enter Address');
     }
 
@@ -221,7 +277,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.autoHideErrorMessage(3000);
       return;
     }
-    
+
     if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
       this.data['phoneNumber'] = this.phoneNumber!;
     }
@@ -229,43 +285,45 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.data['address'] = this.address!;
     }
 
-    this.calendarService.scheduleEvent(this.data)
+    this.calendarService
+      .scheduleEvent(this.data)
       .pipe(first())
       .subscribe({
         next: () => {
           this.resetData();
-          if (localStorage.getItem('meetingDatas')) localStorage.removeItem('meetingDatas');
+          if (localStorage.getItem('meetingDatas'))
+            localStorage.removeItem('meetingDatas');
         },
-        error: (error:any) => {
+        error: (error: any) => {
           this.errorMessages.push(error?.message);
           this.autoHideErrorMessage();
-        }
+        },
       });
   }
 
   resetData() {
     this.data = {
-      title: "",
-      description: "",
-      meetLink: "",
-      start: "",
-      end: "",
-      syncWith: this.data.syncWith,
+      title: '',
+      description: '',
+      start: '',
+      end: '',
+      calendarId: this.data.calendarId,
       attendees: [],
       optionalAttendees: [],
       duration: 1,
-      phoneNumber: "",
-      address: ""
-    }
+      phoneNumber: '',
+      address: '',
+    };
   }
 
   getContactsAvailability(contact: UserData) {
     const contactId = contact.id;
     const contactEmail = contact.email;
     this.data.attendees?.push(contactEmail);
-    if(!contactId) return;
+    if (!contactId) return;
 
-    this.availabilityService.getByUserId([contactId])
+    this.availabilityService
+      .getByUserId([contactId])
       .pipe(first())
       .subscribe({
         next: (data: any) => {
@@ -275,10 +333,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error(error.message);
-        }
+        },
       });
 
-      
     // const contactEmails = this.data.attendees;
     // if (contactEmails && contactEmails.length > 0) {
     //   this.availabilityService.getByEmails(contactEmails)
@@ -301,7 +358,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   fetchMyAttendees() {
-    this.service.fetchAccessibleContacts()
+    this.service
+      .fetchAccessibleContacts()
       .pipe(first())
       .subscribe({
         next: (data: CalendarAccess[] | null) => {
@@ -313,21 +371,20 @@ export class MeetingComponent implements OnInit, OnDestroy {
                 name: `${contact.owner.firstName} ${contact.owner.lastName}`,
                 email: contact.owner.email,
                 avatar: contact.owner.avatar,
-                removable: true
-              }
+                removable: true,
+              };
             });
           }
         },
         error: (error) => {
           this.error = error;
-        }
+        },
       });
   }
 
   broadcastContactData() {
     const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
     this.broadcaster.broadcast('contact_calendar_data', contacts);
-    
   }
 
   updateAttendees(users: UserData[]) {
@@ -335,25 +392,28 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   getLocations() {
-    this.sharableLinkService.getLocations()
-      .subscribe({
-        next: (res: any) => {
-          this.locations = res;
-        }
-      });
+    this.sharableLinkService.getLocations().subscribe({
+      next: (res: any) => {
+        this.locations = res;
+      },
+    });
   }
 
   chooseLocation(loc: Location) {
     this.choosedLocationObj = loc;
-    this.data.meetLink = loc.value;
+    this.data.entanglesLocation = loc.value;
     this.showLocation = false;
-    if (![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(loc.value)) {
+    if (
+      ![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(
+        loc.value
+      )
+    ) {
       // if incoming and outgoing and address is choosed from location option
       // no need to check for connection of location choosed
       this.connectMessage = {
         title: '',
-        type: ''
-      }
+        type: '',
+      };
       return;
     }
 
@@ -361,12 +421,12 @@ export class MeetingComponent implements OnInit, OnDestroy {
       // if not connected show connect message
       this.connectMessage = {
         title: loc.title,
-        type: loc.value
+        type: loc.value,
       };
     } else {
       this.connectMessage = {
         title: '',
-        type: ''
+        type: '',
       };
     }
   }
@@ -378,17 +438,16 @@ export class MeetingComponent implements OnInit, OnDestroy {
       data: this.data,
       choosedLocationObj: this.choosedLocationObj,
       selectedAttendees: this.selectedAttendees,
-    }
+    };
     localStorage.setItem('meetingDatas', JSON.stringify(savedData));
     localStorage.setItem('calendar-redirect', window.location.pathname);
     let connectApiReq = null;
     if (type == MeetViaEnum.Zoom) {
-      this.calendarPermissionService.connectZoom() 
-        .subscribe({
-          next: (url: string) => {
-            window.location.href = url;
-          }
-        });
+      this.calendarPermissionService.connectZoom().subscribe({
+        next: (url: string) => {
+          window.location.href = url;
+        },
+      });
     }
 
     if (type == MeetViaEnum.GMeet) {
@@ -396,42 +455,44 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
 
     if (type == MeetViaEnum.Teams) {
-      connectApiReq = this.calendarPermissionService.connectOffice365Calendar()
+      connectApiReq = this.calendarPermissionService.connectOffice365Calendar();
     }
 
     if (connectApiReq) {
       connectApiReq.subscribe({
         next: (url: string) => {
           window.location.href = url;
-        }
+        },
       });
     }
   }
 
-  onDurationSelectionChanged(index: number){
+  onDurationSelectionChanged(index: number) {
     this.form.patchValue({
-      'duration': index,
+      duration: index,
     });
     this.data.duration = index;
     if (index != 4) {
-      const newIndex = index+1;
+      const newIndex = index + 1;
       this.broadcaster.broadcast('timeSLotInterval', 15 * newIndex);
       return;
     }
     this.broadcaster.broadcast('timeSLotInterval', 30);
-    
   }
 
   autoHideErrorMessage(time=3000) {
     setTimeout(() => {
-        this.errorMessages = [];
-      }, time);
+      this.errorMessages = [];
+    }, time);
   }
 
   resetSelectedDate() {
     this.data['start'] = '';
     this.data['end'] = '';
-    this.broadcaster.broadcast('selectUnselectDate', {'startDate': '', 'endDate': ''});
+    this.broadcaster.broadcast('selectUnselectDate', {
+      startDate: '',
+      endDate: '',
+    });
   }
 
   get f() {
@@ -439,7 +500,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   get myCalendars() {
-    const calendars: Calendar[] = []
+    const calendars: Calendar[] = [];
     this.myCalendar?.googleCalendar?.forEach((item) => {
       calendars.push(item);
     });
@@ -450,15 +511,23 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   get parsedDate(): string {
-    let currentDate = this.commonService.getFormattedDateString(moment()) ?? "";
+    let currentDate = this.commonService.getFormattedDateString(moment()) ?? '';
     if (this.data.start) {
       currentDate = this.data.start;
     }
-    return this.commonService.getFormattedDateString(moment.utc(currentDate).local(), 'ddd, MMM Do') ?? "";
+    return (
+      this.commonService.getFormattedDateString(
+        moment.utc(currentDate).local(),
+        'ddd, MMM Do'
+      ) ?? ''
+    );
   }
 
   get hasCalendars(): boolean {
-    return (this.myCalendar?.googleCalendar?.length ?? 0) > 0 || (this.myCalendar?.office365Calendar?.length ?? 0) > 0
+    return (
+      (this.myCalendar?.googleCalendar?.length ?? 0) > 0 ||
+      (this.myCalendar?.office365Calendar?.length ?? 0) > 0
+    );
   }
 
   get timezone(): string {
