@@ -12,8 +12,8 @@ export class AvailabilityComponent implements OnInit {
 
   availability: CalendarAvailability | null = null;
   _availability: CalendarAvailability = {
-    from: "10:00",
-    to: "05:00",
+    from: "09:00am",
+    to: "05:00pm",
     clockType: ClockType.NORMAL.valueOf(),
     sunday: false,
     monday: true,
