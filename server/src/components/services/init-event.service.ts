@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as moment from "moment/moment";
+import * as moment from "moment/moment"
 import {dateDiff} from "../helpers/utils";
 
 
@@ -13,140 +13,194 @@ export class InitEventService {
    *
    * @returns returns url
    * @param dates
-   * @param splitedEvents
+   * @param splitEvents
    * @param newAvailabilityDate
    * @param eventDateStart
    * @param eventDateEnd
-   * @param avalDateStart
-   * @param avalDateEnd
+   * @param availabilityStart
+   * @param availabilityEnd
    */
   iniEvents(dates,
-            splitedEvents,
+            splitEvents,
             newAvailabilityDate,
             eventDateStart,
             eventDateEnd,
-            avalDateStart,
-            avalDateEnd) {
+            availabilityStart,
+            availabilityEnd) {
 
-    let notEventSplit = true;
+    const DURATION = 15; //TODO check in all case.
+
     let eventStartMinute = eventDateStart.getMinutes();
     let eventEndMinute = eventDateEnd.getMinutes();
     let eventStartHour = eventDateStart.getHours();
     let eventEndHour = eventDateEnd.getHours();
 
-    let newAvalEndDate = moment(eventDateStart).set({
+    let newAvailabilityEndDate = moment(eventDateStart).set({
       hour: eventStartHour,
       minute: eventStartMinute
     }).toDate();
 
-    if (newAvalEndDate > avalDateEnd) {
-        newAvalEndDate = avalDateEnd;
+    if (newAvailabilityEndDate > availabilityEnd) {
+        newAvailabilityEndDate = availabilityEnd;
     }
 
-    if (splitedEvents.length > 0) {
-      let dateIndex = splitedEvents.length - 1;
-      let lastAvalEvent = splitedEvents[dateIndex];
-      let lastAvalStart = lastAvalEvent.start;
-      let lastAvalEnd = lastAvalEvent.end;
+    if (splitEvents.length > 0) {
+      let dateIndex = splitEvents.length - 1;
+      let lastSplitEvent = splitEvents[dateIndex];
+      let lastEventStart = lastSplitEvent.start;
+      let lastEventEnd = lastSplitEvent.end;
 
-      if (eventStartHour >= lastAvalStart.getHours() && eventEndHour <= lastAvalEnd.getHours()) {
-        if (eventStartHour == lastAvalStart.getHours()) {
+      let lastEventStartHour = lastEventStart.getHours();
+      let lastEventEndHour = lastEventEnd.getHours();
+
+      let lastEventStartMinute = lastEventStart.getMinutes();
+      let lastEventEndMinute = lastEventEnd.getMinutes();
+
+      if (eventStartHour >= lastEventStartHour && eventEndHour <= lastEventEndHour) {//TODO chi mtnum dranica
+
+        if (eventStartHour == lastEventStartHour) {
           // when event start is equal
-          if (eventStartMinute == lastAvalStart.getMinutes()) {
+          if (eventStartMinute == lastEventStartMinute) {
 
             newAvailabilityDate.push({
               start: eventDateEnd,
-              end: lastAvalEnd,
+              end: lastEventEnd,
             });
 
             dates.splice(-1);
           }
           // when event start is OUT aval. start
-          else if (eventStartMinute < lastAvalStart.getMinutes()) {
+          else if (eventStartMinute < lastEventStartMinute) {
             newAvailabilityDate.push({
               start: eventDateEnd,
-              end: lastAvalEnd,
+              end: lastEventEnd,
             });
 
             dates.splice(-1);
           }
           // when event start is IN aval. start
           else {
-            let diffMin = dateDiff(lastAvalStart, eventDateStart);
+            let diffMin = dateDiff(lastEventStart, eventDateStart);
 
-            if (diffMin >= 15) {
+            if (diffMin >= DURATION) {
               newAvailabilityDate.push({
-                start: lastAvalStart,
+                start: lastEventStart,
                 end: eventDateStart,
               });
             }
 
             newAvailabilityDate.push({
               start: eventDateEnd,
-              end: lastAvalEnd,
+              end: lastEventEnd,
             });
 
             dates.splice(-1); //delete split event
           }
         }
-        else if (eventEndHour == lastAvalEnd.getHours()) {
+        else if (eventEndHour == lastEventEndHour) {
           //when event end is equal with aval. end
-          if (eventEndMinute == lastAvalEnd.getMinutes()) {
+          if (eventEndMinute == lastEventEndMinute) {
             newAvailabilityDate.push({
-              start: lastAvalStart,
+              start: lastEventStart,
               end: eventDateStart,
             });
 
           }
           //when event end is out from aval.
-          else if (eventEndMinute > lastAvalEnd.getMinutes()) {
+          else if (eventEndMinute > lastEventEndMinute) {
+            let diffMin = eventEndMinute - lastEventEndMinute;
 
-            newAvailabilityDate.push({
-              start: lastAvalStart,
-              end: eventDateStart,
-            });
+            if (diffMin >= DURATION) {
+              newAvailabilityDate.push({
+                start: lastEventStart,
+                end: eventDateStart,
+              });
 
-            dates.splice(-1); //delete split event
-
+              dates.splice(-1);
+            }
           }
           //when event end is IN aval. end
           else {
 
             newAvailabilityDate.push({
-              start: lastAvalStart,
+              start: lastEventStart,
               end: eventDateStart,
             });
 
-            let diffMin = dateDiff(lastAvalEnd, eventDateEnd);
+            let diffMin = dateDiff(lastEventEnd, eventDateEnd);
 
-            if (diffMin >= 15) {
+            if (diffMin >= DURATION) {
               newAvailabilityDate.push({
                 start: eventDateEnd,
-                end: lastAvalEnd,
+                end: lastEventEnd,
               });
             }
 
-            dates.splice(-1); //delete split event
+            dates.splice(-1);
           }
         }
         else {
+          let diffMin = dateDiff(lastEventStart, eventDateStart);
+          let avalDiffMinute = dateDiff(eventDateEnd, lastEventEnd);
 
-          let diffMin = dateDiff(lastAvalStart, eventDateStart);
-          let avalDiffMinute = dateDiff(eventDateEnd, lastAvalEnd);
-
-          if (diffMin >= 15) {
+          if (diffMin >= DURATION) {
             newAvailabilityDate.push({
-              start: lastAvalStart,
+              start: lastEventStart,
               end: eventDateStart,
             });
           }
 
-          if (avalDiffMinute >= 15) {
+          if (avalDiffMinute >= DURATION) {
             newAvailabilityDate.push({
               start: eventDateEnd,
-              end: lastAvalEnd,
+              end: lastEventEnd,
             });
           }
+
+          dates.splice(-1);
+        }
+      }
+      else if (eventStartHour <= lastEventEndHour && eventEndHour > lastEventEndHour) {
+
+        if (eventStartHour == lastEventEndHour) {
+          let difMinute = lastEventEndMinute - eventStartMinute;
+
+          if (difMinute >= DURATION) {
+            newAvailabilityDate.push({
+              start: lastEventStart,
+              end: eventDateStart,
+            });
+            dates.splice(-1);
+
+          }
+        } else {
+          newAvailabilityDate.push({
+            start: lastEventStart,
+            end: eventDateStart,
+          });
+
+          dates.splice(-1);
+        }
+      }
+      else if (eventStartHour < lastEventStartHour && eventEndHour >= lastEventStartHour) {
+
+        if (eventEndHour == lastEventStartHour) {
+          let difMinute = eventEndMinute - lastEventStartMinute;
+
+          if (difMinute >= DURATION) {
+            newAvailabilityDate.push({
+              start: eventDateEnd,
+              end: lastEventEnd,
+            });
+
+            dates.splice(-1);
+          }
+
+        } else {
+          newAvailabilityDate.push({
+            start: eventDateEnd,
+            end: lastEventEnd,
+          });
 
           dates.splice(-1);
         }
@@ -154,28 +208,82 @@ export class InitEventService {
     }
     else {
 
-      debugger;
-      if (avalDateStart <= newAvalEndDate) {//TODO fix this part
+      if (availabilityStart <= newAvailabilityEndDate) {
         newAvailabilityDate.push({
-          start: avalDateStart,
-          end: newAvalEndDate,
+          start: availabilityStart,
+          end: newAvailabilityEndDate,
         });
       }
 
-      if (eventDateEnd <= avalDateEnd) {
+      if (eventDateEnd <= availabilityEnd) {
         newAvailabilityDate.push({
           start: eventDateEnd,
-          end: avalDateEnd,
+          end: availabilityEnd,
         });
       }
     }
 
     if (newAvailabilityDate.length > 0) {
-      splitedEvents.push(...newAvailabilityDate);
+      splitEvents.push(...newAvailabilityDate);
       dates.push(...newAvailabilityDate);
-      notEventSplit = false;
     }
 
-    return {dates, newAvailabilityDate, notEventSplit}
+    return {dates, newAvailabilityDate}
+  }
+
+  splitAvailabilityByDuration(duration:number, dates:any): any //TODO create interface for type start-end
+  {
+    let allEvents = [];
+
+    dates.forEach((date) => {
+      let startDate = date.start;
+      let endDate = date.end;
+      let diffMinute = dateDiff(startDate, endDate);
+
+      if (diffMinute > duration) {
+        const ranges = this.splitTime(moment(startDate), moment(endDate), duration);
+
+        ranges.forEach((ranges) => {
+          let start = ranges.start;
+          let end = ranges.end;
+
+          let diffMinute = dateDiff(start, end);
+
+          if (diffMinute >= duration) {
+            allEvents.push({start: ranges.start, end: ranges.end});
+          }
+        });
+
+      }
+    });
+
+    return allEvents;
+  }
+
+  splitTime(startDate, endDate, duration: number) {
+    let array = [];
+    let myStartDate;
+    let myEndDate;
+
+    if (!myStartDate) {
+      myStartDate = startDate;
+      myEndDate = moment(new Date(myStartDate)).add(duration, 'minutes').toDate();
+    }
+
+    while (myEndDate <= endDate)
+    {
+      let startDate7777 = myStartDate;
+      let endDate7777 = moment(new Date(myStartDate));
+
+      array.push({
+        start: startDate7777.toDate(),
+        end: endDate7777.add(duration, 'minutes').toDate(),
+      });
+
+      myStartDate = endDate7777;
+      myEndDate = moment(new Date(myStartDate)).add(duration, 'minutes').toDate();
+    }
+
+    return array;
   }
 }

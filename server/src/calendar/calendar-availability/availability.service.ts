@@ -1,4 +1,4 @@
-import {In, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {BadRequestException, HttpStatus, Injectable} from '@nestjs/common';
 import {ErrorMessages} from '../../components/constants/error.messages';
@@ -91,13 +91,6 @@ export class AvailabilityService {
             const contactEvents:any[] = await this.eventService.getEventsByUserIds(userIds, {startDate, dateEnd});
             availabilityDates = await this.convertAvailabilityToDate(data[0], contactEvents);
             availabilityDates.push(...contactEvents);
-
-            debugger;
-
-            //TODO extract/split event dates  by service and use it in create event also (with my event)
-            // let start = new Date();
-            // let end = moment(new Date()).add(10, 'days').toDate();
-            // let dates = await this.splitDatesByInterval(start, end, weekDays, 30);
         }
 
         return {availabilityDates};
@@ -211,7 +204,6 @@ export class AvailabilityService {
             }
         }
 
-        debugger;
         return dates;
     }
 
