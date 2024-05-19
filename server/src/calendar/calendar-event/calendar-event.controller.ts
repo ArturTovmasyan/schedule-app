@@ -82,13 +82,9 @@ export class CalendarEventController {
   }
 
   @Post('google-webhook')
-  // @UseGuards(AuthGuard())
-  // @UseInterceptors(UpdateAccessTokenInterceptor)
   async forGoogleWebhook(@Req() req: Request, @Res() res: Response) {
     const resourceId = req.headers['x-goog-resource-id'];
     const resourceState = req.headers['x-goog-resource-state'];
-
-    console.log('req.headers ', req.headers);
 
     const webhook = await this.calendarEventService.getWebhookByChannelId(
       resourceId,
@@ -102,7 +98,7 @@ export class CalendarEventController {
 
   @Post('outlook-webhook')
   // @UseGuards(AuthGuard())
-  // @UseInterceptors(UpdateAccessTokenInterceptor)
+  // @UseInterceptors(UpdateWebhookInterceptor)
   async forOutlookWebhook(
     @Query() query,
     @Req() req: Request,

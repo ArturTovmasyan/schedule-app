@@ -70,31 +70,27 @@ export class CalendarPermissionsService {
       },
     });
 
-    console.log('existingTokens ', existingTokens);
-
     if (existingTokens?.refreshToken) {
-      const resRevokeToken =
-        await this.clientsCredentials.googleOAuth2Client.revokeToken(
-          existingTokens.refreshToken,
-        );
+      await this.calendarTokenRepository.manager.transaction(
+        async (manager) => {
+          await this.calendarEventService.stopGoogleWebhookChannel(
+            user,
+            existingTokens.accessToken,
+            manager,
+          );
+          const resRevokeToken =
+            await this.clientsCredentials.googleOAuth2Client.revokeToken(
+              existingTokens.refreshToken,
+            );
 
-      if (resRevokeToken.status === 200) {
-        await this.calendarTokenRepository.manager.transaction(
-          async (manager) => {
+          if (resRevokeToken.status === 200) {
             await manager.getRepository(CalendarToken).delete({
               owner: { id: user.id },
               calendarType: CalendarTypeEnum.GoogleCalendar,
             });
-
-            await this.calendarEventService.stopGoogleWebhookChannel(
-              user,
-              existingTokens.accessToken,
-              manager,
-            );
-          },
-        );
-      }
-
+          }
+        },
+      );
       statusOfCalendarsAndUrl.statusOfCalendars =
         await this.getUserStatusOfCalendars(user.id);
 
@@ -136,11 +132,11 @@ export class CalendarPermissionsService {
         owner: { id: user.id },
       };
 
-      await calendarTokenRepository.save(calendarTokenBody);
+      const token = await calendarTokenRepository.save(calendarTokenBody);
 
       await this.calendarEventService.getCalendarsFromGoogle(user, manager);
 
-      await this.calendarEventService.googleEventWatcher(user, tokens, manager);
+      await this.calendarEventService.googleEventWatcher(user, token, manager);
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });

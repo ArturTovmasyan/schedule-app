@@ -16,6 +16,7 @@ import { transactionManagerWrapper } from '../../components/helpers/dbTransactio
 import UpdateEventDto from './dto/updateEvent.dto';
 import * as locaTunnel from 'localtunnel';
 import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CalendarEventService {
@@ -29,6 +30,7 @@ export class CalendarEventService {
     @InjectRepository(CalendarWebhookChannel)
     private readonly calendarWebhookChannelRepository: Repository<CalendarWebhookChannel>,
     private readonly clientsCredentials: ClientsCredentialsService,
+    private readonly configService: ConfigService,
   ) {}
 
   async getCalendarsFromGoogle(user: User, manager?: EntityManager) {
@@ -155,10 +157,6 @@ export class CalendarEventService {
     const tasks = await calendar.acl.list({
       calendarId: cal.data.items[0].id,
     });
-
-    console.log('tasks ', tasks.data.items);
-
-    console.log('events ', events.data.items);
   }
   async getFromMS(userId: string) {
     const { accessToken } = await this.calendarTokenRepository.findOne({
@@ -456,14 +454,23 @@ export class CalendarEventService {
     }
   }
 
-  async googleEventWatcher(user: User, token, manager?: EntityManager) {
+  async googleEventWatcher(
+    user: User,
+    token: CalendarToken,
+    manager?: EntityManager,
+  ) {
     const googleCalendarClient = await this.getGoogleCredentials(
-      token.access_token,
+      token.accessToken,
     );
 
     const tunnel = await locaTunnel({
-      port: 3000,
+      port: +this.configService.get<string>('PORT'),
     });
+
+    const baseUrl =
+      this.configService.get<string>('NODE_ENVIRONMENT') === 'development'
+        ? tunnel.url
+        : this.configService.get<string>('WEB_PRODUCTION_HOST');
 
     const calendarWebhookChannelRepo = manager.getRepository(
       CalendarWebhookChannel,
@@ -481,8 +488,8 @@ export class CalendarEventService {
       requestBody: {
         id: googleLocalPrimaryCalendar.id,
         type: 'web_hook',
-        address: `${tunnel.url}/api/calendar/events/google-webhook`,
-        token: token.access_token,
+        address: `${baseUrl}/api/calendar/events/google-webhook`,
+        token: token.accessToken,
         expiration: null,
       },
       calendarId: googleLocalPrimaryCalendar.calendarId,
@@ -512,8 +519,13 @@ export class CalendarEventService {
       });
 
     const tunnel = await locaTunnel({
-      port: 3000,
+      port: +this.configService.get<string>('PORT'),
     });
+
+    const baseUrl =
+      this.configService.get<string>('NODE_ENVIRONMENT') === 'development'
+        ? tunnel.url
+        : this.configService.get<string>('WEB_PRODUCTION_HOST');
 
     // const watchCloseResponse = await outlookCalendarClient
     //   .api('/subscriptions/f48dac3f-04db-032a-1c1c-f10a6c40057e')
@@ -524,7 +536,7 @@ export class CalendarEventService {
       .post(
         {
           changeType: 'deleted,updated,created',
-          notificationUrl: `${tunnel.url}/api/calendar/events/outlook-webhook`,
+          notificationUrl: `${baseUrl}/api/calendar/events/outlook-webhook`,
           resource: 'me/events',
           expirationDateTime: '2022-09-12T18:23:45.9356913Z',
         },
@@ -559,7 +571,12 @@ export class CalendarEventService {
     }
 
     function isEqualEvent(a, b): boolean {
-      return a.updatedOn === b.updatedOn;
+      return (
+        a.start.getTime() === b.start.getTime() &&
+        a.end.getTime() === b.end.getTime() &&
+        a.title === b.title &&
+        a.description === b.description
+      );
     }
 
     function getDelta(
