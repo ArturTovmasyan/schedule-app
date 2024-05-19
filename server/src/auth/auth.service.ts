@@ -1,4 +1,11 @@
-import {BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { UsersService } from '@user/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserCreateDto } from '@user/dto/user-create.dto';
@@ -14,11 +21,12 @@ import {statusEnum} from "@user/enums/status.enum";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "@user/entity/user.entity";
 import {Repository} from "typeorm";
+import {ChangePasswordDto} from "./dto/change-password.dto";
 
 @Injectable()
 export class AuthService {
 
-  private readonly appHost: string;
+  private readonly appHost:string = process.env.WEB_HOST;
 
   constructor(
     private readonly usersService: UsersService,
@@ -27,9 +35,7 @@ export class AuthService {
     private readonly mailService: MailService,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-  ) {
-    this.appHost = this.configService.get<string>('WEB_HOST');
-  }
+  ) {}
 
   async register(userDto: UserCreateDto): Promise<RegistrationStatus> {
     debugger;
@@ -80,16 +86,30 @@ export class AuthService {
     };
   }
 
+  public async verifyToken(token): Promise<UserDto> {
+    const data = this.jwtService.verify(token) as JwtPayload;
+    const user = await this.userRepo.findOne({where: { id: data.id }});
+
+    if (user) {
+      return user;
+    }
+
+    throw new UnauthorizedException({
+          status: HttpStatus.UNAUTHORIZED,
+          message: ErrorMessages.userNotFound,
+        }
+    );
+  }
+
   async sendConfirmation(user: UserDto) {
     debugger;
     const token = await this._createToken(user);
-    const confirmLink = `${this.appHost}/api/auth/confirm?token=${token.accessToken}`;
+    const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
 
     await this.mailService.send({
-      // from: this.configService.get<string>('NO_REPLY_EMAIL'),
+      // from: process.env.NO_REPLY_EMAIL,
       from: 'no-reply@handshake.com',
-      // to: user.email,
-      to: 'ateptan777@gmail.com',
+      to: user.email,
       subject: 'Verify Handshake Account',
       html: `
                 <h3>Hello ${user.firstName}!</h3>
@@ -98,8 +118,33 @@ export class AuthService {
     });
   }
 
-  async confirm(token: string): Promise<boolean> {
+  async resetPassword(email: string) {
     debugger;
+    const user: UserDto = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: ErrorMessages.userNotFound,
+      });
+    }
+
+    const token = await this._createToken(user);
+    const changeLink = `${this.appHost}change-password?token=${token.accessToken}`;
+
+    //TODO must be fetch from config .env
+    await this.mailService.send({
+      // from: process.env.NO_REPLY_EMAIL,
+      from: 'no-reply@handshake.com',
+      to: user.email,
+      subject: 'Reset Handshake Account Password',
+      html: `
+                <h3>Hello ${user.firstName}!</h3>
+                <p>Please use this <a href="${changeLink}">link</a> to reset your password.</p>
+            `,
+    });
+  }
+
+  async confirmRegistration(token: string): Promise<boolean> {
     const user:Pick<UserDto, 'id'|'status'> = await this.verifyToken(token);
 
     if (user && user.status === statusEnum.pending) {
@@ -114,20 +159,9 @@ export class AuthService {
     });
   }
 
-  private async verifyToken(token): Promise<UserDto> {
-    debugger;
-    const data = this.jwtService.verify(token) as JwtPayload;
-    const {id, email} = data;
-    const user = await this.userRepo.findOne({where: { email: email, id: id }});
-
-    if (user) {
-      return user;
-    }
-
-    throw new UnauthorizedException({
-          status: HttpStatus.UNAUTHORIZED,
-          message: ErrorMessages.userNotFound,
-       }
-    );
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<boolean> {
+    const password = await this.usersService.hashPassword(changePasswordDto.password);
+    await this.userRepo.update(userId , {password});
+    return true;
   }
 }

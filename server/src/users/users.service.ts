@@ -11,12 +11,16 @@ import { UserDto } from './dto/user.dto';
 import { User } from '@user/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { comparePasswords } from '@shared/utils';
 import { ErrorMessages } from '@shared/error.messages';
 
 @Injectable()
 export class UsersService {
+
+  public readonly saltRounds = 10;
+
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
@@ -158,5 +162,10 @@ export class UsersService {
 
     user = await this.userRepo.findOne({ where: { id }, withDeleted: true });
     return toUserDto(user);
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(this.saltRounds);
+    return await bcrypt.hash(password, salt);
   }
 }

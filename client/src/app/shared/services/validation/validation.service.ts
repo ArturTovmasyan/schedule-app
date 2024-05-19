@@ -11,6 +11,7 @@ export class ValidationService {
             'invalidFullName': 'Invalid Full Name',
             'currentPassword': 'Invalid current password',
             'addEmail': 'This email already exists',
+            'invalidConfirmPassword': 'Passwords do not match, please retype',
             'invalidPassword': 'Invalid password. Password must be at least 8 characters long, and contain a number and symbol.',
             'minlength': `Minimum length ${validatorValue ? validatorValue.requiredLength : 0}`,
         };
@@ -42,6 +43,16 @@ export class ValidationService {
       return null;
     } else {
       return {'invalidFullName': true};
+    }
+  }
+
+  static passwordsEqualValidator(c: FormControl) {
+    if (c.value.newPassword.length > 0 &&
+      (c.value.confirmPassword.length > 0 &&
+        c.value.newPassword !== c.value.confirmPassword)) {
+      return {'invalidConfirmPassword': true};
+    } else {
+      return null;
     }
   }
 }

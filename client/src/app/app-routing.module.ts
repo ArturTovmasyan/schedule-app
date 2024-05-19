@@ -7,6 +7,7 @@ import { LoginComponent } from './core/components/login/login.component';
 import {SignupComponent} from "./core/components/signup/signup.component";
 import {ResetPasswordComponent} from "./core/components/reset-password/reset-password.component";
 import {ConfirmAccountComponent} from "./core/components/confirm-account/confirm-account.component";
+import {ChangePasswordComponent} from "./core/components/change-password/change-password.component";
 
 //TODO In future will be change for use loadChildren (lazy load module)
 const routes: Routes = [
@@ -25,7 +26,13 @@ const routes: Routes = [
       },
       {
         path: 'confirm',
-        component: ConfirmAccountComponent
+        component: ConfirmAccountComponent,
+        data: {title: 'Confirm Registration'}
+      },
+      {
+        path: 'change-password',
+        component: ChangePasswordComponent,
+        data: {title: 'Change Password'}
       },
       {
         path: 'register', component: SignupComponent, data: {title: 'Sign Up'}

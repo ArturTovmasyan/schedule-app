@@ -29,9 +29,6 @@ export class SignupComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.form.invalid) {
-      return;
-    }
   }
 
   get f() {
@@ -39,6 +36,10 @@ export class SignupComponent implements OnInit {
   }
 
   signup() {
+
+    if (this.form.invalid) {
+      return;
+    }
 
     // generate first and last names
     const splitData = this.form.value.fullName.split(' ');

@@ -9,8 +9,8 @@ export class MailService {
 
     constructor(private readonly configService: ConfigService) {
         this.mg = Mailgun({
-            apiKey: this.configService.get<string>('MAILGUN_API_KEY'),
-            domain: this.configService.get<string>('MAILGUN_API_DOMAIN'),
+            apiKey: process.env.MAILGUN_API_KEY,
+            domain: process.env.MAILGUN_API_DOMAIN,
         });
     }
 

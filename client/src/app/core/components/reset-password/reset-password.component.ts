@@ -32,7 +32,6 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   resetPassword() {
-    //TODO send reset password email here!
     if (this.form.invalid) {
       return;
     }

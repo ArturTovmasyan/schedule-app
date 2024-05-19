@@ -4,8 +4,8 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  NotFoundException,
-  Post, Query, Redirect,
+  Patch,
+  Post, Query,
   Req,
   UseGuards, ValidationPipe,
 } from '@nestjs/common';
@@ -15,17 +15,15 @@ import { AuthService } from './auth.service';
 import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload.interface';
 import { RegistrationStatus } from './interfaces/regisitration-status.interface';
-import { UsersService } from '@user/users.service';
 import { UserDto } from '@user/dto/user.dto';
-import { ErrorMessages } from '@shared/error.messages';
 import {SignInDto} from "./dto/signin.dto";
 import {ConfirmAccountDto} from "./dto/confirm-account.dto";
+import {ChangePasswordDto} from "./dto/change-password.dto";
 
 @Controller('api/auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UsersService,
+    private readonly authService: AuthService
   ) {}
 
   @Post('register')
@@ -51,20 +49,22 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  public async resetPassword(@Body() dto: UserDto): Promise<UserDto> {
-    const user: UserDto = await this.userService.findOneByEmail(dto.email);
-    if (!user) {
-      throw new NotFoundException({
-        status: HttpStatus.NOT_FOUND,
-        message: ErrorMessages.userNotFound,
-      });
-    }
-
-    return user;
+  public async resetPassword(@Body() dto: UserDto): Promise<void> {
+   await this.authService.resetPassword(dto.email);
   }
 
-  @Get('/confirm')
+  @Patch('change-password')
+  @UseGuards(AuthGuard())
+  public async changePassword(
+      // @GetUser() user: User,
+      @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto): Promise<boolean> {
+    debugger;
+    let user: UserDto = await this.authService.verifyToken(changePasswordDto.token);
+    return await this.authService.changePassword(user.id, changePasswordDto);
+  }
+
+  @Get('confirm')
   async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto): Promise<boolean> {
-    return await this.authService.confirm(query.token);
+    return await this.authService.confirmRegistration(query.token);
   }
 }
