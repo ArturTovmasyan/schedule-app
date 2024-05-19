@@ -598,6 +598,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
   }
 
+  close() {
+    this.broadcaster.broadcast('calendar_full_size', true);
+  }
+
   ngOnDestroy(): void {
     this.broadcaster.broadcast('reset_event');
     this.selectedDates$.unsubscribe();
