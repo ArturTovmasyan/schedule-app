@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { ClockType } from '../enums/clockType.enum';
+import { number } from 'joi';
 
 @Entity('calendar_availability')
 export class Availability {
@@ -25,26 +26,35 @@ export class Availability {
   @Column({ name: 'to', type: 'varchar', length: 7, nullable: false })
   to: string;
 
+  @Column({
+    name: 'timezone',
+    type: 'varchar',
+    length: 100,
+    nullable: false,
+    default: 'UTC',
+  })
+  timezone: string;
+
   @Column({ name: 'sunday', type: 'boolean', default: false })
-  sunday?: Boolean;
+  sunday?: boolean;
 
   @Column({ name: 'monday', type: 'boolean', default: false })
-  monday?: Boolean;
+  monday?: boolean;
 
   @Column({ name: 'tuesday', type: 'boolean', default: false })
-  tuesday?: Boolean;
+  tuesday?: boolean;
 
   @Column({ name: 'wednesday', type: 'boolean', default: false })
-  wednesday?: Boolean;
+  wednesday?: boolean;
 
   @Column({ name: 'thursday', type: 'boolean', default: false })
-  thursday?: Boolean;
+  thursday?: boolean;
 
   @Column({ name: 'friday', type: 'boolean', default: false })
-  friday?: Boolean;
+  friday?: boolean;
 
   @Column({ name: 'saturday', type: 'boolean', default: false })
-  saturday?: Boolean;
+  saturday?: boolean;
 
   @Column({ name: 'clock_type', enum: ClockType })
   clockType: ClockType;

@@ -28,6 +28,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "@azure/msal-node": "^1.14.5",
+>>>>>>> b726049 (refactor and fix API to fetch availabilities)
     "@giorgosavgeris/passport-zoom-oauth2": "^1.1.0",
     "@google-cloud/local-auth": "^2.1.0",
     "@microsoft/microsoft-graph-client": "^3.0.2",
@@ -57,9 +61,16 @@
     "joi": "^17.6.0",
     "localtunnel": "^2.0.2",
     "moment": "^2.29.4",
+<<<<<<< HEAD
     "passport": "^0.5.2",
     "passport-azure-ad": "^4.3.3",
     "passport-azure-ad-oauth2": "^0.0.4",
+=======
+    "moment-timezone": "^0.5.43",
+    "moment-weekday-calc": "^1.1.4",
+    "morgan": "^1.10.0",
+    "passport": "^0.6.0",
+>>>>>>> b726049 (refactor and fix API to fetch availabilities)
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

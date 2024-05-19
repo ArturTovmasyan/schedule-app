@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import * as moment from "moment/moment"
-import {dateDiff} from "../helpers/utils";
+import * as moment from 'moment/moment';
+import { dateDiff } from '../helpers/utils';
 
 @Injectable()
 export class InitEventService {
-  constructor() {  }
+  constructor() {}
 
   /**
    * @description For uploading files to aws s3 bucket,
@@ -19,14 +19,15 @@ export class InitEventService {
    * @param availabilityStart
    * @param availabilityEnd
    */
-  iniEvents(dates,
-            splitEvents,
-            newAvailabilityDate,
-            eventDateStart,
-            eventDateEnd,
-            availabilityStart,
-            availabilityEnd) {
-
+  initEvents(
+    dates,
+    splitEvents,
+    newAvailabilityDate,
+    eventDateStart,
+    eventDateEnd,
+    availabilityStart,
+    availabilityEnd,
+  ) {
     const DURATION = 15; //TODO check in all case.
 
     let eventStartMinute = eventDateStart.getMinutes();
@@ -34,13 +35,15 @@ export class InitEventService {
     let eventStartHour = eventDateStart.getHours();
     let eventEndHour = eventDateEnd.getHours();
 
-    let newAvailabilityEndDate = moment(eventDateStart).set({
-      hour: eventStartHour,
-      minute: eventStartMinute
-    }).toDate();
+    let newAvailabilityEndDate = moment(eventDateStart)
+      .set({
+        hour: eventStartHour,
+        minute: eventStartMinute,
+      })
+      .toDate();
 
     if (newAvailabilityEndDate > availabilityEnd) {
-        newAvailabilityEndDate = availabilityEnd;
+      newAvailabilityEndDate = availabilityEnd;
     }
 
     if (splitEvents.length > 0) {
@@ -55,12 +58,13 @@ export class InitEventService {
       let lastEventStartMinute = lastEventStart.getMinutes();
       let lastEventEndMinute = lastEventEnd.getMinutes();
 
-      if (eventStartHour >= lastEventStartHour && eventEndHour <= lastEventEndHour) {
-
+      if (
+        eventStartHour >= lastEventStartHour &&
+        eventEndHour <= lastEventEndHour
+      ) {
         if (eventStartHour == lastEventStartHour) {
           // when event start is equal
           if (eventStartMinute == lastEventStartMinute) {
-
             newAvailabilityDate.push({
               start: eventDateEnd,
               end: lastEventEnd,
@@ -95,15 +99,13 @@ export class InitEventService {
 
             dates.splice(-1); //delete split event
           }
-        }
-        else if (eventEndHour == lastEventEndHour) {
+        } else if (eventEndHour == lastEventEndHour) {
           //when event end is equal with aval. end
           if (eventEndMinute == lastEventEndMinute) {
             newAvailabilityDate.push({
               start: lastEventStart,
               end: eventDateStart,
             });
-
           }
           //when event end is out from aval.
           else if (eventEndMinute > lastEventEndMinute) {
@@ -120,7 +122,6 @@ export class InitEventService {
           }
           //when event end is IN aval. end
           else {
-
             newAvailabilityDate.push({
               start: lastEventStart,
               end: eventDateStart,
@@ -137,8 +138,7 @@ export class InitEventService {
 
             dates.splice(-1);
           }
-        }
-        else {
+        } else {
           let diffMin = dateDiff(lastEventStart, eventDateStart);
           let avalDiffMinute = dateDiff(eventDateEnd, lastEventEnd);
 
@@ -158,8 +158,10 @@ export class InitEventService {
 
           dates.splice(-1);
         }
-      }
-      else if (eventStartHour <= lastEventEndHour && eventEndHour > lastEventEndHour) {
+      } else if (
+        eventStartHour <= lastEventEndHour &&
+        eventEndHour > lastEventEndHour
+      ) {
         if (eventStartHour == lastEventEndHour) {
           let difMinute = lastEventEndMinute - eventStartMinute;
 
@@ -169,7 +171,6 @@ export class InitEventService {
               end: eventDateStart,
             });
             dates.splice(-1);
-
           }
         } else {
           newAvailabilityDate.push({
@@ -179,9 +180,10 @@ export class InitEventService {
 
           dates.splice(-1);
         }
-      }
-      else if (eventStartHour < lastEventStartHour && eventEndHour >= lastEventStartHour) {
-
+      } else if (
+        eventStartHour < lastEventStartHour &&
+        eventEndHour >= lastEventStartHour
+      ) {
         if (eventEndHour == lastEventStartHour) {
           let difMinute = eventEndMinute - lastEventStartMinute;
 
@@ -193,7 +195,6 @@ export class InitEventService {
 
             dates.splice(-1);
           }
-
         } else {
           newAvailabilityDate.push({
             start: eventDateEnd,
@@ -203,9 +204,7 @@ export class InitEventService {
           dates.splice(-1);
         }
       }
-    }
-    else {
-
+    } else {
       if (availabilityStart <= newAvailabilityEndDate) {
         newAvailabilityDate.push({
           start: availabilityStart,
@@ -226,6 +225,6 @@ export class InitEventService {
       dates.push(...newAvailabilityDate);
     }
 
-    return {dates, newAvailabilityDate}
+    return { dates, newAvailabilityDate };
   }
 }

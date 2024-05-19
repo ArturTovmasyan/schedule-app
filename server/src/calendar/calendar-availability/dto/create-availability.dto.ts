@@ -41,4 +41,9 @@ export class CreateAvailabilityDto {
   @ApiProperty({ required: false, type: 'boolean' })
   @IsOptional()
   saturday?: boolean;
+
+  @ApiProperty({ required: true, type: 'number'})
+  @IsNotEmpty()
+  timezoneOffset: number;
+
 }
