@@ -12,6 +12,41 @@ import {P404Component} from "./core/components/error/404.component";
 import {P500Component} from "./core/components/error/500.component";
 import {RedirectGuard} from "./core/guards/redirect.guard";
 import {OauthLoginComponent} from "./core/components/oauth-login/oauth-login.component";
+<<<<<<< HEAD
+=======
+import {PaymentSuccessComponent} from "./core/components/payment/payment-success/payment-success.component";
+import {
+  GoogleCalendarComponent
+} from "./core/components/calendar/calendar-permission/google-calendar/google-calendar.component";
+import {MsCalendarComponent} from "./core/components/calendar/calendar-permission/ms-calendar/ms-calendar.component";
+import {CalendarComponent} from "./core/components/calendar/calendar.component";
+import {AccessRequestComponent} from "./core/components/calendar/access-request/access-request.component";
+import {ShareCalendarComponent} from "./core/components/calendar/share-calendar/share-calendar.component";
+import {ContactsComponent} from "./core/components/calendar/contacts/contacts.component";
+import {MeetingComponent} from "./core/components/calendar/meeting/meeting.component";
+import {ProposeTimeSlotComponent} from "./core/components/calendar/propose-time-slot/propose-time-slot.component";
+import {SettingsComponent} from './core/components/settings/settings.component';
+import {AvailabilityComponent} from './core/components/availability/availability.component';
+import {ConfigurationComponent} from './core/components/configuration/configuration.component';
+import {ConnectCalendarComponent} from './core/components/calendar/connect-calendar/connect-calendar.component';
+import {ChangePasswordComponent} from "./core/components/change-password/change-password.component";
+import {AccountInfoComponent} from "./core/components/account-info/account-info.component";
+import {OnboardingComponent} from "./core/components/onboarding/onboarding.component";
+
+import {
+  OnboardingCalendarComponent
+} from './core/components/onboarding/onboarding-calendar/onboarding-calendar.component';
+import {
+  OnboardingAvailabilityComponent
+} from './core/components/onboarding/onboarding-availability/onboarding-availability.component';
+import {
+  OnboardingConfigurationComponent
+} from './core/components/onboarding/onboarding-configuration/onboarding-configuration.component';
+import {SubscriptionPlanComponent} from "./core/components/subscription-plan/subscription-plan.component";
+import {PrivacyPolicyComponent} from "./core/components/privacy-policy/privacy-policy.component";
+import {TermsConditionsComponent} from "./core/components/terms-conditions/terms-conditions.component";
+import {InviteAndConnectComponent} from "./core/components/calendar/invite-and-connect/invite-and-connect.component";
+>>>>>>> 8a0cab6 (Add invite and connect component)
 
 const routes: Routes = [
   {path: '', redirectTo: 'calendar/access-request', pathMatch: 'full'},
@@ -172,6 +207,10 @@ const routes: Routes = [
       {
         path: 'propose-time',
         component: ProposeTimeSlotComponent
+      },
+      {
+        path: 'invite',
+        component: InviteAndConnectComponent
       }
     ]
   },
