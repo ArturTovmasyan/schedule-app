@@ -78,7 +78,7 @@
   }
 
   .meeting-title{
-    
+    margin-bottom: 20px;
     .meeting-title-secondary{
       font-family: "Open Sans", sans-serif;
       font-size: 16px;
@@ -100,7 +100,6 @@
 
       .header {
         position: relative;
-        margin-bottom: 17px;
         text-align: left;
 
         h3 {
@@ -119,7 +118,6 @@
           line-height: 22px;
           color: #747474;
           text-transform: uppercase;
-          padding-bottom: 13px;
           width: 100%;
         }
       }
@@ -503,6 +501,8 @@
           display: none;
         }
 
+        
+
         .fc-daygrid-day-frame {
           height: 40px;
         }
@@ -516,6 +516,7 @@
 
         .fc-daygrid-day {
           border: none !important;
+          cursor: pointer;
         }
 
         td {
@@ -526,16 +527,24 @@
           justify-content: center;
           flex-direction: unset;
         }
+        .fc-toolbar {
+          top: 0px!important;
+        }
 
         .fc-header-toolbar {
           position: relative;
           display: flex;
           flex-direction: column;
-          margin-bottom: 1rem;
 
           h2 {
             font-size: 16px!important;
+            width: unset;
+            font-family: 'Open Sans', sans-serif;
+            line-height: unset!important;
+            margin: 0 10px 3px 10px;
           }
+
+         
           .fc-button {
             transition: all 0.2s ease!important;
             padding: 0!important;
