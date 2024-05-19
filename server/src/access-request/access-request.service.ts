@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { ConfigService } from '@nestjs/config';
-import { Repository, Connection } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 

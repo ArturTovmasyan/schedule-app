@@ -1,6 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { ClockType } from '../enums/clockType.enum';
 
 export class CreateAvailabilityDto {
   @ApiProperty({ required: true, type: 'string' })
