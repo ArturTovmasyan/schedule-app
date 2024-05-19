@@ -74,15 +74,15 @@ h2#fc-dom-1 {
 }
 
 .event-big {
-  height: 105px;
+  height: fit-content !important;
   text-align: center;
-  border-left: 10px solid #7fb8ff!important;
-  border-radius: 10px!important;
+  border-left: 10px solid #7fb8ff !important;
+  border-radius: 10px !important;
 }
 
 .event-standard {
-  height: 45px;
+  height: fit-content !important;
   text-align: center;
-  border-left: 10px solid #7fb8ff!important;
-  border-radius: 10px!important;
+  border-left: 10px solid #7fb8ff !important;
+  border-radius: 10px !important;
 }

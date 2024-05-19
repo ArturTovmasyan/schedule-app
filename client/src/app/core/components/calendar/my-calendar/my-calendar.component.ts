@@ -3,7 +3,6 @@ import {CalendarOptions} from "@fullcalendar/angular";
 import {first} from "rxjs/operators";
 import {CalendarService} from "../../../services/calendar/calendar.service";
 import DateConverter from "../../helpers/date.converter";
-// const $ = require( "jquery" )
 
 @Component({
   selector: 'app-my-calendar',
@@ -18,7 +17,7 @@ export class MyCalendarComponent implements OnInit {
   constructor(private calendarService: CalendarService) {}
 
   ngOnInit(): void {
-    // this.fetchMyEvents();
+    this.fetchMyEvents();
   }
 
   fetchMyEvents() {
@@ -30,8 +29,8 @@ export class MyCalendarComponent implements OnInit {
           if (events.length > 0) {
             events.forEach((el: any) => {
               data.push({
-                start: DateConverter.convertUTCDateToLocalDate(el.start),
-                end: DateConverter.convertUTCDateToLocalDate(el.end),
+                start: DateConverter.convertUTCDateToLocalDate(new Date(el.start)),
+                end: DateConverter.convertUTCDateToLocalDate(new Date(el.end)),
                 title: el.title,
                 description: el.description
               })
@@ -70,12 +69,7 @@ export class MyCalendarComponent implements OnInit {
       center: 'prev,title,next',
       right: 'today'
     },
-    events: [
-      {title: 'event 1 Test big title for resize event block', start: '2022-10-04T03:45:00', end: '2022-10-04T04:45:00', description: 'Event 1 description'},
-      {title: 'event 2', start: '2022-10-05T07:45:00', end: '2022-10-05T08:45:00', description: 'Event 2 description'},
-      {title: 'event 3', start: '2022-10-06T02:45:00', end: '2022-10-06T05:45:00', description: 'Event 3 description'},
-      {title: 'event 4', start: '2022-10-07T10:45:00', end: '2022-10-07T12:45:00', description: 'Event 4 description'},
-    ],
+    events: [],
     eventContent: this.eventContent.bind(this),
     eventClassNames: function(arg) {
       const title = arg.event._def.title;
@@ -92,13 +86,12 @@ export class MyCalendarComponent implements OnInit {
     // },
     // dateClick: this.handleDateClick.bind(this),
     // select: function(arg) {
-    //   debugger;
     // },
   };
 
   eventContent(arg: any) {
-    let divEl = document.createElement('div');
     // let description = arg.event._def.extendedProps['description'];
+    let divEl = document.createElement('div');
     let title = arg.event.title;
     let time = arg.timeText;
     divEl.innerHTML = '<span>' + title + '</span><br/><span style="color: #047BDAFF">' + time + '</span>';

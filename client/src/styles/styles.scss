@@ -229,26 +229,26 @@ input[type="checkbox"]:disabled {
   }
 }
 
-//.btn { //TODO remove or move from base styles
-//  width: 260px;
-//  height: 50px;
-//  margin-top: 45px;
-//  font-size: 22px;
-//  line-height: 28px;
-//  color: white;
-//  background-color: #7B9666;
-//  font-weight: medium;
-//  /* UI Properties */
-//  border-radius: 33px;
-//  border: none;
-//  cursor: pointer;
-//
-//  &.btn-primary {
-//    background: transparent linear-gradient(348deg, #CCD839 0%, #7B9666 100%) 0% 0% no-repeat padding-box;
-//  }
-//
-//  &.btn-secondary {
-//    background-color: white;
-//    color: #7B9666;
-//  }
-//}
+.btn1 {
+  width: 260px;
+  height: 50px;
+  margin-top: 45px;
+  font-size: 22px;
+  line-height: 28px;
+  color: white;
+  background-color: #7B9666;
+  font-weight: medium;
+  /* UI Properties */
+  border-radius: 33px;
+  border: none;
+  cursor: pointer;
+
+  &.btn1-primary {
+    background: transparent linear-gradient(348deg, #CCD839 0%, #7B9666 100%) 0% 0% no-repeat padding-box;
+  }
+
+  &.btn1-secondary {
+    background-color: white;
+    color: #7B9666;
+  }
+}
