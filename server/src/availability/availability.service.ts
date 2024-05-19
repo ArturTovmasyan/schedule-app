@@ -1,13 +1,13 @@
-import {Repository} from 'typeorm';
-import {InjectRepository} from '@nestjs/typeorm';
-import {BadRequestException, Injectable} from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
-import {IResponseMessage} from 'src/components/interfaces/response.interface';
-import {CreateAvailabilityDto} from './dto/create-availability.dto';
-import {UpdateAvailabilityDto} from './dto/update-availability.dto';
-import {Availability} from './entities/availability.entity';
-import {User} from '@user/entity/user.entity';
-import {ErrorMessages} from "../components/constants/error.messages";
+import { IResponseMessage } from 'src/components/interfaces/response.interface';
+import { ErrorMessages } from '../components/constants/error.messages';
+import { CreateAvailabilityDto } from './dto/create-availability.dto';
+import { UpdateAvailabilityDto } from './dto/update-availability.dto';
+import { Availability } from './entities/availability.entity';
+import { User } from '@user/entity/user.entity';
 
 @Injectable()
 export class AvailabilityService {
@@ -40,7 +40,7 @@ export class AvailabilityService {
     }
 
     return await this.availabilityRepo.save({
-      user: {id: user.id},
+      user: { id: user.id },
       ...createAvailabilityDto,
     });
   }
@@ -53,7 +53,7 @@ export class AvailabilityService {
 
   async findAll(user: User): Promise<Availability> {
     return await this.availabilityRepo.findOne({
-      user: {id: user.id},
+      user: { id: user.id },
     });
   }
 
@@ -81,7 +81,7 @@ export class AvailabilityService {
       { ...updateAvailabilityDto },
     );
 
-    return { message: 'updated' };
+    return { message: 'updated', status: HttpStatus.ACCEPTED };
   }
 
   remove(id: number) {

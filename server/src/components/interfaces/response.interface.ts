@@ -5,4 +5,5 @@ export interface IResponse<T> {
 
 export interface IResponseMessage {
   message: string;
+  status: number;
 }
