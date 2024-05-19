@@ -50,7 +50,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: AuthComponent,
+    component: LayoutComponent,
     children: [
       {
         path: 'login',
