@@ -207,6 +207,10 @@ const routes: Routes = [
         component: MeetingComponent
       },
       {
+        path: 'meeting/:id',
+        component: MeetingComponent
+      },
+      {
         path: 'propose-time',
         component: ProposeTimeSlotComponent
       },

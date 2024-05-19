@@ -83,10 +83,11 @@
               <input type="text" id="meetingEndTime" name="meetingEndTime"
                 placeholder="{{ this.data.end | parseTime:'hh:mmA' }}" readonly>
             </li>
-            
+
           </ul>
           <div>
-            <button  id="remove-button" class="remove-button {{ !this.data.start ? 'hidden': ''}}" (click)="resetSelectedDate()"></button>
+            <button id="remove-button" class="remove-button {{ !this.data.start ? 'hidden': ''}}"
+              (click)="resetSelectedDate()"></button>
           </div>
         </div>
         <div class="save-to-calendar" *ngIf="hasCalendars">
@@ -107,7 +108,7 @@
         <div class="select-wrapper">
           <div class="select open">
             <div class="select__trigger" (click)="showLocation = !showLocation">
-              <span  *ngIf="!choosedLocationObj?.title">Choose...</span>
+              <span *ngIf="!choosedLocationObj?.title">Choose...</span>
               <div *ngIf="choosedLocationObj?.title" class="d-flex custom-option">
                 <span class="logo">
                   <img [src]="choosedLocationObj?.image" alt="{{choosedLocationObj?.title}}">

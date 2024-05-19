@@ -1,7 +1,6 @@
 #container {
-    
-
     .event-detail {
+        text-align: start;
         position: fixed;
         z-index: 5;
         min-width: 300px;
@@ -16,11 +15,9 @@
             display: none;
         }
 
-        &.top {
-        }
+        &.top {}
 
-        &.bottom {
-        }
+        &.bottom {}
 
         &.left {
             left: calc(100% + 22px);
@@ -43,6 +40,11 @@
             border-radius: 100%;
             background: #F1F1F1 0% 0% no-repeat padding-box;
 
+            &:hover {
+                transform: scale(1.01);
+                box-shadow: 1px 2px 4px #0000003B;
+            }
+
             img {
                 width: 8px;
                 height: 8px;
@@ -50,13 +52,22 @@
         }
 
         .content {
+            align-items: flex-start;
             width: max-content;
             max-width: 400px;
             padding: 20px;
             display: inline-flex;
             flex-direction: column;
-            
-            label {
+
+            div {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+
+            label,
+            div label {
                 font-size: 14px;
                 line-height: 16px;
                 margin-top: 16px;
@@ -70,14 +81,29 @@
                 }
             }
 
-            span {
+            span,
+            div span {
                 margin-top: 4px;
                 font-size: 12px;
                 line-height: 14px;
                 color: #707070;
 
+                &.time {
+                    font-size: 11px;
+                }
+
+                &.description {
+                    color: black;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    margin-top: 6px;
+                }
+
                 &.calendar-info {
                     margin-top: 8px;
+
                     img {
                         padding: 3px;
                         background-color: #EDEDED;
@@ -112,11 +138,23 @@
                 border-radius: 33px;
                 color: white;
                 font-weight: 600;
+                cursor: pointer;
+
+                &:hover {
+                    transform: scale(1.01);
+                    box-shadow: 2px 4px 5px #0000003B;
+                }
             }
 
             .action {
                 color: #47B8F6;
                 padding: 10px;
+                cursor: pointer;
+
+                &:hover {
+                    transform: scale(1.01);
+                    text-shadow: 2px 4px 5px #0000003B;
+                }
             }
         }
     }

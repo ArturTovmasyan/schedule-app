@@ -10,7 +10,7 @@ import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interfa
 @Component({
   selector: 'app-my-calendar',
   templateUrl: './my-calendar.component.html',
-  styleUrls: ['./my-calendar.component.scss']
+  styleUrls: ['./my-calendar.component.scss'],
 })
 export class MyCalendarComponent implements OnInit, OnDestroy {
   events: any = [];
@@ -123,7 +123,7 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
       interactionPlugin,
       timeGridPlugin,
       rrulePlugin,
-      interactionPlugin
+      interactionPlugin,
     ],
     initialView: 'timeGridWeek',
     dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },
@@ -147,22 +147,23 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
         minute: '2-digit',
         hour12: true,
         meridiem: 'lowercase',
-        separator: '.'
-      }
+        separator: '.',
+      },
     ],
     titleFormat: {
-      month: 'long', day: 'numeric'
+      month: 'long',
+      day: 'numeric',
     },
     eventTimeFormat: {
       hour: 'numeric',
       minute: '2-digit',
       meridiem: 'short',
-      hour12: true
+      hour12: true,
     },
     headerToolbar: {
       left: '',
       center: 'prev,title,next',
-      right: ''
+      right: '',
     },
     events: [],
     eventContent: this.eventContent.bind(this),

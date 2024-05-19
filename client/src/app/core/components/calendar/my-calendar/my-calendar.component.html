@@ -14,28 +14,37 @@
   <div #eventDetailView class="event-detail hidden" id="event-detail">
     <div class="close" (click)="closeDetail()"><img src="assets/ic_close.svg"></div>
     <section class="content">
-      <label class="title">Test Event</label>
-      <span class="time">Friday, February 11 6:00 AM - 6:30 AM</span>
-      <label>Attendees</label>
-      <div class="chip-container">
-        <app-chip-user-item [mini]="true" [borderClass]="'selected'" [user]="user"></app-chip-user-item>
+      <label class="title">{{ currentEventSelection?.title ?? "" }}</label>
+      <span class="time">{{ currentEventSelection?.extendedProps?.datetime ?? "" }}</span>
+      <span class="description">{{ currentEventSelection?.extendedProps?.description ?? "" }}</span>
+      <div *ngIf="currentEventSelection?.extendedProps?.link">
+        <label>Location</label>
+        <span>{{ currentEventSelection?.extendedProps?.link ?? "N/A" }}</span>
       </div>
-
-      <label>Optional</label>
-      <div class="chip-container">
-        <app-chip-user-item [mini]="true" [borderClass]="'rejected'" [user]="user"></app-chip-user-item>
-
+      <div *ngIf="(currentEventSelection?.extendedProps?.attendees?.length ?? 0) !== 0">
+        <label>Attendees</label>
+        <div class="chip-container">
+          <app-chip-user-item *ngFor="let attendee of (currentEventSelection?.extendedProps?.attendees ?? [])"
+            [mini]="true" [borderClass]="attendee.status" [user]="attendee"></app-chip-user-item>
+        </div>
+      </div>
+      <div *ngIf="(currentEventSelection?.extendedProps?.optional_attendees?.length ?? 0) !== 0">
+        <label>Optional</label>
+        <div class="chip-container">
+          <app-chip-user-item *ngFor="let attendee of (currentEventSelection?.extendedProps?.optional_attendees ?? [])"
+            [mini]="true" [borderClass]="attendee.status" [user]="attendee"></app-chip-user-item>
+        </div>
       </div>
 
       <span class="calendar-info">
         Event saved in
         <img src="/assets/outlook-icon.svg">
-        <span class="calendr-name">example@outlook.com</span>
+        <span class="calendr-name">{{ currentEventSelection?.extendedProps?.calendar ?? "" }}</span>
       </span>
     </section>
     <section class="footer">
-      <span class="button">Edit</span>
-      <span class="action">Cancel this meeting</span>
+      <span class="button" (click)="navigateToDetail(currentEventSelection?.id)">Edit</span>
+      <span class="action" (click)="cancelMeeting(currentEventSelection?.id)">Cancel this meeting</span>
     </section>
   </div>
 </div>

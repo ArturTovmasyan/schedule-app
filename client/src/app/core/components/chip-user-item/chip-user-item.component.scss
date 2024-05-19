@@ -6,11 +6,11 @@
   background-color: white;
   align-items: center;
 
-  &.selected {
+  &.accepted {
     border: 1px solid #17B326;
   }
 
-  &.rejected {
+  &.declined {
     border: 1px solid #F71818;
   }
   

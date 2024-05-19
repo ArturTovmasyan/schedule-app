@@ -1,8 +1,8 @@
 <div class="chip-item {{borderClass}}" [ngClass]="{mini: mini}">
   <img src="{{user.avatar}}" alt="user icon" *ngIf="user.avatar">
-  <span id="initials" *ngIf="!user.avatar">{{ user?.name?.charAt(0) ?? '' }}</span>
-  <span class="info">
-    <span>{{ user.name }}</span>
+  <span id="initials" *ngIf="!user.avatar">{{ (user?.name || user?.email)?.charAt(0) ?? '' }}</span>
+  <span class="info" [title]="user?.name || user?.email">
+    <span>{{ user.name || user.email }}</span>
     <span>{{ user.email | getContactCompany }}</span>
   </span>
   <span class="remove-button" id="remove-button" (click)="remove()" *ngIf="user.removable"></span>
