@@ -6,6 +6,7 @@ import { ZoomOAuthToken } from './zoom/entity/zoom-oauth-token.entity';
 import { CalendarToken } from 'src/calendar/calendar-permissions/entity/calendarToken.entity';
 import { ILinkedIntegrations } from './zoom/interfaces/zoom.interface';
 import { CalendarTypeEnum } from 'src/calendar/calendar-permissions/enums/calendarType.enum';
+import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
 
 @Injectable()
 export class IntegrationsService {
@@ -44,42 +45,42 @@ export class IntegrationsService {
         sub_title: 'Web Conference',
         available: !!zoomToken,
         image: 'assets/zoom.png',
-        value: 'zoom',
+        value: MeetViaEnum.Zoom,
       },
       {
         title: 'Google Meet',
         sub_title: 'Web Conference',
         available: !!googleToken,
         image: 'assets/google-meet.png',
-        value: 'gmeet',
+        value: MeetViaEnum.GMeet,
       },
       {
         title: 'Microsoft Teams',
         sub_title: 'Web Conference',
         available: !!MSToken,
         image: 'assets/microsoft-teams.png',
-        value: 'teams',
+        value: MeetViaEnum.Teams,
       },
       {
         title: 'Inbound phone call',
         sub_title: 'You will receive a phone call',
         available: true,
         image: 'assets/incoming-call.png',
-        value: 'incoming-call',
+        value: MeetViaEnum.InboundCall,
       },
       {
         title: 'Outbound phone call',
         sub_title: 'You will be making a phone call',
         available: true,
         image: 'assets/outgoing-call.png',
-        value: 'outgoing-call',
+        value: MeetViaEnum.OutboundCall,
       },
       {
         title: 'Physical address',
         sub_title: 'You will meet face to face',
         available: true,
         image: 'assets/location.png',
-        value: 'address',
+        value: MeetViaEnum.PhysicalAddress,
       },
     ];
 

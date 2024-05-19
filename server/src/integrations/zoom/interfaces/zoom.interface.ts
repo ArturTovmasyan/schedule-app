@@ -1,3 +1,5 @@
+import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
+
 export interface IZoomTokenResponse {
   access_token: string;
   refresh_token: string;
@@ -8,7 +10,7 @@ export interface ILinkedIntegrations {
   title: string;
   sub_title: string;
   image: string;
-  value: string;
+  value: MeetViaEnum;
   available: boolean;
 }
 

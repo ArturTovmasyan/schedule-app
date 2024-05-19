@@ -1,21 +1,22 @@
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import { DOCUMENT } from '@angular/common';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Observable, of, shareReplay, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Subject, tap } from 'rxjs';
 import { CalendarAccess } from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
 import { AvailabilityService } from 'src/app/core/services/calendar/availability.service';
 import { CommonService } from 'src/app/core/services/common.service';
 import { BroadcasterService } from "../../../../shared/services";
 import { SharableLinkService } from 'src/app/core/services/calendar/sharable-link.service';
-import { ActivatedRoute } from '@angular/router';
+import { MeetViaEnum } from '../enums/sharable-links.enum';
+import { ActivatedRoute, Router } from '@angular/router';
 
 export interface Location {
   id?: string;
   title: string;
   sub_title?: string;
   image: string;
-  value: string;
+  value: MeetViaEnum;
   available: boolean;
 }
 
@@ -27,8 +28,9 @@ export interface Location {
 })
 export class SharableLinkComponent implements OnInit, OnDestroy {
 
+  readonly MeetViaEnum = MeetViaEnum;
   @ViewChild('contactInput') input!: ElementRef;
-  subscription: BehaviorSubject<boolean>;
+  subscription$: BehaviorSubject<boolean>;
   selectedDates$: BehaviorSubject<any> = new BehaviorSubject([]);
   selectedDates: any = []
   showLocation = false;
@@ -63,11 +65,12 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
     private readonly calendarAccessService: CalendarAccessService,
-    private availabilityService: AvailabilityService,
-    private sharableLinkService: SharableLinkService,
+    private readonly availabilityService: AvailabilityService,
+    private readonly sharableLinkService: SharableLinkService,
     @Inject(DOCUMENT) document: any
 
   ) {
@@ -83,7 +86,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     }
 
     this._document = document;
-    this.subscription = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
+    this.subscription$ = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
       const startdate = moment.utc(dates.start).local().format('ddd, MMM Do');
       if (this.selectedDates[startdate]) {
         this.selectedDates[startdate].push(dates);
@@ -94,7 +97,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
         return moment.utc(left.start).diff(moment.utc(right.start))
       });
       const sortedObject = Object.fromEntries(
-        Object.entries(this.selectedDates).sort(([a,], [b,]) => {
+        Object.entries(this.selectedDates).sort(([a], [b]) => {
           return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
         })
       )
@@ -154,7 +157,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
             }
           }
           const sortedObject = Object.fromEntries(
-            Object.entries(this.selectedDates).sort(([a,], [b,]) => {
+            Object.entries(this.selectedDates).sort(([a], [b]) => {
               return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
             })
           )
@@ -218,7 +221,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   chooseLocation(loc: Location) {
     this.choosedLocationObj = loc;
     this.showLocation = false;
-    if (!['zoom', 'gmeet', 'teams'].includes(loc.value)) {
+    if (![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(loc.value)) {
       // if incoming and outgoing and address is choosed from location option
       // no need to check for connection of location choosed
       return;
@@ -234,7 +237,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   // connect to zoom, meet or teams if not connected
-  // type could be zoom, teams or gmeet
+  // type could be zoom, teams or gmeet used MeetViaEnum
   connect(type: string) {
     const savedData = {
       selectedContacts: this.selectedContacts,
@@ -244,7 +247,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
     localStorage.setItem('savedDatas', JSON.stringify(savedData));
 
-    if (type == 'zoom') {
+    if (type == MeetViaEnum.Zoom) {
       this.sharableLinkService.getZoomOauthUrl()
         .subscribe({
           next: (res: string) => {
@@ -263,9 +266,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Please select at least one available time slot';
     } else if (!this.choosedLocationObj) {
       this.errorMessage = 'Please select the Location';
-    } else if (this.choosedLocationObj?.value == 'incoming-call' && !this.phoneNumber) {
+    } else if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall && !this.phoneNumber) {
       this.errorMessage = 'Please enter Phone Number';
-    } else if (this.choosedLocationObj?.value == 'address' && !this.address) {
+    } else if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress && !this.address) {
       this.errorMessage = 'Please enter Address';
     }
 
@@ -300,22 +303,27 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       requestParams['attendees'] = this.selectedContacts.map(x => x.owner.id);
     }
 
-    if (this.choosedLocationObj?.value == 'incoming-call') {
+    if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
       requestParams['phone_number'] = this.phoneNumber;
     }
-    if (this.choosedLocationObj?.value == 'address') {
+    if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress) {
       requestParams['address'] = this.address;
     }
 
     this.sharableLinkService.createLink(requestParams)
       .subscribe({
         next: (res: any) => {
-          if (res.metadata.id) {
+          if (res.status) {
             if (localStorage.getItem('savedData')) localStorage.removeItem('savedData');
-            this.sharableLink = `https://entangles.io/share/${res.metadata.id}`;
+            // route to details page after link creationg for better update functionality
+            // TODO: we can use same page. Will determine after update functionality is done in backend
+            this.router.navigateByUrl(`/calendar/sharable-link/${res.metadata.sharableLinkId}`);
+            // Do Not remove this. May need later.
+            // this.sharableLink = `${environment.host}share/${res.metadata.sharableLinkId}`;
           }
         },
         error: (error) => {
+          // show error from server here
           console.log(error);
         }
       });
@@ -435,7 +443,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.broadcaster.broadcast('reset_event');
     this.selectedDates$.unsubscribe();
-    this.subscription.unsubscribe();
+    this.subscription$.unsubscribe();
   }
 
 }

@@ -124,14 +124,14 @@
       <div class="connect-message">Please <a href="javascript:void(0)">connect</a><span class=""> Microsoft Teams</span>
         to your account
       </div>
-      <ng-container *ngIf="choosedLocationObj?.value == 'incoming-call'">
+      <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.InboundCall">
           <h3 class="section-title-secondary mt-4 mb-2">
             Phone number
           </h3>
           <input type="text" class="form-control" [(ngModel)]="phoneNumber" name="phoneNumber">
       </ng-container>
 
-      <ng-container *ngIf="choosedLocationObj?.value == 'address'">
+      <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.PhysicalAddress">
         <h3 class="section-title-secondary mt-4 mb-2">
           Address
         </h3>
