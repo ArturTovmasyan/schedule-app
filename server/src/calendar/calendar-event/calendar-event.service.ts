@@ -23,10 +23,16 @@ import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity
 import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
-import { WeekDaysEnum } from './enums/weekDays.enum';
+import {
+  FirstWeekDaysAbbreviateEnum,
+  WeekDaysAbbreviateEnum,
+  WeekDaysEnum,
+} from './enums/weekDays.enum';
 import { GoogleWeekDaysEnum } from './enums/googleWeekDays.enum';
 import { GoogleIndexOfWeekEnum } from './enums/indexOfWeek.enum';
 import { EventRecurrenceTypeEnum } from './enums/eventRecurrenceType.enum';
+import { RRule } from 'rrule';
+import { getEnumKeyByEnumValue } from '../../components/helpers/getEnumKeyByEnumValue';
 import moment = require('moment');
 
 @Injectable()

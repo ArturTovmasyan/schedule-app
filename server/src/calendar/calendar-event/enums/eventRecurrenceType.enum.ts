@@ -1,6 +1,6 @@
 export enum EventRecurrenceTypeEnum {
-  Daily = 'daily',
-  Weekly = 'weekly',
-  Monthly = 'monthly',
-  Yearly = 'yearly',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
 }
