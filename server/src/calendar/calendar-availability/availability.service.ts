@@ -72,17 +72,17 @@ export class AvailabilityService {
 
     /**
      * @description `Find user calendar aval. times`
-     * @param userIds - `User id`
+     * @param userId
+     * @param currentUserId - `Current user id`
      * @returns `{Event times data}`
      */
 
-    async findUserAvailabilityTimes(userIds: string[]): Promise<any> {
+    async findUserAvailabilityTimes(userId: string, currentUserId: string): Promise<any> {
         let availabilityDates;
         let data: Availability[] = await this.availabilityRepo.find({
             where: { user: In(userIds) },
         });
 
-        debugger;
         if (data) {
             const weekDays = await this.generateWeekDays(data[0]);
             const startDate = moment().toDate();
@@ -155,7 +155,7 @@ export class AvailabilityService {
         //
         const dateRange = moment().dateRangeToDates({
             rangeStart: moment().toDate(),
-            rangeEnd: moment().add(2, 'week').format('yyyy-MM-DD'),
+            rangeEnd: moment().add(2, 'week').format('yyyy-MM-DD hh:mm:ss'),
             weekdays: await this.generateWeekDays(data),
             exclusions: []
         });
@@ -226,31 +226,31 @@ export class AvailabilityService {
     async generateWeekDays(data: Availability): Promise<any> {
         const weekDays = [];
 
-        if (data.monday) {
+        if (data.sunday) {
             weekDays.push(0);
         }
 
-        if (data.tuesday) {
+        if (data.monday) {
             weekDays.push(1);
         }
 
-        if (data.wednesday) {
+        if (data.tuesday) {
             weekDays.push(2);
         }
 
-        if (data.thursday) {
+        if (data.wednesday) {
             weekDays.push(3);
         }
 
-        if (data.friday) {
+        if (data.thursday) {
             weekDays.push(4);
         }
 
-        if (data.saturday) {
+        if (data.friday) {
             weekDays.push(5);
         }
 
-        if (data.sunday) {
+        if (data.saturday) {
             weekDays.push(6);
         }
 

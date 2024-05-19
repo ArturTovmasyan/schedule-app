@@ -47,7 +47,6 @@ export class ContactItemComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (data: any | null) => {
-          debugger;
           const dates = data?.availabilityDates;
           const contactData = {
             ...dates,

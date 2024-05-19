@@ -30,8 +30,10 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
         delete contactAvailabilities['contactId'];
         for (const k in contactAvailabilities) {
           availabilityDates.push({
-            start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].start)),
-            end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].end)),
+            // start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].start)),
+            // end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].end)),
+            start: contactAvailabilities[k].start,
+            end: contactAvailabilities[k].end,
             className: 'available-event'
           })
         }
@@ -62,8 +64,10 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
           if (events.length > 0) {
             events.forEach((el: any) => {
               data.push({
-                start: DateConverter.convertUTCDateToLocalDate(new Date(el.start)),
-                end: DateConverter.convertUTCDateToLocalDate(new Date(el.end)),
+                // start: DateConverter.convertUTCDateToLocalDate(new Date(el.start)),
+                // end: DateConverter.convertUTCDateToLocalDate(new Date(el.end)),
+                start: el.start,
+                end: el.end,
                 title: el.title,
                 description: el.description
               })

@@ -176,8 +176,6 @@ export class CalendarEventService {
         const event = await client
             .api(`https://graph.microsoft.com/v1.0/me/calendar/events`)
             .get();
-
-        console.log('event ', event.value[0]);
     }
 
     async createUserCalendarEvent(user: User, eventBody: CreateEventDto) {

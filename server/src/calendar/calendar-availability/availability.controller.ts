@@ -54,8 +54,9 @@ export class AvailabilityController {
 
   @ApiExcludeEndpoint()
   @Get(':userId')
-  findOne(@Param('userId') userId: string) {
-    return this.availabilityService.findUserAvailabilityTimes([userId]);
+  @UseGuards(AuthGuard())
+  findOne(@Param('userId') userId: string, @GetUser() user) {
+    return this.availabilityService.findUserAvailabilityTimes(userId, user.id);
   }
 
   @ApiResponse({ type: IResponseMessage })
