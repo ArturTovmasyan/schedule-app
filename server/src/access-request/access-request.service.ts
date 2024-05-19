@@ -68,10 +68,9 @@ export class AccessRequestService {
       });
     }
 
-    await this.calendarAccessService.checkAccess(
-      user,
+    await this.calendarAccessService.checkAccess(user, [
       createAccessRequestDto.toEmail,
-    );
+    ]);
 
     const findUserByEmail = await this.userRepo.findOne({
       where: { email: createAccessRequestDto.toEmail },
@@ -194,7 +193,7 @@ export class AccessRequestService {
         });
       }
 
-      await this.calendarAccessService.checkAccess(user, data.toEmail);
+      await this.calendarAccessService.checkAccess(user, [data.toEmail]);
 
       await queryRunner.manager
         .createQueryBuilder()

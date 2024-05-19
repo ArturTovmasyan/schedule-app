@@ -5,9 +5,11 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '@user/entity/user.entity';
 import { CalendarAccess } from 'src/calendar-access/entities/calendar-access.entity';
+import { InvitationModule } from 'src/invitation/invitation.module';
 
 @Module({
   imports: [
+    InvitationModule,
     TypeOrmModule.forFeature([User, CalendarAccess]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],

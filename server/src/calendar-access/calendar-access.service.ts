@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
@@ -42,7 +42,7 @@ export class CalendarAccessService {
       });
     }
 
-    await this.checkAccess(user, createCalendarAccessDto.toEmail);
+    await this.checkAccess(user, [createCalendarAccessDto.toEmail]);
 
     const findUserByEmail = await this.userRepo.findOne({
       where: { email: createCalendarAccessDto.toEmail },
@@ -101,11 +101,11 @@ export class CalendarAccessService {
    * @param email - `email address of accessible user`
    */
 
-  async checkAccess(user: User, email: string): Promise<void> {
+  async checkAccess(user: User, emails: string[]): Promise<void> {
     const checkAccess = await this.calendarAccessRepo.findOne({
       where: {
         owner: { id: user.id },
-        toEmail: email,
+        toEmail: In(emails),
       },
     });
 

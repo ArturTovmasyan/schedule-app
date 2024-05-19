@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {toUserDto, toUserInfoDto} from 'src/components/helpers/mapper';
+import { toUserDto, toUserInfoDto } from 'src/components/helpers/mapper';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from '@user/entity/user.entity';
@@ -13,7 +13,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from './dto/user-update.dto';
-import {comparePasswords, generatePassword} from '../components/helpers/utils';
+import {
+  comparePasswords,
+  generatePassword,
+} from '../components/helpers/utils';
 import { ErrorMessages } from '../components/constants/error.messages';
 import {OauthUserDto} from "@user/dto/user-oauth-create.dto";
 import {StatusEnum} from "@user/enums/status.enum";
@@ -27,6 +30,7 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
     @InjectRepository(CalendarAccess)
     private readonly calendarAccessRepo: Repository<CalendarAccess>,
+    private readonly invitationService: InvitationService,
   ) {}
 
   async create(userDto: UserCreateDto): Promise<UserDto> { // TODO add stripeCustomerId to userDTo
@@ -60,6 +64,10 @@ export class UsersService {
       { accessedUser: { id: user.id } },
       { toEmail: user.email },
     );
+
+    if (invitationId) {
+      await this.invitationService.update(invitationId);
+    }
 
     return toUserDto(user);
   }
