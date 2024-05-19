@@ -4,14 +4,15 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { EventTypeEnum } from '../enums/eventType.enum';
 import { Calendar } from './calendar.entity';
-import { EventRecurrence } from './eventRecurrence.entity';
+import { EventRecurrenceTypeEnum } from '../enums/eventRecurrenceType.enum';
+import { WeekDaysEnum } from '../enums/weekDays.enum';
+import { IndexOfWeekEnum } from '../enums/indexOfWeek.enum';
 
 @Entity()
 export class CalendarEvent {
@@ -68,13 +69,52 @@ export class CalendarEvent {
   @Column({
     type: 'enum',
     enum: EventTypeEnum,
-    nullable: false,
+    nullable: true,
   })
   eventType!: EventTypeEnum;
 
-  @OneToOne(() => EventRecurrence, {
+  @Column({
+    type: 'enum',
+    enum: EventRecurrenceTypeEnum,
+    nullable: false,
+  })
+  recurrenceType!: EventRecurrenceTypeEnum;
+
+  @Column({ nullable: true })
+  recurrenceInterval: number;
+
+  @Column({
+    type: 'enum',
+    enum: WeekDaysEnum,
+    array: true,
     nullable: true,
   })
-  @JoinColumn()
-  recurrence: EventRecurrence;
+  recurrenceDaysOfWeek;
+
+  @Column({
+    type: 'enum',
+    enum: IndexOfWeekEnum,
+    nullable: true,
+  })
+  recurrenceIndexOfWeek;
+
+  @Column({
+    nullable: true,
+  })
+  recurrenceDayOfMonth: number;
+
+  @Column({ nullable: true })
+  recurrenceMonth: number;
+
+  @Column({ nullable: true })
+  recurrenceFirstDayOfWeek: string;
+
+  @CreateDateColumn({ nullable: true, default: null })
+  recurrenceStartDate: Date;
+
+  @CreateDateColumn({ nullable: true, default: null })
+  recurrenceEndDate: Date;
+
+  @Column({ nullable: true })
+  recurrenceNumberOfOccurrences: number;
 }

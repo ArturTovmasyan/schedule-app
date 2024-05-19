@@ -23,7 +23,6 @@ import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity
 import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
-import { EventRecurrence } from './entities/eventRecurrence.entity';
 import { WeekDaysEnum } from './enums/weekDays.enum';
 import moment = require('moment');
 
@@ -723,6 +722,16 @@ export class CalendarEventService {
         a.end.getTime() === b.end.getTime() &&
         a.title === b.title &&
         a.description === b.description
+        // a.recurrenceType === b.recurrenceType &&
+        // a.recurrenceInterval === b.recurrenceInterval &&
+        // a.recurrenceDaysOfWeek === b.recurrenceDaysOfWeek &&
+        // a.recurrenceIndexOfWeek === b.recurrenceIndexOfWeek &&
+        // a.recurrenceDayOfMonth === b.recurrenceDayOfMonth &&
+        // a.recurrenceMonth === b.recurrenceMonth &&
+        // a.recurrenceFirstDayOfWeek === b.recurrenceFirstDayOfWeek &&
+        // a.recurrenceStartDate.getTime() === b.recurrenceStartDate.getTime() &&
+        // a.recurrenceEndDate.getTime() === b.recurrenceEndDate.getTime() &&
+        // a.recurrenceNumberOfOccurrences === b.recurrenceNumberOfOccurrences
       );
     }
 
@@ -775,5 +784,38 @@ export class CalendarEventService {
         done(null, accessToken);
       },
     });
+  }
+
+  private convertDateToNegativeLocalTimeZone(inputDate: string) {
+    const date = new Date(inputDate);
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() + userTimezoneOffset);
+  }
+
+  private serializedOutlookEventRecurrence(event: CalendarEvent, item) {
+    event.recurrenceType = item.recurrence?.pattern.type || null;
+    event.recurrenceInterval = item.recurrence?.pattern.interval || null;
+    event.recurrenceDaysOfWeek = item.recurrence?.pattern.daysOfWeek
+      ? item.recurrence?.pattern.daysOfWeek.map((weekDay) => {
+          const capitalizedWeekDay =
+            weekDay.charAt(0).toUpperCase() + weekDay.slice(1);
+          return WeekDaysEnum[capitalizedWeekDay];
+        })
+      : null;
+    event.recurrenceIndexOfWeek = item.recurrence?.pattern.index || null;
+    event.recurrenceDayOfMonth = item.recurrence?.pattern.dayOfMonth || null;
+    event.recurrenceMonth = item.recurrence?.pattern.month || null;
+    event.recurrenceFirstDayOfWeek =
+      item.recurrence?.pattern.firstDayOfWeek || null;
+    event.recurrenceStartDate = item.recurrence?.range.startDate
+      ? this.convertDateToNegativeLocalTimeZone(
+          item.recurrence?.range.startDate,
+        )
+      : null;
+    event.recurrenceEndDate = item.recurrence?.range.endDate
+      ? this.convertDateToNegativeLocalTimeZone(item.recurrence?.range.endDate)
+      : null;
+    event.recurrenceNumberOfOccurrences =
+      item.recurrence?.range.numberOfOccurrences || null;
   }
 }
