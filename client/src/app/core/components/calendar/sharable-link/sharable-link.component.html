@@ -120,14 +120,14 @@
         <h3 class="section-title-secondary mt-4 mb-2">
           Phone number
         </h3>
-        <input type="text" class="form-control" [(ngModel)]="phoneNumber" name="phoneNumber" [disabled]="!updateView">
+        <input type="text" [(ngModel)]="phoneNumber" name="phoneNumber" [disabled]="!updateView">
       </ng-container>
 
       <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.PhysicalAddress">
         <h3 class="section-title-secondary mt-4 mb-2">
           Address
         </h3>
-        <input type="text" class="form-control" [(ngModel)]="address" name="address" [disabled]="!updateView">
+        <input type="text" [(ngModel)]="address" name="address" [disabled]="!updateView">
       </ng-container>
 
       <div class="connect-message" *ngIf="connectMessage.title != ''">

@@ -1,3 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="15" height="9" viewBox="0 0 15 9">
-  <path id="Icon_material-navigate-next" data-name="Icon material-navigate-next" d="M14.6,9l-1.713,1.762L18.448,16.5l-5.563,5.737L14.6,24l7.287-7.5Z" transform="translate(24 -12.885) rotate(90)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="13.041" height="6.797" viewBox="0 0 13.041 6.797">
+  <g id="ic_expand" transform="translate(-3.94 11.047) rotate(-90)">
+    <path id="Path_42710" data-name="Path 42710" d="M9.987,15.922,5,10.461,9.987,5" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+  </g>
 </svg>

@@ -140,7 +140,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       this.selectedDates$.next(this.selectedDates);
       this.selectedContacts = savedDataArr.selectedContacts;
       this.selectedContacts$.next(this.selectedContacts);
-      this.addedTimeSlots = savedDataArr.addedTimeSlots;
+      this.addedTimeSlots = savedDataArr.addedTimeSlots ?? [];
       this.deletedTimeSlots = savedDataArr.deletedTimeSlots;
       if (this.selectedContacts.length > 0) this.showJointAvailibility = true;
       const selectedDatesNew: any = [];
@@ -337,7 +337,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   createSharableLink() {
     const selectedDates = this.selectedDates$.value;
-    if (selectedDates.length == 0) {
+    if (Object.keys(selectedDates).length == 0) {
       this.errorMessage = 'Please select at least one available time slot';
     } else if (!this.choosedLocationObj) {
       this.errorMessage = 'Please select the Location';
