@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class calendarAccess1661363971369 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `      CREATE TABLE IF NOT EXISTS "calendar-access"
+      `      CREATE TABLE IF NOT EXISTS "calendar-event-access"
              ("id" uuid NOT NULL DEFAULT uuid_generate_v4(),
               "owner_id" uuid NOT NULL,
               "accessed_user_id" uuid DEFAULT NULL,

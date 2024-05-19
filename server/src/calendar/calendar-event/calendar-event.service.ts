@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
 import { EntityManager, IsNull, Not, Repository } from 'typeorm';
@@ -17,6 +21,7 @@ import UpdateEventDto from './dto/updateEvent.dto';
 import * as locaTunnel from 'localtunnel';
 import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity';
 import { ConfigService } from '@nestjs/config';
+import { ErrorMessages } from 'src/components/constants/error.messages';
 
 @Injectable()
 export class CalendarEventService {
@@ -182,16 +187,27 @@ export class CalendarEventService {
 
   async createUserCalendarEvent(user: User, eventBody: CreateEventDto) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
-      let outlookEventId = '';
-      let googleEventId = '';
-      let creatorFromGoogle = '';
-      let creatorFromOutlook = '';
+      let outlookEventId: string = '';
+      let googleEventId: string = '';
+      let creatorFromGoogle: string = '';
+      let creatorFromOutlook: string = '';
       const tokens = await this.getTokens(user, manager);
       const googleToken = tokens.googleToken;
       const outlookToken = tokens.outlookToken;
       const eventSavers = [];
 
-      if (googleToken) {
+      if (
+        (eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar) &&
+          !googleToken) ||
+        (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn) &&
+          !outlookToken)
+      ) {
+        throw new BadRequestException({
+          message: ErrorMessages.calendarNotLinked,
+        });
+      }
+
+      if (eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar)) {
         const googleAccessToken = googleToken.accessToken;
         const googleCalendarClient = await this.getGoogleCredentials(
           googleAccessToken,
@@ -224,7 +240,7 @@ export class CalendarEventService {
         eventSavers.push(saveEventGoogle);
       }
 
-      if (outlookToken) {
+      if (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn)) {
         const outlookAccessToken = outlookToken.accessToken;
 
         const outlookCalendarClient = await this.getOutlookCredentials(

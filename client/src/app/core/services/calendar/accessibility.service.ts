@@ -15,7 +15,7 @@ export class AccessibilityService {
   }
 
   get url(): string {
-    return '/api/calendar-accessibility';
+    return '/api/calendar/accessibility';
   }
 
   create(formData: CalendarAccessibility) {
