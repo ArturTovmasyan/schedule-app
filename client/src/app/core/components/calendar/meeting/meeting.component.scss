@@ -11,6 +11,7 @@ section.meeting-title {
     color: #cc0000;
     display: inline-block;
   }
+
   .header {
     position: relative;
 
@@ -53,6 +54,7 @@ section.meeting-title {
     border-radius: 10px;
     height: calc(100% - 40px);
     overflow: scroll;
+
     .form-control:focus {
       outline: none;
       border-color: unset;
@@ -289,7 +291,7 @@ section.meeting-title {
     .date-time-container {
       border-radius: 12px;
       border: 1px solid #d8d8d8;
-      padding: 12px;
+      padding: 12px 3px;
       text-align: left;
       display: flex;
       justify-content: space-between;
@@ -300,21 +302,40 @@ section.meeting-title {
         align-items: initial;
         justify-content: space-between;
         margin-bottom: 0;
+        max-width: 100%;
+
 
         li {
           margin-right: 0;
-
+          width: 31%;
+overflow: hidden;
           & + li {
             border-left: 1px solid #656565;
             margin-left: 7px;
             padding-left: 7px;
           }
 
+          input {
+            width: fit-content;
+            height: fit-content;
+            border: 0;
+            background-color: transparent;
+            max-width: 100%;
+            padding: 0;
+
+
+            &::placeholder {
+              font-family: 'Lexend Deca', sans-serif;
+              font-size: 13px;
+              color: #656565;
+              text-align: center;
+
+            }
+          }
+
           p {
             margin-bottom: 0;
-            font-family: 'Lexend Deca', sans-serif;
-            font-size: 13px;
-            color: #656565;
+
           }
         }
 
@@ -323,6 +344,15 @@ section.meeting-title {
           justify-content: space-between;
           align-items: center;
 
+          span {
+            font-family: 'Lexend Deca', sans-serif;
+            font-size: 13px;
+            color: #656565;
+            width: 100%;
+            text-align: center;
+            margin-top: 4px;
+          }
+
           img {
             height: 20px;
             margin-right: 5px;
@@ -330,8 +360,25 @@ section.meeting-title {
         }
 
         li.timeframe {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          width: 38%;
+          margin-left: 0 !important;
+          padding-left: 2px !important;
+
           p {
+            margin: 0 2px;
             color: #4A8638;
+          }
+
+          input {
+            max-width: 49%;
+
+            &::placeholder {
+              text-align: center;
+              color: #4A8638;
+            }
           }
         }
       }
@@ -415,6 +462,7 @@ section.meeting-title {
             background-color: #E9F6FD;
           }
         }
+
         img {
           padding: 3px;
           background-color: #EDEDED;
@@ -463,7 +511,7 @@ section.meeting-title {
       line-height: 1.2;
     }
 
-    input#meetingLocation::placeholder{
+    input#meetingLocation::placeholder {
       font-family: 'Lexend Deca', sans-serif;
       font-size: 15px;
       color: #656565;

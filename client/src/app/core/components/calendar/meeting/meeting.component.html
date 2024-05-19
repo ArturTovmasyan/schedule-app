@@ -89,14 +89,16 @@
         <div class="date-time-container">
           <ul class="list-unstyled list-inline">
             <li class="list-inline-item date">
-              <p>{{ parsedDate }}</p>
+              <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ parsedDate }}" readonly>
             </li>
             <li class="list-inline-item timeframe">
-              <p>{{ parsedStartTime }} - {{ parsedEndTime }}</p>
+              <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ parsedStartTime }}" readonly>
+              <p> - </p>
+              <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ parsedEndTime }}" readonly>
             </li>
             <li class="list-inline-item timezone">
               <!-- <img src="assets/canada-flag.png" alt="timezone"> -->
-              <p>{{ timezone }}</p>
+              <span id="timezoneText">{{ timezone }}</span>
             </li>
           </ul>
         </div>
