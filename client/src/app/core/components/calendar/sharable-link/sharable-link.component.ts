@@ -1,7 +1,7 @@
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import { DOCUMENT } from '@angular/common';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Subject, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, tap } from 'rxjs';
 import { CalendarAccess } from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
 import { AvailabilityService } from 'src/app/core/services/calendar/availability.service';

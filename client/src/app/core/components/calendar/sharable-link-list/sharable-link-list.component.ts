@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { SharableLinkService } from 'src/app/core/services/calendar/sharable-link.service';
-import {BroadcasterService} from "../../../../shared/services";
+import { BroadcasterService } from "../../../../shared/services";
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { Page } from 'src/app/shared/models/page';
@@ -76,11 +76,9 @@ export class SharableLinkListComponent implements OnInit {
   }
 
   deleteLink(id: any) {
-    
     this.sharableLinkService.deleteLink(id)
     .subscribe({
       next: (res: any) => {
-        console.log('deleted res', res);
         if (res?.message == 'Deleted') {
           this.toastrService.success('Successfully Deleted!', '', {
             timeOut: 3000,

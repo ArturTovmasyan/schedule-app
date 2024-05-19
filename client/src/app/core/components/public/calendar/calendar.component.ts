@@ -135,7 +135,6 @@ export class PublicCalendarComponent implements OnDestroy {
     this.destroy$ = this.broadcaster.on('loadAvailableTimeslots')
       .subscribe((data: any) => {
         if (data) {
-          console.log('data' , data);
           this.calendarOptions.selectable = true;
           this.calendarOptions.slotDuration = '00:30:00';
           this.calendarOptions.slotLabelInterval = 30;
