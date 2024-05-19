@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { first } from 'rxjs';
+import { CommonService } from 'src/app/core/services/common.service';
 import { CalendarInvitationService } from '../../../services/calendar/invitation.service';
 
 @Component({
@@ -18,7 +20,9 @@ export class InviteAndConnectComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private invitationService: CalendarInvitationService
+    private readonly invitationService: CalendarInvitationService,
+    private readonly commonService: CommonService,
+    private readonly router: Router
   ) { }
 
   ngOnInit(): void {
@@ -69,7 +73,7 @@ export class InviteAndConnectComponent implements OnInit {
 
     this.inviteForm.patchValue({
       'duration': index,
-      'endDate': endDate
+      'endDate': this.commonService.getFormattedDateString(endDate)
     });
   }
 
@@ -105,6 +109,10 @@ export class InviteAndConnectComponent implements OnInit {
     for (const control in this.inviteForm.controls) {
       this.inviteForm.controls[control].setErrors(null);
     }
+  }
+
+  close() {
+    this.router.navigate(['/calendar/contacts'])
   }
 
 }
