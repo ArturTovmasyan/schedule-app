@@ -159,6 +159,20 @@ export class CalendarPermissionsService {
     });
 
     if (existingTokens?.refreshToken) {
+      await this.calendarTokenRepository.manager.transaction(
+        async (manager) => {
+          await this.calendarEventService.stopOutlookWebhookChannel(
+            user,
+            existingTokens.accessToken,
+            manager,
+          );
+
+          await manager.getRepository(CalendarToken).delete({
+            owner: { id: user.id },
+            calendarType: CalendarTypeEnum.Office365Calendar,
+          });
+        },
+      );
       await this.calendarTokenRepository.delete({
         owner: { id: user.id },
         calendarType: CalendarTypeEnum.Office365Calendar,
@@ -235,9 +249,7 @@ export class CalendarPermissionsService {
         manager,
       );
 
-      // await this.calendarEventService.syncOutlookCalendarEventList(user, manager);
-      //
-      // return this.getUserStatusOfCalendars(user.id, manager);
+      return this.getUserStatusOfCalendars(user.id, manager);
     });
   }
 

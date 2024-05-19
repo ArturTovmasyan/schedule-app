@@ -435,6 +435,7 @@ export class CalendarEventService {
     const existedGoogleWebhookChannel =
       await calendarWebhookChannelRepo.findOne({
         owner: { id: user.id },
+        calendarType: CalendarTypeEnum.GoogleCalendar,
       });
 
     if (existedGoogleWebhookChannel) {
@@ -449,8 +450,37 @@ export class CalendarEventService {
       if (stopChannelResponse.status === 204) {
         await calendarWebhookChannelRepo.delete({
           owner: { id: user.id },
+          calendarType: CalendarTypeEnum.GoogleCalendar,
         });
       }
+    }
+  }
+
+  async stopOutlookWebhookChannel(
+    user: User,
+    token: string,
+    manager: EntityManager,
+  ) {
+    const calendarWebhookChannelRepo = manager.getRepository(
+      CalendarWebhookChannel,
+    );
+    const outlookCalendarClient = await this.getOutlookCredentials(token);
+
+    const existedOutlookWebhookChannel =
+      await calendarWebhookChannelRepo.findOne({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.Office365Calendar,
+      });
+
+    if (existedOutlookWebhookChannel) {
+      await outlookCalendarClient
+        .api(`/subscriptions/${existedOutlookWebhookChannel.channelId}`)
+        .delete();
+
+      await calendarWebhookChannelRepo.delete({
+        owner: { id: user.id },
+        calendarType: CalendarTypeEnum.Office365Calendar,
+      });
     }
   }
 
@@ -459,56 +489,66 @@ export class CalendarEventService {
     token: CalendarToken,
     manager?: EntityManager,
   ) {
-    const googleCalendarClient = await this.getGoogleCredentials(
-      token.accessToken,
-    );
+    return transactionManagerWrapper(
+      manager,
+      this.calendarWebhookChannelRepository,
+      async (manager) => {
+        const googleCalendarClient = await this.getGoogleCredentials(
+          token.accessToken,
+        );
 
-    const tunnel = await locaTunnel({
-      port: +this.configService.get<string>('PORT'),
-    });
+        const tunnel = await locaTunnel({
+          port: +this.configService.get<string>('PORT'),
+        });
 
-    const baseUrl =
-      this.configService.get<string>('NODE_ENVIRONMENT') === 'development'
-        ? tunnel.url
-        : this.configService.get<string>('WEB_PRODUCTION_HOST');
+        const baseUrl =
+          this.configService.get<string>('NODE_ENVIRONMENT') === 'development'
+            ? tunnel.url
+            : this.configService.get<string>('WEB_PRODUCTION_HOST');
 
-    const calendarWebhookChannelRepo = manager.getRepository(
-      CalendarWebhookChannel,
-    );
+        const calendarWebhookChannelRepo = manager.getRepository(
+          CalendarWebhookChannel,
+        );
 
-    const googleLocalPrimaryCalendar = await manager
-      .getRepository(Calendar)
-      .findOne({
-        owner: { id: user.id },
-        calendarType: CalendarTypeEnum.GoogleCalendar,
-        isPrimary: true,
-      });
+        const googleLocalPrimaryCalendar = await manager
+          .getRepository(Calendar)
+          .findOne({
+            owner: { id: user.id },
+            calendarType: CalendarTypeEnum.GoogleCalendar,
+            isPrimary: true,
+          });
 
-    const watchResponse = await googleCalendarClient.events.watch({
-      requestBody: {
-        id: googleLocalPrimaryCalendar.id,
-        type: 'web_hook',
-        address: `${baseUrl}/api/calendar/events/google-webhook`,
-        token: token.accessToken,
-        expiration: null,
+        const watchResponse = await googleCalendarClient.events.watch({
+          requestBody: {
+            id: googleLocalPrimaryCalendar.id,
+            type: 'web_hook',
+            address: `${baseUrl}/api/calendar/events/google-webhook`,
+            token: token.accessToken,
+            expiration: null,
+          },
+          calendarId: googleLocalPrimaryCalendar.calendarId,
+        });
+
+        const webhookResourceId = watchResponse.data.resourceId;
+        const webhookExpiration = +watchResponse.data.expiration;
+
+        const webhookChannel = new CalendarWebhookChannel();
+        webhookChannel.channelId = webhookResourceId;
+        webhookChannel.expirationDate = new Date(webhookExpiration);
+        webhookChannel.owner = user;
+        webhookChannel.calendarType = CalendarTypeEnum.GoogleCalendar;
+
+        await calendarWebhookChannelRepo.save(webhookChannel);
       },
-      calendarId: googleLocalPrimaryCalendar.calendarId,
-    });
-
-    const webhookResourceId = watchResponse.data.resourceId;
-    const webhookExpiration = +watchResponse.data.expiration;
-
-    const webhookChannel = new CalendarWebhookChannel();
-    webhookChannel.channelId = webhookResourceId;
-    webhookChannel.expirationDate = new Date(webhookExpiration);
-    webhookChannel.owner = user;
-    webhookChannel.eventType = CalendarTypeEnum.GoogleCalendar;
-
-    await calendarWebhookChannelRepo.save(webhookChannel);
+    );
   }
 
   async outlookEventWatcher(user: User, token, manager?: EntityManager) {
     const outlookCalendarClient = await this.getOutlookCredentials(token);
+
+    const calendarWebhookChannelRepo = manager.getRepository(
+      CalendarWebhookChannel,
+    );
 
     const outlookLocalPrimaryCalendar = await manager
       .getRepository(Calendar)
@@ -533,22 +573,22 @@ export class CalendarEventService {
 
     const watchResponse = await outlookCalendarClient
       .api('/subscriptions')
-      .post(
-        {
-          changeType: 'deleted,updated,created',
-          notificationUrl: `${baseUrl}/api/calendar/events/outlook-webhook`,
-          resource: 'me/events',
-          expirationDateTime: '2022-09-12T18:23:45.9356913Z',
-        },
-        // ,
-        // (error, response, rawResponse) => {
-        //   console.log('error ', error);
-        //   console.log('response ', response);
-        //   console.log('rawResponse ', rawResponse);
-        // },
-      );
+      .post({
+        changeType: 'deleted,updated,created',
+        notificationUrl: `${baseUrl}/api/calendar/events/outlook-webhook`,
+        resource: 'me/events',
+        expirationDateTime: new Date(Date.now() + 250560000).toISOString(),
+      });
 
     console.log('watchResponse ', watchResponse);
+
+    const webhookChannel = new CalendarWebhookChannel();
+    webhookChannel.channelId = watchResponse.id;
+    webhookChannel.expirationDate = new Date(watchResponse.expirationDateTime);
+    webhookChannel.owner = user;
+    webhookChannel.calendarType = CalendarTypeEnum.Office365Calendar;
+
+    await calendarWebhookChannelRepo.save(webhookChannel);
   }
 
   async getWebhookByChannelId(channel: string | string[]) {

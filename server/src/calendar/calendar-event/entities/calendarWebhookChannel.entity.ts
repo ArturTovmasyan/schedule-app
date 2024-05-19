@@ -36,5 +36,5 @@ export class CalendarWebhookChannel {
     enum: CalendarTypeEnum,
     nullable: false,
   })
-  eventType!: CalendarTypeEnum;
+  calendarType!: CalendarTypeEnum;
 }

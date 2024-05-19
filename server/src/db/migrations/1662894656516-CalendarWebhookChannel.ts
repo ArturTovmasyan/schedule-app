@@ -3,21 +3,22 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class CalendarWebhookChannel1662894656516 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            CREATE TYPE "public"."calendar_webhook_channel_eventtype_enum" 
+            CREATE TYPE "public"."calendar_webhook_channel_calendartype_enum" 
             AS ENUM('GoogleCalendar', 'Office365Calendar', 'ExchangeCalendar', 'OutlookPlugIn', 'iCloudCalendar');
         `);
     await queryRunner.query(`
             CREATE TABLE "calendar_webhook_channel"
             (
-                "id"             uuid                                               NOT NULL DEFAULT uuid_generate_v4(),
+                "id"             uuid                                                  NOT NULL DEFAULT uuid_generate_v4(),
                 "channelId"      character varying,
-                "expirationDate" TIMESTAMP(3)                                                DEFAULT now(),
-                "createdOn"      TIMESTAMP                                          NOT NULL DEFAULT now(),
-                "updatedOn"      TIMESTAMP                                          NOT NULL DEFAULT now(),
-                "eventType"      "public"."calendar_webhook_channel_eventtype_enum" NOT NULL,
-                "ownerId"        uuid                                               NOT NULL,
+                "expirationDate" TIMESTAMP(3)                                                   DEFAULT now(),
+                "createdOn"      TIMESTAMP                                             NOT NULL DEFAULT now(),
+                "updatedOn"      TIMESTAMP                                             NOT NULL DEFAULT now(),
+                "calendarType"   "public"."calendar_webhook_channel_calendartype_enum" NOT NULL,
+                "ownerId"        uuid                                                  NOT NULL,
                 CONSTRAINT "PK_ba83bff5588faa21d633f6c2ec4" PRIMARY KEY ("id")
             );
+
         `);
     await queryRunner.query(`
             ALTER TABLE "calendar_webhook_channel"
@@ -35,7 +36,7 @@ export class CalendarWebhookChannel1662894656516 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "calendar_webhook_channel"`);
 
     await queryRunner.query(
-      `DROP TYPE "public"."calendar_webhook_channel_eventtype_enum"`,
+      `DROP TYPE "public"."calendar_webhook_channel_calendartype_enum"`,
     );
   }
 }

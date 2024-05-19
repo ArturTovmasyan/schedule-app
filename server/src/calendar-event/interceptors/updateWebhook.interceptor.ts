@@ -13,6 +13,7 @@ import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.
 import { ClientsCredentialsService } from '../../clients-credentials/clients-credentials.service';
 import { CalendarWebhookChannel } from '../entities/calendarWebhookChannel.entity';
 import { CalendarToken } from '../../calendar-permissions/entity/calendarToken.entity';
+import { CalendarEventService } from '../calendar-event.service';
 
 @Injectable()
 export class UpdateWebhookInterceptor implements NestInterceptor {
@@ -21,11 +22,11 @@ export class UpdateWebhookInterceptor implements NestInterceptor {
     private readonly calendarWebhookChannelRepository: Repository<CalendarWebhookChannel>,
     private readonly calendarPermissionsService: CalendarPermissionsService,
     private readonly clientsCredentials: ClientsCredentialsService,
+    private readonly calendarEventService: CalendarEventService,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const user = context.switchToHttp().getRequest().user;
-
     this.calendarWebhookChannelRepository.manager.transaction(
       async (manager) => {
         const calendarWebhookChannelRepository = manager.getRepository(
@@ -44,13 +45,19 @@ export class UpdateWebhookInterceptor implements NestInterceptor {
         const webhooks = await calendarWebhookChannelRepository
           .createQueryBuilder()
           .where('"ownerId" = :userId', { userId: user.id })
-          .andWhere('"expiryDate" < now()')
+          .andWhere('"expirationDate" < now()')
           .getMany();
 
         for (const webhook of webhooks) {
-          if (webhook.eventType === CalendarTypeEnum.GoogleCalendar) {
-            console.log('to do');
-          } else if (webhook.eventType === CalendarTypeEnum.Office365Calendar) {
+          if (webhook.calendarType === CalendarTypeEnum.GoogleCalendar) {
+            await this.calendarWebhookChannelRepository.delete({
+              owner: { id: user.id },
+              calendarType: CalendarTypeEnum.GoogleCalendar,
+            });
+            await this.calendarEventService.googleEventWatcher(user, token);
+          } else if (
+            webhook.calendarType === CalendarTypeEnum.Office365Calendar
+          ) {
             const updatedTokens =
               await this.calendarPermissionsService.msalInstance.acquireTokenByRefreshToken(
                 {

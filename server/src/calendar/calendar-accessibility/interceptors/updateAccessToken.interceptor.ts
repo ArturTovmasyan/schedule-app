@@ -24,7 +24,6 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const user = context.switchToHttp().getRequest().user;
-
     this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
 

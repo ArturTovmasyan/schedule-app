@@ -29,6 +29,7 @@ export class CalendarEventController {
 
   @Get()
   @UseGuards(AuthGuard())
+  @UseInterceptors(UpdateWebhookInterceptor)
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async getUserCalendarEvents(
     @Req() req: { user: User },
@@ -97,15 +98,22 @@ export class CalendarEventController {
   }
 
   @Post('outlook-webhook')
-  // @UseGuards(AuthGuard())
-  // @UseInterceptors(UpdateWebhookInterceptor)
   async forOutlookWebhook(
     @Query() query,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    console.log('req ', req.body);
-    // console.log('req route stack', req.route.stack);
+    console.log('req.body.value ', req);
+
+    // TO DO resourceId bug
+
+    const resourceId = req.body.value.subscriptionId;
+
+    const webhook = await this.calendarEventService.getWebhookByChannelId(
+      resourceId,
+    );
+
+    await this.calendarEventService.syncOutlookCalendarEventList(webhook.owner);
 
     res.status(200);
     res.send(query.validationToken);
