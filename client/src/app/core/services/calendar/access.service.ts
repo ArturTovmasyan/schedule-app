@@ -14,12 +14,17 @@ export class CalendarAccessService {
   ) {
   }
 
-  get url(): string {
-    return '/api/calendar/access-request';
+  requestCalendarAccess(formData: AccessRequest) {
+    return this.http.post<ApiResponse<AccessRequest>>('/api/calendar/access-request', {...formData}, {
+    }).pipe(
+      map(() => {
+        return formData
+      })
+    );
   }
 
-  requestCalendarAccess(formData: AccessRequest) {
-    return this.http.post<ApiResponse<AccessRequest>>(this.url, {...formData}, {
+  shareCalendarAccess(formData: AccessRequest) {
+    return this.http.post<ApiResponse<AccessRequest>>('/api/calendar/access', {...formData}, {
     }).pipe(
       map(() => {
         return formData

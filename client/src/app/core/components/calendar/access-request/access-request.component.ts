@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { first } from 'rxjs';
+import { AccessRequest } from 'src/app/core/interfaces/calendar/access-request.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
 
 @Component({
@@ -51,7 +52,6 @@ export class AccessRequestComponent {
 
   onShareStatusUpdate(event: Event) {
     this.shareCalendarAccess = (event.target as any).checked ?? false;
-    console.log(this.shareCalendarAccess)
   }
 
   submitRequest() {
@@ -61,7 +61,10 @@ export class AccessRequestComponent {
       timeForAccess: this.endDate?.toDateString() ?? null
     }).pipe(first())
       .subscribe({
-        next: () => {
+        next: (data: AccessRequest) => {
+          if(this.shareCalendarAccess) {
+            this.shareCalendar(data);
+          }
           this.message = '';
           this.endDate = null;
           this.emails = [];
@@ -72,4 +75,13 @@ export class AccessRequestComponent {
       });
   }
 
+  shareCalendar(data: AccessRequest) {
+    this.accessService.shareCalendarAccess(data)
+      .pipe(first())
+      .subscribe({
+        error: (error) => {
+          this.error = error;
+        }
+      });
+  }
 }
