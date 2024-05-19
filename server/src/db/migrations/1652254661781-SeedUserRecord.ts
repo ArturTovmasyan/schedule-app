@@ -6,9 +6,9 @@ export class SeedUserRecord1652254661781 implements MigrationInterface {
     const userRepo = queryRunner.manager.getRepository(User);
 
     const user = userRepo.create({
-      email: 'julian@test.com',
-      firstName: 'Julian',
-      lastName: 'M.',
+      email: 'local@test.com',
+      firstName: 'Local',
+      lastName: 'User',
       password: 'Test@12345',
     });
 
