@@ -24,7 +24,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   readonly MeetViaEnum = MeetViaEnum;
   @ViewChild('contactInput') input!: ElementRef;
   subscription$: BehaviorSubject<boolean>;
-  selectedDates$: BehaviorSubject<any> = new BehaviorSubject([]);
+  selectedDates$: BehaviorSubject<any> = new BehaviorSubject({});
   selectedDates:any = []
 
   // both varible are used for update of sharable links only

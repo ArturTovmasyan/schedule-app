@@ -66,115 +66,27 @@
       </h3>
       <input type="text" name="meetingTitle" placeholder="Please type meeting title" id="meetingTitle">
 
+      <!--      selected time slots     -->
       <h3 class="section-title-secondary  mt-4 mb-2">
         Selected time slots
       </h3>
-
-
-      <ul class="list-unstyled time-slots">
-        <li class="time-slot" id="timeSlot" *ngFor="let date of selectedDates$ | async | keyvalue:sortTimeslots">
+      <input type="text" name="no-slots" placeholder="Select the time slots in calendar"  *ngIf="(selectedDates$ | async | json) == '{}'" readonly>
+      <div class="selected-time-slot" *ngFor="let date of selectedDates$ | async | keyvalue:sortTimeslots">
+        <div class="info">
           <div class="date">
-            <input type="text" id="availableDate" name="availableDate"
-                   placeholder="{{ date.key }}" readonly>
+            <input type="text" id="date" name="date" placeholder="{{ date.key }}" readonly>
           </div>
-          <ul class="available-times list-unstyled" id="availableTimes">
-            <li class="available-timeframe" id="availableTimeframe"
-                *ngFor="let time of $any(date.value); let i = index">
-              <div class="list-inline-item timeframe">
-                <input type="text" id="availableStartTime" name="availableStartTime"
-                       placeholder="{{ time.start | parseTime:'hh:mmA' }}" readonly>
-                <p> - </p>
-                <input type="text" id="availableEndTime" name="availableEndTime"
-                       placeholder="{{ time.end | parseTime:'hh:mmA' }}" readonly>
-              </div>
-              <div class="timezone">
-                <span class="timezoneText">{{ timezone }}</span>
-              </div>
+          <ul class="list-unstyled timeframe">
+            <li *ngFor="let time of $any(date.value); let i = index">
+              <input type="text" id="startTime" name="availableStartTime" placeholder="{{ time.start | parseTime:'hh:mmA' }}" readonly>
+              <p> - </p>
+              <input type="text" id="endTime" name="availableEndTime" placeholder="{{ time.end | parseTime:'hh:mmA' }}" readonly>
               <button class="remove-button" id="removeButton" (click)="removeTime(date.key, i)" *ngIf="updateView">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </li>
           </ul>
-        </li>
-      </ul>
-
-
-
-      <!--      selected time slots     -->
-      <div class="selected-time-slot" id="selectedTimeSlot">
-        <div class="info">
-          <div class="date">
-            <input type="text" id="date" name="date"
-                   placeholder="Tue, Oct 08th" readonly>
-          </div>
-          <ul class="list-unstyled timeframe">
-            <li>
-              <input type="text" id="startTime" name="availableStartTime"
-                     placeholder="10:00AM" readonly>
-              <p> - </p>
-              <input type="text" id="endTime" name="availableEndTime"
-                     placeholder="11:00PM" readonly>
-            </li>
-
-          </ul>
         </div>
-        <button class="remove-button" id="removeButton">
-          <img src="assets/close-icon.svg" alt="remove button">
-        </button>
-      </div>
-      <div class="selected-time-slot" id="selectedTimeSlot">
-        <div class="info">
-          <div class="date">
-            <input type="text" id="date" name="date"
-                   placeholder="Tue, Oct 08th" readonly>
-          </div>
-          <ul class="list-unstyled timeframe">
-            <li>
-              <input type="text" id="startTime" name="availableStartTime"
-                     placeholder="10:00AM" readonly>
-              <p> - </p>
-              <input type="text" id="endTime" name="availableEndTime"
-                     placeholder="11:00PM" readonly>
-            </li>
-            <li>
-              <input type="text" id="startTime" name="availableStartTime"
-                     placeholder="11:00AM" readonly>
-              <p> - </p>
-              <input type="text" id="endTime" name="availableEndTime"
-                     placeholder="11:30PM" readonly>
-            </li>
-            <li>
-              <input type="text" id="startTime" name="availableStartTime"
-                     placeholder="12:00AM" readonly>
-              <p> - </p>
-              <input type="text" id="endTime" name="availableEndTime"
-                     placeholder="12:30PM" readonly>
-            </li>
-          </ul>
-        </div>
-        <button class="remove-button" id="removeButton">
-          <img src="assets/close-icon.svg" alt="remove button">
-        </button>
-      </div>
-      <div class="selected-time-slot" id="selectedTimeSlot">
-        <div class="info">
-          <div class="date">
-            <input type="text" id="date" name="date"
-                   placeholder="Tue, Oct 18th" readonly>
-          </div>
-          <ul class="list-unstyled timeframe">
-            <li>
-              <input type="text" id="startTime" name="availableStartTime"
-                     placeholder="10:00AM" readonly>
-              <p> - </p>
-              <input type="text" id="endTime" name="availableEndTime"
-                     placeholder="11:00PM" readonly>
-            </li>
-          </ul>
-        </div>
-        <button class="remove-button" id="removeButton">
-          <img src="assets/close-icon.svg" alt="remove button">
-        </button>
       </div>
       <!--      End of selected time slots     -->
 
