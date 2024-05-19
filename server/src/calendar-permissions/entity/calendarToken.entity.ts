@@ -5,12 +5,14 @@ import {
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
+    Unique,
     UpdateDateColumn,
 } from 'typeorm';
 import {User} from "@user/entity/user.entity";
 import {CalendarTypeEnum} from "../enums/calendarType.enum";
 
 @Entity()
+@Unique(['calendarType', 'owner'])
 export class CalendarToken {
     @PrimaryGeneratedColumn('uuid')
     id!: number;
@@ -22,7 +24,7 @@ export class CalendarToken {
     @Column({type: 'varchar', nullable: false})
     accessToken!: string;
 
-    @Column({type: 'varchar', nullable: false})
+    @Column({type: 'varchar', nullable: true})
     refreshToken!: string;
 
     @CreateDateColumn()
@@ -31,8 +33,8 @@ export class CalendarToken {
     @UpdateDateColumn()
     updatedOn!: Date;
 
-    @CreateDateColumn({precision: 3})
-    expiryDate!: Date;
+    @Column({type: "bigint", nullable: false})
+    expiryDate!: number;
 
     @Column({
         type: 'enum',

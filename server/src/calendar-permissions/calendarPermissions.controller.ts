@@ -4,10 +4,12 @@ import {User} from "@user/entity/user.entity";
 import {CalendarPermissionsService} from "./calendarPermissions.service";
 import {TokensByCalendar} from "./types/statusOfCalendars.type";
 import {Response} from "express";
+import {UsersService} from "@user/users.service";
 
 @Controller('calendar-permissions')
 export class CalendarPermissionsController {
-    constructor(private readonly calendarPermissionsService: CalendarPermissionsService) {
+    constructor(private readonly calendarPermissionsService: CalendarPermissionsService,
+                private readonly usersService: UsersService) {
     }
 
     @Get('status-of-calendars')
@@ -17,15 +19,18 @@ export class CalendarPermissionsController {
     }
 
     @Get('google-calendar')
-    // @UseGuards(AuthGuard())
-    async googleCalendar(@Res() res: Response) {
-        const url = await this.calendarPermissionsService.connectGoogleCalendar();
-        return res.redirect(url)
+    @UseGuards(AuthGuard())
+    async googleCalendar(@Req() req: { user: User }, @Res() res: Response) {
+        const {url, statusOfCalendars} = await this.calendarPermissionsService.toggleGoogleCalendar(req.user);
+        if (url) {
+            return res.redirect(url)
+        }
+        return res.send(statusOfCalendars);
     }
 
     @Get('google-calendar-callback')
-    // @UseGuards(AuthGuard())
-    async googleCalendarCallback(@Query() query: any) {
-        console.log('query ', query)
+    @UseGuards(AuthGuard())
+    async googleCalendarCallback(@Req() req: { user: User }, @Query() query: any) {
+        return await this.calendarPermissionsService.getTokensAndSave(req.user, query.code);
     }
 }
