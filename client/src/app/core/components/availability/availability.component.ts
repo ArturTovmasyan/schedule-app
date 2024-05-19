@@ -1,9 +1,10 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {first} from 'rxjs/operators';
 import {CalendarAvailability} from '../../interfaces/calendar/availability.calendar.interface';
 import {AvailabilityService} from '../../services/calendar/availability.service';
-import * as moment from 'moment-timezone';
 import { CommonService } from '../../services/common.service';
+import { first } from 'rxjs';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+var moment = require('moment-timezone');
 
 @Component({
   selector: 'app-availability',
@@ -28,6 +29,13 @@ export class AvailabilityComponent implements OnInit {
   }
   error: any | null = null;
 
+  availableTimezones = moment.tz.names();
+
+  private _isFromAm = true
+  private _isToAm = false
+
+  pauseUpdate = false;
+
   constructor(
     private calendarAvailabilityService: AvailabilityService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -36,6 +44,10 @@ export class AvailabilityComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAvailability();
+  }
+
+  get selectedTimezone() {
+    return this.tempAvailability.timezone;
   }
 
   get currentAvailability() {
@@ -67,8 +79,9 @@ export class AvailabilityComponent implements OnInit {
   }
 
   set fromText(value) {
-    this.tempAvailability.from = `${value}${this.isFromAM ? 'am' : 'pm'}`;
-    this.updateAccessibility();
+    const suffix = this.tempAvailability.clockType == ClockType.NORMAL ? (this.isFromAM) ? 'am' : 'pm' : '';
+    this.tempAvailability.from = `${value}${suffix}`;
+    if (!this.pauseUpdate) this.updateAccessibility();
   }
 
   get toText() {
@@ -80,15 +93,17 @@ export class AvailabilityComponent implements OnInit {
   }
 
   set toText(value) {
-    this.tempAvailability.to = `${value}${this.isToAM ? 'am' : 'pm'}`;
-    this.updateAccessibility();
+    const suffix = this.tempAvailability.clockType == ClockType.NORMAL ? (this.isToAM) ? 'am' : 'pm' : '';
+    this.tempAvailability.to = `${value}${suffix}`;
+    if (!this.pauseUpdate) this.updateAccessibility();
   }
 
   get isFromAM() {
-    return this.tempAvailability.from.endsWith("am");
+    return this._isFromAm;
   }
 
   set isFromAM(value) {
+    this._isFromAm = value
     if (this.meridian) {
       this.tempAvailability.from = `${this.fromText}${value ? 'am' : 'pm'}`;
       this.updateAccessibility();
@@ -96,10 +111,11 @@ export class AvailabilityComponent implements OnInit {
   }
 
   get isToAM() {
-    return this.tempAvailability.to.endsWith("am");
+    return this._isToAm;
   }
 
   set isToAM(value) {
+    this._isFromAm = value
     if (this.meridian) {
       this.tempAvailability.to = `${this.toText}${value ? 'am' : 'pm'}`;
       this.updateAccessibility();
@@ -121,7 +137,6 @@ export class AvailabilityComponent implements OnInit {
 
   updateAccessibility() {
     const data: CalendarAvailability = this.tempAvailability;
-    data.timezone = this.commonService.localTimezone;
     const observable = this.currentAvailability == null
       ? this.calendarAvailabilityService.create(data)
       : this.calendarAvailabilityService.update(data)
@@ -137,15 +152,26 @@ export class AvailabilityComponent implements OnInit {
       })
   }
 
+  onTimezoneSelected(timezone: string) {
+    if (this.tempAvailability.timezone === timezone) {
+      return;
+    }
+    console.log(timezone);
+    this.tempAvailability.timezone = timezone;
+    this.updateAccessibility();
+  }
+
   onClockTypeChanged(type: ClockType) {
     if (this.tempAvailability.clockType === type) {
       return;
     }
 
     this.tempAvailability.clockType = type;
-
+    this.pauseUpdate = true;
     this.fromText = this.parseTime(this.tempAvailability.from, this.meridian, this.isFromAM);
     this.toText = this.parseTime(this.tempAvailability.to, this.meridian, this.isToAM);
+    this.updateAccessibility();
+    this.pauseUpdate = false;
   }
 
   parseTime(time: string, inMeridian: boolean, isAM: boolean) {

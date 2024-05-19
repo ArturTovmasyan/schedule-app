@@ -31,7 +31,9 @@ import {SignupComponent} from './core/components/signup/signup.component';
     HttpClientModule,
     CalendarModule,
     NgHttpLoaderModule.forRoot(),
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    FormsModule,
+    NgSelectModule
   ],
   providers: [
     jwtInterceptorProvider,
@@ -48,5 +50,6 @@ import {SignupComponent} from './core/components/signup/signup.component';
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule {
 }

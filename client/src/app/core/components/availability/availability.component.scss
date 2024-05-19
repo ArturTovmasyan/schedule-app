@@ -4,9 +4,6 @@ section.availability {
 
 
   #availabilityWrapper {
-
-
-
     width: 90%;
     margin: 0 auto;
     position: relative;
@@ -59,6 +56,9 @@ section.availability {
         }
       }
 
+      ng-select {
+        width: 250px;
+      }
 
       div#content {
         display: flex;

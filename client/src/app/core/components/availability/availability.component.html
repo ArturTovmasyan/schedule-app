@@ -14,9 +14,15 @@
       </div>
     </div>
 
-
     <div id="hours">
       <label class="section-header">Working hours</label>
+      <ng-select 
+        class="mb-3"
+        [items]="availableTimezones" 
+        [ngModel]="selectedTimezone"
+        [clearable]="false"
+        (change)="onTimezoneSelected($event)">
+      </ng-select>
       <div id="content">
         <div id="range">
           <div class="time">
