@@ -78,7 +78,12 @@ export class MyCalendarComponent implements OnInit {
       center: 'prev,title,next',
       right: 'today'
     },
-    events: [],
+    events: [
+      {title: 'event 1 Test big title for resize event block', start: '2022-10-11T03:45:00', end: '2022-10-11T04:45:00', description: 'Event 1 description'},
+      {title: 'event 2', start: '2022-10-12T07:45:00', end: '2022-10-12T08:45:00', description: 'Event 2 description'},
+      {title: 'event 3', start: '2022-10-13T02:45:00', end: '2022-10-13T05:45:00', description: 'Event 3 description'},
+      {title: 'event 4', start: '2022-10-14T10:45:00', end: '2022-10-14T12:45:00', description: 'Event 4 description'},
+    ],
     eventContent: this.eventContent.bind(this),
     eventClassNames: function(arg) {
       const title = arg.event._def.title;
