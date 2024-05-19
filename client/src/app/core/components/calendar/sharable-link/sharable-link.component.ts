@@ -276,6 +276,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     if (![MeetViaEnum.Zoom, MeetViaEnum.GMeet, MeetViaEnum.Teams].includes(loc.value)) {
       // if incoming and outgoing and address is choosed from location option
       // no need to check for connection of location choosed
+      this.connectMessage = {
+        title: '',
+        type: ''
+      }
       return;
     }
 

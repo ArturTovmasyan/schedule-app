@@ -149,14 +149,8 @@ export class AuthService {
         return true;
     }
 
-<<<<<<< HEAD
     async confirmRegistration(token: string): Promise<boolean> {
         const user: Pick<UserDto, 'id' | 'status'> = await this.verifyToken(token);
-=======
-    async confirmRegistration(token: string): Promise<LoginStatus> {
-        const {user} = await this.verifyToken(token);
->>>>>>> d5dbaaa (auto login after email confirmation)
-
 		if(user) {
 			if (user.status === StatusEnum.pending) {
 				user.status = StatusEnum.active;

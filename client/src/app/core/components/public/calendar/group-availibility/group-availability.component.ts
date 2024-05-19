@@ -58,7 +58,8 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
 
   ngOnInit(): void {
     this.calendarService.getDetails(this.linkId)
-      .subscribe((data: any) => {
+    .subscribe({
+      next: (data: any) => {
         if (data?.slots) {
           // load available timeslots on calendar
           const datas = [];
@@ -97,7 +98,11 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
             user: data.user
           }];
         }
-      });
+      },
+      error: () => {
+        this.router.navigate(['/']);
+      }
+    })
 
       this.onTimeSlotSelected();
   }

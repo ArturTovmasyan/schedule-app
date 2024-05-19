@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {ApplicationUser} from "../../interfaces/user/app.user.interface";
 import {LoginUser} from "../../interfaces/user/login.user.interface";
 
@@ -103,10 +103,22 @@ export class AuthService {
 
     return this.http.post<any>('/api/auth/microsoft/callback', {...data}, requestOptions).pipe(
       map((response: any) => {
+<<<<<<< HEAD
         if (response && response.accessToken) {
           localStorage.setItem('cu', JSON.stringify(response));
           this.currentUserSubject.next(response);
         }
+=======
+        const resp: any = {
+          ...token,
+          user: {
+            'fullName': response.user.firstName + ' ' + response.user.lastName,
+            'email': response.user.email,
+            'avatar': response.user.avatar
+          }
+        }
+        this.currentUserSubject.next(resp);
+>>>>>>> 29b2421 (shake-90-redirect user to homepage on 404)
         return response;
       })
     );

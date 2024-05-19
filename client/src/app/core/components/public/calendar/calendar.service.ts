@@ -73,7 +73,7 @@ export class PublicCalendarService {
               return res.data;
             }),
             catchError((error) => {
-              return throwError(() => new Error(error));
+              return throwError(() => error);
             })
           );
     }

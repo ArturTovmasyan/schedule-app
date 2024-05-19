@@ -4,6 +4,8 @@ export interface ApplicationUser {
   provider?: string;
   user: {
     id: string;
+    fullName?: string;
+    avatar?: string;
     firstName: string;
     lastName: string;
     email: string;
