@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-onboarding',
@@ -40,6 +41,10 @@ export class OnboardingComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute
   ) {
 
+  }
+
+  get env() {
+    return environment;
   }
 
   ngOnInit(): void {

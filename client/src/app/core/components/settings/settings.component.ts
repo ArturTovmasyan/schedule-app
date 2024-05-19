@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-settings',
@@ -44,6 +45,10 @@ export class SettingsComponent implements OnInit {
   setting_title = this.navOptions[0]['title'];
 
   ngOnInit(): void {
+  }
+
+  get env() {
+    return environment;
   }
 
   changeTitle(title: string) {
