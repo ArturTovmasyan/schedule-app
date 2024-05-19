@@ -1,0 +1,17 @@
+<div id="container">
+    <div>
+        <span id="title">{{ title }}</span>
+        <span id="slogan">{{ slogan }}</span>
+    </div>
+    <div id="nav">
+        <div *ngIf="!isAuthenticated && isLogin">
+            <span>Have an account?</span>
+            <span class="button"><a href="#">Log in</a></span>
+        </div>
+        <div *ngIf="!isAuthenticated && !isLogin">
+            <span>Need an account?</span>
+            <span class="button"><a href="#">Register</a></span>
+        </div>
+        <span *ngIf="isAuthenticated" class="button"><a href="#">Log out</a></span>
+    </div>
+</div>
