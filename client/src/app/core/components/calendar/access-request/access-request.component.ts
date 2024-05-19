@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { first } from 'rxjs';
@@ -23,6 +24,7 @@ export class AccessRequestComponent implements OnInit {
   constructor(
     private readonly accessService: CalendarAccessService,
     private readonly commonService: CommonService,
+    private readonly router: Router,
     private readonly changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -93,5 +95,9 @@ export class AccessRequestComponent implements OnInit {
           this.error = error;
         }
       });
+  }
+
+  close() {
+    this.router.navigate(['/calendar/contacts'])
   }
 }

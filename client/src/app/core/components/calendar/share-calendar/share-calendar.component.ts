@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { first } from 'rxjs';
@@ -22,7 +23,8 @@ export class ShareCalendarComponent {
 
   constructor(
     private readonly accessService: CalendarAccessService,
-    private readonly commonService: CommonService
+    private readonly commonService: CommonService,
+    private readonly router: Router
   ) { }
 
   ngOnInit() {
@@ -91,5 +93,9 @@ export class ShareCalendarComponent {
           this.error = error;
         }
       });
+  }
+
+  close() {
+    this.router.navigate(['/calendar/contacts'])
   }
 }
