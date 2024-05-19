@@ -155,17 +155,4 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
       return 'event';
     }
   };
-
-  eventContent(arg: any) {
-    let divEl = document.createElement('div');
-    let title = arg.event.title;
-    let time = arg.timeText;
-
-    if (title) {
-      divEl.innerHTML = '<span>' + title + '</span><br/><span style="color: #047BDAFF">' + time + '</span>';
-    } else {
-      divEl.innerHTML = '<span style="color: #047BDAFF">' + time + '</span>';
-    }
-    return {html: divEl.innerHTML};
-  }
 }

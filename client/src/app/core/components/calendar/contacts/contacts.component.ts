@@ -32,19 +32,23 @@ export class ContactsComponent implements OnInit {
 
   filterData() {
     const query = this.searchQuery.toLocaleLowerCase().trim();
+
     this.filteredData = this.data.filter((item) => {
 
-      const addContact = item.owner.firstName.toLowerCase().startsWith(query) ||
-        item.owner.lastName.toLowerCase().startsWith(query) ||
-        item.owner.email.toLowerCase().startsWith(query);
-
-      //ignore duplicates
-      if (this.lastOwnerId && this.lastOwnerId == item.owner.id) {
-        return false;
+      if (!query) {
+        this.lastOwnerId = '';
+        return true;
       }
 
-      this.lastOwnerId = item.owner.id;
-      return addContact;
+      //ignore duplicates
+      // if (this.lastOwnerId && this.lastOwnerId == item.owner.id) {
+      //   return false;
+      // }
+      // this.lastOwnerId = item.owner.id;
+
+      return item.owner.firstName.toLowerCase().startsWith(query) ||
+        item.owner.lastName.toLowerCase().startsWith(query) ||
+        item.owner.email.toLowerCase().startsWith(query);
     });
   }
 

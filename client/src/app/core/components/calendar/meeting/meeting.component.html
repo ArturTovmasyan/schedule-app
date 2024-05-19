@@ -99,9 +99,6 @@
               <p>{{ timezone }}</p>
             </li>
           </ul>
-          <!-- <button class="remove-button" id="removeButton">
-            <img src="assets/close-icon.svg" alt="remove button">
-          </button> -->
         </div>
         <div class="save-to-calendar">
           <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img [src]="getCalendarIcon(selectedCalendar?.type ?? null)" alt="calendar icon"> {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
