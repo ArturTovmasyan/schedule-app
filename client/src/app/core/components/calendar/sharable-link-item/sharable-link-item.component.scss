@@ -7,6 +7,64 @@ div.sharable-link-container {
     margin-top: 10px;
   }
 
+  .delete-dialog {
+    width: calc(100% - 20px);
+    height: calc(100% - 26px);
+    position: absolute;
+    background-color: rgba($color: #ffffff, $alpha: 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    label {
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 600;
+      color: black;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+      
+      a {
+        font-size: 14px;
+        line-height: 20px;
+        padding: 4px 12px;
+        border-radius: 12px;
+        border: 0;
+
+        &:first-child {
+          color: #32AEF1;
+          border: 1px solid #32AEF1;
+
+          &:hover {
+            color: white;
+            background-color: #98D6F8;
+            transition: 0.4s ease;
+          }
+        }
+
+        &:last-child {
+          
+          background: #32AEF1;
+          border-radius: 12px;
+          border: 0;
+          color: #fff;
+          font-size: 16px;
+
+          &:hover {
+            background-color: #1d97dc;
+            transition: 0.4s ease;
+          }
+        }
+      }
+    }
+  }
+
   .sharable-link-container-header {
     display: flex;
     justify-content: space-between;
