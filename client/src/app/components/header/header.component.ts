@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
   }
 
   get slogan() {
-    return 'Make meetings work!';
+    return '';
   }
 
   register() {
