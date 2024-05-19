@@ -17,7 +17,6 @@ import { ClientsCredentialsService } from '../clients-credentials/clients-creden
 import { google, oauth2_v2 } from 'googleapis';
 import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 import { CalendarData } from './types/calendar-data.type';
-import { ca } from 'date-fns/locale';
 
 @Injectable()
 export class CalendarPermissionsService {
