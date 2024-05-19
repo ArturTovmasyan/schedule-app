@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import * as Mailgun from 'mailgun-js';
-import { ConfigService } from '@nestjs/config';
 import { IMailGunData } from './interfaces/mail.interface';
 
 @Injectable()
 export class MailService {
     private mg: Mailgun.Mailgun;
 
-    constructor(private readonly configService: ConfigService) {
+    constructor() {
         this.mg = Mailgun({
             apiKey: process.env.MAILGUN_API_KEY,
             domain: process.env.MAILGUN_API_DOMAIN,
