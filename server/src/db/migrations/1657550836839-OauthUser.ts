@@ -5,9 +5,9 @@ export class OauthUser1657550836839 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "status"`);
-        await queryRunner.query(`ALTER TABLE "user" ADD "status" smallint DEFAULT '0'`);
-        await queryRunner.query(`ALTER TABLE "user" ADD "oauthId" character varying(100) DEFAULT '0'`);
-        await queryRunner.query(`ALTER TABLE "user" ADD "provider" character varying(10)`);
+        await queryRunner.query(`ALTER TABLE "user" ADD "status" IF NOT EXISTS smallint DEFAULT '0'`);
+        await queryRunner.query(`ALTER TABLE "user" ADD "oauthId" IF NOT EXISTS  character varying(100) DEFAULT '0'`);
+        await queryRunner.query(`ALTER TABLE "user" ADD "provider" IF NOT EXISTS  character varying(10)`);
         await queryRunner.query(`ALTER TABLE "user" ALTER COLUMN "password" DROP NOT NULL`);
     }
 
@@ -16,6 +16,6 @@ export class OauthUser1657550836839 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "provider"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "oauthId"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "status"`);
-        await queryRunner.query(`ALTER TABLE "user" ADD "status" smallint DEFAULT '0'`);
+        await queryRunner.query(`ALTER TABLE "user" ADD "status" IF NOT EXISTS smallint DEFAULT '0'`);
     }
 }
