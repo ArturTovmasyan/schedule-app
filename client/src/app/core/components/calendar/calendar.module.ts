@@ -18,6 +18,7 @@ import { SharableLinkComponent } from './sharable-link/sharable-link.component';
 import { GroupAvailabilityComponent } from './group-availability/group-availability.component'
 import { SharableLinkService } from '../../services/calendar/sharable-link.service';
 import { SharableLinkListComponent } from './sharable-link-list/sharable-link-list.component';
+import { SharableLinkItemComponent } from './sharable-link-item/sharable-link-item.component';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,

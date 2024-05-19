@@ -1,3 +1,125 @@
+:host ::ng-deep {
+  li.sharable-link-container {
+      border: 1px solid #b9b9b9;
+      padding: 5px 7px;
+      border-radius: 10px;
+
+      &+li.sharable-link-container {
+        margin-top: 10px;
+      }
+
+      .sharable-link-container-header {
+        display: flex;
+        justify-content: space-between;
+
+        ul.users-avatars {
+          li.user-avatar {
+            margin: 0;
+
+            &+li.user-avatar {
+              margin-left: 10px;
+            }
+
+            img {
+              height: 30px;
+              width: 30px;
+              border-radius: 50%;
+            }
+          }
+        }
+
+        .sharable-link-info {
+          text-align: right;
+
+          h4 {
+            &+h4 {
+              margin-top: 2px;
+            }
+
+            font-family: 'Lexend Deca',
+            sans-serif;
+            color: #6A6A6A;
+            font-size: 12px;
+            font-weight: 400;
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .sharable-link-container-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+
+        button.link {
+          font-family: 'Lexend Deca', sans-serif;
+          color: #315EA0;
+          font-size: 12px;
+          font-weight: 400;
+          margin-bottom: 0;
+          border: 0;
+          background-color: transparent;
+        }
+
+        ul.actions {
+          li {
+            margin: 0;
+
+            &+li {
+              margin-left: 5px;
+            }
+
+
+            button {
+
+              height: 20px;
+              width: 20px;
+              border: 0;
+              background-color: transparent;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+
+              img {
+                height: 15px;
+              }
+            }
+          }
+        }
+      }
+      .delete-dialog {
+        position: absolute;
+        right: 0;
+        left: 0;
+        height: 100%;
+        top: 0;
+        background: rgba(245, 158, 158, 0.4);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        div {
+          display: flex;
+          justify-content: space-around;
+          width: 100%;
+          a {
+            font-size: 1.25rem;
+            cursor: pointer;
+            &:hover {
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+}
+
 section.sharable-links {
   padding: 37px 16px 0 14px;
   background-color: white;
@@ -202,4 +324,3 @@ section.sharable-links {
     }
   }
 }
-

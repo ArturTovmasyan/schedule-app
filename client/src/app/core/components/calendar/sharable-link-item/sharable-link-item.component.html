@@ -1,0 +1,54 @@
+
+  <div class="delete-dialog" *ngIf="link.createdByMe && showDeletePopup">
+    <h5>Are you sure?</h5>
+    <div>
+      <a (click)="deleteLink(false)">No</a>
+      <a (click)="deleteLink(true)">Yes</a>
+    </div>
+  </div>
+  <div class="sharable-link-container-header">
+    <ul class="list-unstyled list-inline users-avatars" id="usersAvatars">
+      <ng-container *ngIf="link.attendees.length; else selfUser">
+        <li class="list-inline-item user-avatar" *ngFor="let attendee of link.attendees">
+          <img *ngIf="attendee.user.avatar" [src]="attendee.user.avatar">
+          <span *ngIf="!attendee.user.avatar">{{ attendee.user.firstName | acronymName }}</span>
+        </li>
+      </ng-container>
+      <ng-template #selfUser>
+        <li class="list-inline-item user-avatar">
+          <img *ngIf="link.user.avatar" [src]="link.user.avatar">
+          <span *ngIf="!link.user.avatar">{{ link.user.firstName | acronymName }}</span>
+        </li>
+      </ng-template>
+    </ul>
+    <div class="sharable-link-info" id="sharableLinkInfo">
+      <h4 class="created-by">Created by {{ link.user.firstName }}</h4>
+      <h4 class="date" id="date">
+        {{ link.updatedOn | date }}
+      </h4>
+    </div>
+  </div>
+  <div class="sharable-link-container-footer">
+    <button class="link">
+      {{ link.link }}
+    </button>
+    <ul class="list-unstyled list-inline actions">
+      <li class="list-inline-item" *ngIf="link.createdByMe">
+        <button class="delete" (click)="deleteLinkPopup()">
+          <img src="assets/trash-icon.png" alt="trash icon">
+        </button>
+      </li>
+      <li class="list-inline-item" *ngIf="link.createdByMe">
+        <button class="edit" routerLink="/calendar/sharable-link/{{link.id}}">
+          <img src="assets/edit-icon.png" alt="trash icon">
+        </button>
+      </li>
+      <li class="list-inline-item">
+        <div class="buttons position-relative">
+          <button class="copy" (click)="copyLink(link.link)">
+            <img src="assets/copy-icon.png" alt="trash icon">
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>

@@ -1,7 +1,6 @@
-import { Component, EventEmitter, OnInit, Output, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { SharableLinkService } from 'src/app/core/services/calendar/sharable-link.service';
 import {BroadcasterService} from "../../../../shared/services";
-import { tap } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { Page } from 'src/app/shared/models/page';
@@ -40,19 +39,23 @@ export class SharableLinkListComponent implements OnInit {
     }
     this.sharableLinkService.getLinks(params)
     .subscribe((res: any) => {
-      console.log(res.data.length);
       if (res.data.length && res.metadata.count > this.page.limit) {
         this.nextPage = 'true';
       } else {
         this.nextPage = null;
       }
       const results = res.data;
+      const slots = [];
       for (let i = 0; i < results.length; i++) {
+        for (const date of results[i].slots) {
+          slots.push(date);
+        }
         const context = {
           item: results[i]
         };
         this.container.createEmbeddedView(this.template, context);
       }
+      this.broadcaster.broadcast('addSharableLinkTimeSlot', slots);
     })
   }
 
@@ -72,8 +75,29 @@ export class SharableLinkListComponent implements OnInit {
     }
   }
 
-  deleteLink() {
-    console.log('delete link');
+  deleteLink(id: any) {
+    
+    this.sharableLinkService.deleteLink(id)
+    .subscribe({
+      next: (res: any) => {
+        console.log('deleted res', res);
+        if (res?.message == 'Deleted') {
+          this.toastrService.success('Successfully Deleted!', '', {
+            timeOut: 3000,
+            positionClass: 'toast-top-left'
+          });
+          this.container.clear();
+          this.loadSharableLinks();
+        }
+      },
+      error: (err: any) => {
+        this.toastrService.error(err?.message, 'Error On Delete', {
+          timeOut: 3000,
+          positionClass: 'toast-top-left'
+        });
+      }
+    });
+    
   }
 
   close() {

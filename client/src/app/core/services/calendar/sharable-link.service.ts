@@ -21,6 +21,10 @@ export class SharableLinkService {
     return this.http.patch<ApiResponse<any>>(`/api/sharable-links/${id}`, { ...formData });
   }
 
+  deleteLink(id: string) {
+    return this.http.delete(`/api/sharable-links/${id}`);
+  }
+
   getDetails(linkId: string) {
     return this.http.get<ApiResponse<any>>(`/api/sharable-links/${linkId}`);
   }
