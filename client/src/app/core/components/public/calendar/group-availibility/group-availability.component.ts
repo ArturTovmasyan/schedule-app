@@ -36,6 +36,7 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
   location: Location | undefined;
   form!: FormGroup;
   selectedSlot: any;
+  meetingTitle!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -61,6 +62,7 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
     this.calendarService.getDetails(this.linkId)
     .subscribe({
       next: (data: any) => {
+        
         if (data?.slots) {
           // load available timeslots on calendar
           const datas = [];
@@ -70,7 +72,8 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
                 id: date.id,
                 groupId: 'notAvailableSlot',
                 start: date.startDate,
-                end: date.endDate
+                end: date.endDate,
+                title: data.title
               });
             } else {
               datas.push({
@@ -78,7 +81,8 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
                 groupId: 'availableSlot',
                 start: date.startDate,
                 end: date.endDate,
-                className: AVAILABILITY_EVENT_CLASS
+                className: AVAILABILITY_EVENT_CLASS,
+                title: data.title
               });
             }
           }
@@ -99,6 +103,8 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
             user: data.user
           }];
         }
+
+        this.meetingTitle = data?.title;
       },
       error: () => {
         this.router.navigate(['/']);

@@ -1,8 +1,9 @@
 <section class="group-availability" id="groupAvailability">
   <div class="header">
-    <h2 class="section-title text-center">
-      Group availability
-    </h2>
+    <h3>
+      ENTANGLES
+    </h3>
+    <label id="title">Group Availabillity</label>
   </div>
   <div class="group-availability-content">
     <form action="" [formGroup]="form" (ngSubmit)="submit()">
@@ -16,15 +17,19 @@
               </div>
               <div class="user-bio">
                 <h5 class="full-name">{{ att.user.firstName }} {{ att.user.lastName }}</h5>
-                <!-- <h6 class="contact-company">
-                  AirBnbddffasdfsdfdf
-                </h6> -->
               </div>
             </div>
           </li>
         </ul>
       </div>
+
+      <div class="meeting-title">
+        <h3 class="section-title-secondary mb-2"> Meeting title </h3>
+        <div>{{ meetingTitle }}</div>
+      </div>
+
       <div class="calendar w-100" [style.display]="componentData.isTimeslotSelected ? 'none' : ''">
+        <div class="calendar-header"></div>
         <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
         </full-calendar>
       </div>
