@@ -1,5 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CalendarAccess} from "../../../../interfaces/calendar/calendar-access.interface";
+import {BroadcasterService} from "../../../../../shared/services";
+import {first} from "rxjs/operators";
+import {AvailabilityService} from "../../../../services/calendar/availability.service";
 
 @Component({
   selector: 'app-contact-item',
@@ -11,7 +14,8 @@ export class ContactItemComponent implements OnInit {
   @Input("contact")
   contact!: CalendarAccess;
 
-  constructor() { }
+  constructor(private broadcaster: BroadcasterService, private availabilityService: AvailabilityService) {
+  }
 
   ngOnInit(): void {
   }
@@ -35,5 +39,24 @@ export class ContactItemComponent implements OnInit {
 
   revokeAccess(item: CalendarAccess) {
     console.log(`revoke access for ${item.id}`);
+  }
+
+  getContactAvailability() {
+    const contactId = this.contact.owner.id;
+    this.availabilityService.getByUserId(contactId)
+      .pipe(first())
+      .subscribe({
+        next: (data: any | null) => {
+          const dates = data.availabilityDates;
+          const contactData = {
+            ...dates,
+            contactId
+          }
+          this.broadcaster.broadcast('contact_calendar_data', contactData);
+        },
+        error: (error) => {
+          console.error(error.message);
+        }
+      });
   }
 }

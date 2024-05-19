@@ -31,4 +31,16 @@ export class CalendarService {
       })
     )
   }
+
+  fetchContactEvents(contactId: string) {
+    let initDate = moment().subtract(1, 'week').toDate(); //TODO add event for contact and test
+    let startDate = this.datePipe.transform(initDate, 'yyyy-MM-dd');
+    let endDate = moment(startDate, "yyyy-MM-DD").add(1, 'month').format('yyyy-MM-DD');
+
+    return this.http.get<ApiResponse<any>>(this.url+'/'+contactId+'?startDate='+startDate+'&dateEnd='+endDate, {}).pipe(
+      map((response: ApiResponse<any>) => {
+        return response;
+      })
+    )
+  }
 }

@@ -19,7 +19,14 @@ import { AuthGuard } from '@nestjs/passport';
 import TimeIntervalDto from './dto/timeInterval.dto';
 import CreateEventDto from './dto/createEvent.dto';
 import UpdateEventDto from './dto/updateEvent.dto';
+<<<<<<< HEAD
 import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
+=======
+import { Request, Response } from 'express';
+import { UpdateWebhookInterceptor } from './interceptors/updateWebhook.interceptor';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {GetUser} from "../../components/decorators/get-user.decorator";
+>>>>>>> 9a3bcc7 (Cretae contact avail. event functionality)
 
 @ApiBearerAuth()
 @ApiTags('Calendar Event')
@@ -32,12 +39,24 @@ export class CalendarEventController {
   @UseInterceptors(UpdateWebhookInterceptor)
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async getUserCalendarEvents(
-    @Req() req: { user: User },
+    @GetUser() user,
     @Query() query: TimeIntervalDto,
   ) {
     return await this.calendarEventService.getUserCalendarEvents(
-      req.user,
+      user.id,
       query,
+    );
+  }
+
+  @Get(':contactId')
+  @UseGuards(AuthGuard())
+  async getContactEvents(
+      @Param('contactId') contactId: string,
+      @Query() query: TimeIntervalDto,
+  ) {
+    return await this.calendarEventService.getUserCalendarEvents(
+        contactId,
+        query,
     );
   }
 

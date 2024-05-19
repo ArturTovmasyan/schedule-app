@@ -1,4 +1,4 @@
-<div class="contact-info">
+<div class="contact-info" (click)="getContactAvailability()">
   <div class="contact-portrait" id="contactPortrait">
     <img *ngIf="contact.owner.avatar; else avatarAcronym" src="{{contact.owner.avatar}}" alt="user portrait">
   </div>

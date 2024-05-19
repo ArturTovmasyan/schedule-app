@@ -9,10 +9,7 @@ import { CalendarAvailability } from '../../interfaces/calendar/availability.cal
 })
 export class AvailabilityService {
 
-  constructor(
-    private readonly http: HttpClient
-  ) {
-  }
+  constructor(private readonly http: HttpClient) {}
 
   get url(): string {
     return '/api/calendar/availability';
@@ -41,6 +38,15 @@ export class AvailabilityService {
     }).pipe(
       map((response: ApiResponse<CalendarAvailability>) => {
         return response.data
+      })
+    )
+  }
+
+  getByUserId(id: string) {
+    return this.http.get<ApiResponse<any>>(this.url+'/'+id, {
+    }).pipe(
+      map((response: ApiResponse<any>) => {
+        return response;
       })
     )
   }

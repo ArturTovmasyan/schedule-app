@@ -49,13 +49,13 @@ export class AvailabilityController {
   @Get()
   @UseGuards(AuthGuard())
   findAll(@GetUser() user) {
-    return this.availabilityService.findAll(user);
+    return this.availabilityService.findOne(user.id);
   }
 
   @ApiExcludeEndpoint()
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.availabilityService.findOne(+id);
+  @Get(':userId')
+  findOne(@Param('userId') userId: string) {
+    return this.availabilityService.findOne(userId, true);
   }
 
   @ApiResponse({ type: IResponseMessage })

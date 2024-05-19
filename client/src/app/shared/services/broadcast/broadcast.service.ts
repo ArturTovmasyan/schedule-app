@@ -9,7 +9,7 @@ export class BroadcasterService {
   broadcast(key: string, data?: any) {
     if (this.events[key] && this.events[key].length) {
       for (const ev of this.events[key]) {
-        ev.next();
+        ev.next(data);
       }
     }
   }

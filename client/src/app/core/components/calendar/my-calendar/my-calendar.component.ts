@@ -1,23 +1,57 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CalendarOptions} from "@fullcalendar/angular";
 import {first} from "rxjs/operators";
 import {CalendarService} from "../../../services/calendar/calendar.service";
 import DateConverter from "../../helpers/date.converter";
+import {BroadcasterService} from "../../../../shared/services";
+import {BehaviorSubject} from "rxjs";
+import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interface";
 
 @Component({
   selector: 'app-my-calendar',
   templateUrl: './my-calendar.component.html',
   styleUrls: ['./my-calendar.component.scss']
 })
-export class MyCalendarComponent implements OnInit {
+export class MyCalendarComponent implements OnInit, OnDestroy {
   events: any = [];
   error: any = null;
   calendarApi: any;
+  myEvents: any;
+  contactEvents: any;
+  contactAvailabilityDates: any;
+  subscription: BehaviorSubject<boolean>;
 
-  constructor(private calendarService: CalendarService) {}
+  constructor(private calendarService: CalendarService, private broadcaster: BroadcasterService) {
+    this.subscription = this.broadcaster.on('contact_calendar_data').subscribe((contactAvailabilities: any) => {
+      debugger;
+      const availabilityDates: CalendarEvent[] = [];
+      const contactId = contactAvailabilities.contactId;
+
+      if (contactAvailabilities) {
+        delete contactAvailabilities['contactId'];
+        for (const k in contactAvailabilities) {
+          availabilityDates.push({
+            start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].start)),
+            end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].end)),
+            className: 'available-event'
+          })
+        }
+
+        this.contactAvailabilityDates = availabilityDates;
+
+        // this.fetchContactEvents(contactId);
+        this.calendarOptions.events = this.myEvents.concat(availabilityDates);
+        //TODO compare with my events and availability
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.fetchMyEvents();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   fetchMyEvents() {
@@ -35,7 +69,32 @@ export class MyCalendarComponent implements OnInit {
                 description: el.description
               })
             })
+            this.myEvents = data;
             this.calendarOptions.events = data;
+          }
+        },
+        error: (error) => {
+          this.error = error;
+        }
+      });
+  }
+
+  fetchContactEvents(userId: string) {
+    this.calendarService.fetchContactEvents(userId)
+      .pipe(first())
+      .subscribe({
+        next: (events: any) => {
+          const data: any[] = [];
+          if (events.length > 0) {
+            events.forEach((el: any) => {
+              data.push({
+                start: DateConverter.convertUTCDateToLocalDate(new Date(el.start)),
+                end: DateConverter.convertUTCDateToLocalDate(new Date(el.end)),
+                className: 'available-event'
+              })
+            })
+            this.contactEvents = data;
+            // this.calendarOptions.events = data;
           }
         },
         error: (error) => {
@@ -49,7 +108,7 @@ export class MyCalendarComponent implements OnInit {
     dayHeaderFormat: {weekday: 'short', day: '2-digit', omitCommas: true},
     direction: 'ltr',
     themeSystem: 'bootstrap',
-    dayHeaders:true,
+    dayHeaders: true,
     allDaySlot: false,
     eventTextColor: 'black',
     eventBackgroundColor: '#E9F6FD',
@@ -65,13 +124,13 @@ export class MyCalendarComponent implements OnInit {
       {
         hour: 'numeric',
         minute: '2-digit',
-        hour12:true,
+        hour12: true,
         meridiem: 'lowercase',
         separator: '.'
       }
     ],
     titleFormat: {
-     month: 'long', day: 'numeric'
+      month: 'long', day: 'numeric'
     },
     eventTimeFormat: {
       hour: 'numeric',
@@ -86,12 +145,8 @@ export class MyCalendarComponent implements OnInit {
     },
     events: [],
     eventContent: this.eventContent.bind(this),
-    eventClassNames: function(arg) {
-      //TODO get contact availability times
-      if (true) {
-        return 'event';
-      }
-      return 'available-event';
+    eventClassNames: function () {
+      return 'event';
     }
   };
 
@@ -100,8 +155,11 @@ export class MyCalendarComponent implements OnInit {
     let title = arg.event.title;
     let time = arg.timeText;
 
-    //TODO check if available event change background here.
-    divEl.innerHTML = '<span>' + title + '</span><br/><span style="color: #047BDAFF">' + time + '</span>';
+    if (title) {
+      divEl.innerHTML = '<span>' + title + '</span><br/><span style="color: #047BDAFF">' + time + '</span>';
+    } else {
+      divEl.innerHTML = '<span style="color: #047BDAFF">' + time + '</span>';
+    }
     return {html: divEl.innerHTML};
   }
 }
