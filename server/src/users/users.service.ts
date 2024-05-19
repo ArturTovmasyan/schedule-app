@@ -267,7 +267,20 @@ export class UsersService {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
-    return toUserInfoDto(user);
+    return {
+      ...toUserInfoDto(user),
+      onboarded: user.onboarded,
+    };
+  }
+
+  async markUserAsOnboarded(id: string): Promise<boolean> {
+    const user: User = await this.userRepo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    await this.userRepo.update({ id }, { onboarded: true });
+    return true;
   }
 }
 auth.service.ts

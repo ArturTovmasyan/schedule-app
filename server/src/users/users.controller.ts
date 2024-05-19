@@ -23,7 +23,7 @@ import {
   IResponseMessage,
   IResponse,
 } from 'src/components/interfaces/response.interface';
-import {validateImageFile} from "../components/helpers/utils";
+import { validateImageFile } from '../components/helpers/utils';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -56,9 +56,11 @@ export class UsersController {
 
   @ApiResponse({ type: IResponseMessage })
   @ApiOperation({ summary: 'Set user avatar' })
-  @UseInterceptors(FileInterceptor('file', {
-    fileFilter: validateImageFile
-  }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: validateImageFile,
+    }),
+  )
   @Put('avatar')
   @UseGuards(AuthGuard())
   async setUserAvatar(
@@ -85,5 +87,17 @@ export class UsersController {
   @UseGuards(AuthGuard())
   async delete(@Param('id') id: string): Promise<UserDto> {
     return await this.usersService.delete(id);
+  }
+
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Mark user as onboarded' })
+  @Put('me/onboarded')
+  @UseGuards(AuthGuard())
+  async markUserAsOnboarded(@GetUser() user: User): Promise<IResponseMessage> {
+    await this.usersService.markUserAsOnboarded(user.id);
+    return {
+      status: 200,
+      message: 'Success',
+    };
   }
 }

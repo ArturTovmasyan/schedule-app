@@ -32,7 +32,7 @@ export class AuthService {
           localStorage.setItem('cu', JSON.stringify(response));
           this.currentUserSubject.next(response);
         }
-        return response.user;
+        return response;
       })
     );
   }
@@ -52,6 +52,10 @@ export class AuthService {
 
   resetPassword(email: string) {
     return this.http.post<any>('/api/auth/reset-password', {email});
+  }
+
+  markOnboarded() {
+    return this.http.put<any>('/api/users/me/onboarded', {});
   }
 
   confirmAccount(token: string): Observable<boolean> {

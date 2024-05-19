@@ -151,41 +151,42 @@ export class AuthService {
 
     async confirmRegistration(token: string): Promise<boolean> {
         const user: Pick<UserDto, 'id' | 'status'> = await this.verifyToken(token);
-		if(user) {
-			if (user.status === StatusEnum.pending) {
-				user.status = StatusEnum.active;
-				await this.userRepo.update(user.id, user);
-			}
-			
-			const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
-			const stripeCustomerId = user.stripeCustomerId;
-			return {
-				stripeCustomerId,
-				...token,
-			};
-		}
-        
+
+        if(user) {
+            if (user.status === StatusEnum.pending) {
+                user.status = StatusEnum.active;
+                await this.userRepo.update(user.id, user);
+            }
+
+            const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
+            const stripeCustomerId = user.stripeCustomerId;
+            return {
+                stripeCustomerId,
+                ...token,
+            };
+        }
+
         throw new BadRequestException({
             status: HttpStatus.BAD_REQUEST,
             message: ErrorMessages.confirmError,
         });
     }
 
-    async changePassword(
-        userId: string,
-        changePasswordDto: ChangePasswordDto,
+        async changePassword(
+            userId: string,
+            changePasswordDto: ChangePasswordDto,
     ): Promise<boolean> {
-        const password = await this.usersService.hashPassword(
-            changePasswordDto.password,
-        );
-        await this.userRepo.update(userId, { password });
-        return true;
-    }
+            const password = await this.usersService.hashPassword(
+                changePasswordDto.password,
+            );
+            await this.userRepo.update(userId, { password });
+            return true;
+        }
 
-    async validateGoogleLogin(data: any): Promise<any> {
-        let {sub, email} = data;
-        let oauthId = sub;
-        let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
+        async validateGoogleLogin(data: any): Promise<any> {
+            let {sub, email} = data;
+            let oauthId = sub;
+            let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
 
         if (!user) {
             user = await this.userRepo.findOne({where: [{email: email}]});
@@ -209,32 +210,32 @@ export class AuthService {
         return this._createToken(user, '30d');
     }
 
-    async validateMicrosoftLogin(data: any): Promise<any> {
-        try {
-            let {id, mail} = data;
-            let oauthId = id;
-            let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
+        async validateMicrosoftLogin(data: any): Promise<any> {
+            try {
+                let {id, mail} = data;
+                let oauthId = id;
+                let user: UserDto = await this.userRepo.findOne({where: {oauthId}});
 
-            if (!user) {
-                user = await this.userRepo.findOne({where: [{email: mail}]});
-                if (user) {
-                    new ForbiddenException(
-                        {
-                            message: ErrorMessages.socialAccountExist,
-                            status: HttpStatus.FORBIDDEN
-                        }
-                    );
-                }
-
-                const customerData = await this.stripeService.createCustomer(data.displayName, data.mail);
-                data.stripeCustomerId = customerData.id;
-                data.provider = OauthProvider.MICROSOFT;
-                user = await this.usersService.registerMicrosoftUser(data);
+        if (!user) {
+            user = await this.userRepo.findOne({where: [{email: mail}]});
+            if (user) {
+                new ForbiddenException(
+                    {
+                        message: ErrorMessages.socialAccountExist,
+                        status: HttpStatus.FORBIDDEN
+                    }
+                );
             }
 
-            return this._createToken(user, '30d');
+            const customerData = await this.stripeService.createCustomer(data.displayName, data.mail);
+            data.stripeCustomerId = customerData.id;
+            data.provider = OauthProvider.MICROSOFT;
+            user = await this.usersService.registerMicrosoftUser(data);
+        }
 
-        } catch (err) {
+        return this._createToken(user, '30d');
+
+    } catch (err) {
             throw new InternalServerErrorException({
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: err.message,
@@ -242,20 +243,20 @@ export class AuthService {
         }
     }
 
-    sendConfirmation(user: UserDto) {
-        const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
-        const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
+        sendConfirmation(user: UserDto) {
+            const token = this._createToken(user, this.CONFIRMATION_TOKEN_TIME);
+            const confirmLink = `${this.appHost}confirm?token=${token.accessToken}`;
 
-        this.mailService.send({
-            from: this.configService.get<string>('NO_REPLY_EMAIL'),
-            templateId: MailTemplate.CONFIRM_ACCOUNT,
-            personalizations: [{
-                to: user.email,
-                dynamicTemplateData: {
-                    ...this.mailService.defaultTemplateData,
-                    confirmation_url: confirmLink
-                }
-            }]
-        });
+            this.mailService.send({
+                from: this.configService.get<string>('NO_REPLY_EMAIL'),
+                templateId: MailTemplate.CONFIRM_ACCOUNT,
+                personalizations: [{
+                    to: user.email,
+                    dynamicTemplateData: {
+                        ...this.mailService.defaultTemplateData,
+                        confirmation_url: confirmLink
+                    }
+                }]
+            });
+        }
     }
-}

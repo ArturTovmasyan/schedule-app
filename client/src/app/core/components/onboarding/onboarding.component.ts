@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-onboarding',
@@ -35,10 +36,12 @@ export class OnboardingComponent implements OnInit {
   onboard_title = this.navOptions[0]['title'];
   currentNavIndex = 0;
   isAtFirstPage = true;
+  marked = false;
 
   constructor(
     private readonly router: Router,
-    private readonly activatedRoute: ActivatedRoute
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly authService: AuthService
   ) {
 
   }
@@ -59,6 +62,13 @@ export class OnboardingComponent implements OnInit {
     this.onboard_title = this.navOptions[index].title;
     this.isAtFirstPage = index == 0;
     this.currentNavIndex = index;
+    if(!this.marked) {
+      this.authService.markOnboarded().subscribe({
+        next: () => {
+          this.marked = true;
+        }
+      });
+    }
   }
 
   navigateNext() {

@@ -24,6 +24,10 @@ export class UserDto {
   @Expose({ name: 'status' })
   status: number;
 
+  @ApiProperty({ required: false, type: 'boolean' })
+  @Expose({ name: 'onboarded' })
+  onboarded?: boolean;
+
   @ApiProperty({ required: false, type: 'date' })
   @Expose({ name: 'created_on' })
   createdOn?: Date;

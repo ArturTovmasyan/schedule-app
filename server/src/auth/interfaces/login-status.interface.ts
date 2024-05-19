@@ -4,4 +4,5 @@ export interface LoginStatus {
   user: UserDto;
   accessToken: any;
   expiresIn: any;
+  onboarded: boolean;
 }

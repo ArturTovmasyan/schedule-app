@@ -35,6 +35,9 @@ export class User {
   @Column({ name: 'avatar', type: 'varchar', nullable: true })
   avatar: string;
 
+  @Column({ name: 'onboarded', type: 'bool', nullable: false, default: false })
+  onboarded: boolean;
+
   @CreateDateColumn() createdOn?: Date;
   @UpdateDateColumn() updatedOn?: Date;
   @DeleteDateColumn() deletedOn?: Date;

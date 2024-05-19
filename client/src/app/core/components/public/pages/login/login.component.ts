@@ -66,9 +66,9 @@ export class LoginComponent implements OnInit {
       .login(this.form.value)
       .pipe(first())
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.form.reset();
-          this.router.navigate(['/onboarding/calendar']);
+          this.router.navigate([response.onboarded ? '/calendar/contacts' : '/onboarding/calendar']);
         },
         error: (error) => {
           this.error = error;

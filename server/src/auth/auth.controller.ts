@@ -77,7 +77,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Recovery password' })
   @Patch('recovery-password')
   public async recoveryPassword(
-    @Body() recoveryPasswordDto: ResetPasswordDto ,
+    @Body() recoveryPasswordDto: ResetPasswordDto,
   ): Promise<boolean> {
     const user: UserDto = await this.authService.verifyToken(
       changePasswordDto.token,
