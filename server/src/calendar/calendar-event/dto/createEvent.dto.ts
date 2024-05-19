@@ -1,15 +1,11 @@
 import {
-  ArrayNotEmpty,
   IsDateString,
   IsNotEmpty,
   IsString,
-  IsEnum,
   IsArray,
-  IsUUID,
   IsOptional,
   IsEmail,
 } from 'class-validator';
-import { CalendarTypeEnum } from 'src/calendar/calendar-permissions/enums/calendarType.enum';
 
 export class CreateEventDto {
   @IsString()
@@ -17,7 +13,6 @@ export class CreateEventDto {
   title: string;
 
   @IsString()
-  @IsNotEmpty()
   description: string;
 
   @IsString()

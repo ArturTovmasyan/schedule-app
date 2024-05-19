@@ -401,7 +401,6 @@ export class AvailabilityService {
     }
 
     async findIdsByEmails(emails:string[], currentUserId: string):Promise<any> {
-        debugger;
         let contactIds = await this.userRepo
             .createQueryBuilder('user')
             .select('user.id')

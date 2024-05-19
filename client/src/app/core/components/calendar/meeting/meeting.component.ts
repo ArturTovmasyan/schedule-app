@@ -9,7 +9,8 @@ import {CalendarPermissionService} from 'src/app/core/services/calendar/permissi
 import {CommonService} from 'src/app/core/services/common.service';
 import {CalendarType} from '../connect-calendar/connect-calendar.component';
 import {AvailabilityService} from "../../../services/calendar/availability.service";
-import {BroadcasterService} from "../../../../shared/services";
+import {BroadcasterService, ValidationService} from "../../../../shared/services";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-meeting',
@@ -31,8 +32,11 @@ export class MeetingComponent implements OnInit, OnDestroy {
   myCalendar: CalendarData | null = null;
   selectedCalendar: Calendar | null = null;
   subscription: BehaviorSubject<boolean>;
+  form: FormGroup;
   showCalendars = false;
   selectEvent = false;
+  error = false;
+  errorMessages: any = [];
 
   constructor(
     private readonly router: Router,
@@ -40,7 +44,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
     private readonly permissionService: CalendarPermissionService,
     private readonly commonService: CommonService,
     private readonly availabilityService: AvailabilityService,
-    private readonly broadcaster: BroadcasterService
+    private readonly broadcaster: BroadcasterService,
+    private formBuilder: FormBuilder
   ) {
     this.subscription = this.broadcaster.on('meet_date_range').subscribe((eventData: any) => {
       if (eventData.contact_email) {
@@ -49,7 +54,12 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
       this.data.start = eventData.start;
       this.data.end = eventData.end;
-      this.selectEvent = true;
+      this.selectEvent = this.data.attendees?.length != 0;
+    });
+
+    this.form = this.formBuilder.group({
+      meetTitle: ['', [Validators.required, Validators.minLength(5)]],
+      meetingLocation: ['', [Validators.required, ValidationService.urlValidator]],
     });
   }
 
@@ -104,16 +114,31 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.getContactsAvailability();
   }
 
+  updateFieldError(hasError: boolean) {
+    this.error = hasError;
+  }
+
   updateOptionalAttendeeEmails(emails: string[]) {
     this.data.optionalAttendees = emails;
   }
 
   scheduleEvent() {
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.errorMessages = [];
+    this.data.title = this.form.get('meetTitle')?.value;
+    this.data.meetLink = this.form.get('meetingLocation')?.value;
+
     this.calendarService.scheduleEvent(this.data)
       .pipe(first())
       .subscribe({
-        next: (data: any) => {
+        next: () => {
           this.resetData();
+        },
+        error: (error) => {
+          this.errorMessages.push(error?.message);
         }
       });
   }
@@ -155,6 +180,10 @@ export class MeetingComponent implements OnInit, OnDestroy {
 
   close() {
     this.router.navigate(['/calendar/contacts'])
+  }
+
+  get f() {
+    return this.form.controls;
   }
 
   get myCalendars() {
