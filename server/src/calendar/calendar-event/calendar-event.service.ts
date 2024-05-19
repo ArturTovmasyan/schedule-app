@@ -23,6 +23,8 @@ import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity
 import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
+import { EventRecurrence } from './entities/eventRecurrence.entity';
+import { WeekDaysEnum } from './enums/weekDays.enum';
 import moment = require('moment');
 
 @Injectable()

@@ -59,12 +59,6 @@ export class CalendarEvent {
   @CreateDateColumn({ nullable: true, precision: 3 })
   end!: Date;
 
-  @OneToOne(() => EventRecurrence, {
-    nullable: true,
-  })
-  @JoinColumn()
-  recurrence: EventRecurrence;
-
   @CreateDateColumn()
   createdOn!: Date;
 
@@ -77,4 +71,10 @@ export class CalendarEvent {
     nullable: false,
   })
   eventType!: EventTypeEnum;
+
+  @OneToOne(() => EventRecurrence, {
+    nullable: true,
+  })
+  @JoinColumn()
+  recurrence: EventRecurrence;
 }
