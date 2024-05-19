@@ -1,6 +1,6 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
+import { Calendar, CalendarOptions, DateSelectArg, FullCalendarComponent } from '@fullcalendar/angular';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { PublicCalendarService } from '../public.service';
 import { AVAILABILITY_EVENT_CLASS } from "../../../interfaces/constant/calendar.constant";
@@ -13,6 +13,11 @@ import { AVAILABILITY_EVENT_CLASS } from "../../../interfaces/constant/calendar.
 export class PublicCalendarComponent implements OnDestroy {
   timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
   @ViewChild("calendar") calendar!: FullCalendarComponent;
+  componentData = {
+    timeslotSelected: false,
+    selectedTimeSlot: null,
+    timezone: ''
+  };
   calendarApi!: Calendar;
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
@@ -69,6 +74,8 @@ export class PublicCalendarComponent implements OnDestroy {
       return 'event';
     },
     select: (info) => {
+      this.componentData['selectedTimeSlot'] = info as any;
+      this.componentData['timeslotSelected'] = true;
       console.log(info);
     },
     selectOverlap: function (info) {
@@ -123,7 +130,8 @@ export class PublicCalendarComponent implements OnDestroy {
           this.calendarOptions.selectConstraint = "businessHours";
           this.calendarOptions.events = this.getAvailableSlots(datas)[1];
         }
-      })
+      });
+    this.componentData['timezone'] = this.timezone as string;
   }
 
   ngAfterViewChecked() {

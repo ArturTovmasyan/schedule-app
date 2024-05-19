@@ -3,35 +3,89 @@
     <h2 class="section-title text-center">
       Group availability
     </h2>
-    <button class="close-button" id="closeButton">
-      <img src="assets/close-icon.svg" alt="close button">
-    </button>
   </div>
-  <!-- Start of: external user: Clicking and opening the sharable link -->
-
-   <div class="group-availability-content">
-     <div class="users-container">
-       <ul class="users-list list-unstyled list-inline">
-         <li class="list-inline-item user-info" *ngFor="let att of attendees">
-           <div class="user-info-wrapper">
-             <div class="user-portrait">
-               <img *ngIf="att.avatar" [src]="att.avatar">
-               <span *ngIf="!att.avatar">{{ att.user.firstName | acronymName }}</span>
-             </div>
-             <div class="user-bio">
-               <h5 class="full-name">{{ att.user.firstName }} {{ att.user.lastName }}</h5>
-               <!-- <h6 class="contact-company">
-                 AirBnbddffasdfsdfdf
-               </h6> -->
-             </div>
-           </div>
-         </li>
-       </ul>
-     </div>
-     <div class="calendar w-100">
+  <div class="group-availability-content">
+    <form action="" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="users-container">
+        <ul class="users-list list-unstyled list-inline">
+          <li class="list-inline-item user-info" *ngFor="let att of attendees">
+            <div class="user-info-wrapper">
+              <div class="user-portrait">
+                <img *ngIf="att.avatar" [src]="att.avatar">
+                <span *ngIf="!att.avatar">{{ att.user.firstName | acronymName }}</span>
+              </div>
+              <div class="user-bio">
+                <h5 class="full-name">{{ att.user.firstName }} {{ att.user.lastName }}</h5>
+                <!-- <h6 class="contact-company">
+                  AirBnbddffasdfsdfdf
+                </h6> -->
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="calendar w-100" *ngIf="!componentData.timeslotSelected">
         <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
         </full-calendar>
-     </div>
+      </div>
+      <ng-container *ngIf="componentData.timeslotSelected">
+        <h3 class="section-title-secondary">
+          Date/Time
+        </h3>
+        <div class="date-time-container">
+          <ul class="list-unstyled list-inline">
+            <li class="list-inline-item date">
+              <input formControlName="control" value="{{ componentData.selectedTimeSlot }}" style="display:none;"/>
+              <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'ddd, MMM Do' }}" readonly>
+            </li>
+            <li class="list-inline-item timeframe">
+              <input type="text" id="meetingStartTime" name="meetingStartTime" placeholder="{{ componentData.selectedTimeSlot?.start | parseTime:'hh:mmA'}}" readonly>
+              <p> - </p>
+              <input type="text" id="meetingEndTime" name="meetingEndTime" placeholder="{{ componentData.selectedTimeSlot?.end | parseTime:'hh:mmA'}}" readonly>
+            </li>
+            <li class="list-inline-item timezone">
+              <span id="timezoneText">{{ componentData.timezone }}</span>
+            </li>
+          </ul>
+        </div>
+        <h3 class="section-title-secondary">
+          Location
+        </h3>
+        <div class="location">
+          <div class="logo" id="locationLogo">
+            <img src="{{ location?.image }}" alt="zoom">
+          </div>
+          <div class="text" id="locationText">
+            <h2>
+              {{ location?.title }}
+            </h2>
+            <p>
+              {{ location?.sub_title }}
+            </p>
+          </div>
+        </div>
+        <div class="form-group mb-0" *ngIf="location?.value == MeetViaEnum.InboundCall">
+          <label for="yourPhoneNumber">Your phone number</label>
+          <input type="text" class="form-control" id="yourPhoneNumber"
+            placeholder="Please provide the phone number for the call" formControlName="phone">
+        </div>
+        <div class="form-group mb-0">
+          <label for="yourName">Your name</label>
+          <input type="text" class="form-control" id="yourName" placeholder="Please type your name" formControlName="name">
+          <app-control-messages [control]="f['name']" [showRequiredErrors]="true"></app-control-messages>
+        </div>
+        <div class="form-group mb-0">
+          <label for="yourEmail">Your email</label>
+          <input type="email" class="form-control" id="yourEmail" placeholder="Please provide your email and guest's emails" formControlName="email">
+          <app-control-messages [control]="f['email']" [showRequiredErrors]="true"></app-control-messages>
+        </div>
+        <div class="form-group mb-0">
+          <label for="optionalNotes">Optional notes</label>
+          <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add notes and comments" formControlName="notes"></textarea>
+        </div>
+        <button type="submit" id="scheduleButton">Schedule</button>
+      </ng-container>
+    </form>
    </div>
 
   <!-- End of: external user: Clicking and opening the sharable link -->

@@ -11,16 +11,7 @@ import { SharableLinkService } from 'src/app/core/services/calendar/sharable-lin
 import { MeetViaEnum } from '../enums/sharable-links.enum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarPermissionService } from 'src/app/core/services/calendar/permission.service';
-
-export interface Location {
-  id?: string;
-  title: string;
-  sub_title?: string;
-  image: string;
-  value: MeetViaEnum;
-  available: boolean;
-}
-
+import { Location } from 'src/app/core/interfaces/calendar/location.interface';
 
 @Component({
   selector: 'app-sharable-link',
@@ -57,7 +48,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   showCopiedText = false;
   showJointAvailibility = false;
   private readonly _document: Document;
-  
+
   locations: Location[] = [];
 
   get timezone(): string {
@@ -89,7 +80,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
     const linkId = this.route.snapshot.params['id'];
     // load from api if link id is sent to parameters ie used for edit page
-    
+
     // load from saved Data of localstorage after connect redirection
     if (localStorage.getItem('savedDatas')) {
       this.runAfterRedirect();
@@ -182,7 +173,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
           // for preselect events on calendar
           this.broadcaster.broadcast('addSharableLinkTimeSlot', res.data.slots);
-          
+
           // for phone and address
           if (res.data.phoneNumber) {
             this.phoneNumber = res.data.phoneNumber;
@@ -283,7 +274,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
             window.location.href = url;
           }
         });
-      
+
     }
 
     if (type == MeetViaEnum.GMeet) {

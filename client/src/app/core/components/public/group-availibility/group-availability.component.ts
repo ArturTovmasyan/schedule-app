@@ -1,10 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
 import { Subject, takeUntil } from 'rxjs';
+import { Location } from 'src/app/core/interfaces/calendar/location.interface';
+import { MeetViaEnum } from '../../calendar/enums/sharable-links.enum';
 import { PublicCalendarService } from '../public.service';
+
+type ComponentData = {
+  timeslotSelected: boolean,
+  selectedTimeSlot: any,
+  timezone: any
+};
+
 @Component({
   selector: 'app-group-availability',
   templateUrl: './group-availability.component.html',
@@ -12,6 +22,12 @@ import { PublicCalendarService } from '../public.service';
 })
 export class GroupAvailabilityComponent implements OnInit, OnDestroy {
 
+  @Input() componentData: ComponentData = {
+    timeslotSelected: false,
+    selectedTimeSlot: null,
+    timezone: ''
+  };
+  readonly MeetViaEnum = MeetViaEnum;
   destroySubscription = new Subject();
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
@@ -97,21 +113,31 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   linkId: string;
   calendarData$ = this.calendarService.calendarData$$;
   attendees: any;
+  location: Location | undefined;
+  form!: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private calendarService: PublicCalendarService
+    private formBuilder: FormBuilder,
+    public calendarService: PublicCalendarService
   ) {
     this.linkId = route.snapshot.params['id'];
+    this.initForm();
   }
 
+  get f() {
+    return this.form.controls;
+  }
 
   ngOnInit(): void {
     this.calendarData$
     .pipe(takeUntil(this.destroySubscription))
     .subscribe((data: any) => {
       if (data?.slots) {
+        console.log(data, 'dataaaa');
+        // location
+        this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
         const datas = [];
         for (const date of data.slots) {
           datas.push({
@@ -127,9 +153,24 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     })
   }
 
+  initForm() {
+    this.form = this.formBuilder.group({
+      name: ['', [Validators.required]],
+      email: ['', [Validators.required]],
+      notes: [''],
+      phone: ['']
+    }, { updateOn: 'blur' });
+  }
+
   changeWeek(date:any) {
     this.calendarService.selectedWeek.next(date);
 
+  }
+
+  submit() {
+    if (!this.form.valid){
+      return;
+    }
   }
 
   ngOnDestroy(): void {

@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, of, Subject, throwError } from 'rxjs';
+import { Location } from '../../interfaces/calendar/location.interface';
 import { ApiResponse } from '../../interfaces/response/api.response.interface';
+import { MeetViaEnum } from '../calendar/enums/sharable-links.enum';
 
 @Injectable()
 export class PublicCalendarService {
@@ -10,6 +12,52 @@ export class PublicCalendarService {
   calendarData$$ = this.calendarData$.asObservable();
   calendarData: any;
   selectedWeek = new Subject();
+  _selectedTimeSlot = null;
+
+  locations: Location[] = [
+    {
+      title: 'Zoom',
+      sub_title: 'Web Conference',
+      available: true,
+      image: 'assets/zoom.png',
+      value: MeetViaEnum.Zoom,
+    },
+    {
+      title: 'Google Meet',
+      sub_title: 'Web Conference',
+      available: true,
+      image: 'assets/google-meet.png',
+      value: MeetViaEnum.GMeet,
+    },
+    {
+      title: 'Microsoft Teams',
+      sub_title: 'Web Conference',
+      available: true,
+      image: 'assets/microsoft-teams.png',
+      value: MeetViaEnum.Teams,
+    },
+    {
+      title: 'Inbound phone call',
+      sub_title: 'You will receive a phone call',
+      available: true,
+      image: 'assets/incoming-call.png',
+      value: MeetViaEnum.InboundCall,
+    },
+    {
+      title: 'Outbound phone call',
+      sub_title: 'You will be making a phone call',
+      available: true,
+      image: 'assets/outgoing-call.png',
+      value: MeetViaEnum.OutboundCall,
+    },
+    {
+      title: 'Physical address',
+      sub_title: 'You will meet face to face',
+      available: true,
+      image: 'assets/location.png',
+      value: MeetViaEnum.PhysicalAddress,
+    },
+  ];
 
   constructor(
     private readonly http: HttpClient
@@ -33,6 +81,10 @@ export class PublicCalendarService {
 
   openSelectedWeek() {
     return this.selectedWeek.asObservable();
+  }
+
+  getLocations() {
+    return this.locations;
   }
 
 }
