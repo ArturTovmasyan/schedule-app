@@ -1,19 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CalendarOptions } from '@fullcalendar/angular';
+import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
 import { Location } from 'src/app/core/interfaces/calendar/location.interface';
+import { AVAILABILITY_EVENT_CLASS } from 'src/app/core/interfaces/constant/calendar.constant';
 import { BroadcasterService } from 'src/app/shared/services';
 import { MeetViaEnum } from '../../calendar/enums/sharable-links.enum';
 import { PublicCalendarService } from '../public.service';
+import { SelectedTimeSlotData } from '../interfaces/selected-timeslot.interface';
 
-type ComponentData = {
-  selectedTimeSlot: any,
-  timezone: any
-};
 
 @Component({
   selector: 'app-cancel-meeting',
@@ -22,10 +20,13 @@ type ComponentData = {
 })
 export class CancelMeetingComponent implements OnInit, OnDestroy {
 
-  componentData: ComponentData = {
+  componentData: SelectedTimeSlotData = {
     selectedTimeSlot: null,
-    timezone: ''
+    selectedTimeSlotId: null
   };
+
+  @ViewChild("calendar") calendar!: FullCalendarComponent;
+  calendarApi!: Calendar;
   readonly MeetViaEnum = MeetViaEnum;
   destroy$ = new Subject();
   calendarOptions: CalendarOptions = {
@@ -114,6 +115,7 @@ export class CancelMeetingComponent implements OnInit, OnDestroy {
   location: Location | undefined;
   form!: FormGroup;
   selectedSlot: any;
+  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -132,41 +134,57 @@ export class CancelMeetingComponent implements OnInit, OnDestroy {
     return this.form.controls;
   }
 
+  get timezone() {
+    return this.calendarService.timezone;
+  }
+
   ngOnInit(): void {
     this.calendarService.getDetails(this.linkId)
       .subscribe((data: any) => {
         if (data?.slots) {
+          // load available timeslots on calendar
           const datas = [];
           for (const date of data.slots) {
-            datas.push({
-              start: date.startDate,
-              end: date.endDate
-            });
+            if (date.choosedByEmail && date.id == this.scheduledId) {
+              datas.push({
+                id: date.id,
+                groupId: 'notAvailableSlot',
+                start: date.startDate,
+                end: date.endDate
+              });
+              this.componentData.selectedTimeSlot = {
+                start: date.startDate,
+                end: date.endDate
+              }
+              this.componentData.selectedTimeSlotId = date.id;
+            } else {
+              datas.push({
+                id: date.id,
+                groupId: 'notAvailableSlot',
+                start: date.startDate,
+                end: date.endDate,
+                className: AVAILABILITY_EVENT_CLASS
+              });
+            }
           }
           this.broadcaster.broadcast('loadAvailableTimeslots', datas);
-          // may need in future
-          // this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
           this.calendarOptions.events = datas;
         }
-
         if (data?.attendees?.length > 0) {
           this.attendees = data.attendees;
         }
-
-        // selected timeslot from api
-        const timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
-        this.componentData.selectedTimeSlot = {
-          start: new Date(),
-          end: new Date()
-        }
-        this.componentData.timezone = timezone;
+        this.calendarApi.gotoDate(this.componentData.selectedTimeSlot.start);
+        this.calendarService.selectedWeek.next(this.componentData.selectedTimeSlot.start);
       });
+  }
 
+  ngAfterViewChecked() {
+    this.calendarApi = this.calendar.getApi();
   }
 
   initForm() {
     this.form = this.formBuilder.group({
-      notes: ['', [Validators.required]]
+      reason: ['', [Validators.required]]
     }, { updateOn: 'blur' });
   }
 
@@ -180,8 +198,16 @@ export class CancelMeetingComponent implements OnInit, OnDestroy {
       return;
     }
     const formData = this.form.value;
-    formData['selectedTimeslot'] = this.componentData.selectedTimeSlot;
-    return;
+    this.calendarService.cancelSelectedSlotMeeting(this.scheduledId, formData)
+      .subscribe({
+        next: () => {
+          this.calendarApi.gotoDate(new Date());
+          this.router.navigate([`/share/${this.linkId}`]);
+        },
+        error: (err) => {
+          this.errorMessage = err.error.message;
+        }
+      });
   }
 
   addValidation(controlName: string) {

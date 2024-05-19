@@ -16,13 +16,11 @@ import { CommonService } from 'src/app/core/services/common.service';
 })
 export class PublicCalendarComponent implements OnDestroy {
   destroy$ = new Subject();
-  timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1];
   @ViewChild("calendar") calendar!: FullCalendarComponent;
   componentData = {
     isTimeslotSelected: false,
     selectedTimeSlot: null,
-    selectedTimeSlotId: null,
-    timezone: ''
+    selectedTimeSlotId: null
   };
   calendarApi!: Calendar;
   calendarOptions: CalendarOptions = {
@@ -120,10 +118,13 @@ export class PublicCalendarComponent implements OnDestroy {
     return { html: divEl.innerHTML };
   }
 
+  get timezone() {
+    return this.calendarService.timezone;
+  }
+
   ngOnInit(): void {
     // load for group availability only
     this.loadBroadcastEvents();
-    this.componentData['timezone'] = this.timezone as string;
   }
 
   ngAfterViewChecked() {

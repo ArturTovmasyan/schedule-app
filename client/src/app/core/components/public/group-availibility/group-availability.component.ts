@@ -9,14 +9,9 @@ import { Location } from 'src/app/core/interfaces/calendar/location.interface';
 import { AVAILABILITY_EVENT_CLASS } from 'src/app/core/interfaces/constant/calendar.constant';
 import { BroadcasterService } from 'src/app/shared/services';
 import { MeetViaEnum } from '../../calendar/enums/sharable-links.enum';
+import { SelectedTimeSlotData } from '../interfaces/selected-timeslot.interface';
 import { PublicCalendarService } from '../public.service';
 
-type ComponentData = {
-  isTimeslotSelected: boolean,
-  selectedTimeSlot: any,
-  selectedTimeSlotId: any,
-  timezone: any
-};
 
 @Component({
   selector: 'app-group-availability',
@@ -26,11 +21,10 @@ type ComponentData = {
 export class GroupAvailabilityComponent implements OnInit, OnDestroy {
 
   errorMessage = null;
-  componentData: ComponentData = {
+  componentData: SelectedTimeSlotData = {
     isTimeslotSelected: false,
     selectedTimeSlot: null,
-    selectedTimeSlotId: null,
-    timezone: ''
+    selectedTimeSlotId: null
   };
   readonly MeetViaEnum = MeetViaEnum;
   destroy$ = new Subject();
@@ -137,6 +131,10 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     return this.form.controls;
   }
 
+  get timezone() {
+    return this.calendarService.timezone;
+  }
+
   ngOnInit(): void {
     this.calendarService.getDetails(this.linkId)
       .subscribe((data: any) => {
@@ -209,7 +207,7 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
     }
     const formData = this.form.value;
 
-    const timeSlotId = this.componentData.selectedTimeSlotId;
+    const timeSlotId = this.componentData.selectedTimeSlotId as string;
 
     this.calendarService.submitSelectedSlotInfo(timeSlotId, formData)
     .subscribe({

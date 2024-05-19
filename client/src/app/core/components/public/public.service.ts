@@ -11,6 +11,7 @@ export class PublicCalendarService {
   calendarData: any;
   selectedWeek = new Subject();
   _selectedTimeSlot = null;
+  timezone: string | null = null;
 
   locations: Location[] = [
     {
@@ -57,10 +58,12 @@ export class PublicCalendarService {
     },
   ];
 
+
   constructor(
     private readonly http: HttpClient
     ) {
-      console.log('test');
+    const timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1] ?? null;
+    this.timezone = timezone;
     }
 
     getDetails(id: string) {
@@ -85,6 +88,10 @@ export class PublicCalendarService {
 
   submitSelectedSlotInfo(slotId: string, formData: any) {
     return this.http.patch<ApiResponse<any>>(`/api/sharable-links/select-slot/public/${slotId}`, { ...formData });
+  }
+
+  cancelSelectedSlotMeeting(slotId: string, formData: any) {
+    return this.http.patch<ApiResponse<any>>(`/api/sharable-links/cancel-slot/${slotId}`, { ...formData });
   }
 
 }

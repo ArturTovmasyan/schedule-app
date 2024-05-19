@@ -585,10 +585,12 @@ export class SharableLinksService {
         await this.zoomService.deleteMeeting(schedulerUser, slot.meetingId);
       }
 
-      await this.calendarEventService.deleteUserCalendarEvent(
-        schedulerUser,
-        slot.calendarEventId,
-      );
+      if (slot.calendarEventId) {
+        await this.calendarEventService.deleteUserCalendarEvent(
+          schedulerUser,
+          slot.calendarEventId,
+        );
+      }
 
       await queryRunner.manager.getRepository(SharableLinkSlotsEntity).update(
         { id: slot.id },
