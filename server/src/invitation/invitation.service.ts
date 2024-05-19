@@ -4,14 +4,14 @@ import { Connection, In, Repository } from 'typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
-import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
 import { CalendarAccessService } from 'src/calendar/calendar-access/calendar-access.service';
+import { AccessRequestService } from 'src/access-request/access-request.service';
 import { IResponseMessage } from 'src/components/interfaces/response.interface';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 import { InvitationStatusEnum } from './enums/invitation-status.enum';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
-import { Invitation } from './entities/invitation.entity';
 import { MailService, MailTemplate } from '../mail/mail.service';
+import { Invitation } from './entities/invitation.entity';
 import { User } from '@user/entity/user.entity';
 
 @Injectable()
@@ -24,6 +24,7 @@ export class InvitationService {
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
     private readonly calendarAccessService: CalendarAccessService,
+    private readonly accessRequestService: AccessRequestService,
     private readonly connection: Connection,
   ) {}
 
@@ -71,7 +72,7 @@ export class InvitationService {
     await queryRunner.startTransaction();
 
     try {
-      const invitation = await queryRunner.manager
+      await queryRunner.manager
         .createQueryBuilder()
         .insert()
         .into(Invitation)
@@ -79,56 +80,35 @@ export class InvitationService {
         .returning('id')
         .execute();
 
-      let htmlMessage: string;
-      if (createInvitationDto.giveAccess) {
-        await this.calendarAccessService.checkAccess(
-          user,
-          createInvitationDto.emails,
-        );
-
-        const bulkAccess: QueryDeepPartialEntity<CalendarAccess>[] = [];
-
-        createInvitationDto.emails.map((email) => {
-          bulkAccess.push({
-            owner: { id: user.id },
-            toEmail: email,
-            comment: 'You were invited to entangles.io',
-          });
+      if (createInvitationDto.shareMyCalendar) {
+        await this.calendarAccessService.create(user, {
+          toEmails: createInvitationDto.emails,
+          comment: createInvitationDto.message,
+          timeForAccess: createInvitationDto.endDate,
         });
+      }
 
-        await queryRunner.manager
-          .getRepository(CalendarAccess)
-          .upsert(bulkAccess, {
-            conflictPaths: ['toEmail', 'owner'],
-            skipUpdateIfNoValuesChanged: true,
-          });
-
-        htmlMessage = `
-          <h3>Hello!</h3>
-         <p>${
-           (createInvitationDto.message ?? '') +
-           `</p><p>You're <a href='${process.env.WEB_HOST}register?invitationId=${invitation.raw[0].id}'>
-           invited</a> and you also have access to the calendar of the ${user.firstName} ${user.lastName}`
-         }</p> `;
-      } else {
-        htmlMessage = `<h3>Hello!</h3><p>${
-          (createInvitationDto.message ?? '') +
-          `</p><br/><p>. ${user.firstName} ${user.lastName} invited you to use 
-          <a href='${process.env.WEB_HOST}register?invitationId=${invitation.raw[0].id}'>entangles.io</a>`
-        }</p>`;
+      if (createInvitationDto.requestCalendarView) {
+        await this.accessRequestService.create(user, {
+          toEmails: createInvitationDto.emails,
+          comment: createInvitationDto.message,
+          timeForAccess: createInvitationDto.endDate,
+        });
       }
 
       this.mailService.send({
         from: this.configService.get<string>('NO_REPLY_EMAIL'),
         templateId: MailTemplate.INVITE_EMAIL,
-        personalizations: [{
-            to: user.email,
+        personalizations: [
+          {
+            to: createInvitationDto.emails,
             dynamicTemplateData: {
-                ...this.mailService.defaultTemplateData,
-                name: `${user.firstName} ${user.lastName}`.trim(),
-                confirmation_url: `${process.env.WEB_HOST}register`
-            }
-        }]
+              ...this.mailService.defaultTemplateData,
+              name: `${user.firstName} ${user.lastName}`.trim(),
+              confirmation_url: `${process.env.WEB_HOST}register`,
+            },
+          },
+        ],
       });
 
       await queryRunner.commitTransaction();

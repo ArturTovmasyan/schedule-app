@@ -23,5 +23,14 @@ export class CreateInvitationDto {
   @ApiProperty({ required: false, type: 'boolean' })
   @IsOptional()
   @IsBoolean()
-  giveAccess: Boolean;
+  shareMyCalendar?: Boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsBoolean()
+  requestCalendarView?: Boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  endDate: Date;
 }

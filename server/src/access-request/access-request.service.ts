@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, In, Repository } from 'typeorm';
+import { Connection, DeepPartial, In, Repository } from 'typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
@@ -10,6 +10,7 @@ import { AccessRequest } from './entities/access-request.entity';
 import { ErrorMessages } from '@shared/error.messages';
 import { MailService } from '../mail/mail.service';
 import { User } from '@user/entity/user.entity';
+import * as moment from 'moment';
 import {
   AccessRequestStatusEnum,
   RequestStatusEnum,
@@ -30,7 +31,6 @@ export class AccessRequestService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly mailService: MailService,
-    private readonly calendarAccessService: CalendarAccessService,
     private readonly configService: ConfigService,
     private readonly connection: Connection,
     private readonly notificationsService: NotificationsService,
@@ -68,16 +68,28 @@ export class AccessRequestService {
       });
     }
 
-    await this.calendarAccessService.checkAccess(
-      user,
-      createAccessRequestDto.toEmails,
-    );
-
     const findUsersByEmail = await this.userRepo.find({
       where: { email: In(createAccessRequestDto.toEmails) },
     });
 
-    const bulkData: QueryDeepPartialEntity<AccessRequest>[] = [];
+    const checkAccess = await this.calendarAccessRepo.findOne({
+      where: {
+        owner: { id: In(findUsersByEmail.map((user) => user.email)) },
+        toEmail: In([user.email]),
+      },
+    });
+
+    if (
+      checkAccess &&
+      (moment().diff(checkAccess.timeForAccess) < 0 ||
+        !checkAccess.timeForAccess)
+    ) {
+      throw new BadRequestException({
+        message: ErrorMessages.alreadyHaveAccess,
+      });
+    }
+
+    const bulkData: DeepPartial<AccessRequest>[] = [];
 
     createAccessRequestDto.toEmails.forEach((email) => {
       const currentUser = findUsersByEmail.filter(
@@ -120,23 +132,23 @@ export class AccessRequestService {
     await this.notificationsService.create(user, notifiacationBulk);
 
     bulkData.forEach((current) => {
-      const currentUser = findUsersByEmail.filter(
-        (user) => user.email === current.toEmail,
-      )[0];
-
-      this.mailService.send({
+      if (current.toEmail !== user.email) {
+        this.mailService.send({
           from: this.configService.get<string>('NO_REPLY_EMAIL'),
           templateId: MailTemplate.CALENDAR_REQUESTED,
-          personalizations: [{
-              to: user.email,
+          personalizations: [
+            {
+              to: current.toEmail,
               dynamicTemplateData: {
-                  ...this.mailService.defaultTemplateData,
-                  name: `${user.firstName} ${user.lastName}`.trim(),
-                  invite_url: `${process.env.WEB_HOST}`,
-                  message: current.comment ?? ""
-              }
-          }]
-      });
+                ...this.mailService.defaultTemplateData,
+                name: `${user.firstName} ${user.lastName}`.trim(),
+                invite_url: `${process.env.WEB_HOST}`,
+                message: current.comment ?? '',
+              },
+            },
+          ],
+        });
+      }
     });
 
     return { message: 'Request is sent', status: HttpStatus.OK };
@@ -231,7 +243,7 @@ export class AccessRequestService {
               ? RequestStatusEnum.Accepted
               : RequestStatusEnum.Declined,
         })
-        .where([{id: id}])
+        .where([{ id: id }])
         .execute();
 
       if (accessRequestStatus.status === AccessRequestStatusEnum.Accept) {

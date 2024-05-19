@@ -1,11 +1,10 @@
 import * as moment from 'moment';
-import { In, Repository } from 'typeorm';
+import { DeepPartial, In, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { NotificationTypeEnum } from 'src/notifications/enums/notifications.enum';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { UpdateCalendarAccessDto } from './dto/update-calendar-access.dto';
@@ -46,13 +45,13 @@ export class CalendarAccessService {
       });
     }
 
-    await this.checkAccess(user, createCalendarAccessDto.toEmails);
-
     const findUsersByEmail = await this.userRepo.find({
       where: { email: In(createCalendarAccessDto.toEmails) },
     });
 
-    const bulkData: QueryDeepPartialEntity<CalendarAccess>[] = [];
+    await this.checkAccess(user, createCalendarAccessDto.toEmails);
+
+    const bulkData: DeepPartial<CalendarAccess>[] = [];
 
     createCalendarAccessDto.toEmails.forEach((email) => {
       const currentUser = findUsersByEmail.filter(
@@ -94,23 +93,23 @@ export class CalendarAccessService {
     await this.notificationsService.create(user, notificationBulk);
 
     bulkData.forEach((current) => {
-      const currentUser = findUsersByEmail.filter(
-        (user) => user.email === current.toEmail,
-      )[0];
-
-      this.mailService.send({
-        from: this.configService.get<string>('NO_REPLY_EMAIL'),
-        templateId: MailTemplate.CALENDAR_SHARED,
-        personalizations: [{
-            to: user.email,
-            dynamicTemplateData: {
+      if (current.toEmail !== user.email) {
+        this.mailService.send({
+          from: this.configService.get<string>('NO_REPLY_EMAIL'),
+          templateId: MailTemplate.CALENDAR_SHARED,
+          personalizations: [
+            {
+              to: current.toEmail,
+              dynamicTemplateData: {
                 ...this.mailService.defaultTemplateData,
                 name: `${user.firstName} ${user.lastName}`.trim(),
                 notification_url: `${process.env.WEB_HOST}`,
-                message: current.comment ?? ""
-            }
-        }]
-      });
+                message: current.comment ?? '',
+              },
+            },
+          ],
+        });
+      }
     });
 
     return { message: 'shared successfully', status: HttpStatus.CREATED };
@@ -130,7 +129,11 @@ export class CalendarAccessService {
       },
     });
 
-    if ( checkAccess && (moment().diff(checkAccess.timeForAccess) < 0 || !checkAccess.timeForAccess) ) {
+    if (
+      checkAccess &&
+      (moment().diff(checkAccess.timeForAccess) < 0 ||
+        !checkAccess.timeForAccess)
+    ) {
       throw new BadRequestException({
         message: ErrorMessages.alreadyHaveAccess,
       });
@@ -146,7 +149,6 @@ export class CalendarAccessService {
   async findAccessed(
     user: User,
   ): Promise<{ data: CalendarAccess[]; count: number }> {
-
     const [data, count] = await this.calendarAccessRepo
       .createQueryBuilder('calendarAccess')
       .innerJoin('calendarAccess.owner', 'owner')
