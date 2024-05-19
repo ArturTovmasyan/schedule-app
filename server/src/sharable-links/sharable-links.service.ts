@@ -258,6 +258,7 @@ export class SharableLinksService {
         'slots.startDate',
         'slots.endDate',
         'slots.choosedBy',
+        'slots.choosedByEmail',
       ])
       .leftJoin('sharableLink.attendees', 'attendees')
       .leftJoin(`attendees.user`, 'attuser')
@@ -300,6 +301,7 @@ export class SharableLinksService {
         'slots.startDate',
         'slots.endDate',
         'slots.choosedBy',
+        'slots.choosedByEmail',
       ])
       .leftJoin('sharableLink.attendees', 'attendees')
       .leftJoin(`attendees.user`, 'attuser')
