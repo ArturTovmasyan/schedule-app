@@ -8,7 +8,7 @@ import {ShareCalendarComponent} from './share-calendar/share-calendar.component'
 import {ContactsComponent} from './contacts/contacts.component';
 import {MeetingComponent} from './meeting/meeting.component';
 import {ProposeTimeSlotComponent} from './propose-time-slot/propose-time-slot.component';
-import {FullCalendarComponent} from "./full-calendar/full-calendar.component";
+import {MyCalendarComponent} from "./my-calendar/my-calendar.component";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -29,7 +29,7 @@ FullCalendarModule.registerPlugins([
     ContactsComponent,
     MeetingComponent,
     ProposeTimeSlotComponent,
-    FullCalendarComponent
+    MyCalendarComponent
   ],
   imports: [
     CommonModule,

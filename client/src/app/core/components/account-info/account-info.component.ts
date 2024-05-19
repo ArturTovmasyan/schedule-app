@@ -10,7 +10,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 export class AccountInfoComponent implements OnInit {
 
   @ViewChild('fileInput', { static: false })
-  fileInput: ElementRef|any;
+  fileInput!: ElementRef;
   userName:string = '';
   email:string = '';
   avatar:string = '';

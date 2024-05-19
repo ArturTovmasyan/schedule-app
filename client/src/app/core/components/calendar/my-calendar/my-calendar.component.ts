@@ -1,38 +1,50 @@
-import {Component, OnInit} from '@angular/core';
-import {CalendarOptions} from "@fullcalendar/angular";
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {CalendarOptions, FullCalendarComponent} from "@fullcalendar/angular";
 import {first} from "rxjs/operators";
 import {CalendarService} from "../../../services/calendar/calendar.service";
-import {DatePipe} from "@angular/common";
-import DateConvert from "../../helpers/date.convert";
-// const $ = require('jquery');
+import DateConverter from "../../helpers/date.converter";
 
 @Component({
-  selector: 'app-full-calendar',
-  templateUrl: './full-calendar.component.html',
-  styleUrls: ['./full-calendar.component.scss']
+  selector: 'app-my-calendar',
+  templateUrl: './my-calendar.component.html',
+  styleUrls: ['./my-calendar.component.scss']
 })
-export class FullCalendarComponent implements OnInit {
+export class MyCalendarComponent implements OnInit, AfterViewInit {
   events: any = [];
   error: any = null;
+  calendarApi: any;
 
-  constructor(private calendarService: CalendarService, public datePipe: DatePipe) {}
+  @ViewChild('calendar')
+  calendarComponent!: FullCalendarComponent;
+
+  constructor(private calendarService: CalendarService) {}
 
   ngOnInit(): void {
-    // this.fetchMyEvents();
+    this.fetchMyEvents();
+  }
+
+  ngAfterViewInit(): void {
+    debugger;
+    this.calendarApi = this.calendarComponent.getApi();
   }
 
   fetchMyEvents() {
+
+    debugger;
+    this.calendarApi.next();
+    this.calendarApi.preview();
+
     this.calendarService.fetchEvents()
       .pipe(first())
       .subscribe({
         next: (events: any) => {
           const data: any[] = [];
-
           if (events.length > 0) {
             events.forEach((el: any) => {
+              debugger;
               data.push({
-                start: this.datePipe.transform(DateConvert.convertUTCDateToLocalDate(new Date(el.start)), 'yyyy-MM-ddThh:mm:ss'),
-                end: this.datePipe.transform(DateConvert.convertUTCDateToLocalDate(new Date(el.end)), 'yyyy-MM-ddThh:mm:ss'),
+                start: DateConverter.convertUTCDateToLocalDate(el.start),
+                end: DateConverter.convertUTCDateToLocalDate(el.end),
                 title: el.title,
                 description: el.description
               })
@@ -82,8 +94,6 @@ export class FullCalendarComponent implements OnInit {
   };
 
   eventContent(arg: any) {
-      debugger;
-
       let divEl = document.createElement('div');
       // let description = arg.event._def.extendedProps['description'];
       let title = arg.event.title;
@@ -103,6 +113,6 @@ export class FullCalendarComponent implements OnInit {
   }
 
   handleDateClick(arg: { dateStr: string; }) {
-    alert('date click! ' + arg.dateStr)
+    // alert('date click! ' + arg.dateStr)
   }
 }

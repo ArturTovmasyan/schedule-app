@@ -21,9 +21,10 @@ export class CalendarService {
   }
 
   fetchEvents() {
-    let currentDate = new Date();
-    let startDate = this.datePipe.transform(currentDate, 'yyyy-MM-dd');
-    let endDate = moment(currentDate, "yyyy-MM-DD").add(7, 'days').format('yyyy-MM-DD');
+    let initDate = moment().subtract(1, 'week').toDate();
+    let startDate = this.datePipe.transform(initDate, 'yyyy-MM-dd');
+    let endDate = moment(startDate, "yyyy-MM-DD").add(5, 'week').format('yyyy-MM-DD');
+
     return this.http.get<ApiResponse<any>>(this.url + '?startDate='+startDate+'&dateEnd='+endDate, {}).pipe(
       map((response: ApiResponse<any>) => {
         return response;
