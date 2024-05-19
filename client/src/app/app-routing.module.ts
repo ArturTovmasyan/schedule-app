@@ -215,7 +215,7 @@ const routes: Routes = [
         component: SharableLinkComponent
       },
       {
-        path: 'sharable-link/list',
+        path: 'sharable-links',
         component: SharableLinkListComponent
       },
       {

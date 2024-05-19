@@ -252,3 +252,44 @@ input[type="checkbox"]:disabled {
     color: #7B9666;
   }
 }
+
+
+// copied tooltip
+.copy-btn {
+  .copied-tooltip {
+    position: absolute;
+    top: -20px;
+    right: 0;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    width: 120px;
+    z-index: 1;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s linear, opacity 0.3s linear;
+  }
+
+  .copied-tooltip.visible {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  button {
+
+    height: 20px;
+    width: 20px;
+    border: 0;
+    background-color: transparent;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      height: 15px;
+    }
+  }
+}

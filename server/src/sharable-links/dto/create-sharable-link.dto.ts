@@ -100,11 +100,13 @@ export class PaginationDto implements IPaginate {
   @ApiProperty({ required: false, default: 20 })
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   limit: number = 20;
 
   @ApiProperty({ required: false, default: 0 })
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   offset: number = 0;
 
   @ApiProperty({ required: false, default: false })
