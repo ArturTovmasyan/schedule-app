@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   CallHandler,
   ExecutionContext,
   Injectable,
@@ -6,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
+import { CalendarToken } from '../../calendar-permissions/entity/calendarToken.entity';
 import { Repository } from 'typeorm';
-import { CalendarPermissionsService } from '../calendar-permissions/calendarPermissions.service';
-import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
+import { CalendarPermissionsService } from '../../calendar-permissions/calendarPermissions.service';
+import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
 
 @Injectable()
 export class UpdateAccessTokenInterceptor implements NestInterceptor {
@@ -31,8 +32,6 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
         .andWhere('"expiryDate" < now()')
         .getMany();
 
-      // console.log('tokens ', tokens);
-
       for (const token of tokens) {
         if (token.calendarType === CalendarTypeEnum.GoogleCalendar) {
           await this.calendarPermissionsService.googleOAuth2Client.setCredentials(
@@ -41,11 +40,23 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
             },
           );
 
-          const t =
+          const refreshRes =
             await this.calendarPermissionsService.googleOAuth2Client.refreshAccessToken();
-          console.log('t   ', t);
+
+          if (refreshRes.res.headers.status !== 200) {
+            throw new BadGatewayException();
+          }
+          const updatedTokens = refreshRes.res.data;
+
+          const calendarTokenBody = {
+            id: token.id,
+            accessToken: updatedTokens.access_token,
+            refreshToken: updatedTokens.refresh_token,
+            expiryDate: new Date(updatedTokens.expiry_date).toISOString(),
+          };
+          await calendarTokenRepository.save(calendarTokenBody);
         } else if (token.calendarType === CalendarTypeEnum.Office365Calendar) {
-          const t =
+          const updatedTokens =
             await this.calendarPermissionsService.msalInstance.acquireTokenByRefreshToken(
               {
                 scopes: [
@@ -59,11 +70,21 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
               },
             );
 
-          console.log('t   ', t);
+          if (!updatedTokens.accessToken) {
+            throw new BadGatewayException();
+          }
+
+          const calendarTokenBody = {
+            id: token.id,
+            accessToken: updatedTokens.accessToken,
+            expiryDate: updatedTokens.expiresOn,
+            extExpiryDate: updatedTokens.extExpiresOn,
+          };
+
+          await calendarTokenRepository.save(calendarTokenBody);
         }
       }
     });
-
     return next.handle();
   }
 }

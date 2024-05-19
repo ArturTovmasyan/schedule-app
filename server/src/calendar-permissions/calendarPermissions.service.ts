@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CalendarToken } from './entity/calendarToken.entity';
@@ -6,7 +6,7 @@ import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { ConfigService } from '@nestjs/config';
 import { Auth, google } from 'googleapis';
 import * as msal from '@azure/msal-node';
-import { transactionManagerWrapper } from '../helpers/dbTransactionManager';
+import { transactionManagerWrapper } from '../common/helpers/dbTransactionManager';
 import { CalendarTypeEnum } from './enums/calendarType.enum';
 import { UserDto } from '@user/dto/user.dto';
 import { ConfidentialClientApplication } from '@azure/msal-node/dist/client/ConfidentialClientApplication';
@@ -102,7 +102,12 @@ export class CalendarPermissionsService {
   async getTokensFromGoogleAndSave(user: UserDto, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
-      const { tokens } = await this.googleOAuth2Client.getToken(code);
+      const getTokenResponse = await this.googleOAuth2Client.getToken(code);
+
+      if (getTokenResponse.res.headers.status !== 200) {
+        throw new BadGatewayException();
+      }
+      const tokens = getTokenResponse.tokens;
 
       const expiryDate = new Date(tokens.expiry_date).toISOString();
 
@@ -182,9 +187,12 @@ export class CalendarPermissionsService {
         ),
       });
 
+      if (!tokenResponse.accessToken) {
+        throw new BadGatewayException();
+      }
+
       const tokenCache = this.msalInstance.getTokenCache().serialize();
 
-      console.log('tokenCache ', JSON.parse(tokenCache));
       const refreshTokenObject = JSON.parse(tokenCache).RefreshToken;
 
       const refreshToken =
