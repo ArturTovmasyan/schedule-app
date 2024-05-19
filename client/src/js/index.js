@@ -5,6 +5,7 @@ $(document).ready(function () {
       updateDateNumbers();
     });
   }, 200);
+
 });
 
 function updateDateNumbers() {
