@@ -14,6 +14,7 @@ const DatabaseConfig = () => ({
     entitiesDir: 'src',
     migrationsDir: 'src/db/migrations',
   },
+  cache: false,
 });
 
 export default DatabaseConfig;

@@ -15,7 +15,7 @@ import { CalendarPermissionsModule } from '../calendar-permissions/calendarPermi
     forwardRef(() => CalendarPermissionsModule),
   ],
   controllers: [CalendarEventController],
-  providers: [CalendarEventService],
+  providers: [CalendarEventService, CalendarService],
   exports: [CalendarEventService],
 })
 export class CalendarEventModule {}

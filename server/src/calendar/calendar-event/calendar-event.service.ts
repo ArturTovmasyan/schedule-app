@@ -8,8 +8,6 @@ import { CalendarToken } from '../calendar-permissions/entity/calendarToken.enti
 import { EntityManager, IsNull, Not, Repository } from 'typeorm';
 import { ClientsCredentialsService } from '../clients-credentials/clients-credentials.service';
 import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
-import { google } from 'googleapis';
-import * as graph from '@microsoft/microsoft-graph-client';
 import 'isomorphic-fetch';
 import { Calendar } from './entities/calendar.entity';
 import { User } from '@user/entity/user.entity';
