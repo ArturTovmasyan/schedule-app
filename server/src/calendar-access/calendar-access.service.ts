@@ -8,6 +8,7 @@ import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { UpdateCalendarAccessDto } from './dto/update-calendar-access.dto';
 import { CalendarAccess } from './entities/calendar-access.entity';
 import { TimeForAccessEnum } from './enums/access-time.enum';
+import { ErrorMessages } from '@shared/error.messages';
 import { MailService } from 'src/mail/mail.service';
 import { User } from '@user/entity/user.entity';
 
@@ -35,26 +36,17 @@ export class CalendarAccessService {
     user: User,
     createCalendarAccessDto: CreateCalendarAccessDto,
   ): Promise<string> {
-    const checkExists = await this.calendarAccessRepo.findOne({
-      where: {
-        owner: { id: user.id },
-        toEmail: createCalendarAccessDto.toEmail,
-      },
-    });
+    if (createCalendarAccessDto.toEmail === user.email) {
+      throw new BadRequestException({
+        message: ErrorMessages.cantSentYourself,
+      });
+    }
+
+    await this.checkAccess(user, createCalendarAccessDto.toEmail);
 
     const findUserByEmail = await this.userRepo.findOne({
       where: { email: createCalendarAccessDto.toEmail },
     });
-
-    if (
-      checkExists &&
-      (moment().diff(checkExists.timeForAccess) < 0 ||
-        !checkExists.timeForAccess)
-    ) {
-      throw new BadRequestException({
-        message: 'This email already has access',
-      });
-    }
 
     let timeForAccess: Date | null = null;
 
@@ -95,6 +87,31 @@ export class CalendarAccessService {
     });
 
     return 'shared successfully';
+  }
+
+  /**
+   * @description `Void function,that validates does userA have access to userB's calendar`
+   * @param user - `Authorized user data`
+   * @param email - `email address of accessable user`
+   */
+
+  async checkAccess(user: User, email: string): Promise<void> {
+    const checkAccess = await this.calendarAccessRepo.findOne({
+      where: {
+        owner: { id: user.id },
+        toEmail: email,
+      },
+    });
+
+    if (
+      checkAccess &&
+      (moment().diff(checkAccess.timeForAccess) < 0 ||
+        !checkAccess.timeForAccess)
+    ) {
+      throw new BadRequestException({
+        message: ErrorMessages.alreadyHaveAccess,
+      });
+    }
   }
 
   /**

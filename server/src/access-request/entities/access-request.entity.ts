@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  OneToOne,
   ManyToOne,
   JoinColumn,
   DeleteDateColumn,
@@ -10,21 +9,22 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
+import { RequestStatusEnum } from '../enums/requestStatus.enum';
 
-@Entity('calendar-access')
-export class CalendarAccess {
+@Entity('access-request')
+export class AccessRequest {
   @PrimaryGeneratedColumn('uuid') id: string;
 
   @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'owner_id' })
-  owner: User;
+  @JoinColumn({ name: 'applicant_id' })
+  applicant: User;
 
   @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'accessed_user_id' })
-  accessedUser: User;
+  @JoinColumn({ name: 'receiver_id' })
+  receiver: User;
 
-  @Column({ name: 'accessed_user_id', type: 'uuid' })
-  accessedUserId: string;
+  @Column({ name: 'receiver_id', type: 'uuid' })
+  receiverUserId: string;
 
   @Column({ name: 'time_for_access', type: 'timestamptz' })
   timeForAccess: Date;
@@ -34,6 +34,14 @@ export class CalendarAccess {
 
   @Column({ name: 'comment', type: 'text' })
   comment: string;
+
+  @Column({
+    name: 'status',
+    type: 'enum',
+    enumName: 'request_status',
+    default: RequestStatusEnum.Pending,
+  })
+  status?: RequestStatusEnum;
 
   @CreateDateColumn()
   createdOn?: Date;
