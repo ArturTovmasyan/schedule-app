@@ -63,17 +63,34 @@
         </div>
       </div>
       <div class="details" *ngIf="currentDisplaySection === Section.DOMAIN">
-        <label id="title">Domain</label>
+        <label id="title">Anyone from following domain(s) can see my calendar availability:</label>
 
         <div class="item-container">
+          <div class="item-container-example">
+            <h3>Example:</h3>
+            <div class="anyone-from-example">
+              <h6>Anyone from <span>microsoft.com</span>
+                <button class="remove-button">
+                  <img src="assets/close-icon.svg" alt="close button">
+                </button>
+              </h6>
+            </div>
+          </div>
           <div class="input">
-            <input #domainInput type="text" placeholder="Enter a domain" (keyup.enter)="addDomain()">
-            <img src="assets/ic_add.svg" fill="red" (click)="addDomain()">
+            <h6>Anyone from</h6>
+            <input #domainInput type="text" placeholder="type the domain here" (keyup.enter)="addDomain()">
+            <button class="remove-button" id="closeButton">
+              <img src="assets/close-icon.svg" alt="close button">
+            </button>
+            <!--            <img src="assets/ic_add.svg" fill="red" (click)="addDomain()">-->
           </div>
 
           <div class="item" *ngFor="let domain of domains; let i = index">
+            <h6>Anyone from</h6>
             <span>@{{ domain }}</span>
-            <img src="assets/ic_delete.svg" (click)="removeDomain(i)">
+            <button class="remove-button" id="closeButton" (click)="removeDomain(i)">
+              <img src="assets/close-icon.svg" alt="close button">
+            </button>
           </div>
         </div>
       </div>

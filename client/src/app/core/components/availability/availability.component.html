@@ -1,48 +1,97 @@
-<div id="container">
-  <section id="hours">
-    <label class="section-header"><img src="assets/ic_clock.svg" alt="">Hours Available</label>
-    <div id="content">
-      <section id="clock-type">
-        <label class="header-small">Clock type</label>
-        <div class="radio-group">
-          <button id="type-normal" [ngClass]="meridian ? 'checked' : ''"
-            (click)="onClockTypeChanged(ClockType.NORMAL)">12 H</button>
-          <button id="type-millitary" [ngClass]="!meridian ? 'checked' : ''"
-            (click)="onClockTypeChanged(ClockType.MILITARY)">24 H</button>
-        </div>
-      </section>
-      <section id="range">
-        <div class="time">
-          <label class="header-small">From</label>
-          <app-timepicker [meridian]="meridian" [(time)]="fromText" [(inAM)]="isFromAM"></app-timepicker>
-        </div>
-        <span>-</span>
-        <div class="time">
-          <label class="header-small">To</label>
-          <app-timepicker [meridian]="meridian" [(time)]="toText" [(inAM)]="isToAM"></app-timepicker>
-        </div>
-      </section>
+<section class="availability">
+  <div class="setting-content-header">
+    <div class="text">
+      <h1>Availability</h1>
     </div>
-  </section>
-  <section id="days">
-    <label class="section-header"><img src="assets/ic_calendar.svg" alt="">Days Available</label>
-    <div id="buttons">
-      <button [ngClass]="tempAvailability.monday ? 'checked' : ''"
-        (click)="toggleDaySelection(Day.MON)">{{ Day.MON }}</button>
-      <button [ngClass]="tempAvailability.tuesday ? 'checked' : ''"
-        (click)="toggleDaySelection(Day.TUE)">{{ Day.TUE }}</button>
-      <button [ngClass]="tempAvailability.wednesday ? 'checked' : ''"
-        (click)="toggleDaySelection(Day.WED)">{{ Day.WED }}</button>
-      <button [ngClass]="tempAvailability.thursday ? 'checked' : ''"
-        (click)="toggleDaySelection(Day.THU)">{{ Day.THU }}</button>
-      <button [ngClass]="tempAvailability.friday ? 'checked' : ''"
-        (click)="toggleDaySelection(Day.FRI)">{{ Day.FRI }}</button>
-      <button [ngClass]="tempAvailability.saturday ? 'checked' : ''"
-        (click)="toggleDaySelection(Day.SAT)">{{ Day.SAT }}</button>
-      <button [ngClass]="tempAvailability.sunday ? 'checked' : ''"
-        (click)="toggleDaySelection(Day.SUN)">{{ Day.SUN }}</button>
+    <div class="account-info">
+      <div class="timezone">
+        <h4 id="userTimezone">
+          GMT -4/ET
+        </h4>
+      </div>
+      <a class="notifications" id="notifications">
+        <img src="assets/notification-icon.svg" alt="notifications">
+        <div class="counter">
+          <h6 id="notificationsCounter">
+            123
+          </h6>
+        </div>
+      </a>
+      <a class="user-profile" id="userProfile">
+        <img src="assets/user-icon.png" alt="profile image">
+      </a>
     </div>
-  </section>
+  </div>
 
-  <span id="message">Don’t worry. You can always adjust later in your Settings.</span>
-</div>
+  <div id="availabilityWrapper">
+    <div class="availability-page-title">
+      What are your working hours?
+    </div>
+    <div id="clockType">
+      <label class="section-header">Clock type</label>
+      <div class="radio-group">
+        <button id="type-normal" [ngClass]="meridian ? 'checked' : ''"
+                (click)="onClockTypeChanged(ClockType.NORMAL)"><span>AM/PM</span> View
+        </button>
+        <button id="type-millitary" [ngClass]="!meridian ? 'checked' : ''"
+                (click)="onClockTypeChanged(ClockType.MILITARY)"><span>24 Hour</span> View
+        </button>
+      </div>
+    </div>
+
+
+    <div id="hours">
+      <label class="section-header">Working hours</label>
+      <div id="content">
+        <div id="range">
+          <div class="time">
+            <label class="header-small">From</label>
+            <app-timepicker [meridian]="meridian" [(time)]="fromText" [(inAM)]="isFromAM"></app-timepicker>
+          </div>
+          <div class="hours-middle-line"></div>
+          <div class="time">
+            <label class="header-small">To</label>
+            <app-timepicker [meridian]="meridian" [(time)]="toText" [(inAM)]="isToAM"></app-timepicker>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="days">
+      <label class="section-header">Days Available</label>
+      <div id="buttons">
+        <button [ngClass]="tempAvailability.monday ? 'checked' : ''"
+                (click)="toggleDaySelection(Day.MON)">{{ Day.MON }}</button>
+        <button [ngClass]="tempAvailability.tuesday ? 'checked' : ''"
+                (click)="toggleDaySelection(Day.TUE)">{{ Day.TUE }}</button>
+        <button [ngClass]="tempAvailability.wednesday ? 'checked' : ''"
+                (click)="toggleDaySelection(Day.WED)">{{ Day.WED }}</button>
+        <button [ngClass]="tempAvailability.thursday ? 'checked' : ''"
+                (click)="toggleDaySelection(Day.THU)">{{ Day.THU }}</button>
+        <button [ngClass]="tempAvailability.friday ? 'checked' : ''"
+                (click)="toggleDaySelection(Day.FRI)">{{ Day.FRI }}</button>
+        <button [ngClass]="tempAvailability.saturday ? 'checked' : ''"
+                (click)="toggleDaySelection(Day.SAT)">{{ Day.SAT }}</button>
+        <button [ngClass]="tempAvailability.sunday ? 'checked' : ''"
+                (click)="toggleDaySelection(Day.SUN)">{{ Day.SUN }}</button>
+      </div>
+    </div>
+    <div id="message">
+      <span>Don’t worry. You can always adjust later in your Settings.</span>
+    </div>
+    <div class="back-next-buttons">
+      <a href="" class="back-button">
+        <img src="assets/chevron-left.png" alt="chevron left"> Back
+      </a>
+      <a href="" class="next-button">
+        Next <img src="assets/chevron-right.png" alt="chevron right">
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+
+

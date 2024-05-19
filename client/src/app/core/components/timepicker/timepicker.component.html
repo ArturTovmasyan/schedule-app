@@ -1,7 +1,7 @@
 <div id="container">
   <div id="picker">
     <span id="input" class="input" role="textbox" contenteditable (input)="timeUpdated($event)">{{ time }}</span>
-    <button (click)="toggleDropdown()"><img src="assets/ic_chev_down.svg"></button>
+
     <div id="dropdown" *ngIf="showDropdown">
         <span *ngFor="let slot of timeSlots"
           id="{{ generateSlotId(slot) }}"
