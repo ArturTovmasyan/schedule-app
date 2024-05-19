@@ -16,3 +16,16 @@ function updateDateNumbers() {
     });
   }
 }
+
+
+document.querySelectorAll('.fc-timeline-lane-frame')?.forEach((e) => {
+  if (e) {
+    const cellHoverElementsContainer = document.createElement('div');
+    cellHoverElementsContainer.className = 'cell-hover-elements-container';
+    const count = currentView === 'resourceTimelineWeek' ? 7 : 24;
+    for (let i = 0; i < count; i += 1) {
+      cellHoverElementsContainer.appendChild(document.createElement('div'));
+    }
+    e?.appendChild(cellHoverElementsContainer);
+  }
+});

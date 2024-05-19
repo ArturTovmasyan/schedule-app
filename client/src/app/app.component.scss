@@ -4,8 +4,6 @@
   height: 100%;
 }
 
-
-
 :host ::ng-deep {
   .hover-scale {
     // cursor: pointer;
@@ -14,7 +12,7 @@
     &:hover {
       transform: scale(1.05);
       box-shadow: 8px 10px 10px #0000003B;
-    
+
     }
   }
   .text-hover-scale, .fc-toolbar-title, .fc-timegrid-slot {
@@ -22,7 +20,7 @@
     &:hover {
       transform: scale(1.05);
       text-shadow: 8px 10px 10px #0000003B;
-    
+
     }
   }
 
@@ -31,7 +29,7 @@
     &:hover {
       transform: scale(1.2);
       text-shadow: 8px 10px 10px #0000003B;
-    
+
     }
   }
 
@@ -55,7 +53,7 @@
   .fc-time-grid-container .fc-slats .fc-minor {
     transition: transform 0.3s;
   }
-  
+
   .fc-time-grid-container .fc-slats .fc-minor:hover {
     transform: scale(1.1);
   }
@@ -67,5 +65,5 @@
     cursor: pointer;
     padding-right: 5px;
     text-align: right;
-} 
+}
 }
