@@ -25,11 +25,15 @@ import { ErrorMessages } from 'src/components/constants/error.messages';
 import { randomUUID } from 'crypto';
 import {
   FirstWeekDaysAbbreviateEnum,
+  FirstWeekDaysOutlookAbbreviateEnum,
+  GoogleWeekDaysEnum,
   WeekDaysAbbreviateEnum,
   WeekDaysEnum,
 } from './enums/weekDays.enum';
-import { GoogleWeekDaysEnum } from './enums/googleWeekDays.enum';
-import { GoogleIndexOfWeekEnum } from './enums/indexOfWeek.enum';
+import {
+  GoogleIndexOfWeekEnum,
+  IndexOfWeekToNumberEnum,
+} from './enums/indexOfWeek.enum';
 import { EventRecurrenceTypeEnum } from './enums/eventRecurrenceType.enum';
 import { RRule } from 'rrule';
 import { getEnumKeyByEnumValue } from '../../components/helpers/getEnumKeyByEnumValue';

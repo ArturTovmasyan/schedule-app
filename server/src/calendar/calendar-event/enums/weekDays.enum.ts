@@ -1,29 +1,49 @@
 export enum WeekDaysEnum {
-  Sunday = 'Sunday',
-  Monday = 'Monday',
-  Tuesday = 'Tuesday',
-  Wednesday = 'Wednesday',
-  Thursday = 'Thursday',
-  Friday = 'Friday',
-  Saturday = 'Saturday',
+  Sunday = 'Sun',
+  Monday = 'Mon',
+  Tuesday = 'Tue',
+  Wednesday = 'Wed',
+  Thursday = 'Thu',
+  Friday = 'Fri',
+  Saturday = 'Sat',
 }
 
 export enum WeekDaysAbbreviateEnum {
-  SU = 'Sunday',
-  MO = 'Monday',
-  TU = 'Tuesday',
-  WE = 'Wednesday',
-  TH = 'Thursday',
-  FR = 'Friday',
-  SA = 'Saturday',
+  SU = 'Sun',
+  MO = 'Mon',
+  TU = 'Tue',
+  WE = 'Wed',
+  TH = 'Thu',
+  FR = 'Fri',
+  SA = 'Sat',
 }
 
 export enum FirstWeekDaysAbbreviateEnum {
-  SU = 'sunday',
-  MO = 'monday',
-  TU = 'tuesday',
-  WE = 'wednesday',
-  TH = 'thursday',
-  FR = 'friday',
-  SA = 'saturday',
+  SU = 'Sun',
+  MO = 'Mon',
+  TU = 'Tue',
+  WE = 'Wed',
+  TH = 'Thu',
+  FR = 'Fri',
+  SA = 'Sat',
+}
+
+export enum FirstWeekDaysOutlookAbbreviateEnum {
+  sunday = 'Sun',
+  monday = 'Mon',
+  tuesday = 'Tue',
+  wednesday = 'Wed',
+  thursday = 'Thu',
+  friday = 'Fri',
+  saturday = 'Sat',
+}
+
+export enum GoogleWeekDaysEnum {
+  SU = 'Sun',
+  MO = 'Mon',
+  TU = 'Tue',
+  WE = 'Wed',
+  TH = 'Thu',
+  FR = 'Fri',
+  SA = 'Sat',
 }
