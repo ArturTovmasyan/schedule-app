@@ -13,7 +13,7 @@
           <li class="list-inline-item user-info" *ngFor="let att of attendees">
             <div class="user-info-wrapper">
               <div class="user-portrait">
-                <img *ngIf="att.avatar" [src]="att.avatar">
+                <img *ngIf="att.avatar" [src]="att.avatar" alt="avatar">
                 <span *ngIf="!att.avatar">{{ att.user.firstName | acronymName }}</span>
               </div>
               <div class="user-bio">

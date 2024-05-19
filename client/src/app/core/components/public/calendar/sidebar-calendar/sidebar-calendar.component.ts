@@ -89,5 +89,6 @@ export class PublicSidebarCalendarComponent  {
   changeWeek(date: any) {
     this.calendarService.selectedWeek.next(date);
   }
+  
 
 }

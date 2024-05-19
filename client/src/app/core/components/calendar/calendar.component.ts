@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BroadcasterService } from "../../../shared/services";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { CommonService } from '../../services/common.service';
-import { ActivatedRoute, NavigationEnd, Router,Event as NavigationEvent } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-availability',

@@ -11,7 +11,6 @@ export class PublicCalendarService {
   calendarData: any;
   selectedWeek = new Subject();
   _selectedTimeSlot = null;
-  timezone: string | null = null;
 
   locations: Location[] = [
     {
@@ -62,8 +61,6 @@ export class PublicCalendarService {
   constructor(
     private readonly http: HttpClient
     ) {
-    const timezone = new Date().toString().match(/([A-Z]+[\+-][0-9]+.*)/)?.[1] ?? null;
-    this.timezone = timezone;
     }
 
     getDetails(id: string) {

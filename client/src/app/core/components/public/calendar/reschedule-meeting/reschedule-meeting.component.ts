@@ -64,10 +64,6 @@ export class RescheduleMeetingComponent extends PublicSidebarCalendarComponent i
     return this.form.controls;
   }
 
-  get timezone() {
-    return this.calendarService.timezone;
-  }
-
   ngOnInit(): void {
     this.calendarService.getDetails(this.linkId)
       .subscribe((data: any) => {

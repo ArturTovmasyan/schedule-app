@@ -6,8 +6,6 @@ import * as moment from 'moment-timezone';
 })
 export class CommonService {
 
-  constructor() {}
-
   getFormattedDateString(date: moment.Moment | null, format = `YYYY-MM-DDTHH:mm:ss.sssZ`): string | null {
     if (date != null) {
       return date.format(format);

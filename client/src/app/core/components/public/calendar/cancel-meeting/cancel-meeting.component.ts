@@ -57,10 +57,6 @@ export class CancelMeetingComponent extends PublicSidebarCalendarComponent imple
     return this.form.controls;
   }
 
-  get timezone() {
-    return this.calendarService.timezone;
-  }
-
   ngOnInit(): void {
     this.calendarService.getDetails(this.linkId)
       .subscribe((data: any) => {
