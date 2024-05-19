@@ -93,8 +93,24 @@ export class LoginComponent implements OnInit {
       this.msService.loginPopup()
         .subscribe({
           next: (result) => {
+            debugger;
             if (result.accessToken) {
-              this.getProfileData();
+              this.http.get(GRAPH_ENDPOINT)
+                .subscribe({
+
+                  next: (profileData) => {
+                    this.authService.microsoftLogin(profileData).subscribe({
+                      next: (data) => {
+                        debugger;
+                        console.log(data);
+                      },
+                      error: (error) => {
+                        this.router.navigate(['/']);
+                      }
+                    });
+                  },
+                  error: (error) => console.log(error)
+                });
             }
           },
           error: (error) => console.log(error)
@@ -108,6 +124,7 @@ export class LoginComponent implements OnInit {
         next: (profileData) => {
           this.authService.microsoftLogin(profileData).subscribe({
             next: (data) => {
+              debugger;
               console.log(data);
             },
             error: (error) => {

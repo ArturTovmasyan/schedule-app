@@ -212,7 +212,6 @@ export class AuthService {
     async validateMicrosoftLogin(data: any): Promise<string> {
         try {
 
-            debugger;
             let {id, mail} = data;
             let oauthId = id;
             let user: UserDto = await this.userRepo.findOne({where: {oauthId}});

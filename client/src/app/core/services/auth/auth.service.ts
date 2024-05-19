@@ -92,6 +92,7 @@ export class AuthService {
   microsoftLogin(data: MicrosoftUserType) {
     return this.http.post<any>('/api/auth/microsoft/callback', {...data}).pipe(
       map((response: any) => {
+        debugger;
         if (response && response.accessToken) {
           localStorage.setItem('cu', JSON.stringify(response));
           this.currentUserSubject.next(response);

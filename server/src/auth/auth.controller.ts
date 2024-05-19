@@ -6,7 +6,7 @@ import {
     HttpStatus,
     Patch,
     Post,
-    Query, Redirect,
+    Query,
     Req,
     Res,
     UseGuards,
@@ -94,7 +94,9 @@ export class AuthController {
         if (user && user.id) {
             const jwt = await this.authService.validateMicrosoftLogin(user);
             if (jwt) {
-                res.redirect(webHost+'oauth/success?token=' + jwt);
+
+                return {accessToken: jwt};
+                // res.redirect(webHost+'oauth/success?token=' + jwt);
             }
         }
 
