@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {first} from "rxjs/operators";
 import {CalendarPermissionService} from "../../services/calendar/permission.service";
 import {CalendarPermission} from "../../interfaces/calendar/permission.calendar.inteface";
 
-enum CalendarType { //TODO sync with backend interface
-  GOOGLE = "google",
-  MS = "ms",
-  APPLE = "apple"
+export enum CalendarType {
+  GOOGLE = "googleCalendar",
+  MS = "office365Calendar",
+  POPUP_NAME = 'calendar-access'
 }
 
 @Component({
@@ -16,10 +16,12 @@ enum CalendarType { //TODO sync with backend interface
 })
 export class ConnectCalendarComponent implements OnInit {
 
-  currentCalendar: any = null
+  googleCalendar: any = null
+  msCalendar: any = null
   error: any | null = null;
 
-  constructor(private calendarPermissionService: CalendarPermissionService) { }
+  constructor(private calendarPermissionService: CalendarPermissionService) {
+  }
 
   ngOnInit(): void {
     this.fetchCurrentCalendar();
@@ -29,9 +31,9 @@ export class ConnectCalendarComponent implements OnInit {
     this.calendarPermissionService.fetch()
       .pipe(first())
       .subscribe({
-        next: (value: CalendarPermission|any) => {
-          debugger;
-          this.currentCalendar = value.googleCalendar
+        next: (value: CalendarPermission | any) => {
+          this.googleCalendar = value.googleCalendar
+          this.msCalendar = value.office365Calendar
         },
         error: (error) => {
           this.error = error;
@@ -39,23 +41,21 @@ export class ConnectCalendarComponent implements OnInit {
       });
   }
 
-  accessGoogleCalendar() {
-      this.calendarPermissionService.redirectAuth()
-        .pipe(first())
-        .subscribe({
-          next: (value: any) => {
-            debugger;
-          },
-          error: (error) => {
-            debugger;
-          }
-        });
+  accessGoogleCalendar(checked: boolean) {
+    this.calendarPermissionService.googleCalendarAccess(checked).subscribe();
   }
 
-  hasGoogleCalendarPermission(): boolean {
-    debugger;
-    if (this.currentCalendar != null) {
-      return this.currentCalendar === true;
+  accessMsCalendar(checked: boolean) {
+    this.calendarPermissionService.msCalendarAccess(checked).subscribe();
+  }
+
+  hasCalendarPermission(type: CalendarType): boolean {
+    if (this.googleCalendar != null) {
+      if (type === CalendarType.GOOGLE) {
+        return this.googleCalendar === true;
+      } else if (type === CalendarType.MS) {
+        return this.msCalendar === true;
+      }
     }
     return false
   }

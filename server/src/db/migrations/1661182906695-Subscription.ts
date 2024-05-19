@@ -35,10 +35,13 @@ export class Subscription1661182906695 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_ed229b1dc042b01cc46516da400"`);
         await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "UQ_ed229b1dc042b01cc46516da400"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "stripe_subscription_id"`);
-        await queryRunner.query(`ALTER TABLE "user"
-            ADD "stripe_subscription_id" character varying(20)`);
+        await queryRunner.query(`ALTER TABLE "user" ADD "stripe_subscription_id" character varying(20)`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "stripe_subscription_id"`);
         await queryRunner.query(`DROP TABLE "subscription"`);
+<<<<<<< HEAD
+=======
+        await queryRunner.query(`DROP TYPE IF EXISTS "public"."subscription_status_enum"`);
+>>>>>>> 17e5289 (Finish calendar permissions functioanlity for front (Google and MS))
     }
 
 }

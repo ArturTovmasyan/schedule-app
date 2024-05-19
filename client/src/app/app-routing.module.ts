@@ -18,14 +18,24 @@ const routes: Routes = [
   {path: '404', component: P404Component, data: {title: 'Page 404'}},
   {path: '500', component: P500Component, data: {title: 'Page 500'}},
   {
-    path: 'payment-success',
-    component: PaymentSuccessComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'google-calendar',
-    component: GoogleCalendarComponent,
-    canActivate: [AuthGuard],
+    path: '',
+    children: [
+      {
+        path: 'payment-success',
+        component: PaymentSuccessComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'google-calendar',
+        component: GoogleCalendarComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'ms-calendar',
+        component: MsCalendarComponent,
+        canActivate: [AuthGuard],
+      },
+    ]
   },
   {
     path: '',

@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { ApiResponse } from '../../interfaces/response/api.response.interface';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {map} from 'rxjs/operators';
+import {ApiResponse} from '../../interfaces/response/api.response.interface';
 import {CalendarPermission} from "../../interfaces/calendar/permission.calendar.inteface";
+import {CalendarType} from "../../components/connect-calendar/connect-calendar.component";
 
 @Injectable({
   providedIn: 'root'
@@ -19,30 +20,68 @@ export class CalendarPermissionService {
   }
 
   fetch() {
-    return this.http.get<ApiResponse<CalendarPermission>>(this.url+'status-of-calendars', {
-    }).pipe(
+    return this.http.get<ApiResponse<CalendarPermission>>(this.url + 'status-of-calendars', {}).pipe(
       map((response: ApiResponse<CalendarPermission>) => {
-        debugger;
         return response;
       })
     )
   }
 
-  redirectAuth() {
-    return this.http.get<any>(this.url+'google-calendar', {}).pipe(
+  googleCalendarAccess(checked: boolean) {
+    return this.http.get<any>(this.url + 'google-calendar', {}).pipe(
       map((response: any) => {
-        debugger;
-        return true
+        if (response.data && checked) {
+          this.createCalendarAccessWindow(response.data.url);
+        }
       })
     )
   }
 
-  redirectGoogleCallback(code: string) {
-    return this.http.get<any>(this.url+'google-calendar-callback?code='+code, {}).pipe(
+  msCalendarAccess(checked: boolean) {
+    return this.http.get<any>(this.url + 'ms-calendar', {}).pipe(
       map((response: any) => {
-        debugger;
-        return true
+        if (response.data && checked) {
+          this.createCalendarAccessWindow(response.data.url);
+        }
       })
     )
+  }
+
+  googleCallback(code: string) {
+    return this.http.get<any>(this.url + 'google-calendar-callback?code=' + code, {}).pipe(
+      map((response: any) => {
+        if (window.name === CalendarType.POPUP_NAME) {
+          window.close();
+        }
+        return response;
+      })
+    )
+  }
+
+  msCallback(code: string) {
+    return this.http.get<any>(this.url + 'ms-calendar-callback?code=' + code, {}).pipe(
+      map((response: any) => {
+        if (window.name === CalendarType.POPUP_NAME) {
+          window.close();
+        }
+        return response;
+      })
+    )
+  }
+
+  createCalendarAccessWindow(
+    url: string,
+    name = CalendarType.POPUP_NAME,
+    width = 450,
+    height = 500,
+    left = 500,
+    top = 165) {
+
+    if (url == null) {
+      return null;
+    }
+
+    const options = `width=${width},height=${height},left=${left},top=${top}, scrollbars=0`;
+    return window.open(url, name, options);
   }
 }

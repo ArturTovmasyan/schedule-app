@@ -6,7 +6,7 @@
       <label class="calendar-name">Google Calendar</label>
       <span class="calendar-desc">Gmail, G-suite</span>
       <label class="switch">
-        <input type="checkbox" (change)="accessGoogleCalendar()" [checked]="hasGoogleCalendarPermission()">
+        <input #googleAccess type="checkbox" (change)="accessGoogleCalendar(googleAccess.checked)" [checked]="hasCalendarPermission(CalendarType.GOOGLE)">
         <span class="slider round"></span>
       </label>
     </div>
@@ -19,7 +19,7 @@
       <label class="calendar-name">Office 365 Calendar</label>
       <span class="calendar-desc">Office 365, Outlook.com, live.com, or Hotmail calendar</span>
       <label class="switch">
-        <input type="checkbox" >
+        <input #msAccess type="checkbox" (change)="accessMsCalendar(msAccess.checked)" [checked]="hasCalendarPermission(CalendarType.MS)">
         <span class="slider round"></span>
       </label>
       <div class="border"></div>

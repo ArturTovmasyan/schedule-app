@@ -23,7 +23,6 @@ export class SubscriptionsController {
     @Post('standard')
     async createStandardSubscription(@Body() data: AddCreditCardDto, @GetUser() user: User) {
         try {
-            debugger;
             const priceId = this.configService.get('STANDARD_SUBSCRIPTION_PRICE_ID');
             await this.stripeService.updateCustomer(user.stripeCustomerId, data.stripeToken);
             const subscriptionData = await this.subscriptionsService.createSubscription(user.stripeCustomerId, priceId);

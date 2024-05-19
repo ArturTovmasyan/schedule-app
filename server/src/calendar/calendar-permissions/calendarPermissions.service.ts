@@ -154,7 +154,6 @@ export class CalendarPermissionsService {
       const token = await calendarTokenRepository.save(calendarTokenBody);
 
       await this.calendarEventService.getCalendarsFromGoogle(user, manager);
-
       await this.calendarEventService.googleEventWatcher(user, token, manager);
 
       return this.getUserStatusOfCalendars(user.id, manager);
