@@ -33,8 +33,7 @@
       margin-bottom: 5px;
     }
     input#email, input#password{
-      border-top-left-radius: 20px;
-      border-bottom-left-radius: 20px;
+      border-radius: 20px;
       border: 1px solid #b7b7b7;
       &::placeholder{
         font-family: 'Lexend Deca', sans-serif;
@@ -45,6 +44,14 @@
       }
       &:focus-visible{
         outline-color: #32AEF1;
+      }
+    }
+    .password-input-group{
+      position: relative;
+      i{
+        position: absolute;
+        right: 18px;
+        font-size: 18px;
       }
     }
     input[type=checkbox]{
