@@ -14,10 +14,10 @@ export class SettingsComponent implements OnInit {
     title: 'Calendar Setup',
     route: '/settings/calendar'
   },{
-    id: 'configuration',
-    title: 'Configuration',
-    route: '/settings/configuration'
-  },{
+  //   id: 'configuration',
+  //   title: 'Configuration',
+  //   route: '/settings/configuration'
+  // },{
     id: 'account-info',
     title: 'Account Info',
     route: '/settings/account-info'

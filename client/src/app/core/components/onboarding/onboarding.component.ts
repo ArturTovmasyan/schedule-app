@@ -16,11 +16,11 @@ export class OnboardingComponent implements OnInit {
       title: 'Calendar Setup',
       route: '/onboarding/calendar'
     },
-    {
-      id: 'configuration',
-      title: 'Configuration',
-      route: '/onboarding/configuration'
-    },
+    // {
+    //   id: 'configuration',
+    //   title: 'Configuration',
+    //   route: '/onboarding/configuration'
+    // },
     {
       id: 'availability',
       title: 'Availability',
