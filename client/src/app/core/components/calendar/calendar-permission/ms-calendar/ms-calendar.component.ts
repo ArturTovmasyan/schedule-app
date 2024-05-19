@@ -25,7 +25,8 @@ export class MsCalendarComponent implements OnInit {
               .pipe(first())
               .subscribe({
                 next: () => {
-                  this.router.navigate(['/onboarding/calendar'])
+                  const route = localStorage.getItem('calendar-redirect') ?? '/onboarding/calendar';
+                  this.router.navigate([route]);
                 },
                 error: () => {
                   this.router.navigate(['/404'])

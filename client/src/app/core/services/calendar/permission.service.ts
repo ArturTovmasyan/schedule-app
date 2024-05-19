@@ -64,6 +64,28 @@ export class CalendarPermissionService {
     return this.http.post<any>(`${this.url}/ms-calendar/revoke`, { calendarId });
   }
 
+  connectZoom() {
+    return this.http.post<ApiResponse<any>>('/api/integrations/zoom/oauth', {})
+      .pipe(
+        map((response: any) => {
+          if (response.data) {
+            return response.data.url
+          }
+        })
+      )
+  }
+
+  zoomCallback(code: string) {
+    return this.http.get<any>(`/api/integrations/zoom/oauth/callback?code=${code}`, {}).pipe(
+      map((response: any) => {
+        if (window.name === CalendarType.PopupName) {
+          window.close();
+        }
+        return response;
+      })
+    )
+  }
+
   googleCallback(code: string) {
     return this.http.get<any>(this.url + '/google-calendar-callback?code=' + code, {}).pipe(
       map((response: any) => {

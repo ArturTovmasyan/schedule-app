@@ -1,7 +1,7 @@
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import { DOCUMENT } from '@angular/common';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Subject, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Subject, switchMap, tap } from 'rxjs';
 import { CalendarAccess } from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
 import { AvailabilityService } from 'src/app/core/services/calendar/availability.service';
@@ -10,6 +10,7 @@ import { BroadcasterService } from "../../../../shared/services";
 import { SharableLinkService } from 'src/app/core/services/calendar/sharable-link.service';
 import { MeetViaEnum } from '../enums/sharable-links.enum';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CalendarPermissionService } from 'src/app/core/services/calendar/permission.service';
 
 export interface Location {
   id?: string;
@@ -56,7 +57,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   showCopiedText = false;
   showJointAvailibility = false;
   private readonly _document: Document;
-
+  
   locations: Location[] = [];
 
   get timezone(): string {
@@ -71,20 +72,26 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     private readonly calendarAccessService: CalendarAccessService,
     private readonly availabilityService: AvailabilityService,
     private readonly sharableLinkService: SharableLinkService,
+    private calendarPermissionService: CalendarPermissionService,
     @Inject(DOCUMENT) document: any
-
   ) {
-    this.getLocations();
+    this.broadcaster.broadcast('reset_event');
+    // get location list and get sharable link details
+    this.sharableLinkService.getLocations()
+      .subscribe({
+        next: (res: any) => {
+          this.locations = res;
+          if (linkId) {
+              this.loadSharableLinkDetails(linkId);
+          }
+        }
+      });
+
     const linkId = this.route.snapshot.params['id'];
     // load from api if link id is sent to parameters ie used for edit page
-    if (linkId) {
-      setTimeout(() => {
-        this.loadSharableLinkDetails(linkId);
-      }, 0);
-      
-    }
+    
     // load from saved Data of localstorage after connect redirection
-    if (localStorage.getItem('savedData')) {
+    if (localStorage.getItem('savedDatas')) {
       this.runAfterRedirect();
     }
 
@@ -111,7 +118,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.broadcaster.broadcast('multiselect_calendar', true);
-
   }
 
   ngAfterViewInit() {
@@ -141,6 +147,14 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.broadcaster.broadcast('addSharableLinkTimeSlot', selectedDatesNew);
       }, 2000);
+
+      if (!this.choosedLocationObj?.available) {
+        // if not connected show connect message
+        this.connectMessage = {
+          title: this.choosedLocationObj?.title as string,
+          type: this.choosedLocationObj?.value as string
+        };
+      }
     }
   }
 
@@ -167,9 +181,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           this.selectedDates$.next(sortedObject);
 
           // for preselect events on calendar
-          setTimeout(() => {
-            this.broadcaster.broadcast('addSharableLinkTimeSlot', res.data.slots);
-          }, 2000);
+          this.broadcaster.broadcast('addSharableLinkTimeSlot', res.data.slots);
           
           // for phone and address
           if (res.data.phoneNumber) {
@@ -244,6 +256,11 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
         title: loc.title,
         type: loc.value
       };
+    } else {
+      this.connectMessage = {
+        title: '',
+        type: ''
+      };
     }
   }
 
@@ -257,15 +274,34 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     }
 
     localStorage.setItem('savedDatas', JSON.stringify(savedData));
+    localStorage.setItem('calendar-redirect', window.location.pathname);
 
     if (type == MeetViaEnum.Zoom) {
-      this.sharableLinkService.getZoomOauthUrl()
+      this.calendarPermissionService.connectZoom()
         .subscribe({
-          next: (res: string) => {
-            console.log(res);
-            // TODO: redirect to zoom url with state of page
-            // state is used to redirect after hitting callback url default state is null
-            // window.location.href = `${res['url']}&state=sharable-links`;
+          next: (url: string) => {
+            window.location.href = url;
+          }
+        });
+      
+    }
+
+    if (type == MeetViaEnum.GMeet) {
+      this.calendarPermissionService.connectGoogleCalendar()
+        .pipe(first())
+        .subscribe({
+          next: (url: string) => {
+            window.location.href = url;
+          }
+      });
+    }
+
+    if (type == MeetViaEnum.Teams) {
+      this.calendarPermissionService.connectOffice365Calendar()
+        .pipe(first())
+        .subscribe({
+          next: (url: string) => {
+            window.location.href = url;
           }
         });
     }
@@ -325,10 +361,11 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res: any) => {
           if (res.status) {
-            if (localStorage.getItem('savedData')) localStorage.removeItem('savedData');
+            if (localStorage.getItem('savedDatas')) localStorage.removeItem('savedDatas');
             // route to details page after link creationg for better update functionality
             // TODO: we can use same page. Will determine after update functionality is done in backend
-            this.router.navigateByUrl(`/calendar/sharable-link/${res.metadata.sharableLinkId}`);
+            this.router.navigate(['/calendar/sharable-link', res.metadata.sharableLinkId]);
+            // this.router.navigateByUrl(`/calendar/sharable-link/${res.metadata.sharableLinkId}`);
             // Do Not remove this. May need later.
             // this.sharableLink = `${environment.host}share/${res.metadata.sharableLinkId}`;
           }

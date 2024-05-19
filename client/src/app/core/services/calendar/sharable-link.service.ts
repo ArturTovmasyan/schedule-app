@@ -25,14 +25,6 @@ export class SharableLinkService {
       );
   }
 
-  getZoomOauthUrl() {
-    return this.http.post<ApiResponse<any>>('/api/integrations/zoom/oauth', {})
-      .pipe(
-        map((response) => {
-          return response.data
-        })
-      );
-  }
 
   loadContacts() {
     return this.http.get<ApiResponse<any>>('/api/contacts')

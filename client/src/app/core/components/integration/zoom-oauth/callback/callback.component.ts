@@ -24,11 +24,11 @@ export class CallbackComponent implements OnInit {
           .pipe(first())
           .subscribe({
             next: (data) => {
-              console.log(data)
-              this.router.navigate(['/integrations/zoom'], { queryParams: { success: true } })
+              const route = localStorage.getItem('calendar-redirect') ?? '/onboarding/calendar';
+              this.router.navigate([route]);
             },
             error: (err) => {
-              this.router.navigate(['/integrations/zoom'])
+              this.router.navigate(['/404'])
             }
           });
       }
