@@ -39,7 +39,7 @@ export class SignupComponent {
 
   signup() {
     if (this.form.invalid) {
-      this.focusField.nativeElement.focus();
+      // this.focusField.nativeElement.focus();
       this.showRequiredErrors = true;
 
       return;

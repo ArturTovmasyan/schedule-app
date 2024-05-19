@@ -79,7 +79,7 @@ export class ValidationService {
 
   static passwordValidator(c: FormControl) {
       if (c.value &&
-        c.value.match(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[`~!@#$%^&*_\-+=|\/?<>])([a-zA-Z\d`~!@#$%^&*_\-+=|/?<>]{8,16})$/)) {
+        c.value.match(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[`~!.@#$%^&*_\-+=|\/?<>])([a-zA-Z\d`~!.@#$%^&*_\-+=|/?<>]{8,16})$/)) {
           return null;
       } else {
           return {'invalidPassword': true};

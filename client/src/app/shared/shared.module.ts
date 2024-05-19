@@ -9,6 +9,7 @@ import {AvatarComponent} from "../core/components/avatar/avatar.component";
 import {AcronymNamePipe} from "../core/pipes/acronym-name.pipe";
 import { ParseTimePipe } from "../core/pipes/parse-time.pipe";
 import { ScrollTrackerDirective } from './directives/scroll-tracker.directive';
+import { FormDirective } from './directives/form.directive';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { ScrollTrackerDirective } from './directives/scroll-tracker.directive';
     NotificationItemComponent,
     AvatarComponent,
     ScrollTrackerDirective,
+    FormDirective,
     AcronymNamePipe,
     ParseTimePipe
   ],
@@ -34,6 +36,7 @@ import { ScrollTrackerDirective } from './directives/scroll-tracker.directive';
     NotificationItemComponent,
     AvatarComponent,
     ScrollTrackerDirective,
+    FormDirective,
     AcronymNamePipe,
     ParseTimePipe
   ]
