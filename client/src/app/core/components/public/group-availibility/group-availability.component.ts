@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CalendarOptions } from '@fullcalendar/angular';
+import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
@@ -14,6 +14,7 @@ import { PublicCalendarService } from '../public.service';
 type ComponentData = {
   isTimeslotSelected: boolean,
   selectedTimeSlot: any,
+  selectedTimeSlotId: any,
   timezone: any
 };
 
@@ -24,13 +25,17 @@ type ComponentData = {
 })
 export class GroupAvailabilityComponent implements OnInit, OnDestroy {
 
+  errorMessage = null;
   componentData: ComponentData = {
     isTimeslotSelected: false,
     selectedTimeSlot: null,
+    selectedTimeSlotId: null,
     timezone: ''
   };
   readonly MeetViaEnum = MeetViaEnum;
   destroy$ = new Subject();
+  @ViewChild("calendar") calendar!: FullCalendarComponent;
+  calendarApi!: Calendar;
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin],
@@ -139,18 +144,28 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
           // load available timeslots on calendar
           const datas = [];
           for (const date of data.slots) {
-            datas.push({
-              groupId: 'availableSlot',
-              start: date.startDate,
-              end: date.endDate,
-              className: AVAILABILITY_EVENT_CLASS
-            });
+            if (date.choosedByEmail) {
+              datas.push({
+                id: date.id,
+                groupId: 'notAvailableSlot',
+                start: date.startDate,
+                end: date.endDate
+              });
+            } else {
+              datas.push({
+                id: date.id,
+                groupId: 'availableSlot',
+                start: date.startDate,
+                end: date.endDate,
+                className: AVAILABILITY_EVENT_CLASS
+              });
+            }
           }
           this.broadcaster.broadcast('loadAvailableTimeslots', datas);
           // location
           this.location = this.calendarService.getLocations().find(res => res.value == data['meetVia']);
-          if (data['meetVia'] == MeetViaEnum.InboundCall) {
-            this.addValidation('phone');
+          if (data['meetVia'] == MeetViaEnum.OutboundCall) {
+            this.addValidation('phoneNumber');
           }
 
           this.calendarOptions.events = datas;
@@ -163,6 +178,10 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
       this.onTimeSlotSelected();
   }
 
+  ngAfterViewChecked() {
+    this.calendarApi = this.calendar.getApi();
+  }
+
   onTimeSlotSelected() {
     this.destroy$ = this.broadcaster.on('timeSlotSelected')
       .subscribe((data: any) => {
@@ -173,9 +192,9 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
   initForm() {
     this.form = this.formBuilder.group({
       name: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      notes: [''],
-      phone: ['']
+      email: ['', [Validators.required, Validators.email]],
+      note: [''],
+      phoneNumber: ['']
     }, { updateOn: 'blur' });
   }
 
@@ -189,8 +208,47 @@ export class GroupAvailabilityComponent implements OnInit, OnDestroy {
       return;
     }
     const formData = this.form.value;
-    formData['selectedTimeslot'] = this.componentData.selectedTimeSlot;
-    return;
+
+    const timeSlotId = this.componentData.selectedTimeSlotId;
+
+    this.calendarService.submitSelectedSlotInfo(timeSlotId, formData)
+    .subscribe({
+      next: (res) => {
+        const events = this.calendarOptions.events as any;
+        const datas = [];
+        let selectedDate = null;
+        this.broadcaster.broadcast('loadAvailableTimeslots', []);
+        for (const date of events) {
+          if (date.id == timeSlotId) {
+            datas.push({
+              id: date.id,
+              groupId: 'notAvailableSlot',
+              start: date.start,
+              end: date.end
+            });
+            selectedDate = date.start;
+          } else {
+            datas.push({
+              id: date.id,
+              groupId: date.groupId,
+              start: date.start,
+              end: date.end,
+              className: date.className
+            });
+          }
+
+        }
+        this.broadcaster.broadcast('loadAvailableTimeslots', [...datas]);
+        this.calendarOptions.events = datas;
+        this.componentData.isTimeslotSelected = false;
+        this.componentData.selectedTimeSlot = null;
+        this.componentData.selectedTimeSlotId = null;
+        if (selectedDate) this.calendarApi.gotoDate(selectedDate);
+      },
+      error: (err) => {
+        this.errorMessage = err.error.message;
+      }
+    })
   }
 
   addValidation(controlName: string) {

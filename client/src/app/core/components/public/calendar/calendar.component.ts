@@ -1,5 +1,6 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import interactionPlugin from '@fullcalendar/interaction';
 import { Calendar, CalendarOptions, FullCalendarComponent } from '@fullcalendar/angular';
 import { Subject, takeUntil } from 'rxjs';
 import { PublicCalendarService } from '../public.service';
@@ -20,16 +21,18 @@ export class PublicCalendarComponent implements OnDestroy {
   componentData = {
     isTimeslotSelected: false,
     selectedTimeSlot: null,
+    selectedTimeSlotId: null,
     timezone: ''
   };
   calendarApi!: Calendar;
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
+    plugins: [interactionPlugin],
     dayHeaderFormat: { weekday: 'short', day: '2-digit', omitCommas: true },
     direction: 'ltr',
     themeSystem: 'bootstrap',
     dayHeaders: true,
-    editable: false,
+    editable: true,
     allDaySlot: false,
     eventTextColor: 'black',
     eventBackgroundColor: '#E9F6FD',
@@ -45,10 +48,10 @@ export class PublicCalendarComponent implements OnDestroy {
     windowResize: (view) => {
       view.view.calendar.updateSize();
     },
-    eventClick: function (eventInfo: any) {
-      const calendar = eventInfo.view.calendar;
-      calendar.updateSize();
-    },
+    // eventClick: function (eventInfo: any) {
+    //   const calendar = eventInfo.view.calendar;
+    //   calendar.updateSize();
+    // },
     selectable: false,
     slotLabelFormat: [
       {
@@ -82,9 +85,7 @@ export class PublicCalendarComponent implements OnDestroy {
       this.componentData['isTimeslotSelected'] = true;
       this.broadcaster.broadcast('timeSlotSelected', this.componentData);
     },
-    selectOverlap: function (info) {
-      return info._def.ui.classNames[0] == AVAILABILITY_EVENT_CLASS;
-    }
+    selectOverlap: this.selectOverlapFunc.bind(this)
   }
 
   linkId: string;
@@ -98,6 +99,12 @@ export class PublicCalendarComponent implements OnDestroy {
     this.linkId = this.route.snapshot.params['id'];
 
     this.openSelectedWeek();
+  }
+
+
+  selectOverlapFunc(args: any) {
+    this.componentData['selectedTimeSlotId'] = args._def.publicId;
+    return args._def.ui.classNames[0] == AVAILABILITY_EVENT_CLASS;
   }
 
   eventContent(arg: any) {

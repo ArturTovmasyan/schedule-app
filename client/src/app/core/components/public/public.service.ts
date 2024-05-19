@@ -83,4 +83,8 @@ export class PublicCalendarService {
     return this.locations;
   }
 
+  submitSelectedSlotInfo(slotId: string, formData: any) {
+    return this.http.patch<ApiResponse<any>>(`/api/sharable-links/select-slot/public/${slotId}`, { ...formData });
+  }
+
 }

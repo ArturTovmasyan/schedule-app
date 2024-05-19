@@ -24,7 +24,7 @@
           </li>
         </ul>
       </div>
-      <div class="calendar w-100" *ngIf="!componentData.isTimeslotSelected">
+      <div class="calendar w-100" [style.display]="componentData.isTimeslotSelected ? 'none' : ''">
         <full-calendar class="calendar-sidebar" id="calendar" #calendar [options]="calendarOptions">
         </full-calendar>
       </div>
@@ -64,15 +64,20 @@
             </p>
           </div>
         </div>
-        <div class="form-group mb-0" *ngIf="location?.value == MeetViaEnum.InboundCall">
+        <div class="form-group mb-0" *ngIf="location?.value == MeetViaEnum.OutboundCall">
           <label for="yourPhoneNumber">Your phone number</label>
           <input type="text" class="form-control" id="yourPhoneNumber"
-            placeholder="Please provide the phone number for the call" formControlName="phone">
-          <div *ngIf="f['phone'].invalid && (f['phone'].dirty || f['phone'].touched)">
+            placeholder="Please provide the phone number for the call" formControlName="phoneNumber">
+          <div *ngIf="f['phoneNumber'].invalid && (f['phoneNumber'].dirty || f['phoneNumber'].touched)">
             <span class="error">
               <i class="fa fa-exclamation-triangle"></i>Please add your phone
             </span>
           </div>
+        </div>
+        <div class="error" *ngIf="errorMessage">
+          <span *ngFor="let error of errorMessage">
+            {{error}}
+          </span>
         </div>
         <div class="form-group mb-0">
           <label for="yourName">Your name</label>
@@ -88,13 +93,13 @@
           <input type="email" class="form-control" id="yourEmail" placeholder="Please provide your email and guest's emails" formControlName="email">
           <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)">
             <span class="error">
-              <i class="fa fa-exclamation-triangle"></i>Please add your email
+              <i class="fa fa-exclamation-triangle"></i>Please add your valid email
             </span>
           </div>
         </div>
         <div class="form-group mb-0">
           <label for="optionalNotes">Optional notes</label>
-          <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add notes and comments" formControlName="notes"></textarea>
+          <textarea type="text" class="form-control" id="optionalNotes" placeholder="Add notes and comments" formControlName="note"></textarea>
         </div>
         <button type="submit" id="scheduleButton">Schedule</button>
       </ng-container>
