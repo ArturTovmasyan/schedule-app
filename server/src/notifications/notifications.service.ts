@@ -141,7 +141,7 @@ export class NotificationsService {
   }
 
   /**
-   * @descripiton `Mark notification as read by ID`
+   * @description `Mark notification as read by ID`
    *
    * @param id - `ID of notification`
    * @param user - `Authorized user data`

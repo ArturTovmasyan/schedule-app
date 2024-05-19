@@ -28,7 +28,7 @@ import {
 
 @ApiBearerAuth()
 @ApiTags('Notifications')
-@Controller('notifications')
+@Controller('api/notifications')
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
