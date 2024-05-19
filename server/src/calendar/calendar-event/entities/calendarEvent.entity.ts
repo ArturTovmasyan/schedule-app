@@ -4,12 +4,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
 import { EventTypeEnum } from '../enums/eventType.enum';
 import { Calendar } from './calendar.entity';
+import { EventRecurrenceEntity } from './eventRecurrence.entity';
 
 @Entity()
 export class CalendarEvent {
@@ -57,12 +59,11 @@ export class CalendarEvent {
   @CreateDateColumn({ nullable: true, precision: 3 })
   end!: Date;
 
-  @Column({
-    default: null,
-    name: 'recurrence',
-    type: 'jsonb',
+  @OneToOne(() => EventRecurrenceEntity, {
+    nullable: true,
   })
-  recurrence: string[];
+  @JoinColumn()
+  recurrence: EventRecurrenceEntity;
 
   @CreateDateColumn()
   createdOn!: Date;

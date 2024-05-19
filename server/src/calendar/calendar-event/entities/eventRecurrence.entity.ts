@@ -4,9 +4,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { EventRecurrenceTypeEnum } from '../enums/eventRecurrenceType.enum';
+import { WeekDaysEnum } from '../enums/weekDays.enum';
+import { IndexOfWeekEnum } from '../enums/indexOfWeek.enum';
 
 @Entity()
-export class EventRecurrenceEntity {
+export class EventRecurrence {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -17,18 +20,41 @@ export class EventRecurrenceEntity {
   })
   type!: EventRecurrenceTypeEnum;
 
-  @Column()
+  @Column({ nullable: true })
   interval: number;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: WeekDaysEnum,
+    array: true,
+    nullable: true,
+  })
+  daysOfWeek;
+
+  @Column({
+    type: 'enum',
+    enum: IndexOfWeekEnum,
+    nullable: true,
+  })
+  indexOfWeek;
+
+  @Column({
+    nullable: true,
+  })
+  dayOfMonth: number;
+
+  @Column({ nullable: true })
+  month: number;
+
+  @Column({ nullable: true })
   firstDayOfWeek: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: true })
   startDate: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: true })
   endDate: Date;
 
-  @Column()
+  @Column({ nullable: true })
   numberOfOccurrences: number;
 }
