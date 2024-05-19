@@ -159,7 +159,12 @@ const routes: Routes = [
         {
           path: 'availability',
           component: AvailabilityComponent
-        },{
+        },
+        {
+          path: 'password',
+          component: ChangePasswordComponent
+        },
+        {
           path: '**',
           redirectTo: '/settings/availability'
         }

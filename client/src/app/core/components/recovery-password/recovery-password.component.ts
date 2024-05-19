@@ -1,4 +1,4 @@
-import { Component} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ErrorResponse} from "../../interfaces/error/error-response.interface";
 import {BroadcasterService, ValidationService} from "../../../shared/services";
@@ -29,21 +29,21 @@ export class RecoveryPasswordComponent {
     this.form = this.formBuilder.group({
       'newPassword': ['', [ValidationService.passwordValidator, Validators.required]],
       'confirmPassword': ['', [Validators.required]]
-    },  {validator: ValidationService.passwordsEqualValidator})
+    }, {validator: ValidationService.passwordsEqualValidator})
   }
 
   setNewPassword() {
-      this.authService
-        .setNewPassword(this.confirmToken, this.form.value.newPassword)
-        .subscribe({
-          next: () => {
-            this.form.clearValidators();
-            this.form.reset();
-            this.changed = true;
-          },
-          error: (error) => {
-            this.error = error;
-          }
-        });
+    this.authService
+      .setNewPassword(this.confirmToken, this.form.value.newPassword)
+      .subscribe({
+        next: () => {
+          this.form.clearValidators();
+          this.form.reset();
+          this.changed = true;
+        },
+        error: (error) => {
+          this.error = error;
+        }
+      });
   }
 }

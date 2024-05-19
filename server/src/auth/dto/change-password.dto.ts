@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches, IsNotEmpty } from 'class-validator';
 import { ErrorMessages } from 'src/components/constants/error.messages';
 
-export class ChangePasswordDto {
+export class ResetPasswordDto {
   @ApiProperty({ required: true, type: 'string' })
   @IsString()
   @IsNotEmpty()
@@ -18,7 +18,7 @@ export class ChangePasswordDto {
   readonly token: string;
 }
 
-export class ResetPasswordDto {
+export class ChangePasswordDto {
   @ApiProperty({ required: true, type: 'string' })
   @IsString()
   @IsNotEmpty()
@@ -35,7 +35,7 @@ export class ResetPasswordDto {
     /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/,
     { message: ErrorMessages.passwordDoesNotMatch },
   )
-  readonly password: string;
+  readonly newPassword: string;
 
   @ApiProperty({ required: true, type: 'string' })
   @IsString()

@@ -2,20 +2,17 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {map} from "rxjs/operators";
-import {AuthService} from "../auth/auth.service";
+import {ChangePasswordInterface} from "../../interfaces/user/change.password.interface";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingService {
 
-  constructor(private readonly http: HttpClient, private authService: AuthService) {}
+  constructor(private readonly http: HttpClient) {}
 
-  changePassword(token: string, password: string): Observable<boolean> {
-    return this.http.patch<boolean>('/api/auth/change-password', {
-      password,
-      token
-    }, {headers: this.authService.authorizationHeader}).pipe(
+  changePassword(formData: ChangePasswordInterface): Observable<boolean> {
+    return this.http.patch<boolean>('/api/auth/change-password', {...formData}).pipe(
       map((response: boolean) => {
         return response;
       })

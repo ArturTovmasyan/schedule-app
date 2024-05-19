@@ -6,9 +6,7 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
+  UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -51,7 +49,6 @@ export class UsersController {
   @ApiExcludeEndpoint()
   @Post()
   @UseGuards(AuthGuard())
-  @UsePipes(new ValidationPipe())
   async create(@Body() userDto: UserCreateDto): Promise<UserDto> {
     return await this.usersService.create(userDto);
   }
@@ -60,7 +57,6 @@ export class UsersController {
   @ApiOperation({ summary: 'Update user data' })
   @Put(':id')
   @UseGuards(AuthGuard())
-  @UsePipes(new ValidationPipe())
   async update(
     @Param('id') id: string,
     @Body() userDto: UserDto,

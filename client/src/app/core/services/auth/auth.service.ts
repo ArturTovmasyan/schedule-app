@@ -63,10 +63,10 @@ export class AuthService {
   }
 
   setNewPassword(token: string, password: string): Observable<boolean> {
-    return this.http.patch<boolean>('/api/auth/set-new-password', {
+    return this.http.patch<boolean>('/api/auth/recovery-password', {
       password,
       token
-    }, {headers: this.authorizationHeader}).pipe(
+    }).pipe(
       map((response: boolean) => {
         return response;
       })
@@ -109,6 +109,6 @@ export class AuthService {
 
   get authorizationHeader(): { [header: string]: string } {
     const token: string = this.currentUserValue?.accessToken ?? ''
-    return this.currentUserValue != null ? { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` } : {}
+    return this.currentUserValue != null ? {'content-type': 'application/json', 'Authorization': `Bearer ${token}`} : {}
   }
 }
