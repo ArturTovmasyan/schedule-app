@@ -18,7 +18,6 @@ import { EventTypeEnum } from './enums/eventType.enum';
 import CreateEventDto from './dto/createEvent.dto';
 import { transactionManagerWrapper } from '../../components/helpers/dbTransactionManager';
 import UpdateEventDto from './dto/updateEvent.dto';
-import * as locaTunnel from 'localtunnel';
 import { CalendarWebhookChannel } from './entities/calendarWebhookChannel.entity';
 import { ConfigService } from '@nestjs/config';
 import { ErrorMessages } from 'src/components/constants/error.messages';

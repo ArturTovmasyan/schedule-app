@@ -42,7 +42,8 @@ export class CalendarPermissionsController {
   async googleCalendar(@Req() req: { user: User }, @Res() res: Response) {
     req.user = { ...req.user, id: '4748fcf0-ac95-41f5-82f3-9d03fb1298f5' };
     const { url, statusOfCalendars } =
-      await this.calendarPermissionsService.toggleGoogleCalendar(req.user);
+    await this.calendarPermissionsService.toggleGoogleCalendar(req.user);
+
     if (url) {
       return { data: { url: url } };
     }
@@ -57,10 +58,13 @@ export class CalendarPermissionsController {
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async disconnectGoogleCalendar(
     @GetUser() user: User,
-    @Body() revokeCalendarDto: RevokeCalendarDto
+    @Body() revokeCalendarDto: RevokeCalendarDto,
   ) {
     const { url, statusOfCalendars } =
-    await this.calendarPermissionsService.disconnectGoogleCalendar(user, revokeCalendarDto.calendarId);
+      await this.calendarPermissionsService.disconnectGoogleCalendar(
+        user,
+        revokeCalendarDto.calendarId,
+      );
 
     if (url) {
       return { data: { url: url } };
@@ -107,10 +111,13 @@ export class CalendarPermissionsController {
   @UseInterceptors(UpdateAccessTokenInterceptor)
   async disconnectMS365Calendar(
     @GetUser() user: User,
-    @Body() revokeCalendarDto: RevokeCalendarDto
+    @Body() revokeCalendarDto: RevokeCalendarDto,
   ) {
     const { url, statusOfCalendars } =
-    await this.calendarPermissionsService.disconnectOffice365Calendar(user, revokeCalendarDto.calendarId);
+      await this.calendarPermissionsService.disconnectOffice365Calendar(
+        user,
+        revokeCalendarDto.calendarId,
+      );
 
     if (url) {
       return { data: { url: url } };
