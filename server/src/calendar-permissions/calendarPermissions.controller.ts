@@ -55,9 +55,9 @@ export class CalendarPermissionsController {
   }
 
   @Get('ms-calendar')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async ms365Calendar(@Req() req: { user: User }, @Res() res: Response) {
-    req.user = { ...req.user, id: 'c7099d30-7ae4-4073-82ac-59c6f46ba041' };
+    // req.user = { ...req.user, id: 'c7099d30-7ae4-4073-82ac-59c6f46ba041' };
 
     const { url, statusOfCalendars } =
       await this.calendarPermissionsService.toggleMS365Calendar(req.user);
@@ -68,9 +68,9 @@ export class CalendarPermissionsController {
   }
 
   @Get('ms-calendar-callback')
-  // @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard())
   async ms365CalendarCallback(@Req() req: { user: User }, @Query() query: any) {
-    req.user = { ...req.user, id: 'c7099d30-7ae4-4073-82ac-59c6f46ba041' };
+    // req.user = { ...req.user, id: 'c7099d30-7ae4-4073-82ac-59c6f46ba041' };
 
     return await this.calendarPermissionsService.getTokensFromMS365AndSave(
       req.user,
