@@ -1,1 +1,107 @@
-<p>access-request works!</p>
+<section class="request-access" id="requestAccess">
+  <div class="header">
+    <h2 class="section-title text-center">
+      Request access
+    </h2>
+    <button class="close-button" id="closeButton">
+      <img src="assets/close-icon.svg" alt="close buton">
+    </button>
+  </div>
+
+  <form id="requestAccessForm" action="">
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Request from
+      </h3>
+      <div class="emails-container" id="emailsContainer">
+        <ul class="emails-list list-unstyled list-inline" id="emailsList">
+          <li class="user-email list-inline-item" id="userEmail">
+            <div class="user-email-wrap">
+              <img src="assets/user-icon.png" alt="user icon">
+              <p class="email-address" id="emailAddress">
+                markanthony@gmail.com
+              </p>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="user-email list-inline-item" id="userEmail">
+            <div class="user-email-wrap">
+              <img src="assets/user-icon.png" alt="user icon">
+              <p class="email-address" id="emailAddress">
+                el@spacex.com
+              </p>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="user-email list-inline-item" id="userEmail">
+            <div class="user-email-wrap">
+              <img src="assets/user-icon.png" alt="user icon">
+              <p class="email-address" id="emailAddress">
+                al@gmail.com
+              </p>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="list-inline-item user-email-input" id="userEmailInput">
+            <input class="form-control" type="text" name="requestFrom" id="requestFrom">
+          </li>
+        </ul>
+
+      </div>
+
+
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Duration
+      </h3>
+      <div class="duration-radio">
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="threeWeek" value="3 Week">
+          <label for="threeWeek">3 Week</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="oneMonth" value="1 Month">
+          <label for="oneMonth">1 Month</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="forever" value="forever" checked>
+          <label for="forever">Forever</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="custom" value="custom">
+          <label for="custom">Custom</label>
+        </div>
+      </div>
+      <input class="form-control" type="text" name="duration" id="customDuration">
+
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Custom message
+      </h3>
+      <textarea class="form-control" name="customMessage" id="customMessage" style="resize: none"
+                placeholder="Hey all,
+
+Please Share your calendars with me so I can schedule with ease.
+
+_Arthur"></textarea>
+    </div>
+    <div class="form-group share-calendar-checkbox">
+      <input type="checkbox" name="shareMyCalendar" id="shareMyCalendar">
+      <label for="shareMyCalendar">Share my calendar with the request</label>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button class="request-button" type="submit">
+        Request
+      </button>
+    </div>
+  </form>
+</section>

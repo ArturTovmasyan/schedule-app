@@ -1,19 +1,96 @@
-<div id="container">
-  <div id="body">
-    <div class="content" id="left-menu">
-      <label>LEFT SIDE BAR</label>
-      <section>
-        <router-outlet></router-outlet>
-      </section>
+<div class="container-fluid" id="container">
+  <div class="row h-100">
+    <div class="col-12 col-sm-3 text-center">
+      <div class="content" id="left-menu">
+        <section style="height: 100%">
+          <router-outlet></router-outlet>
+        </section>
+      </div>
     </div>
-
-    <div id="divider"></div>
-
-    <div class="content" id="calendar">
-      <label>CALENDAR MODULE HERE</label>
-      <section>
-      </section>
+    <div class="col-12 col-sm-9 ps-0 text-center">
+      <div class="calendar" id="calendar">
+        <div class="calendar-header d-flex justify-content-between">
+          <a class="invite-contacts" id="inviteContacts">
+            <img src="assets/invite-contacts-icon.png" alt="invite friends">
+            <p>
+              Invite <br> Contacts
+            </p>
+          </a>
+          <div class="account-info">
+            <div class="timezone">
+              <h4 id="userTimezone">
+                GMT -4/ET
+              </h4>
+            </div>
+            <a class="notifications" id="notifications">
+              <img src="assets/notification-icon.png" alt="notifications">
+              <div class="counter">
+                <h6 id="notificationsCounter">
+                  1
+                </h6>
+              </div>
+            </a>
+            <a class="user-profile" id="userProfile">
+              <img src="assets/profile-img.png" alt="profile image">
+            </a>
+          </div>
+        </div>
+        <div class="calendar-footer d-flex justify-content-center align-items-center">
+          <ul class="list-unstyled mb-0">
+            <li class="list-inline-item">
+              <a href="">
+                <span class="icon w-100">
+                  <img src="assets/handshake-icon.png" alt="handshake">
+                </span>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="">
+                <span class="text">
+                  Request <br>
+                  Access
+                </span>
+                <span class="icon">
+                  <img src="assets/request-calendar.png" alt="request calendar">
+                </span>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="">
+                <span class="text">
+                  Share <br>
+                  Calendar
+                </span>
+                <span class="icon">
+                  <img src="assets/share-calendar.png" alt="share calendar">
+                </span>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="">
+                <span class="text">
+                  View my <br>
+                  contacts
+                </span>
+                <span class="icon">
+                  <img src="assets/contacts.png" alt="view contacts">
+                </span>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="">
+                <span class="text">
+                  Share <br>
+                  Availability
+                </span>
+                <span class="icon">
+                  <img src="assets/share-availability.png" alt="handshake">
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-

@@ -1,1 +1,106 @@
-<p>share-calendar works!</p>
+<section class="share-calendar" id="shareCalendar">
+  <div class="header">
+    <h2 class="section-title text-center">
+      Share calendar
+    </h2>
+    <button class="close-button" id="closeButton">
+      <img src="assets/close-icon.svg" alt="close button">
+    </button>
+  </div>
+
+  <form id="shareCalendarForm" action="">
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Share with
+      </h3>
+      <div class="emails-container" id="emailsContainer">
+        <ul class="emails-list list-unstyled list-inline" id="emailsList">
+          <li class="user-email list-inline-item" id="userEmail">
+            <div class="user-email-wrap">
+              <img src="assets/user-icon.png" alt="user icon">
+              <p class="email-address" id="emailAddress">
+                markanthony@gmail.com
+              </p>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="user-email list-inline-item" id="userEmail">
+            <div class="user-email-wrap">
+              <img src="assets/user-icon.png" alt="user icon">
+              <p class="email-address" id="emailAddress">
+                el@spacex.com
+              </p>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="user-email list-inline-item" id="userEmail">
+            <div class="user-email-wrap">
+              <img src="assets/user-icon.png" alt="user icon">
+              <p class="email-address" id="emailAddress">
+                al@gmail.com
+              </p>
+              <button class="remove-button" id="removeButton">
+                <img src="assets/close-icon.svg" alt="remove button">
+              </button>
+            </div>
+          </li>
+          <li class="list-inline-item user-email-input" id="userEmailInput">
+            <input class="form-control" type="text" name="requestFrom" id="requestFrom">
+          </li>
+        </ul>
+      </div>
+
+
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Duration
+      </h3>
+      <div class="duration-radio">
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="threeWeek" value="3 Week">
+          <label for="threeWeek">3 Week</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="oneMonth" value="1 Month">
+          <label for="oneMonth">1 Month</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="forever" value="forever" checked>
+          <label for="forever">Forever</label>
+        </div>
+        <div class="duration-radio-wrapper">
+          <input type="radio" name="duration" id="custom" value="custom">
+          <label for="custom">Custom</label>
+        </div>
+      </div>
+      <input class="form-control" type="text" name="duration" id="customDuration">
+
+    </div>
+    <div class="form-group">
+      <h3 class="section-title-secondary">
+        Custom message
+      </h3>
+      <textarea class="form-control" name="customMessage" id="customMessage" style="resize: none"
+                placeholder="Hey all,
+
+Follow the link and you will have access to my calendar availability, meaning we can schedule easily.
+
+_Arthur"></textarea>
+    </div>
+    <div class="form-group share-calendar-checkbox">
+      <input type="checkbox" name="requestRecipientAccess" id="requestRecipientAccess">
+      <label for="requestRecipientAccess">Request access to recipient(s) calendars</label>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button class="share-button" type="submit">
+        Share
+      </button>
+    </div>
+  </form>
+</section>

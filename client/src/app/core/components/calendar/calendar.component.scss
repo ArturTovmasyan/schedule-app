@@ -1,60 +1,166 @@
-//TODO test styles for separate left side bar and calendar base module.
 #container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background: #DCE3EF;
+  height: 100vh;
+  padding: 9px 14px;
 
-  section#header {
-    color: #B7B7B7;
-    font-size: 54px;
-    line-height: 56px;
-    letter-spacing: -1px;
-    font-weight: 800;
-
-    span {
-      color: #7B9666;
-    }
+  #left-menu {
+    height: 100%;
   }
 
-  #body {
+  .calendar {
+    height: 100%;
     width: 100%;
-    margin-top: 20px;
-    padding: 60px 0px;
-    display: flex;
-    justify-content: center;
-    background-image: linear-gradient(125deg, #F2F2F2, #EAF0E7);
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    .calendar-header {
+      a.invite-contacts {
+        background-color: #FDFAB1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        cursor: pointer;
+        padding: 5px 20px;
+        color: #000;
+        border-radius: 30px;
 
-    #divider {
-      border: 1px solid #B7B7B7;
-      margin: 0px 75px;
-    }
+        &:hover {
+          transition: 0.4s ease;
+          background-color: #f1ec92;
+          box-shadow: rgba(149, 157, 165, 0.2) 0px 2px 16px;
+        }
 
-    .content {
-      display: flex;
-      flex-direction: column;
-      row-gap: 30px;
+        img {
+          height: 32px;
+          margin-right: 5px;
+        }
 
-      label {
-        color: black;
-        font-size: 21px;
-        line-height: 26px;
-        font-weight: 900;
-        text-transform: uppercase;
-      }
-
-      &#left-menu {
-        section {
-          display: flex;
-          column-gap: 30px;
-          align-items: center;
+        p {
+          text-align: left;
+          font-size: 12px;
+          font-family: 'Lexend Deca', sans-serif;
+          margin-bottom: 0px;
+          line-height: 1.1;
+          margin-top: 1px;
+          letter-spacing: 0.5px;
         }
       }
 
-      &#calendar {
-        section {
-          box-shadow: 0px 0px 15px #00000029;
-          border-radius: 20px;
+      .account-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 32px;
+
+        .timezone {
+          h4 {
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Lexend Deca', sans-serif;
+            color: #1d1d1d;
+            line-height: 20px;
+            margin-bottom: 0;
+          }
+        }
+
+        a.notifications {
+          margin: 0 23px;
+          position: relative;
+          cursor: pointer;
+          &:hover{
+            img{
+              transition: 0.4s ease;
+              height: 34px;
+            }
+          }
+          img {
+            height: 32px;
+          }
+          .counter{
+            height: 15px;
+            width: 15px;
+            background-color: #FF3B3B;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            right: 0;
+            h6{
+              color: #fff;
+              font-size: 8px;
+              font-family: 'Lexend Deca', sans-serif;
+              font-weight: bold;
+              line-height: 10px;
+              margin-bottom: 0;
+
+            }
+          }
+        }
+        a.user-profile{
+          cursor: pointer;
+          &:hover{
+            img{
+              transition: 0.4s ease;
+              height: 34px;
+            }
+          }
+          img{
+            height: 32px;
+          }
+        }
+      }
+    }
+    .calendar-footer{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      bottom: 40px;
+      ul{
+        display: flex;
+        align-items: center;
+        li{
+          &+li{
+            margin-left: 20px;
+          }
+          a{
+            //height: 52px;
+            //min-width: 52px;
+            padding: 15px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            box-shadow: 0px 0px 4px #0000004D;
+            span.text{
+              text-align: left;
+              font-size: 12px;
+              font-family: 'Lexend Deca', sans-serif;
+              margin-bottom: 0px;
+              line-height: 1.1;
+              margin-top: 1px;
+              letter-spacing: 0.5px;
+              color: #000000;
+              margin-right: 15px;
+            }
+            span.icon{
+              height: 100%;
+              width: auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              img{
+                width: auto;
+                height: 30px;
+              }
+            }
+          }
         }
       }
     }
