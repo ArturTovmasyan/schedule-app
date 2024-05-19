@@ -1,28 +1,28 @@
 import {
-  Body,
-  Controller,
-  Delete,
   Get,
-  Param,
-  Post,
   Put,
   UseGuards
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
   ApiBearerAuth,
   ApiExcludeEndpoint,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
 } from '@nestjs/swagger';
-import {
-  IResponse,
-  IResponseMessage,
-} from 'src/components/interfaces/response.interface';
+import { Express } from 'express';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+import { GetUser } from 'src/components/decorators/get-user.decorator';
 import { UserCreateDto } from './dto/user-create.dto';
-import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
+import { User } from './entity/user.entity';
+import { UserDto } from './dto/user.dto';
+import {
+  IResponseMessage,
+  IResponse,
+} from 'src/components/interfaces/response.interface';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -51,6 +51,18 @@ export class UsersController {
   @UseGuards(AuthGuard())
   async create(@Body() userDto: UserCreateDto): Promise<UserDto> {
     return await this.usersService.create(userDto);
+  }
+
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Set user avatar' })
+  @UseInterceptors(FileInterceptor('file'))
+  @Put('avatar')
+  @UseGuards(AuthGuard())
+  async setUserAvatar(
+    @GetUser() user: User,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<IResponseMessage> {
+    return await this.usersService.setUserAvatar(user, file);
   }
 
   @ApiResponse({ type: IResponseMessage })

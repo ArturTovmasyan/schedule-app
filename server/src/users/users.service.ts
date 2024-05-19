@@ -33,10 +33,12 @@ export class UsersService {
     @InjectRepository(CalendarAccess)
     private readonly calendarAccessRepo: Repository<CalendarAccess>,
     private readonly invitationService: InvitationService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   async create(userDto: UserCreateDto): Promise<UserDto> { // TODO add stripeCustomerId to userDTo
     const { email, firstName, lastName, password, stripeCustomerId } = userDto;
+
     const userInDb = await this.userRepo.findOne({
       where: { email },
       withDeleted: true,

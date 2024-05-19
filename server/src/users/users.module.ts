@@ -7,6 +7,7 @@ import { User } from '@user/entity/user.entity';
 import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
 import { InvitationModule } from 'src/invitation/invitation.module';
 import { Invitation } from 'src/invitation/entities/invitation.entity';
+import { FileUploadService } from 'src/components/services/file-upload.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { Invitation } from 'src/invitation/entities/invitation.entity';
     TypeOrmModule.forFeature([User, CalendarAccess, Invitation]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
-  providers: [UsersService],
+  providers: [UsersService, FileUploadService],
   exports: [UsersService],
   controllers: [UsersController],
 })
