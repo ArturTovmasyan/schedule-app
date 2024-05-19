@@ -9,7 +9,7 @@ import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interfa
 
 @Component({
   selector: 'app-my-calendar',
-  templateUrl: './my-calendar.component.html',
+  templateUrl: './my-calendar.component.html'
 })
 export class MyCalendarComponent implements OnInit, OnDestroy {
   events: any = [];
@@ -19,12 +19,14 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
   contactAvailabilityDates: any;
   subscription: BehaviorSubject<boolean>;
   multiSelectSubscription!: BehaviorSubject<never>;
-  selectedContactEmail: string = '';
-  selectedContactId: string = '';
-  currentUrl: string = '';
+  initSharableLinkSubscription!: BehaviorSubject<any>;
+  selectedContactEmail = '';
+  selectedContactId = '';
+  currentUrl = '';
   myEvents: any;
   mySelectedDateEvents: any;
   oldEvents: any;
+  initOldEvents$ = new BehaviorSubject(false);
 
   constructor(private calendarService: CalendarService, private broadcaster: BroadcasterService) {
     this.subscription = this.broadcaster.on('contact_calendar_data').subscribe((contactAvailabilities: any) => {

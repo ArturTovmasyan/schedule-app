@@ -16,6 +16,7 @@ import bootstrapPlugin from '@fullcalendar/bootstrap';
 import rrulePlugin from '@fullcalendar/rrule';
 import { SharableLinkComponent } from './sharable-link/sharable-link.component';
 import { GroupAvailabilityComponent } from './group-availability/group-availability.component'
+import { SharableLinkService } from '../../services/calendar/sharable-link.service';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -42,7 +43,7 @@ FullCalendarModule.registerPlugins([
     SharedModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
-  providers: [DatePipe, GetContactNamePipe, GetContactCompanyPipe]
+  providers: [DatePipe, GetContactNamePipe, GetContactCompanyPipe, SharableLinkService]
 })
 
 export class CalendarModule {

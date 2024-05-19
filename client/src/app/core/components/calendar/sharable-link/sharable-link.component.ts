@@ -7,6 +7,8 @@ import { CalendarAccessService } from 'src/app/core/services/calendar/access.ser
 import { AvailabilityService } from 'src/app/core/services/calendar/availability.service';
 import { CommonService } from 'src/app/core/services/common.service';
 import { BroadcasterService } from "../../../../shared/services";
+import { SharableLinkService } from 'src/app/core/services/calendar/sharable-link.service';
+import { ActivatedRoute } from '@angular/router';
 
 export interface Location {
   id?: string;
@@ -55,7 +57,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   locations: Location[] = [
     { title: 'ZOOM', subTitle: 'Web conference', image:'assets/zoom.png', active: false, value: 'zoom'},
     { title: 'Microsoft Teams', subTitle: 'Web conference', image: 'assets/microsoft-teams.png', active: false, value: 'teams' },
-    { title: 'Google Meet', subTitle: 'Web conference', image: 'assets/google-meet.png', active: false, value: 'meet' },
+    { title: 'Google Meet', subTitle: 'Web conference', image: 'assets/google-meet.png', active: false, value: 'gmeet' },
     { title: 'Inbound phone call', subTitle: 'You will receive a phone call', image: 'assets/incoming-call.png', active: false, value: 'incoming-call' },
     { title: 'Outbound phone call', subTitle: 'You will be making a phone calling', image: 'assets/outgoing-call.png', active: false, value: 'outgoing-call' },
     { title: 'Physical address', subTitle: 'You will meet face to face', image: 'assets/location.png', active: false, value: 'address' }
@@ -66,13 +68,17 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   constructor(
+    private route: ActivatedRoute,
     private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
     private readonly calendarAccessService: CalendarAccessService,
     private availabilityService: AvailabilityService,
+    private sharableLinkService: SharableLinkService,
     @Inject(DOCUMENT) document: any
 
   ) {
+    const linkId = this.route.snapshot.params['id'];
+    this.loadSharableLinkDetails(linkId);
     this._document = document;
     this.subscription = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
       const startdate = moment.utc(dates.start).local().format('ddd, MMM Do');
@@ -90,6 +96,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
         })
       )
       this.selectedDates$.next(sortedObject);
+
+
     });
   }
 
@@ -101,6 +109,38 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initFilterContact();
+  }
+
+  loadSharableLinkDetails(linkId: string | null) {
+    if (!linkId) return;
+
+    this.sharableLinkService.getDetails(linkId)
+    .subscribe({
+      next: (res) => {
+        this.choosedLocationObj = this.locations.find((loc) => loc.value == res.data.meetVia) as Location;
+        this.sharableLink = res.data.id;
+        for (const date of res.data.slots) {
+          const startdate = moment.utc(date.startDate).local().format('ddd, MMM Do');
+          if (this.selectedDates[startdate]) {
+            this.selectedDates[startdate].push({ 'start': date.startDate, 'end': date.endDate });
+          } else {
+            this.selectedDates[startdate] = [{ 'start': date.startDate, 'end': date.endDate }];
+          }
+        }
+        const sortedObject = Object.fromEntries(
+          Object.entries(this.selectedDates).sort(([a,], [b,]) => {
+            return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
+          })
+        )
+        this.selectedDates$.next(sortedObject);
+
+        // for preselect events on calendar
+        setTimeout(() => {
+          this.broadcaster.broadcast('addSharableLinkTimeSlot', res.data.slots);
+        }, 2000);
+
+      }
+    });
   }
 
   removeTime(date: any, i: any) {
@@ -117,7 +157,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.choosedLocationObj = loc;
     this.showLocation = false;
     this.connectMessage = '';
-    if (!['zoom', 'meet', 'teams'].includes(loc.value)) {
+    if (!['zoom', 'gmeet', 'teams'].includes(loc.value)) {
       // if incoming and outgoing and address is choosed from location option
       // no need to check for connecttion of location choosed
       return;
@@ -156,18 +196,47 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const requestParams = new Map()
-      .set("selectedDates", selectedDates)
-      .set("location", this.choosedLocationObj?.value);
+    const selectedDatesNew = [];
+    for (const key in selectedDates) {
+      const value = selectedDates[key];
+      for (const val of value) {
+        selectedDatesNew.push({
+          'startDate': val['start'],
+          'endDate': val['end']
+        });
+      }
+    }
+    const requestParams = {
+      'title': 'Sharable Link',
+      'slots': selectedDatesNew,
+      'meetVia': this.choosedLocationObj?.value,
+      'attendees': [] as any,
+      'phone_number': '' as any,
+      'address': '' as any
+    }
+
+    if (this.selectedContacts.length > 0) {
+      requestParams['attendees'] = this.selectedContacts.map(x => x.owner.id);
+    }
 
     if (this.choosedLocationObj?.value == 'incoming-call') {
-      requestParams.set('phone_number', this.phoneNumber);
+      requestParams['phone_number'] = this.phoneNumber;
     }
     if (this.choosedLocationObj?.value == 'address') {
-      requestParams.set('address', this.address);
+      requestParams['address'] = this.address;
     }
-    // TODO: send API Request with request Parameters
-    this.sharableLink = `https://entangles.io/share/abc-def-xyz`;
+
+    this.sharableLinkService.createLink(requestParams)
+      .subscribe({
+        next: (res: any) => {
+          if (res.status) {
+            this.sharableLink = `https://entangles.io/share/${res.data.id}`;
+          }
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
   }
 
   // load contacts when clicked on Joint availability "plus" sign
