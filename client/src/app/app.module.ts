@@ -49,6 +49,7 @@ import { PaymentComponent } from './core/components/payment/payment.component';
     MsAuthModule,
     IMaskModule,
     HttpClientModule,
+    CalendarModule,
     NgHttpLoaderModule.forRoot(),
   ],
   providers: [
