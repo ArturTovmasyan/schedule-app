@@ -31,6 +31,7 @@ import {OauthProvider} from "./enums/oauth.provider.enum";
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -108,7 +109,12 @@ export class AuthController {
     const webHost = this.configService.get<string>('WEB_HOST');
 
     if (isString(jwt)) {
-      res.redirect(webHost + 'oauth/success?token=' + jwt);
+      const userDto = await this.usersService.findOneByEmail(user.email);
+      res.redirect(
+        `${webHost}oauth/success?token=${jwt}&onboarded=${
+          userDto?.onboarded ?? false
+        }`,
+      );
     } else {
       res.redirect(webHost + 'login');
     }
@@ -128,7 +134,12 @@ export class AuthController {
     const webHost = this.configService.get<string>('WEB_HOST');
 
     if (isString(jwt)) {
-      res.redirect(webHost + 'oauth/success?token=' + jwt);
+      const userDto = await this.usersService.findOneByEmail(user.mail);
+      res.redirect(
+        `${webHost}oauth/success?token=${jwt}&onboarded=${
+          userDto?.onboarded ?? false
+        }`,
+      );
     } else {
       res.redirect(webHost + 'login');
     }
