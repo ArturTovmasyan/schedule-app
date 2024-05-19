@@ -187,29 +187,16 @@ export class CalendarEventService {
       const outlookToken = tokens.outlookToken;
       const eventSavers = [];
 
-      if (
-        (eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar) &&
-          !googleToken) ||
-        (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn) &&
-          !outlookToken)
-      ) {
-        throw new BadRequestException({
-          message: ErrorMessages.calendarNotLinked,
-        });
-      }
+      const calendar = await manager.getRepository(Calendar).findOne({
+        owner: { id: user.id },
+        calendarId: In(eventBody.syncWith),
+      });
 
-      if (eventBody.syncWith.includes(CalendarTypeEnum.GoogleCalendar)) {
+      if (calendar.calendarType === CalendarTypeEnum.GoogleCalendar) {
         const googleAccessToken = googleToken.accessToken;
         const googleCalendarClient = await this.getGoogleCredentials(
           googleAccessToken,
         );
-        const googleLocalPrimaryCalendar = await manager
-          .getRepository(Calendar)
-          .findOne({
-            owner: { id: user.id },
-            calendarType: CalendarTypeEnum.GoogleCalendar,
-            isPrimary: true,
-          });
 
         async function saveEventGoogle() {
           const attendeeData = eventBody.attendees.map((attendee) => {
@@ -226,7 +213,7 @@ export class CalendarEventService {
           const eventData = {
             conferenceDataVersion: 1,
             sendNotifications: true,
-            calendarId: googleLocalPrimaryCalendar.calendarId,
+            calendarId: calendar.calendarId,
             requestBody: {
               summary: eventBody.title,
               description: `
@@ -261,20 +248,12 @@ export class CalendarEventService {
         eventSavers.push(saveEventGoogle);
       }
 
-      if (eventBody.syncWith.includes(CalendarTypeEnum.OutlookPlugIn)) {
+      if (calendar.calendarType === CalendarTypeEnum.OutlookPlugIn) {
         const outlookAccessToken = outlookToken.accessToken;
 
         const outlookCalendarClient = await this.getOutlookCredentials(
           outlookAccessToken,
         );
-
-        const outlookLocalPrimaryCalendar = await manager
-          .getRepository(Calendar)
-          .findOne({
-            owner: { id: user.id },
-            calendarType: CalendarTypeEnum.Office365Calendar,
-            isPrimary: true,
-          });
 
         async function saveEventOutlook() {
           const attendeeData = eventBody.attendees.map((attendee) => {
@@ -296,9 +275,7 @@ export class CalendarEventService {
           });
 
           const outlookEventCreateRes = await outlookCalendarClient
-            .api(
-              `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events`,
-            )
+            .api(`/me/calendars/${calendar.calendarId}/events`)
             .post({
               subject: eventBody.title,
               bodyPreview: eventBody.description,

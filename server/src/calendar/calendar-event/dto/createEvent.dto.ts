@@ -34,9 +34,9 @@ export class CreateEventDto {
   @IsNotEmpty()
   end: string;
 
-  @IsEnum(CalendarTypeEnum, { each: true })
+  @IsString({ each: true })
   @ArrayNotEmpty()
-  syncWith: CalendarTypeEnum[];
+  syncWith: string[];
 
   @IsArray()
   @IsEmail({}, { each: true })
