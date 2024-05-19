@@ -15,3 +15,8 @@ export class IResponseMessage {
   @ApiProperty()
   metadata?: {};
 }
+
+export class IResponseMessageWithData extends IResponseMessage {
+  @ApiProperty()
+  data?: {};
+}

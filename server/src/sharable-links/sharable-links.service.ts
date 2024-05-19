@@ -22,7 +22,7 @@ import { MeetViaEnum } from './enums/sharable-links.enum';
 import { User } from '@user/entity/user.entity';
 import {
   IResponse,
-  IResponseMessage,
+  IResponseMessageWithData,
 } from 'src/components/interfaces/response.interface';
 import {
   SharableLinkSlot,
@@ -51,8 +51,28 @@ export class SharableLinksService {
   async create(
     user: User,
     createSharableLinkDto: CreateSharableLinkDto,
+<<<<<<< HEAD
   ): Promise<IResponseMessage> {
     await this._checkSlotAvailability(user, createSharableLinkDto.slots);
+=======
+  ): Promise<IResponseMessageWithData> {
+    const checkAvailability = await this.calendarEventsRepo.count({
+      where: [
+        ...createSharableLinkDto.slots.map((slot) => {
+          return {
+            start: Between(slot.startDate, slot.endDate),
+            owner: { id: user.id },
+          };
+        }),
+        ...createSharableLinkDto.slots.map((slot) => {
+          return {
+            end: Between(slot.startDate, slot.endDate),
+            owner: { id: user.id },
+          };
+        }),
+      ],
+    });
+>>>>>>> 0ee505d (another response interface added for sharable link)
 
     if (
       (createSharableLinkDto.meetVia === MeetViaEnum.InboundCall ||
@@ -113,6 +133,7 @@ export class SharableLinksService {
 
       await queryRunner.commitTransaction();
 
+<<<<<<< HEAD
       return { message: 'Created', status: 1, metadata: { sharableLinkId } };
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -211,6 +232,9 @@ export class SharableLinksService {
       await queryRunner.commitTransaction();
 
       return { message: 'Updated', status: 1 };
+=======
+      return { message: 'Created', status: 1, data: { id: sharableLinkId } };
+>>>>>>> 0ee505d (another response interface added for sharable link)
     } catch (error) {
       await queryRunner.rollbackTransaction();
 
