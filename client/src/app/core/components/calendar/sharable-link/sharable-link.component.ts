@@ -234,7 +234,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
                   removable: true
               }
               this.selectedUsers.push(user);
-              this.getContactAvailability(user);
+              this.getContactAvailabilities();
             }
             this.broadcaster.broadcast('multiselect_calendar', false);
           }
@@ -253,6 +253,11 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   updateUsers(users: UserData[]) {
     this.selectedUsers = users;
+    if (this.selectedUsers.length > 1) {
+      this.getContactAvailabilities();
+    } else {
+      this.resetData();
+    }
   }
 
   // remove from selected timeslots
@@ -415,7 +420,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     this.showJointAvailability = !this.showJointAvailability;
     if(!this.showJointAvailability) {
       const removedUsers = this.selectedUsers.splice(1, this.selectedUsers.length - 1);
-      this.removeUsers(removedUsers);
+      this.updateUsers(this.selectedUsers);
     }
   }
 
@@ -442,37 +447,14 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
   }
 
-  // select contact after search in joint availability
-  addUser(user: UserData) {
-    this.getContactAvailability(user);
-  }
-
-  removeUsers(users: UserData[]) {
-    for(let user of users) {
-      this.removeUser(user);
-    }
-  }
-  removeUser(user: UserData) {
-    this.emailsWithAvailabilityMap.delete(user.email);
-    this.broadcastContactData();
-    this.selectedDates = [];
-    this.selectedDates$.next([]);
-  }
-
   // add availability to the calendar
-  getContactAvailability(contact: UserData) {
-    const contactId = contact.id;
-    const contactEmail = contact.email;
-
-    if(!contactId) return;
-
-    this.availabilityService.getByUserId([contactId])
+  getContactAvailabilities() {
+    this.availabilityService.getByUserId([...this.selectedUsers.map((user) => user.id!)])
       .pipe(first())
       .subscribe({
         next: (data: any) => {
           const availabilityData = data?.availabilityData;
-          this.emailsWithAvailabilityMap.set(contactEmail, availabilityData);
-          this.broadcastContactData();
+          this.broadcastContactData(availabilityData);
         },
         error: (error) => {
           console.error(error.message);
@@ -480,15 +462,18 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
   }
 
-  broadcastContactData() {
+  broadcastContactData(availabilityData: any) {
+    this.resetData();
+    if (availabilityData.length != 0) {
+      this.broadcaster.broadcast('contact_calendar_data', availabilityData);
+    }
+  }
+
+  resetData() {
     this.selectedDates = [];
     this.selectedDates$.next({});
     this.addedTimeSlots = [];
     this.broadcaster.broadcast('reset_event');
-    const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
-    if (contacts.length != 0) {
-      this.broadcaster.broadcast('contact_calendar_data', contacts);
-    }
   }
 
   copyLink(text: string) {
