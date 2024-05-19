@@ -1,14 +1,7 @@
 <div class="container">
   <div class="chip-container">
-    <div *ngFor="let user of users; let i = index" class="chip-item">
-      <img src="{{user.avatar}}" alt="user icon" *ngIf="user.avatar">
-      <span id="initials" *ngIf="!user.avatar">{{ user?.name?.charAt(0) ?? '' }}</span>
-      <span class="info">
-        <span>{{ user.name }}</span>
-        <span>{{ user.email | getContactCompany }}</span>
-      </span>
-      <span class="remove-button" id="remove-button" (click)="remove(i)" *ngIf="user.removable"></span>
-    </div>
+    <app-chip-user-item *ngFor="let user of users; let i = index" [user]="user" (onRemove)="remove(i)">
+    </app-chip-user-item>
     <div class="list-inline-item user-email-input" id="userEmailInput">
       <input #emailInput class="form-control" type="text" name="requestFrom" id="requestFrom" autocomplete="off"
         autocapitalize="off" autocorrect="off" required spellcheck="false" placeholder="+ Add email"

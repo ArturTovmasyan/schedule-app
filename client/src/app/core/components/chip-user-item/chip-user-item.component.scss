@@ -1,0 +1,64 @@
+.chip-item {
+  display: flex;
+  padding: 1px 9px 1px 6px;
+  border-radius: 26px;
+  gap: 5px;
+  background-color: white;
+  align-items: center;
+  
+  img, span#initials {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #E9F6FD;
+    object-fit: contain;
+  }
+
+  span {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    text-align: start;
+
+    &#initials {
+      color: black;
+      text-transform: uppercase;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    span {
+      min-width: 100px;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    span:first-child {
+      color: black;
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 600;
+    }
+
+    span:last-child {
+      color: #7D7A7A;
+      font-size: 14px;
+      line-height: 19px;
+      font-weight: 400;
+    }
+  }
+
+  span#remove-button {
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    background-color: #F1F1F1;
+    background-image: url('/assets/ic_close_chip.svg');
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+}
