@@ -112,6 +112,13 @@ section.sharable-link {
         justify-content: space-between;
         align-items: center;
         transition: 0.5s;
+        .avatar {
+            display: block;
+          }
+
+          .no-avatar {
+            display: none;
+          }
       }
 
 
@@ -127,12 +134,22 @@ section.sharable-link {
         font-size: 25px;
         transition: 0.5s;
         cursor: pointer;
+
       }
 
       .accordion > input[type="checkbox"]:checked ~ .handle label:after {
         content: "-";
         font-size: 30px;
         transition: 0.5s;
+      }
+
+      .accordion>input[type="checkbox"]:checked~.handle label {
+        .avatar {
+          display: none;
+        }
+        .no-avatar {
+          display: block;
+        }
       }
 
       //accordion end

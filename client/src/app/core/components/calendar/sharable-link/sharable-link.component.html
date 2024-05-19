@@ -13,13 +13,14 @@
         <input type="checkbox" name="collapse" id="handle1">
         <h2 class="handle" (click)="loadContacts()">
           <label for="handle1">
-            Joint availability
+            <app-avatar class="avatar"></app-avatar>
+            <span class="no-avatar">Joint availability</span>
           </label>
         </h2>
         <div class="content">
           <div class="users-container">
             <ul class="users-list list-unstyled list-inline">
-              <ng-container >
+              <ng-container>
                 <li class="list-inline-item user-info" *ngFor="let selectedContact of selectedContacts$ | async">
                   <div class="user-info-wrapper">
                     <div class="user-portrait">
