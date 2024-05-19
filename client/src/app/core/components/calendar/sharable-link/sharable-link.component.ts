@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
-import { BehaviorSubject, debounceTime, first, Observable, of, shareReplay, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Observable, of, shareReplay, Subject, switchMap, tap } from 'rxjs';
 import { CalendarAccess } from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
+import { AvailabilityService } from 'src/app/core/services/calendar/availability.service';
 import { CommonService } from 'src/app/core/services/common.service';
 import { BroadcasterService } from "../../../../shared/services";
 
@@ -23,6 +24,7 @@ export interface Location {
 })
 export class SharableLinkComponent implements OnInit, OnDestroy {
 
+  @ViewChild('contactInput') input!: ElementRef;
   subscription: BehaviorSubject<boolean>;
   selectedDates$: BehaviorSubject<any> = new BehaviorSubject([]);
   selectedDates:any = []
@@ -36,9 +38,12 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
   errorMessage = '';
   // for contacts
-  contacts: Observable<CalendarAccess[]>;
+  contacts: CalendarAccess[] = [];
   private term: Subject<string> = new Subject<string>();
-  filteredContacts: CalendarAccess[] = [];
+  filteredContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
+  selectedContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
+  selectedContacts: CalendarAccess[] = [];
+  selectedEmails: string[] = [];
 
   locations: Location[] = [
     { title: 'ZOOM', subTitle: 'Web conference', image:'assets/zoom.png', active: false, value: 'zoom'},
@@ -56,7 +61,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   constructor(
     private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
-    private readonly calendarAccessService: CalendarAccessService
+    private readonly calendarAccessService: CalendarAccessService,
+    private availabilityService: AvailabilityService
   ) {
     this.subscription = this.broadcaster.on('selectSharableLinkDates').subscribe((dates: any) => {
       const startdate = moment.utc(dates.start).local().format('ddd, MMM Do');
@@ -70,37 +76,21 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
       const sortedObject = Object.fromEntries(
         Object.entries(this.selectedDates).sort(([a,], [b,]) => {
-          return moment(a, "MMM-YY").diff(moment(b, "MMM-YY"));
+          return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
         })
       )
       this.selectedDates$.next(sortedObject);
     });
-
-    this.contacts = this.term.pipe(
-      debounceTime(250),
-      switchMap((term: string) => {
-        const query = term.toLocaleLowerCase().trim();
-
-        const filteredData = this.filteredContacts.filter((item) => {
-
-          if (!query) {
-            return true;
-          }
-
-          return item.owner.firstName.toLowerCase().startsWith(query) ||
-            item.owner.lastName.toLowerCase().startsWith(query) ||
-            item.owner.email.toLowerCase().startsWith(query);
-        });
-        return of(filteredData);
-      }),
-      shareReplay(1)
-    )
   }
 
 
   ngOnInit(): void {
-    // this.broadcaster.broadcast('contact_calendar_data', []);
     this.broadcaster.broadcast('multiselect_calendar', true);
+
+  }
+
+  ngAfterViewInit() {
+    this.initFilterContact();
   }
 
   removeTime(date: any, i: any) {
@@ -172,11 +162,14 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   loadContacts() {
+    if (this.contacts.length > 0){
+      return;
+    }
     this.calendarAccessService.fetchAccessibleContacts()
       .pipe(first())
       .subscribe({
         next: (data: CalendarAccess[] | null) => {
-          this.contacts = of(data ?? []);
+          this.contacts = data ?? [];
         },
         error: (error) => {
           console.log(error);
@@ -184,11 +177,62 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       });
   }
 
-  filterContacts(query: string) {
-    return this.term.next(query);
+  initFilterContact() {
+      fromEvent(this.input.nativeElement, 'keyup')
+        .pipe(
+          map((event: any) => {
+            return event.target.value;
+          }),
+          filter(res => res.length >= 1),
+          debounceTime(500),
+          distinctUntilChanged(),
+          tap((searchedString) => {
+            const filteredContact = this.contacts.filter(contact => this.filterContact(contact, searchedString));
+            this.filteredContacts$.next(filteredContact);
+            console.log(this.contacts);
+          })
+        )
+        .subscribe();
   }
 
+  filterContact(item: any, query: any) {
+    return (item.owner.firstName.toLowerCase().startsWith(query) ||
+          item.owner.lastName.toLowerCase().startsWith(query) ||
+      item.owner.email.toLowerCase().startsWith(query)) && !this.selectedEmails.includes(item.owner.email);
+  }
 
+  selectContact(contact: CalendarAccess) {
+    console.log(contact);
+    this.selectedContacts.push(contact);
+    this.selectedEmails.push(contact.owner.email);
+    this.selectedContacts$.next(this.selectedContacts);
+    this.input.nativeElement.value = '';
+    this.filteredContacts$.next([]);
+    this.getContactAvailability(contact);
+  }
+
+  getContactAvailability(contact: CalendarAccess) {
+    const contactId = contact.owner.id;
+    const contactEmail = contact.owner.email;
+
+    this.availabilityService.getByUserId([contactId])
+      .pipe(first())
+      .subscribe({
+        next: (data: any | null) => {
+          const availabilityData = data?.availabilityData;
+          const contactData = {
+            ...availabilityData,
+            contactEmail,
+            contactId
+          }
+          console.log(contactData);
+          this.broadcaster.broadcast('contact_calendar_data', contactData);
+        },
+        error: (error) => {
+          console.error(error.message);
+        }
+      });
+  }
 
   ngOnDestroy(): void {
     this.broadcaster.broadcast('reset_event');
