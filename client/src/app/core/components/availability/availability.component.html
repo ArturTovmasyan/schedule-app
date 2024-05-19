@@ -1,9 +1,48 @@
 <div id="container">
   <section id="hours">
-    <label><img src="" alt="">Hours Available</label>
-    
+    <label class="section-header"><img src="assets/ic_clock.svg" alt="">Hours Available</label>
+    <div id="content">
+      <section id="clock-type">
+        <label class="header-small">Clock type</label>
+        <div class="radio-group">
+          <button id="type-normal" [ngClass]="meridian ? 'checked' : ''"
+            (click)="onClockTypeChanged(ClockType.NORMAL)">12 H</button>
+          <button id="type-millitary" [ngClass]="!meridian ? 'checked' : ''"
+            (click)="onClockTypeChanged(ClockType.MILLITARY)">24 H</button>
+        </div>
+      </section>
+      <section id="range">
+        <div class="time">
+          <label class="header-small">From</label>
+          <app-timepicker [meridian]="meridian" [(time)]="fromText" [(inAM)]="isFromAM"></app-timepicker>
+        </div>
+        <span>-</span>
+        <div class="time">
+          <label class="header-small">To</label>
+          <app-timepicker [meridian]="meridian" [(time)]="toText" [(inAM)]="isToAM"></app-timepicker>
+        </div>
+      </section>
+    </div>
   </section>
   <section id="days">
-    <label><img src="" alt="">Days Available</label>
+    <label class="section-header"><img src="assets/ic_calendar.svg" alt="">Days Available</label>
+    <div id="buttons">
+      <button [ngClass]="tempAvailability.monday ? 'checked' : ''"
+        (click)="toggleDaySelection(Day.MON)">{{ Day.MON }}</button>
+      <button [ngClass]="tempAvailability.tuesday ? 'checked' : ''"
+        (click)="toggleDaySelection(Day.TUE)">{{ Day.TUE }}</button>
+      <button [ngClass]="tempAvailability.wednesday ? 'checked' : ''"
+        (click)="toggleDaySelection(Day.WED)">{{ Day.WED }}</button>
+      <button [ngClass]="tempAvailability.thursday ? 'checked' : ''"
+        (click)="toggleDaySelection(Day.THU)">{{ Day.THU }}</button>
+      <button [ngClass]="tempAvailability.friday ? 'checked' : ''"
+        (click)="toggleDaySelection(Day.FRI)">{{ Day.FRI }}</button>
+      <button [ngClass]="tempAvailability.saturday ? 'checked' : ''"
+        (click)="toggleDaySelection(Day.SAT)">{{ Day.SAT }}</button>
+      <button [ngClass]="tempAvailability.sunday ? 'checked' : ''"
+        (click)="toggleDaySelection(Day.SUN)">{{ Day.SUN }}</button>
+    </div>
   </section>
+
+  <span id="message">Don’t worry. You can always adjust later in your Settings.</span>
 </div>

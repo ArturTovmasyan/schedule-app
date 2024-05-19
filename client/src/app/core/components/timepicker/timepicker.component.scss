@@ -1,0 +1,65 @@
+#container {
+  height: 80px;
+  border: 1px solid #B7B7B7;
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+
+  button {
+    cursor: pointer;
+  }
+
+  #picker {
+    border-right: 1px solid #E5E5E5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    box-sizing: border-box;
+
+    span.input {
+      flex-grow: 1;
+      font-size: 22px;
+      line-height: 28px;
+      color: black;
+      letter-spacing: -0.22px;
+      font-weight: 700;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #B7B7B7;
+    }
+
+    button {
+      width: 30px;
+      border-radius: 7px;
+      padding: 18px 0;
+      align-self: stretch;
+      border: 1px solid #E5E5E5;
+      text-align: center;
+    }
+  }
+
+  #meridian {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    box-sizing: border-box;
+
+    button {
+      font-size: 15px;
+      line-height: 19px;
+      color: #B7B7B7;
+      font-weight: normal;
+      padding: 2px 7px;
+      background-color: white;
+      border-radius: 8px;
+      border: 1px solid #E5E5E5;
+
+      &.checked {
+        background-color: #7B9666;
+        color: white;
+      }   
+    }
+  }
+}

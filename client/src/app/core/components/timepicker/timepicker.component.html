@@ -1,0 +1,12 @@
+<div id="container">
+  <div id="picker">
+    <span id="input" class="input" role="textbox" 
+      contenteditable
+      (input)="timeUpdated($event)">{{ time }}</span>
+    <button><img src="assets/ic_chev_down.svg"></button>
+  </div>
+  <div id="meridian" *ngIf="meridian">
+    <button [ngClass]="inAM ? 'checked' : ''" (click)="inAMUpdated(true)">AM</button>
+    <button [ngClass]="!inAM ? 'checked' : ''" (click)="inAMUpdated(false)">PM</button>
+  </div>
+</div>
