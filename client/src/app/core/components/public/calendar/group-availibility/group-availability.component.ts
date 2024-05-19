@@ -71,6 +71,7 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
               datas.push({
                 id: date.id,
                 groupId: 'notAvailableSlot',
+                display: 'background',
                 start: date.startDate,
                 end: date.endDate,
                 title: data.title
@@ -79,6 +80,7 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
               datas.push({
                 id: date.id,
                 groupId: 'availableSlot',
+                display: 'background',
                 start: date.startDate,
                 end: date.endDate,
                 className: AVAILABILITY_EVENT_CLASS,
@@ -155,6 +157,7 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
             datas.push({
               id: date.id,
               groupId: 'notAvailableSlot',
+              display: 'background',
               start: date.start,
               end: date.end
             });
@@ -163,6 +166,7 @@ export class GroupAvailabilityComponent extends PublicSidebarCalendarComponent i
             datas.push({
               id: date.id,
               groupId: date.groupId,
+              display: 'background',
               start: date.start,
               end: date.end,
               className: date.className

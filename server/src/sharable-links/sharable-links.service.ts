@@ -535,7 +535,7 @@ export class SharableLinksService {
           address: slot.link.address,
           start: moment(slot.startDate).format(),
           end: moment(slot.endDate).format(),
-          calendarId: schedulerUserCalendar.calendarId,
+          calendarId: schedulerUserCalendar.id,
           attendees: [body.email],
         },
       );
