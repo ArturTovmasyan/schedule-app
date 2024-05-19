@@ -114,8 +114,13 @@ export class CalendarPermissionsService {
   async getTokensFromGoogleAndSave(user: User, code: string) {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       const calendarTokenRepository = manager.getRepository(CalendarToken);
-      const getTokenResponse =
-        await this.clientsCredentials.googleOAuth2Client.getToken(code);
+      let getTokenResponse;
+      try {
+        getTokenResponse =
+          await this.clientsCredentials.googleOAuth2Client.getToken(code);
+      } catch (err) {
+        throw new BadGatewayException(`${err.message}: try new code`);
+      }
 
       if (getTokenResponse.res.status !== 200) {
         throw new BadGatewayException();
@@ -124,13 +129,27 @@ export class CalendarPermissionsService {
 
       const expiryDate = new Date(tokens.expiry_date).toISOString();
 
-      const calendarTokenBody = {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token ? tokens.refresh_token : null,
-        expiryDate,
+      const existingToken = await calendarTokenRepository.findOne({
         calendarType: CalendarTypeEnum.GoogleCalendar,
         owner: { id: user.id },
-      };
+      });
+
+      const calendarTokenBody = existingToken
+        ? {
+            id: existingToken.id,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token ? tokens.refresh_token : null,
+            expiryDate,
+            calendarType: CalendarTypeEnum.GoogleCalendar,
+            owner: { id: user.id },
+          }
+        : {
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token ? tokens.refresh_token : null,
+            expiryDate,
+            calendarType: CalendarTypeEnum.GoogleCalendar,
+            owner: { id: user.id },
+          };
 
       const token = await calendarTokenRepository.save(calendarTokenBody);
 
@@ -228,14 +247,29 @@ export class CalendarPermissionsService {
       const refreshToken =
         refreshTokenObject[Object.keys(refreshTokenObject)[0]].secret;
 
-      const calendarTokenBody = {
-        accessToken: tokenResponse.accessToken,
-        refreshToken,
-        expiryDate: tokenResponse.expiresOn,
-        extExpiryDate: tokenResponse.extExpiresOn,
+      const existingToken = await calendarTokenRepository.findOne({
         calendarType: CalendarTypeEnum.Office365Calendar,
         owner: { id: user.id },
-      };
+      });
+
+      const calendarTokenBody = existingToken
+        ? {
+            id: existingToken.id,
+            accessToken: tokenResponse.accessToken,
+            refreshToken,
+            expiryDate: tokenResponse.expiresOn,
+            extExpiryDate: tokenResponse.extExpiresOn,
+            calendarType: CalendarTypeEnum.Office365Calendar,
+            owner: { id: user.id },
+          }
+        : {
+            accessToken: tokenResponse.accessToken,
+            refreshToken,
+            expiryDate: tokenResponse.expiresOn,
+            extExpiryDate: tokenResponse.extExpiresOn,
+            calendarType: CalendarTypeEnum.Office365Calendar,
+            owner: { id: user.id },
+          };
 
       await calendarTokenRepository.save(calendarTokenBody);
 
