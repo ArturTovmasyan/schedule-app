@@ -1,34 +1,29 @@
 #container {
-  height: 80px;
   background-color: white;
   border-radius: 6px;
   display: flex;
   align-items: center;
+  gap: 18px;
 
   button {
     cursor: pointer;
   }
 
   #picker {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 15px;
-    box-sizing: border-box;
-    border: 1px solid #B7B7B7;
-    border-radius: 7px;
-    margin-right: 10px;
+    height: 66px;
 
-    span.input {
-      flex-grow: 1;
-      font-size: 26px;
-      line-height: 28px;
+    input.picker {
       color: black;
       letter-spacing: -0.22px;
       font-weight: 500;
-      font-family: 'Open Sans', sans-serif;
+      font-size: 26px;
+      line-height: 28px;
+      height: 100%;
+      width: 75px;
+      text-align: center;
+      box-sizing: border-box;
+      border: 1px solid #11A4F4;
+      border-radius: 4px;
 
       &:active {
         text-decoration: none;
@@ -39,68 +34,75 @@
         text-decoration: none;
         outline: none;
       }
-    }
 
-    button {
-      width: 30px;
-      border-radius: 5px;
-      padding: 18px 0;
-      align-self: stretch;
-      border: 1px solid #E5E5E5;
-      font-family: 'Lexend Deca', sans-serif;
-      text-align: center;
-    }
-
-    #dropdown {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      right: 30%;
-      gap: 5px;
-      max-height: 200px;
-      padding: 0 20px 0 10px;
-      overflow-y: scroll;
-      background-color: white;
-      box-shadow: 0px 0px 15px #0000004D;
-      border-radius: 5px;
-
-      /* width */
-      &::-webkit-scrollbar {
-        width: 4px;
+      button {
+        width: 30px;
         border-radius: 5px;
+        padding: 18px 0;
+        align-self: stretch;
+        border: 1px solid #E5E5E5;
+        font-family: 'Lexend Deca', sans-serif;
+        text-align: center;
       }
 
-      /* Track */
-      &::-webkit-scrollbar-track {
-        background: #f1f1f1;
+      #dropdown {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        right: 30%;
+        gap: 5px;
+        max-height: 200px;
+        padding: 0 20px 0 10px;
+        overflow-y: scroll;
+        background-color: white;
+        box-shadow: 0px 0px 15px #0000004D;
         border-radius: 5px;
-      }
 
-      /* Handle */
-      &::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 5px;
-      }
+        /* width */
+        &::-webkit-scrollbar {
+          width: 4px;
+          border-radius: 5px;
+        }
 
-      /* Handle on hover */
-      &::-webkit-scrollbar-thumb:hover {
-        background: #555;
-      }
+        /* Track */
+        &::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 5px;
+        }
 
-      span {
-        font-size: 18px;
-        line-height: 22px;
-        font-weight: 600;
-        letter-spacing: -0.2px;
-        color: #272727;
-        padding: 3px 5px;
-        border-radius: 6px;
-        cursor: pointer;
+        /* Handle */
+        &::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 5px;
+        }
 
-        &.selected {
-          background-color: #EBEBEB;
+        /* Handle on hover */
+        &::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+
+        span {
+          font-size: 18px;
+          line-height: 22px;
+          font-weight: 600;
+          letter-spacing: -0.2px;
+          color: #272727;
+          padding: 3px 5px;
+          border-radius: 6px;
+          cursor: pointer;
+
+          &.selected {
+            background-color: #EBEBEB;
+          }
         }
       }
+    }
+
+    span#colon {
+      font-weight: 600;
+      color: #000;
+      margin: 0 6px;
+      font-size: 32px;
     }
   }
 
@@ -118,18 +120,19 @@
       line-height: 22px;
       color: #B7B7B7;
       font-weight: normal;
-      padding: 6px 13px;
+      width: 52px;
+      height: 32px;
       background-color: white;
       border: 0;
 
       &:first-child {
-        border-top-right-radius: 7px;
-        border-top-left-radius: 7px;
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
       }
 
       &:nth-child(2) {
-        border-bottom-right-radius: 7px;
-        border-bottom-left-radius: 7px;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
       }
 
       &.checked {

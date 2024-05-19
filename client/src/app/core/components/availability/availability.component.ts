@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {first} from 'rxjs/operators';
 import {CalendarAvailability} from '../../interfaces/calendar/availability.calendar.interface';
 import {AvailabilityService} from '../../services/calendar/availability.service';
@@ -12,7 +12,7 @@ export class AvailabilityComponent implements OnInit {
 
   availability: CalendarAvailability | null = null;
   _availability: CalendarAvailability = {
-    from: "09:00",
+    from: "10:00",
     to: "05:00",
     clockType: ClockType.NORMAL.valueOf(),
     sunday: false,
@@ -25,7 +25,10 @@ export class AvailabilityComponent implements OnInit {
   }
   error: any | null = null;
 
-  constructor(private calendarAvailabilityService: AvailabilityService) {}
+  constructor(
+    private calendarAvailabilityService: AvailabilityService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.fetchAvailability();
@@ -40,6 +43,7 @@ export class AvailabilityComponent implements OnInit {
     if (value != null) {
       this.tempAvailability = value;
     }
+    this.changeDetectorRef.detectChanges();
   }
 
   get tempAvailability() {

@@ -1,6 +1,11 @@
 <div id="container">
   <div id="picker">
-    <span id="input" class="input" role="textbox" contenteditable (input)="timeUpdated($event)">{{ time }}</span>
+    <input type="number" pattern="\d+" inputmode="numeric" [ngClass]="invalidTime ? 'error' : ''" max="{{ maxHour }}"
+      min="{{ minHour }}" id="input-hour" class="picker" role="textbox" (input)="hourUpdated($event)"
+      value="{{ hour }}" />
+    <span id="colon">:</span>
+    <input type="number" pattern="\d+" inputmode="numeric" max="59" min="0" id="input-minute" class="picker"
+      role="textbox" (input)="minuteUpdated($event)" value="{{ minute }}" />
 
     <div id="dropdown" *ngIf="showDropdown">
         <span *ngFor="let slot of timeSlots"

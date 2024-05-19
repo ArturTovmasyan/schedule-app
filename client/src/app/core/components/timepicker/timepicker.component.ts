@@ -1,5 +1,5 @@
 import {ViewportScroller} from '@angular/common';
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import * as moment from 'moment';
 
 @Component({
@@ -7,7 +7,7 @@ import * as moment from 'moment';
   templateUrl: './timepicker.component.html',
   styleUrls: ['./timepicker.component.scss']
 })
-export class TimepickerComponent {
+export class TimepickerComponent implements OnInit, OnChanges {
 
   @Input() meridian = false;
   @Input() time: string = moment().format('hh:mm')
@@ -17,12 +17,40 @@ export class TimepickerComponent {
 
   showDropdown = false;
 
+  hour = "";
+  minute = "";
+
+  invalidTime = false;
+  timer: any = null;
+
   constructor(private scroller: ViewportScroller) {
+  }
+
+  ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+
+    this.time = changes['time']?.currentValue ?? this.time;
+    this.meridian = changes['meridian']?.currentValue ?? this.meridian;
+    this.inAM = changes['inAM']?.currentValue ?? this.inAM;
+
+    const data = this.time.split(':');
+    this.hour = data[0];
+    this.minute = data[1];
+  }
+
+  get minHour() {
+    return this.meridian ? 1 : 0;
+  }
+
+  get maxHour() {
+    return this.meridian ? 12 : 23;
   }
 
   get timeSlots() {
     const startIndex = 0;
-    const endIndex = this.meridian ? 12 : 24;
+    const endIndex = this.maxHour;
     const slots: string[] = [];
     for (let i = startIndex; i < endIndex; i++) {
       slots.push(`${i}:00`.padStart(5, '0'));
@@ -45,13 +73,34 @@ export class TimepickerComponent {
     return slot.replace(':', '-');
   }
 
-  timeUpdated(event: any) {
-    const text = this.formatTime(event.target.innerText);
-    event.target.innerText = text;
-    this.placeCaretAtEnd(event.target);
+  timeUpdated() {
+    this.hour = this.hour.padStart(2, '0');
+    this.minute = this.minute.padStart(2, '0');
+    this.time = (`${this.hour}:${this.minute}`);
+    this.timeChange.emit(this.time);
+  }
 
-    if (text.length == 5) {
-      this.timeChange.emit(text);
+  hourUpdated(event: any) {
+    if(this.timer) clearTimeout(this.timer);
+
+    const text = event.target.value;
+    this.invalidTime = text.length > 2 || text.length < 1 || parseInt(text) > this.maxHour || parseInt(text) < this.minHour;
+    if(!this.invalidTime) {
+      this.hour = text;
+      this.timer = setTimeout(() => {
+        this.timeUpdated();
+      }, 1000);
+    }
+  }
+
+  minuteUpdated(event: any) {
+    const text = event.target.value;
+    this.invalidTime = text.length > 2 || text.length < 1 || parseInt(text) > 59 || parseInt(text) < 0;
+    if(!this.invalidTime) {
+      this.minute = text;
+      this.timer = setTimeout(() => {
+        this.timeUpdated();
+      }, 1000);
     }
   }
 
@@ -67,52 +116,5 @@ export class TimepickerComponent {
   inAMUpdated(flag: boolean) {
     this.inAM = flag;
     this.inAMChange.emit(flag);
-  }
-
-  formatTime(text: string) {
-    let cleanText = text.replace(/\D/g, "");
-    const length = cleanText.length;
-
-    if (length > 4) {
-      cleanText = cleanText.slice(0, 4);
-    }
-
-    if (length == 2) {
-      cleanText = this.formatHours(cleanText)
-    } else if (length > 2) {
-      cleanText = `${this.formatHours(cleanText.slice(0, 2))}${this.formatMins(cleanText.slice(2, cleanText.length))}`
-    }
-
-    return cleanText;
-  }
-
-  formatMins(text: string) {
-    if (parseInt(text) > 59) {
-      text = `00`;
-    }
-    return text;
-  }
-
-  formatHours(text: string) {
-    const upperHourLimit = this.meridian ? 12 : 23;
-    if (parseInt(text) > upperHourLimit) {
-      text = `0${text.slice(0, 1)}:${text.slice(1, 2)}`;
-    } else {
-      text = `${text}:`
-    }
-    return text;
-  }
-
-  placeCaretAtEnd(el: any) {
-    el.focus();
-    if (typeof window.getSelection != "undefined"
-      && typeof document.createRange != "undefined") {
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      const sel = window.getSelection();
-      sel?.removeAllRanges();
-      sel?.addRange(range);
-    }
   }
 }
