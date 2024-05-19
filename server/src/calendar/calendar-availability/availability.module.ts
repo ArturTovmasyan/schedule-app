@@ -11,13 +11,14 @@ import {CalendarWebhookChannel} from "../calendar-event/entities/calendarWebhook
 import {Calendar} from "../calendar-event/entities/calendar.entity";
 import {ClientsCredentialsService} from "../clients-credentials/clients-credentials.service";
 import {ConfigService} from "@nestjs/config";
+import {InitEventService} from "../../components/services/init-event.service";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Availability, CalendarEvent, Calendar, CalendarToken,CalendarWebhookChannel]),//TODO optimize
+    TypeOrmModule.forFeature([Availability, CalendarEvent, Calendar, CalendarToken, CalendarWebhookChannel]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [AvailabilityController],
-  providers: [AvailabilityService, CalendarEventService, ClientsCredentialsService, ConfigService],
+  providers: [AvailabilityService, CalendarEventService, ClientsCredentialsService, ConfigService, InitEventService],
 })
 export class AvailabilityModule {}

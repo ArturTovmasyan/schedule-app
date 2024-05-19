@@ -20,7 +20,8 @@ export class AvailabilityService {
     constructor(
         @InjectRepository(Availability)
         private readonly availabilityRepo: Repository<Availability>,
-        private readonly eventService: CalendarEventService
+        private readonly eventService: CalendarEventService,
+        private readonly initEventService: InitEventService,
     ) {
     }
 
@@ -97,9 +98,6 @@ export class AvailabilityService {
             // let start = new Date();
             // let end = moment(new Date()).add(10, 'days').toDate();
             // let dates = await this.splitDatesByInterval(start, end, weekDays, 30);
-
-            // availabilityDates = await this.extractEmptyEventDates(availabilityDates, contactEvents);
-            debugger;
         }
 
         return {availabilityDates};

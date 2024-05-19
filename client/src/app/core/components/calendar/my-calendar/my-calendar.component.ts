@@ -5,6 +5,7 @@ import {CalendarService} from "../../../services/calendar/calendar.service";
 import DateConverter from "../../helpers/date.converter";
 import {BroadcasterService} from "../../../../shared/services";
 import {BehaviorSubject} from "rxjs";
+import {CalendarEvent} from "../../../interfaces/calendar/calendar-event.interface";
 
 @Component({
   selector: 'app-my-calendar',
@@ -27,13 +28,14 @@ export class MyCalendarComponent implements OnInit, OnDestroy {
       const contactId = contactAvailabilities.contactId;
 
       if (contactAvailabilities) {
-        delete contactAvailabilities['contactId'];
-        for (const k in contactAvailabilities) {
+        // delete contactAvailabilities['contactId'];
+        for (const key in contactAvailabilities) {
+
           availabilityDates.push({
-            // start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].start)),
-            // end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[k].end)),
-            start: contactAvailabilities[k].start,
-            end: contactAvailabilities[k].end,
+            // start: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].start)),
+            // end: DateConverter.convertUTCDateToLocalDate(new Date(contactAvailabilities[key].end)),
+            start: contactAvailabilities[key].start,
+            end: contactAvailabilities[key].end,
             className: 'available-event'
           })
         }

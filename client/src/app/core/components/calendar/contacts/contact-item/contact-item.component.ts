@@ -50,7 +50,7 @@ export class ContactItemComponent implements OnInit {
           const dates = data?.availabilityDates;
           const contactData = {
             ...dates,
-            contactId
+            // contactId
           }
           this.broadcaster.broadcast('contact_calendar_data', contactData);
         },
