@@ -3,6 +3,8 @@ section.meeting-title {
   background-color: white;
   height: 100%;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 
   span#no-calendar {
     font-size: 11px;
@@ -15,6 +17,7 @@ section.meeting-title {
     position: relative;
     margin-bottom: 5px;
     text-align: left;
+
     h3 {
       font-family: 'Lexend Deca', sans-serif;
       color: #0C105A;
@@ -23,85 +26,57 @@ section.meeting-title {
       margin-bottom: 19px;
     }
   }
-  .meeting-title-container{
+
+  .meeting-title-container {
+    position: relative;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 34px;
     border-radius: 4px;
-    // mz
-    // background-color: #D3D3D3;
-    padding: 0 15px;
     margin-bottom: 20px;
-    input{
+
+    input {
       border: 0;
-      height: 30px;
-      // mz
-      // width: 300px;
-      // background-color: #D3D3D3;
-      &:focus{
+      padding: 8px 35px 10px 10px;
+      background-color: rgba(211, 211, 211, 0.26);
+
+      &:focus {
         outline: none;
         text-decoration: none;
       }
-      &::placeholder{
+
+      &::placeholder {
         font-size: 16px;
         font-family: 'Open Sans', sans-serif;
         line-height: 22px;
         color: #000000;
       }
     }
-    img{
+
+    img {
+      position: absolute;
+      right: 10px;
       height: 20px;
     }
   }
+
   form#meetingTitle {
     border: 1px dashed #B0B0B066;
     padding: 15px 10px 30px 10px;
     border-radius: 10px;
-    overflow: auto;
-    //accordion start
-    .accordion {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
+    overflow: visible;
+
+    .email-input-field {
       margin-bottom: 1em;
-      background-color: #F5F5F5;
       border-radius: 10px;
       padding: 10px;
+      background-color: #F5F5F5;
 
-      span#joint-availability {
-        width: 28px;
-        height: 28px;
-        margin-top: 10px;
-        border-radius: 50%;
-        border: none;
-        background-image: url('/assets/ic_plus_circle.svg');
-      }
-      
-      .accordian-content {
-        overflow-y: hidden;
-        flex-grow: 1;
-      }
-
-      &.open {
-        span#joint-availability {
-          background-image: url('/assets/ic_minus_circle.svg');
-        }
-
-        .accordian-header {
-          display: none;
-        }
-
-        .accordian-content {
-          display: block;
-          overflow: auto;
-          opacity: 1;
-          transition: opacity 1s ease-out;
-        }
+      &.optional {
+        background-color: #E9F6FD;
       }
     }
-    //accordion end
+
     .select-wrapper {
       position: relative;
       user-select: none;
@@ -212,7 +187,7 @@ section.meeting-title {
         }
       }
 
-      
+
 
       .custom-option:hover {
         cursor: pointer;
@@ -246,8 +221,10 @@ section.meeting-title {
       display: flex;
       justify-content: space-between;
       margin-bottom: 16px;
+
       .duration-radio-wrapper {
         display: flex;
+
         label {
           color: #000000;
           font-weight: 600;
@@ -264,14 +241,14 @@ section.meeting-title {
           margin: 10px;
         }
 
-        input[type=radio] + label {
+        input[type=radio]+label {
           display: inline-block;
           padding: 6px 10px;
           cursor: pointer;
 
         }
 
-        input[type=radio]:checked + label {
+        input[type=radio]:checked+label {
           background-color: #fff;
           border: 1px solid #11A4F4;
           color: #11A4F4;
@@ -291,7 +268,7 @@ section.meeting-title {
         width: 100%;
         margin-bottom: 0;
 
-        li + li {
+        li+li {
           margin-top: 10px;
         }
 
@@ -383,7 +360,7 @@ section.meeting-title {
         width: 100%;
         margin-bottom: 0;
 
-        li + li {
+        li+li {
           margin-top: 10px;
         }
 
@@ -473,89 +450,77 @@ section.meeting-title {
 
       ul {
         display: flex;
+        flex-grow: 1;
         align-items: initial;
-        justify-content: space-between;
         margin-bottom: 0;
-        max-width: 90%;
+        padding: 0 10px;
+        gap: 10px;
 
+        span {
+          font-family: 'Open Sans', sans-serif;
+          font-size: 13px;
+          color: #656565;
+          text-align: center;
 
-        li {
-          margin-right: 0;
-          width: 31%;
-          overflow: hidden;
-
-          & + li {
-            border-left: 1px solid #656565;
-            margin-left: 7px;
-            padding-left: 7px;
+          &.separator {
+            border-left: 1px solid #707070;
           }
-
-          input {
-            width: fit-content;
-            height: fit-content;
-            border: 0;
-            background-color: transparent;
-            max-width: 100%;
-            padding: 0;
-
-
-            &::placeholder {
-              font-family: 'Open Sans', sans-serif;
-              font-size: 13px;
-              color: #656565;
-              text-align: center;
-
-            }
-          }
-
-          p {
-            margin-bottom: 0;
-
-          }
-        }
-
-        li.timezone {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          span {
-            font-family: 'Lexend Deca', sans-serif;
-            font-size: 13px;
-            color: #656565;
-            width: 100%;
-            text-align: center;
-            margin-top: 4px;
-          }
-
-          img {
-            height: 20px;
-            margin-right: 5px;
-          }
-        }
-
-        li.timeframe {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          width: 38%;
-          margin-left: 0 !important;
-          padding-left: 2px !important;
-
-          p {
-            margin: 0 2px;
+          &.timeframe {
             color: #4A8638;
-          }
-
-          input {
-            max-width: 49%;
-
-            &::placeholder {
-              text-align: center;
-              color: #4A8638;
-            }
+            font-weight: 500;
           }
         }
+
+
+        // li {
+        //   overflow: hidden;
+        //   flex-grow: 1;
+
+        //   &+li {
+        //     border-left: 1px solid #656565;
+        //     padding-left: 10px;
+        //   }
+
+        //   input {
+        //     width: 100%;
+        //     height: fit-content;
+        //     border: 0;
+        //     background-color: transparent;
+        //     padding: 0;
+
+
+        //     &::placeholder {
+        //       font-family: 'Open Sans', sans-serif;
+        //       font-size: 13px;
+        //       color: #656565;
+        //       text-align: center;
+
+        //     }
+        //   }
+
+        //   p {
+        //     margin-bottom: 0;
+
+        //   }
+        // }
+
+        // li.timeframe {
+        //   display: flex;
+        //   flex-direction: row;
+        //   align-items: center;
+
+        //   p {
+        //     margin: 0 2px;
+        //     color: #4A8638;
+        //   }
+
+        //   input {
+        //     &::placeholder {
+        //       text-align: center;
+        //       color: #4A8638;
+        //     }
+        //   }
+        // }
       }
 
 
@@ -569,6 +534,7 @@ section.meeting-title {
         background-repeat: no-repeat;
         cursor: pointer;
         margin-right: 8px;
+
         img {
           height: 13px;
         }
@@ -577,6 +543,7 @@ section.meeting-title {
           background-color: #e9e9e9;
           transition: 0.4s ease;
         }
+
         &.hidden {
           display: none;
         }
@@ -652,7 +619,8 @@ section.meeting-title {
       }
     }
 
-    input, textarea {
+    input,
+    textarea {
       border-radius: 12px;
       border: 1px solid #adadad;
       padding: 12px;
@@ -693,16 +661,19 @@ section.meeting-title {
       font-family: 'Open Sans', sans-serif;
       line-height: 1.2;
     }
-    input#meetingLocation{
+
+    input#meetingLocation {
       background-color: #B0B0B066;
       border-radius: 50px;
       border: 1px solid #E3E3E3;
     }
+
     input#meetingLocation::placeholder {
       font-family: 'Open Sans', sans-serif;
       font-size: 15px;
       color: #656565;
     }
+
     .error {
       -moz-transition: min-height .5s;
       -ms-transition: min-height .5s;
@@ -716,9 +687,8 @@ section.meeting-title {
     .animate {
       min-height: 50px;
     }
-
-    
   }
+
   button.remove-button {
     border-radius: 50%;
     border: 0;

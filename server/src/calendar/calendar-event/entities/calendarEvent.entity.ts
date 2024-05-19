@@ -44,7 +44,7 @@ export class CalendarEvent {
   entanglesLocation: MeetViaEnum;
 
   @Column({ type: 'jsonb', default: [] })
-  attendees: string;
+  attendees: Array<any>;
 
   @Column({ type: 'boolean', nullable: false, default: false })
   allDay: boolean;

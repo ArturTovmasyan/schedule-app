@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      </div>
+      </div> -->
       <div class="form-group">
         <h3 class="section-title-secondary">
           Attendees
@@ -52,21 +52,16 @@
             (userAddEvent)="onItemSelect($event)" (userRemoveEvent)="onRemoveItem($event)"></app-chip-user-input>
           </div>
         </div>
-
-
-        <!-- <ng-multiselect-dropdown formControlName="attendees" [placeholder]="'Select Attendees'"
-          [settings]="dropdownSettings" [data]="attendeesOptions" (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onRemoveItem($event)" [(ngModel)]="selectedAttendees">
-        </ng-multiselect-dropdown> -->
-
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">
           Optional
         </h3>
-        <app-chip-email-input [emails]="data.optionalAttendees ?? []" (hasError)="updateFieldError($event)"
-          (emailUpdateEvent)="updateOptionalAttendeeEmails($event)">
-        </app-chip-email-input>
+        <div class="email-input-field optional">
+          <app-chip-user-input [users]="selectedOptionalAttendees" [contacts]="attendeesOptions" [contactsOnly]="false"
+            (userUpdateEvent)="updateAttendees($event, true)" (userAddEvent)="onItemSelect($event, true)"
+            (userRemoveEvent)="onRemoveItem($event, true)"></app-chip-user-input>
+        </div>
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">
@@ -74,17 +69,9 @@
         </h3>
         <div class="date-time-container {{ this.data.start ? 'date-selected': ''}}">
           <ul class="list-unstyled list-inline">
-            <li class="list-inline-item date">
-              <input type="text" id="meetingDate" name="meetingDate" placeholder="{{ parsedDate }}" readonly>
-            </li>
-            <li class="list-inline-item timeframe">
-              <input type="text" id="meetingStartTime" name="meetingStartTime"
-                placeholder="{{ this.data.start | parseTime:'hh:mmA' }}" readonly>
-              <p> - </p>
-              <input type="text" id="meetingEndTime" name="meetingEndTime"
-                placeholder="{{ this.data.end | parseTime:'hh:mmA' }}" readonly>
-            </li>
-
+            <span class="date">{{ parsedDate }}</span>
+            <span class="separator"></span>
+            <span class="timeframe">{{ this.data.start | parseTime:'hh:mmA' }} - {{ this.data.end | parseTime:'hh:mmA' }}</span>
           </ul>
           <div>
             <button id="remove-button" class="remove-button {{ !this.data.start ? 'hidden': ''}}"

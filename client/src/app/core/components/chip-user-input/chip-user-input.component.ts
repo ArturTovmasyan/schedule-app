@@ -29,12 +29,17 @@ export class ChipUserInputComponent {
 
     let emailControl = new FormControl(email);
     let invalidEmail = ValidationService.emailValidator(emailControl)?.invalidEmailAddress;
-
     let invalidContact = this.contactsOnly && !this.contacts.find(c => c.email === email);
-    
+
     if (invalidEmail || invalidContact) {
       this.error = true;
       this.errorMessage = invalidEmail ? 'Invalid email' : 'Provided email is not in your contacts.';
+    } else if (this.users.find(u => u.email === email)) {
+      this.error = true;
+      this.errorMessage = 'User already selected.'
+    }
+
+    if (this.error) {
       this.hasError.emit(true);
       return;
     }
@@ -67,12 +72,22 @@ export class ChipUserInputComponent {
       return contact.email === this.email;
     });
     if(selectedCotact) {
-      this.addUser(selectedCotact);
+      if(!this.users.find(u => u.email === selectedCotact.email)) {
+        this.addUser(selectedCotact);
+      } else {
+        this.email = ' ';
+      }
     }
   }
 
-  updateError() {
+  updateError(event: any) {
     const val = this.emailInput.nativeElement.value
+    
+    if (event.key == ',' || event.key == " ") {
+      this.emailInput.nativeElement.value = val.trim().replace(/[, ]+$/, '');
+      this.add();
+      return;
+    }
 
     if (!val) {
       this.error = false;

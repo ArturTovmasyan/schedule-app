@@ -1,11 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
   IsNotEmpty,
   IsString,
   IsArray,
   IsEmail,
-  IsOptional,
+  ValidateIf,
+  MinLength,
+  IsNumberString,
 } from 'class-validator';
 import { MeetViaEnum } from 'src/sharable-links/enums/sharable-links.enum';
 
@@ -41,13 +42,13 @@ export class CreateEventDto {
   @IsString()
   entanglesLocation: MeetViaEnum;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
+  @ValidateIf((o) => o.entanglesLocation == MeetViaEnum.InboundCall)
+  @MinLength(5)
+  @IsNumberString()
   phoneNumber?: string;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
+  @ValidateIf((o) => o.entanglesLocation == MeetViaEnum.PhysicalAddress)
+  @MinLength(5)
   @IsString()
   address?: string;
 }

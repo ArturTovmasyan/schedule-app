@@ -5,7 +5,8 @@
     <div class="list-inline-item user-email-input" id="userEmailInput">
       <input #emailInput class="form-control" type="text" name="requestFrom" id="requestFrom" autocomplete="off"
         autocapitalize="off" autocorrect="off" required spellcheck="false" placeholder="+ Add email"
-        (keyup)="updateError()" (keyup.enter)="add()" (focusout)="add()"
+        (keyup)="updateError($event)" (keyup.enter)="add()" (focusout)="add()"
+        (keydown.enter)="$event.preventDefault()"
         [(ngModel)]="email" (ngModelChange)="onChange()"
         list="contact-list">
       <datalist id="contact-list">

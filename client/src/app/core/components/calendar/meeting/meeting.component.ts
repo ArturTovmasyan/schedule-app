@@ -44,7 +44,8 @@ export class MeetingComponent implements OnInit, OnDestroy {
   subscription: BehaviorSubject<boolean>;
   form: FormGroup;
   attendeesOptions: UserData[] = [];
-  selectedAttendees: any = [];
+  selectedAttendees: UserData[] = [];
+  selectedOptionalAttendees: UserData[] = [];
   dropdownSettings = {};
   errorMessages: any = [];
   showCalendars = false;
@@ -97,7 +98,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       limitSelection: 10,
       allowSearchFilter: true,
     };
-
+    // TODO: Check
     this.subscription = this.broadcaster
       .on('meet_date_range')
       .subscribe((eventData: any) => {
@@ -178,16 +179,15 @@ export class MeetingComponent implements OnInit, OnDestroy {
       this.choosedLocationObj = savedDataArr.choosedLocationObj;
       this.data = savedDataArr.data;
       this.selectedAttendees = savedDataArr.selectedAttendees ?? [];
+      this.selectedOptionalAttendees = savedDataArr.selectedOptionalAttendees ?? [];
       this.broadcaster.broadcast('selectUnselectDate', {
         startDate: this.data.start,
         endDate: this.data.end,
       });
       if (this.selectedAttendees.length) {
-        for (let i = 0; i < this.selectedAttendees.length; i++) {
-          this.getContactsAvailability(this.selectedAttendees[i]);
-        }
+          this.getContactAvailabilities();
       }
-      this.onDurationSelectionChanged(this.data.duration!);
+      // this.onDurationSelectionChanged(this.data.duration!);
       if (!this.choosedLocationObj?.available) {
         // if not connected show connect message
         this.connectMessage = {
@@ -207,14 +207,56 @@ export class MeetingComponent implements OnInit, OnDestroy {
     this.form.patchValue(defaultValues);
   }
 
-  onItemSelect(item: any) {
-    // this.data.attendees?.push(item.value);
-    this.updateAttendeeEmails(item);
+  updateAttendees(users: UserData[], isOptional: boolean = false) {
+    if (isOptional) {
+      this.selectedOptionalAttendees = users;
+    } else {
+      this.selectedAttendees = users;
+      if(this.selectedAttendees.length > 0) {
+        this.getContactAvailabilities();
+      } else {
+        this.broadcaster.broadcast('reset_event');
+      }
+    }
+
   }
 
-  onRemoveItem(user: UserData) {
-    this.emailsWithAvailabilityMap.delete(user.email);
-    this.broadcastContactData();
+  onItemSelect(user: UserData, isOptional: boolean = false) {
+    if ((this.data.attendees?.indexOf(user.email) ?? -1) >= 0 || (this.data.attendees?.indexOf(user.email) ?? -1) >= 0) {
+      this.onRemoveItem(user, isOptional) 
+    } else if (!isOptional) {
+      this.data.attendees?.push(user.email);
+    } else if (isOptional) {
+      this.data.optionalAttendees?.push(user.email);
+    }
+  }
+
+  onRemoveItem(user: UserData, isOptional: boolean = false) {
+    if (isOptional) {
+      const index = this.data.optionalAttendees?.indexOf(user.email) ?? -1;
+      if (index != -1) { 
+        this.data.optionalAttendees?.splice(index, 1);
+      }
+    } else {
+      const index = this.data.attendees?.indexOf(user.email) ?? -1;
+      if (index != -1) { 
+        this.data.attendees?.splice(index, 1);
+      }
+    }
+  }
+
+  getContactAvailabilities() {
+    this.availabilityService
+      .getByUserId([...this.selectedAttendees.map((user) => user.id!)])
+      .pipe(first())
+      .subscribe({
+        next: (data: any) => {
+          this.broadcastContactData(data?.availabilityData);
+        },
+        error: (error) => {
+          console.error(error.message);
+        },
+      });
   }
 
   ngOnDestroy() {
@@ -237,10 +279,6 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateAttendeeEmails(user: UserData) {
-    this.getContactsAvailability(user);
-  }
-
   updateFieldError(hasError: boolean) {
     this.error = hasError;
   }
@@ -256,21 +294,21 @@ export class MeetingComponent implements OnInit, OnDestroy {
     }
 
     if (this.data.start == '') {
-      this.errorMessages.push('Date/Time cannot be empty');
+      this.errorMessages.push('Select a time for the meeting.');
     }
 
     if (!this.choosedLocationObj) {
-      this.errorMessages.push('Please select the Location');
+      this.errorMessages.push('Please select the location.');
     } else if (
       this.choosedLocationObj?.value == MeetViaEnum.InboundCall &&
       !this.phoneNumber
     ) {
-      this.errorMessages.push('Please enter Phone Number');
+      this.errorMessages.push('Please enter a phone number.');
     } else if (
       this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress &&
       !this.address
     ) {
-      this.errorMessages.push('Please enter Address');
+      this.errorMessages.push('Please enter an address.');
     }
 
     if (this.errorMessages.length) {
@@ -291,8 +329,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.resetData();
-          if (localStorage.getItem('meetingDatas'))
+          if (localStorage.getItem('meetingDatas')) {
             localStorage.removeItem('meetingDatas');
+          }
         },
         error: (error: any) => {
           this.errorMessages.push(error?.message);
@@ -314,47 +353,9 @@ export class MeetingComponent implements OnInit, OnDestroy {
       phoneNumber: '',
       address: '',
     };
-  }
-
-  getContactsAvailability(contact: UserData) {
-    const contactId = contact.id;
-    const contactEmail = contact.email;
-    this.data.attendees?.push(contactEmail);
-    if (!contactId) return;
-
-    this.availabilityService
-      .getByUserId([contactId])
-      .pipe(first())
-      .subscribe({
-        next: (data: any) => {
-          const availabilityData = data?.availabilityData;
-          this.emailsWithAvailabilityMap.set(contactEmail, availabilityData);
-          this.broadcastContactData();
-        },
-        error: (error) => {
-          console.error(error.message);
-        },
-      });
-
-    // const contactEmails = this.data.attendees;
-    // if (contactEmails && contactEmails.length > 0) {
-    //   this.availabilityService.getByEmails(contactEmails)
-    //     .pipe(first())
-    //     .subscribe({
-    //       next: (data: any | null) => {
-    //         const availabilityData = data?.availabilityData;
-    //         const contactData = {
-    //           ...availabilityData
-    //         }
-    //         this.broadcaster.broadcast('contact_calendar_data', contactData);
-    //       },
-    //       error: (error) => {
-    //         console.error(error.message);
-    //       }
-    //     });
-    // } else {
-    //   this.broadcaster.broadcast('contact_calendar_data', []);
-    // }
+    this.selectedAttendees = [];
+    this.selectedOptionalAttendees = [];
+    this.broadcaster.broadcast('reset_event');
   }
 
   fetchMyAttendees() {
@@ -382,13 +383,10 @@ export class MeetingComponent implements OnInit, OnDestroy {
       });
   }
 
-  broadcastContactData() {
-    const contacts = [...this.emailsWithAvailabilityMap.values()].flat();
-    this.broadcaster.broadcast('contact_calendar_data', contacts);
-  }
-
-  updateAttendees(users: UserData[]) {
-    this.selectedAttendees = users;
+  broadcastContactData(availabilityData: any) {
+    if (availabilityData.length != 0) {
+      this.broadcaster.broadcast('contact_calendar_data', availabilityData);
+    }
   }
 
   getLocations() {
@@ -438,6 +436,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
       data: this.data,
       choosedLocationObj: this.choosedLocationObj,
       selectedAttendees: this.selectedAttendees,
+      selectedOptionalAttendees: this.selectedOptionalAttendees,
     };
     localStorage.setItem('meetingDatas', JSON.stringify(savedData));
     localStorage.setItem('calendar-redirect', window.location.pathname);
@@ -518,7 +517,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
     return (
       this.commonService.getFormattedDateString(
         moment.utc(currentDate).local(),
-        'ddd, MMM Do'
+        'ddd, MMM Do YYYY'
       ) ?? ''
     );
   }
