@@ -17,8 +17,8 @@ import {
 } from './enums/requestStatus.enum';
 import {
   AccessRequestQueryParams,
-  AccessRequestStatus,
   CreateAccessRequestDto,
+  AccessRequestStatus,
 } from './dto/create-access-request.dto';
 
 @Injectable()
@@ -34,6 +34,7 @@ export class AccessRequestService {
     private readonly calendarAccessService: CalendarAccessService,
     private readonly configService: ConfigService,
     private readonly connection: Connection,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -90,7 +91,7 @@ export class AccessRequestService {
       timeForAccess = moment().add(3, 'month').toDate();
     }
 
-    await this.accessRequestRepo.save({
+    const data = await this.accessRequestRepo.save({
       applicant: { id: user.id },
       toEmail: createAccessRequestDto.toEmail,
       receiver: { id: findUserByEmail ? findUserByEmail.id : null },
@@ -98,7 +99,15 @@ export class AccessRequestService {
       comment: createAccessRequestDto.comment,
     });
 
-    await this.mailService.send({
+    if (findUserByEmail) {
+      await this.notificationsService.create(user, {
+        type: NotificationTypeEnum.AccessRequest,
+        receiverUserId: findUserByEmail.id,
+        accessRequestId: data.id,
+      });
+    }
+
+    this.mailService.send({
       from: this.configService.get<string>('NO_REPLY_EMAIL'),
       to: createAccessRequestDto.toEmail,
       subject: `Access request from ${user.firstName} ${user.lastName}`,
@@ -209,19 +218,30 @@ export class AccessRequestService {
         .execute();
 
       if (accessRequestStatus.status === AccessRequestStatusEnum.Accept) {
-        await this.calendarAccessRepo.upsert(
-          {
-            accessedUser: { id: data.applicant.id },
-            owner: { id: user.id },
-            toEmail: data.toEmail,
-            comment: data.comment,
-            timeForAccess: data.timeForAccess,
-          },
-          {
-            conflictPaths: ['toEmail', 'owner'],
-            skipUpdateIfNoValuesChanged: true,
-          },
-        );
+        await Promise.all([
+          this.notificationsService.create(user, {
+            type: NotificationTypeEnum.RequestApproved,
+            receiverUserId: data.applicant.id,
+          }),
+          this.calendarAccessRepo.upsert(
+            {
+              accessedUser: { id: data.applicant.id },
+              owner: { id: user.id },
+              toEmail: data.toEmail,
+              comment: data.comment,
+              timeForAccess: data.timeForAccess,
+            },
+            {
+              conflictPaths: ['toEmail', 'owner'],
+              skipUpdateIfNoValuesChanged: true,
+            },
+          ),
+        ]);
+      } else {
+        await this.notificationsService.create(user, {
+          type: NotificationTypeEnum.RequestDenied,
+          receiverUserId: data.applicant.id,
+        });
       }
 
       await queryRunner.commitTransaction();

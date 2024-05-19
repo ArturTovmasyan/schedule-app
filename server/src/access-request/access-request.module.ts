@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 
 import { CalendarAccess } from 'src/calendar/calendar-access/entities/calendar-access.entity';
 import { CalendarAccessModule } from 'src/calendar/calendar-access/calendar-access.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 import { AccessRequestController } from './access-request.controller';
 import { AccessRequest } from './entities/access-request.entity';
 import { AccessRequestService } from './access-request.service';
@@ -14,6 +15,7 @@ import { User } from '@user/entity/user.entity';
 @Module({
   imports: [
     MailModule,
+    NotificationsModule,
     CalendarAccessModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forFeature([AccessRequest, CalendarAccess, User]),

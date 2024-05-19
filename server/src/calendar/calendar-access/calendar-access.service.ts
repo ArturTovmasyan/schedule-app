@@ -4,8 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 
+import { NotificationTypeEnum } from 'src/notifications/enums/notifications.enum';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { CreateCalendarAccessDto } from './dto/create-calendar-access.dto';
 import { UpdateCalendarAccessDto } from './dto/update-calendar-access.dto';
+import { ErrorMessages } from '../../components/constants/error.messages';
 import { CalendarAccess } from './entities/calendar-access.entity';
 import { TimeForAccessEnum } from './enums/access-time.enum';
 import { ErrorMessages } from '@shared/error.messages';
@@ -21,6 +24,7 @@ export class CalendarAccessService {
     private readonly userRepo: Repository<User>,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -76,7 +80,14 @@ export class CalendarAccessService {
       },
     );
 
-    await this.mailService.send({
+    if (findUserByEmail) {
+      await this.notificationsService.create(user, {
+        type: NotificationTypeEnum.CalendarAccess,
+        receiverUserId: findUserByEmail.id,
+      });
+    }
+
+    this.mailService.send({
       from: this.configService.get<string>('NO_REPLY_EMAIL'),
       to: createCalendarAccessDto.toEmail,
       subject: `${user.firstName} ${user.lastName} shared their calendar with you`,
