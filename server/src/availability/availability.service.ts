@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { AVAILABILITY_EXISTS } from 'src/components/constants/availability.const';
+import { IResponseMessage } from 'src/components/interfaces/response.interface';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { Availability } from './entities/availability.entity';
@@ -24,7 +25,10 @@ export class AvailabilityService {
    * @returns `{Created Availability data}`
    */
 
-  async create(user: User, createAvailabilityDto: CreateAvailabilityDto) {
+  async create(
+    user: User,
+    createAvailabilityDto: CreateAvailabilityDto,
+  ): Promise<Availability> {
     const checkUser = await this.availabilityRepo.findOne({
       where: { user: { id: user.id } },
     });
@@ -49,7 +53,7 @@ export class AvailabilityService {
    * @returns `{availability entity data(Object)}`
    */
 
-  async findAll(user: User) {
+  async findAll(user: User): Promise<Availability> {
     const data = await this.availabilityRepo.findOne({
       user: { id: user.id },
     });
@@ -70,7 +74,10 @@ export class AvailabilityService {
    * @returns `{updated}`
    */
 
-  async update(user: User, updateAvailabilityDto: UpdateAvailabilityDto) {
+  async update(
+    user: User,
+    updateAvailabilityDto: UpdateAvailabilityDto,
+  ): Promise<IResponseMessage> {
     await this.availabilityRepo.update(
       {
         user: { id: user.id },
@@ -78,7 +85,7 @@ export class AvailabilityService {
       { ...updateAvailabilityDto },
     );
 
-    return 'updated';
+    return { message: 'updated' };
   }
 
   remove(id: number) {
