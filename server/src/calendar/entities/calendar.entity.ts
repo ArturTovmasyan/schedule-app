@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@user/entity/user.entity';
-import { CalendarTypeEnum } from '../../components/enums/calendarType.enum';
+import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
 
 @Entity()
 export class Calendar {

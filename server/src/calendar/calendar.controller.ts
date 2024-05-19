@@ -8,7 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { UpdateAccessTokenInterceptor } from '../components/helpers/updateAccessToken.interceptor';
+import { UpdateAccessTokenInterceptor } from '../calendar-accessibility/interceptors/updateAccessToken.interceptor';
 import { User } from '@user/entity/user.entity';
 import { CalendarService } from './calendar.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -18,6 +18,8 @@ import CreateEventDto from './dto/createEvent.dto';
 @Controller('api/calendar')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
+
+  //TODO remove this comments
 
   // @Get('google')
   // @UseGuards(AuthGuard())

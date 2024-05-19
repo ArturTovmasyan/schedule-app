@@ -12,7 +12,7 @@ import { User } from '@user/entity/user.entity';
 import { CalendarPermissionsService } from './calendarPermissions.service';
 import { TokensByCalendar } from './types/statusOfCalendars.type';
 import { Response } from 'express';
-import { UpdateAccessTokenInterceptor } from '../components/helpers/updateAccessToken.interceptor';
+import { UpdateAccessTokenInterceptor } from '../calendar-accessibility/interceptors/updateAccessToken.interceptor';
 
 @Controller('api/calendar-permissions')
 export class CalendarPermissionsController {
