@@ -44,11 +44,12 @@ export class MeetingComponent implements OnInit {
         next: (data: CalendarData | any) => {
           this.myCalendar = data;
           if(this.myCalendars.length > 0) {
-            this.selectCalendar(this.myCalendars[0]);
+            this.selectCalendar(this.myCalendars[0]);//TODO why selected first calendar?
           }
         }
       });
     this.data.start = this.commonService.getFormattedDateString(moment()) ?? "";
+    //TODO why added 45 minute instead of of 30, 15 or 60?
     this.data.end = this.commonService.getFormattedDateString(moment().add(45, 'minutes')) ?? "";
   }
 
