@@ -550,13 +550,13 @@ export class CalendarEventService {
       CalendarWebhookChannel,
     );
 
-    const outlookLocalPrimaryCalendar = await manager
-      .getRepository(Calendar)
-      .findOne({
-        owner: { id: user.id },
-        calendarType: CalendarTypeEnum.Office365Calendar,
-        isPrimary: true,
-      });
+    // const outlookLocalPrimaryCalendar = await manager
+    //   .getRepository(Calendar)
+    //   .findOne({
+    //     owner: { id: user.id },
+    //     calendarType: CalendarTypeEnum.Office365Calendar,
+    //     isPrimary: true,
+    //   });
 
     const tunnel = await locaTunnel({
       port: +this.configService.get<string>('PORT'),
@@ -580,7 +580,7 @@ export class CalendarEventService {
         expirationDateTime: new Date(Date.now() + 250560000).toISOString(),
       });
 
-    console.log('watchResponse ', watchResponse);
+    // console.log('watchResponse ', watchResponse);
 
     const webhookChannel = new CalendarWebhookChannel();
     webhookChannel.channelId = watchResponse.id;

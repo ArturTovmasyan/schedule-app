@@ -248,6 +248,10 @@ export class CalendarPermissionsService {
         tokenResponse.accessToken,
         manager,
       );
+      await this.calendarEventService.syncOutlookCalendarEventList(
+        user,
+        manager,
+      );
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });

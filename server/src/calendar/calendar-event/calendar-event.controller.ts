@@ -103,17 +103,17 @@ export class CalendarEventController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    console.log('req.body.value ', req);
+    if (req.body.value) {
+      const resourceId = req.body.value[0].subscriptionId;
 
-    // TO DO resourceId bug
+      const webhook = await this.calendarEventService.getWebhookByChannelId(
+        resourceId,
+      );
 
-    const resourceId = req.body.value.subscriptionId;
-
-    const webhook = await this.calendarEventService.getWebhookByChannelId(
-      resourceId,
-    );
-
-    await this.calendarEventService.syncOutlookCalendarEventList(webhook.owner);
+      await this.calendarEventService.syncOutlookCalendarEventList(
+        webhook.owner,
+      );
+    }
 
     res.status(200);
     res.send(query.validationToken);
