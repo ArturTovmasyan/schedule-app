@@ -12,9 +12,11 @@ import {FullCalendarComponent} from "./full-calendar/full-calendar.component";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
+import bootstrapPlugin from '@fullcalendar/bootstrap';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
+  bootstrapPlugin,
   interactionPlugin,
   timeGridPlugin
 ]);

@@ -1,0 +1,23 @@
+#fc-dom-1 {
+  color: black;
+  font-size: 20px;
+  width: 400px;
+  margin: 0;
+}
+
+button.fc-prev-button  {
+  background-color: red;
+  position: absolute;
+  margin-left: -4%;
+}
+
+button.fc-next-button  {
+  background-color: green;
+  position: absolute;
+  margin-left: 15%;
+  margin-top: -2%;
+}
+
+a.fc-col-header-cell-cushion {
+  text-decoration: none;
+}
