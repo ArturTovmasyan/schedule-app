@@ -25,6 +25,7 @@ import {
   CancelMeetingDto,
   CreateSharableLinkDto,
   PaginationDto,
+  RescheduleMeetingDto,
   SelectSlotPublic,
 } from './dto/create-sharable-link.dto';
 import { GetUser } from 'src/components/decorators/get-user.decorator';
@@ -83,6 +84,16 @@ export class SharableLinksController {
   @Patch('cancel-slot/:slotId')
   cancelSlot(@Param('slotId') slotId: string, @Body() body: CancelMeetingDto) {
     return this.sharableLinksService.cancelMeeting(slotId, body);
+  }
+
+  @ApiResponse({ type: IResponseMessage })
+  @ApiOperation({ summary: 'Reschedule Scheduled meeting' })
+  @Patch('reschedule-slot/:slotId')
+  rescheduleSlot(
+    @Param('slotId') slotId: string,
+    @Body() body: RescheduleMeetingDto,
+  ) {
+    return this.sharableLinksService.rescheduleMeeting(slotId, body);
   }
 
   @ApiResponse({ type: IResponseMessage })

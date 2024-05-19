@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import * as moment from 'moment';
 import { randomUUID } from 'crypto';
@@ -29,6 +30,7 @@ import {
   CreateSharableLinkDto,
   SelectSlotPublic,
   CancelMeetingDto,
+  RescheduleMeetingDto,
 } from './dto/create-sharable-link.dto';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from 'src/mail/mail.service';
@@ -463,6 +465,12 @@ export class SharableLinksService {
           isPrimary: true,
         });
 
+      if (!schedulerUserCalendar) {
+        throw new BadRequestException({
+          message: ErrorMessages.calendarNotFound,
+        });
+      }
+
       let meetLink: string;
       let meetingId: string;
 
@@ -516,12 +524,20 @@ export class SharableLinksService {
         },
       );
 
-      await queryRunner.manager
-        .getRepository(SharableLinkSlotsEntity)
-        .update(
-          { id: slotId },
-          { choosedByEmail: body.email, meetingId, calendarEventId: event.id },
-        );
+      await queryRunner.manager.getRepository(SharableLinkSlotsEntity).update(
+        { id: slotId },
+        {
+          choosedByEmail: body.email,
+          meetingId,
+          calendarEventId: event.id,
+          metadata: {
+            name: body.name,
+            email: body.email,
+            note: body.note,
+            phoneNumber: body.phoneNumber,
+          },
+        },
+      );
 
       await queryRunner.commitTransaction();
 
@@ -568,7 +584,7 @@ export class SharableLinksService {
           select: ['id', 'email', 'firstName', 'lastName', 'avatar'],
         });
 
-      const schedulerUserCalendar = await queryRunner.manager
+      const calendar = await queryRunner.manager
         .getRepository(Calendar)
         .findOne({
           owner: { id: schedulerUser.id },
@@ -613,6 +629,183 @@ export class SharableLinksService {
       await queryRunner.commitTransaction();
 
       return { message: 'Canceled', status: 201 };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+
+      throw new BadRequestException({ message: error.message });
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * @description `Private method that deletes calendar event for both cancellaion and scheduling events`
+   *
+   * @param slot - `Selected slot`
+   * @param user - `Authorized user data`
+   * @param calendar - `Calendar of Authorized user`
+   *
+   * @returns `Deleted`
+   */
+
+  private async _deleteTimeslotEvents(
+    slot: SharableLinkSlotsEntity,
+    user: User,
+    calendar: Calendar,
+  ): Promise<IResponseMessage> {
+    if (slot.link.meetVia === MeetViaEnum.GMeet) {
+      await this.calendarEventService.deleteGoogleMeetLink(
+        user,
+        slot.meetingId,
+        calendar.calendarId,
+      );
+    } else if (slot.link.meetVia === MeetViaEnum.Zoom) {
+      await this.zoomService.deleteMeeting(user, slot.meetingId);
+    }
+
+    await this.calendarEventService.deleteUserCalendarEvent(
+      user,
+      slot.calendarEventId,
+    );
+
+    return { message: 'Deleted', status: HttpStatus.ACCEPTED };
+  }
+
+  /**
+   * @description `Reschedule selected timeslot event`
+   *
+   * @param slotId - `Selected slot id`
+   * @param body - `reason and new slot id`
+   *
+   * @returns `Rescheduled`
+   */
+
+  async rescheduleMeeting(
+    slotId: string,
+    body: RescheduleMeetingDto,
+  ): Promise<IResponseMessage> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+
+    try {
+      const slot = await queryRunner.manager
+        .getRepository(SharableLinkSlotsEntity)
+        .createQueryBuilder('slot')
+        .addSelect(['user.id', 'user.email'])
+        .innerJoinAndSelect('slot.link', 'link')
+        .innerJoin('link.user', 'user')
+        .where({ id: slotId })
+        .getOne();
+
+      const newSlot = await queryRunner.manager
+        .getRepository(SharableLinkSlotsEntity)
+        .createQueryBuilder('slot')
+        .addSelect(['user.id', 'user.email'])
+        .innerJoinAndSelect('slot.link', 'link')
+        .innerJoin('link.user', 'user')
+        .where({ id: body.newSlotId })
+        .andWhere({ linkId: slot.link.id })
+        .getOne();
+
+      const email = slot.user ? slot.user.email : slot.metadata.email;
+
+      const schedulerUser = await queryRunner.manager
+        .getRepository(User)
+        .findOne({
+          where: { id: slot.link.user.id },
+          select: ['id', 'email', 'firstName', 'lastName', 'avatar'],
+        });
+
+      const calendar = await queryRunner.manager
+        .getRepository(Calendar)
+        .findOne({
+          owner: { id: schedulerUser.id },
+          isPrimary: true,
+        });
+
+      await this._deleteTimeslotEvents(slot, schedulerUser, calendar);
+
+      let meetLink: string;
+      let meetingId: string;
+
+      if (slot.link.meetVia === MeetViaEnum.Zoom) {
+        const zoomMeet = await this.zoomService.createMeeting(schedulerUser, {
+          start_time: newSlot.startDate,
+          pre_schedule: true,
+          meeting_invitees: [{ email: email }],
+          waiting_room: true,
+          type: 1,
+          settings: {
+            email_notification: true,
+          },
+        });
+
+        meetLink = zoomMeet.data.join_url;
+        meetingId = zoomMeet.data.id.toString();
+      } else if (slot.link.meetVia === MeetViaEnum.GMeet) {
+        const gMeet = await this.calendarEventService.createGoogleMeetLink(
+          schedulerUser,
+          {
+            start: moment(newSlot.startDate).format(),
+            end: moment(newSlot.endDate).format(),
+            calendarId: calendar.id,
+            attendees: [email],
+          },
+        );
+
+        meetLink = gMeet.meetLink;
+        meetingId = gMeet.meetingId;
+      }
+
+      const event = await this.calendarEventService.createUserCalendarEvent(
+        schedulerUser,
+        {
+          title: slot.link.title,
+          description: `Your meeting of ${slot.startDate} - ${
+            slot.endDate
+          } was rescheduled
+          Reason: ${body.reason}
+          Here are the details of new event with ${
+            slot.user
+              ? slot.user.firstName + ' ' + slot.user.lastName
+              : slot.metadata.name
+          }`,
+          meetLink,
+          phoneNumber: slot.link.phoneNumber,
+          address: slot.link.address,
+          start: moment(newSlot.startDate).format(),
+          end: moment(newSlot.endDate).format(),
+          syncWith: calendar.calendarId,
+          attendees: [email],
+        },
+      );
+
+      await Promise.all([
+        queryRunner.manager.getRepository(SharableLinkSlotsEntity).update(
+          { id: slotId },
+          {
+            choosedByEmail: null,
+            choosedBy: null,
+            meetingId: null,
+            calendarEventId: null,
+            metadata: null,
+          },
+        ),
+        queryRunner.manager.getRepository(SharableLinkSlotsEntity).update(
+          { id: body.newSlotId },
+          {
+            choosedBy: slot.user ? slot.user.id : null,
+            choosedByEmail: slot.metadata.email ?? null,
+            meetingId,
+            calendarEventId: event.id,
+            metadata: slot.metadata,
+          },
+        ),
+      ]);
+
+      await queryRunner.commitTransaction();
+
+      return { message: 'Rescheduled', status: 201 };
     } catch (error) {
       await queryRunner.rollbackTransaction();
 

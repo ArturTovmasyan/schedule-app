@@ -82,6 +82,18 @@ export class CancelMeetingDto {
   reason: string;
 }
 
+export class RescheduleMeetingDto {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsString()
+  reason: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsUUID()
+  newSlotId: string;
+}
+
 export class PaginationDto implements IPaginate {
   @ApiProperty({ required: false, default: 20 })
   @IsOptional()

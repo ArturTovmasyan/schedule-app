@@ -1,3 +1,4 @@
+import { User } from '@user/entity/user.entity';
 import {
   Column,
   Entity,
@@ -7,7 +8,9 @@ import {
   UpdateDateColumn,
   JoinColumn,
   ManyToOne,
+  OneToOne,
 } from 'typeorm';
+import { ISlotMetadata } from '../interfaces/sharable-links.interface';
 import { SharableLinkEntity } from './sharable-link.entity';
 
 @Entity('sharable_link_slots')
@@ -17,6 +20,9 @@ export class SharableLinkSlotsEntity {
 
   @Column({ name: 'choosed_by', nullable: true })
   choosedBy: string;
+
+  @OneToOne(() => User, (user) => user.id)
+  user: User;
 
   @Column({ name: 'choosed_by_email', nullable: true })
   choosedByEmail: string;
@@ -39,6 +45,9 @@ export class SharableLinkSlotsEntity {
 
   @CreateDateColumn({ nullable: true, precision: 3, name: 'end_date' })
   endDate: Date;
+
+  @Column({ name: 'metadata', type: 'jsonb' })
+  metadata: ISlotMetadata;
 
   @CreateDateColumn()
   createdOn?: Date;
