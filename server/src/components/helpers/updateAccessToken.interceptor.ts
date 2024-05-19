@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CalendarToken } from '../calendar-permissions/entity/calendarToken.entity';
+import { CalendarToken } from '../../calendar-permissions/entity/calendarToken.entity';
 import { Repository } from 'typeorm';
-import { CalendarPermissionsService } from '../calendar-permissions/calendarPermissions.service';
-import { CalendarTypeEnum } from '../calendar-permissions/enums/calendarType.enum';
+import { CalendarPermissionsService } from '../../calendar-permissions/calendarPermissions.service';
+import { CalendarTypeEnum } from '../../calendar-permissions/enums/calendarType.enum';
 
 @Injectable()
 export class UpdateAccessTokenInterceptor implements NestInterceptor {
@@ -34,18 +34,19 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
 
       for (const token of tokens) {
         if (token.calendarType === CalendarTypeEnum.GoogleCalendar) {
+
           await this.calendarPermissionsService.googleOAuth2Client.setCredentials(
             {
               refresh_token: token.refreshToken,
             },
           );
 
-          const refreshRes =
-            await this.calendarPermissionsService.googleOAuth2Client.refreshAccessToken();
+          const refreshRes = await this.calendarPermissionsService.googleOAuth2Client.refreshAccessToken();
 
           if (refreshRes.res.headers.status !== 200) {
             throw new BadGatewayException();
           }
+
           const updatedTokens = refreshRes.res.data;
 
           const calendarTokenBody = {
@@ -54,7 +55,9 @@ export class UpdateAccessTokenInterceptor implements NestInterceptor {
             refreshToken: updatedTokens.refresh_token,
             expiryDate: new Date(updatedTokens.expiry_date).toISOString(),
           };
+
           await calendarTokenRepository.save(calendarTokenBody);
+
         } else if (token.calendarType === CalendarTypeEnum.Office365Calendar) {
           const updatedTokens =
             await this.calendarPermissionsService.msalInstance.acquireTokenByRefreshToken(
