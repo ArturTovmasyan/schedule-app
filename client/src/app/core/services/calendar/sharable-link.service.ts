@@ -12,6 +12,10 @@ export class SharableLinkService {
     return this.http.post<ApiResponse<any>>('/api/sharable-links', { ...formData });
   }
 
+  updateLink(id: string, formData: any) {
+    return this.http.post<ApiResponse<any>>(`/api/sharable-links/${id}`, { ...formData });
+  }
+
   getDetails(linkId: string) {
     return this.http.get<ApiResponse<any>>(`/api/sharable-links/${linkId}`);
   }

@@ -32,14 +32,14 @@
                         {{ selectedContact | getContactCompany }}
                       </h6>
                     </div>
-                    <button class="remove-button">
+                    <button class="remove-button" *ngIf="updateView">
                       <img src="assets/close-icon.svg" alt="remove user" (click)="removeSingleContact(selectedContact)">
                     </button>
                   </div>
                 </li>
               </ng-container>
               <li class="user-input">
-                <input type="text" #contactInput>
+                <input type="text" #contactInput *ngIf="updateView">
                 <ul>
                   <ng-container *ngFor="let contact of filteredContacts$|async">
                     <li (click)="selectContact(contact)">
@@ -89,15 +89,12 @@
               <div class="timezone">
                 <span class="timezoneText">{{ timezone }}</span>
               </div>
-              <button class="remove-button" id="removeButton" (click)="removeTime(date.key, i)">
+              <button class="remove-button" id="removeButton" (click)="removeTime(date.key, i)" *ngIf="updateView">
                 <img src="assets/close-icon.svg" alt="remove button">
               </button>
             </li>
-
           </ul>
-
         </li>
-
       </ul>
 
       <h3 class="section-title-secondary mt-4 mb-2">
@@ -128,14 +125,14 @@
           <h3 class="section-title-secondary mt-4 mb-2">
             Phone number
           </h3>
-          <input type="text" class="form-control" [(ngModel)]="phoneNumber" name="phoneNumber">
+          <input type="text" class="form-control" [(ngModel)]="phoneNumber" name="phoneNumber" [disabled]="!updateView">
       </ng-container>
 
       <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.PhysicalAddress">
         <h3 class="section-title-secondary mt-4 mb-2">
           Address
         </h3>
-        <input type="text" class="form-control" [(ngModel)]="address" name="address">
+        <input type="text" class="form-control" [(ngModel)]="address" name="address" [disabled]="!updateView">
       </ng-container>
 
       <div class="connect-message" *ngIf="connectMessage.title != ''">
@@ -154,7 +151,7 @@
           </button>
           <div class="buttons position-relative">
             <span class="copied-tooltip {{ showCopiedText ? 'visible': ''}}">Copied</span>
-            <button>
+            <button (click)="editLink()" *ngIf="!updateView">
               <img src="assets/edit-icon.png" alt="copy">
             </button>
             <button (click)="copyLink(sharableLink)">
@@ -170,6 +167,5 @@
               Create
             </button>
           </div>
-
   </form>
 </section>

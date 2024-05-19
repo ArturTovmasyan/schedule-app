@@ -1,7 +1,7 @@
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import { DOCUMENT } from '@angular/common';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, first, fromEvent, map, Subject, tap } from 'rxjs';
 import { CalendarAccess } from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
 import { AvailabilityService } from 'src/app/core/services/calendar/availability.service';
@@ -20,11 +20,17 @@ import { environment } from 'src/environments/environment';
 })
 export class SharableLinkComponent implements OnInit, OnDestroy {
 
+  linkId = '';
   readonly MeetViaEnum = MeetViaEnum;
   @ViewChild('contactInput') input!: ElementRef;
   subscription$: BehaviorSubject<boolean>;
   selectedDates$: BehaviorSubject<any> = new BehaviorSubject([]);
-  selectedDates: any = []
+  selectedDates:any = []
+
+  // both varible are used for update of sharable links only
+  deletedTimeSlots: any = [];
+  addedTimeSlots: any = [];
+
   showLocation = false;
   choosedLocationObj: Location | null = null;
   connectMessage = { 'title': '', 'type': '' };
@@ -33,9 +39,8 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   address = null;
 
   errorMessage = '';
-  // for contacts
+  // for contacts or attendees
   contacts: CalendarAccess[] = [];
-  private term: Subject<string> = new Subject<string>();
   filteredContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
   selectedContacts$ = new BehaviorSubject<CalendarAccess[]>([]);
   selectedContacts: CalendarAccess[] = [];
@@ -43,10 +48,10 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   selectedEmails: string[] = [];
   // MAP<email, availability_data>
   emailsWithAvailabilityMap = new Map();
-
   sharableLink = '';
   showCopiedText = false;
   showJointAvailibility = false;
+  updateView = true;
   private readonly _document: Document;
 
   locations: Location[] = [];
@@ -63,17 +68,19 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     private readonly calendarAccessService: CalendarAccessService,
     private readonly availabilityService: AvailabilityService,
     private readonly sharableLinkService: SharableLinkService,
-    private calendarPermissionService: CalendarPermissionService,
+    private readonly calendarPermissionService: CalendarPermissionService,
     @Inject(DOCUMENT) document: any
   ) {
     this.broadcaster.broadcast('reset_event');
+    this.linkId = this.route.snapshot.params['id'];
     // get location list and get sharable link details
     this.sharableLinkService.getLocations()
       .subscribe({
         next: (res: any) => {
           this.locations = res;
-          if (linkId) {
-              this.loadSharableLinkDetails(linkId);
+          // load from api if link id is sent to parameters ie used for edit page
+          if (this.linkId) {
+              this.loadSharableLinkDetails(this.linkId);
           }
         }
       });
@@ -94,6 +101,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
       } else {
         this.selectedDates[startdate] = [dates];
       }
+      console.log('addedtimeslot', dates);
+      this.addedTimeSlots.push(dates);
+
       this.selectedDates[startdate].sort(function (left: any, right: any) {
         return moment.utc(left.start).diff(moment.utc(right.start))
       });
@@ -108,7 +118,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.broadcaster.broadcast('multiselect_calendar', true);
+      // this.broadcaster.broadcast('multiselect_calendar', true);
   }
 
   ngAfterViewInit() {
@@ -150,7 +160,13 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   }
 
   loadSharableLinkDetails(linkId: string | null) {
-    if (!linkId) return;
+    if (!linkId) {
+      this.broadcaster.broadcast('multiselect_calendar', true);
+      return;
+    }
+    this.broadcaster.broadcast('multiselect_calendar', false);
+    this.updateView = false;
+
     this.sharableLinkService.getDetails(linkId)
       .subscribe({
         next: (res) => {
@@ -159,9 +175,9 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
           for (const date of res.data.slots) {
             const startdate = moment.utc(date.startDate).local().format('ddd, MMM Do');
             if (this.selectedDates[startdate]) {
-              this.selectedDates[startdate].push({ 'start': date.startDate, 'end': date.endDate });
+              this.selectedDates[startdate].push({ 'id': date.id, 'start': date.startDate, 'end': date.endDate });
             } else {
-              this.selectedDates[startdate] = [{ 'start': date.startDate, 'end': date.endDate }];
+              this.selectedDates[startdate] = [{ 'id': date.id, 'start': date.startDate, 'end': date.endDate }];
             }
           }
           const sortedObject = Object.fromEntries(
@@ -225,10 +241,22 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
   // remove from selected timeslots
   removeTime(date: any, i: any) {
     const selectedDate = this.selectedDates[date].splice(i, 1);
+    // run if in update page
+    console.log(selectedDate);
+    if (this.sharableLink && selectedDate?.[0]?.id) {
+      this.deletedTimeSlots.push(selectedDate[0].id);
+    } else {
+      this.addedTimeSlots.filter((date: any) => {
+        return date.start != selectedDate[0]['start'] &&
+          date.end != selectedDate[0]['end']
+      });
+    }
+
     if (this.selectedDates[date].length == 0) {
       delete this.selectedDates[date];
     }
     this.selectedDates$.next(this.selectedDates);
+
     this.broadcaster.broadcast('removeSharableLinkTimeSlot', selectedDate);
   }
 
@@ -266,7 +294,7 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
 
     localStorage.setItem('savedDatas', JSON.stringify(savedData));
     localStorage.setItem('calendar-redirect', window.location.pathname);
-
+    let connectApiReq = null;
     if (type == MeetViaEnum.Zoom) {
       this.calendarPermissionService.connectZoom()
         .subscribe({
@@ -274,27 +302,22 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
             window.location.href = url;
           }
         });
-
     }
 
     if (type == MeetViaEnum.GMeet) {
-      this.calendarPermissionService.connectGoogleCalendar()
-        .pipe(first())
-        .subscribe({
-          next: (url: string) => {
-            window.location.href = url;
-          }
-      });
+      connectApiReq = this.calendarPermissionService.connectGoogleCalendar();
     }
 
     if (type == MeetViaEnum.Teams) {
-      this.calendarPermissionService.connectOffice365Calendar()
-        .pipe(first())
-        .subscribe({
-          next: (url: string) => {
-            window.location.href = url;
-          }
-        });
+      connectApiReq = this.calendarPermissionService.connectOffice365Calendar()
+    }
+
+    if (connectApiReq) {
+      connectApiReq.subscribe({
+        next: (url: string) => {
+          window.location.href = url;
+        }
+      });
     }
   }
 
@@ -477,6 +500,83 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.showCopiedText = false;
     }, 2000);
+  }
+
+  editLink() {
+    this.updateView = true;
+    this.broadcaster.broadcast('multiselect_calendar', true);
+  }
+
+  updateSharableLink() {
+    const selectedDates = this.addedTimeSlots;
+    if (selectedDates.length == 0) {
+      this.errorMessage = 'Please select at least one available time slot';
+    } else if (!this.choosedLocationObj) {
+      this.errorMessage = 'Please select the Location';
+    } else if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall && !this.phoneNumber) {
+      this.errorMessage = 'Please enter Phone Number';
+    } else if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress && !this.address) {
+      this.errorMessage = 'Please enter Address';
+    }
+
+    if (this.errorMessage) {
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000);
+      return;
+    }
+
+    const selectedDatesNew = [];
+    for (const key in selectedDates) {
+      const value = selectedDates[key];
+      for (const val of value) {
+        selectedDatesNew.push({
+          'startDate': val['start'],
+          'endDate': val['end']
+        });
+      }
+    }
+
+    const requestParams = {
+      'title': this.choosedLocationObj?.title,
+      'addSlots': selectedDatesNew,
+      'deleteSlots': this.deletedTimeSlots,
+      'meetVia': this.choosedLocationObj?.value,
+      'attendees': [] as any,
+      'phoneNumber': null,
+      'address': null
+    }
+
+    if (this.selectedContacts.length > 0) {
+      requestParams['attendees'] = this.selectedContacts.map(x => x.owner.id);
+    }
+
+    if (this.choosedLocationObj?.value == MeetViaEnum.InboundCall) {
+      requestParams['phoneNumber'] = this.phoneNumber;
+    }
+    if (this.choosedLocationObj?.value == MeetViaEnum.PhysicalAddress) {
+      requestParams['address'] = this.address;
+    }
+
+    this.sharableLinkService.updateLink(this.linkId, requestParams)
+      .subscribe({
+        next: (res: any) => {
+          if (res.status) {
+            if (localStorage.getItem('savedDatas')) localStorage.removeItem('savedDatas');
+            window.location.reload();
+            // route to details page after link creationg for better update functionality
+            // TODO: we can use same page. Will determine after update functionality is done in backend
+            // this.router.navigate(['/calendar/sharable-link', res.metadata.sharableLinkId]);
+            // this.router.navigateByUrl(`/calendar/sharable-link/${res.metadata.sharableLinkId}`);
+            // Do Not remove this. May need later.
+            // this.sharableLink = `${environment.host}share/${res.metadata.sharableLinkId}`;
+          }
+        },
+        error: (error) => {
+          // show error from server here
+          console.log(error);
+        }
+      });
   }
 
   ngOnDestroy(): void {
