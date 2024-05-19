@@ -73,12 +73,9 @@
               <input type="text" id="meetingEndTime" name="meetingEndTime"
                 placeholder="{{ this.data.end | parseTime:'hh:mmA' }}" readonly>
             </li>
-            <li class="list-inline-item timezone">
-              <span id="timezoneText">{{ timezone }}</span>
-            </li>
           </ul>
         </div>
-        <div class="save-to-calendar">
+        <div class="save-to-calendar" *ngIf="hasCalendars">
           <h6>Save this event in <span (click)="showCalendars = !showCalendars"><img
                 [src]="getCalendarIcon(selectedCalendar?.calendarType ?? null)" alt="calendar icon">
               {{ selectedCalendar?.summary ?? "N/A" }}</span></h6>
