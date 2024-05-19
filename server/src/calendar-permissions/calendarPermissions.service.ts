@@ -183,6 +183,8 @@ export class CalendarPermissionsService {
       });
 
       const tokenCache = this.msalInstance.getTokenCache().serialize();
+
+      console.log('tokenCache ', JSON.parse(tokenCache));
       const refreshTokenObject = JSON.parse(tokenCache).RefreshToken;
 
       const refreshToken =
@@ -198,6 +200,8 @@ export class CalendarPermissionsService {
       };
 
       await calendarTokenRepository.save(calendarTokenBody);
+
+      this.msalInstance.clearCache();
 
       return this.getUserStatusOfCalendars(user.id, manager);
     });
