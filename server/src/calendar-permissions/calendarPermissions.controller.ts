@@ -31,6 +31,23 @@ export class CalendarPermissionsController {
     @Get('google-calendar-callback')
     @UseGuards(AuthGuard())
     async googleCalendarCallback(@Req() req: { user: User }, @Query() query: any) {
-        return await this.calendarPermissionsService.getTokensAndSave(req.user, query.code);
+        return await this.calendarPermissionsService.getTokensFromGoogleAndSave(req.user, query.code);
+    }
+
+    @Get('ms-calendar')
+    // @UseGuards(AuthGuard())
+    async ms365Calendar(@Req() req: { user: User }, @Res() res: Response) {
+        // const {url, statusOfCalendars} =
+        const url = await this.calendarPermissionsService.toggleMs365Calendar(req.user);
+        if (url) {
+            return res.redirect(url)
+        }
+        // return res.send(statusOfCalendars);
+    }
+
+    @Get('ms-calendar-callback')
+    // @UseGuards(AuthGuard())
+    async ms365CalendarCallback(@Req() req: { user: User }, @Query() query: any) {
+        return await this.calendarPermissionsService.getTokensFromMs365AndSave(req.user, query.code);
     }
 }
