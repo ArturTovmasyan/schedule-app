@@ -54,6 +54,9 @@ export class CalendarEvent {
   @Column({ type: 'varchar', nullable: true })
   meetLink: string;
 
+  @Column({ type: 'jsonb', default: [] })
+  attendees: string;
+
   @Column({ type: 'boolean', nullable: false, default: false })
   allDay: boolean;
 
