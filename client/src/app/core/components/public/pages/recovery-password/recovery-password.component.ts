@@ -1,8 +1,8 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ErrorResponse} from "../../interfaces/error/error-response.interface";
-import {ValidationService} from "../../../shared/services";
-import {AuthService} from "../../services/auth/auth.service";
+import {ErrorResponse} from "../../../../interfaces/error/error-response.interface";
+import {ValidationService} from "../../../../../shared/services";
+import {AuthService} from "../../../../services/auth/auth.service";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({

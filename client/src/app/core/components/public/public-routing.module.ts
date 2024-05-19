@@ -10,6 +10,7 @@ import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.co
 import { ConfirmAccountComponent } from './pages/confirm-account/confirm-account.component';
 import { OauthLoginComponent } from './pages/oauth-login/oauth-login.component';
 import { RedirectGuard } from '../../guards/redirect.guard';
+import { RecoveryPasswordComponent } from './pages/recovery-password/recovery-password.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,12 @@ const routes: Routes = [
       {
         path: 'reset-password',
         component: ResetPasswordComponent,
+        canActivate: [RedirectGuard]
+      },
+      {
+        path: 'new-password',
+        component: RecoveryPasswordComponent,
+        data: {title: 'Change Password'},
         canActivate: [RedirectGuard]
       },
       {
