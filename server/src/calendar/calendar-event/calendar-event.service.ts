@@ -184,9 +184,12 @@ export class CalendarEventService {
     return this.calendarTokenRepository.manager.transaction(async (manager) => {
       let outlookEventId = '';
       let googleEventId = '';
+      let creatorFromGoogle = '';
+      let creatorFromOutlook = '';
       const tokens = await this.getTokens(user, manager);
       const googleToken = tokens.googleToken;
       const outlookToken = tokens.outlookToken;
+      const eventSavers = [];
 
       if (googleToken) {
         const googleAccessToken = googleToken.accessToken;
@@ -200,17 +203,25 @@ export class CalendarEventService {
             calendarType: CalendarTypeEnum.GoogleCalendar,
             isPrimary: true,
           });
-        const googleEventCreateRes = await googleCalendarClient.events.insert({
-          calendarId: googleLocalPrimaryCalendar.calendarId,
-          requestBody: {
-            summary: eventBody.title,
-            description: eventBody.description,
-            start: { dateTime: eventBody.start, timeZone: 'GMT' },
-            end: { dateTime: eventBody.end, timeZone: 'GMT' },
-          },
-        });
 
-        googleEventId = googleEventCreateRes.data.id;
+        async function saveEventGoogle() {
+          const googleEventCreateRes = await googleCalendarClient.events.insert(
+            {
+              calendarId: googleLocalPrimaryCalendar.calendarId,
+              requestBody: {
+                summary: eventBody.title,
+                description: eventBody.description,
+                start: { dateTime: eventBody.start, timeZone: 'GMT' },
+                end: { dateTime: eventBody.end, timeZone: 'GMT' },
+              },
+            },
+          );
+
+          googleEventId = googleEventCreateRes.data.id;
+          creatorFromGoogle = googleEventCreateRes.data.creator.email;
+        }
+
+        eventSavers.push(saveEventGoogle);
       }
 
       if (outlookToken) {
@@ -227,20 +238,31 @@ export class CalendarEventService {
             calendarType: CalendarTypeEnum.Office365Calendar,
             isPrimary: true,
           });
-        const outlookEventCreateRes = await outlookCalendarClient
-          .api(`/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events`)
-          .post({
-            subject: eventBody.title,
-            bodyPreview: eventBody.description,
-            body: {
-              content: eventBody.description,
-            },
-            start: { dateTime: eventBody.start, timeZone: 'GMT' },
-            end: { dateTime: eventBody.end, timeZone: 'GMT' },
-          });
 
-        outlookEventId = outlookEventCreateRes.id;
+        async function saveEventOutlook() {
+          const outlookEventCreateRes = await outlookCalendarClient
+            .api(
+              `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events`,
+            )
+            .post({
+              subject: eventBody.title,
+              bodyPreview: eventBody.description,
+              body: {
+                content: eventBody.description,
+              },
+              start: { dateTime: eventBody.start, timeZone: 'GMT' },
+              end: { dateTime: eventBody.end, timeZone: 'GMT' },
+            });
+
+          outlookEventId = outlookEventCreateRes.id;
+          creatorFromOutlook =
+            outlookEventCreateRes.organizer.emailAddress.address;
+        }
+
+        eventSavers.push(saveEventOutlook);
       }
+
+      await Promise.all(eventSavers.map((saver) => saver()));
 
       const event = new CalendarEvent();
       event.googleId = googleEventId || null;
@@ -251,6 +273,8 @@ export class CalendarEventService {
       event.end = eventBody.end ? new Date(eventBody.end) : null;
       event.title = eventBody.title || null;
       event.creator = user.email || null;
+      event.creatorFromGoogle = creatorFromGoogle || null;
+      event.creatorFromOutlook = creatorFromOutlook || null;
       event.meetLink = eventBody.meetLink || null;
       event.description = eventBody.description || null;
 
@@ -272,6 +296,8 @@ export class CalendarEventService {
       const googleToken = tokens.googleToken;
       const outlookToken = tokens.outlookToken;
 
+      const eventDeleters = [];
+
       if (googleToken) {
         const googleAccessToken = googleToken.accessToken;
         const googleCalendarClient = await this.getGoogleCredentials(
@@ -285,10 +311,14 @@ export class CalendarEventService {
             isPrimary: true,
           });
 
-        await googleCalendarClient.events.delete({
-          calendarId: googleLocalPrimaryCalendar.calendarId,
-          eventId: event.googleId,
-        });
+        async function googleEventDeleter() {
+          await googleCalendarClient.events.delete({
+            calendarId: googleLocalPrimaryCalendar.calendarId,
+            eventId: event.googleId,
+          });
+        }
+
+        eventDeleters.push(googleEventDeleter);
       }
 
       if (outlookToken) {
@@ -306,12 +336,18 @@ export class CalendarEventService {
             isPrimary: true,
           });
 
-        await outlookCalendarClient
-          .api(
-            `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events/${event.outlookId}`,
-          )
-          .delete();
+        async function outlookEventDeleter() {
+          await outlookCalendarClient
+            .api(
+              `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events/${event.outlookId}`,
+            )
+            .delete();
+        }
+
+        eventDeleters.push(outlookEventDeleter);
       }
+
+      await Promise.all(eventDeleters.map((saver) => saver()));
 
       return await manager
         .getRepository(CalendarEvent)
@@ -339,6 +375,8 @@ export class CalendarEventService {
       const googleToken = tokens.googleToken;
       const outlookToken = tokens.outlookToken;
 
+      const eventUpdaters = [];
+
       if (googleToken) {
         const googleAccessToken = googleToken.accessToken;
         const googleCalendarClient = await this.getGoogleCredentials(
@@ -352,16 +390,20 @@ export class CalendarEventService {
             isPrimary: true,
           });
 
-        const resGoogle = await googleCalendarClient.events.update({
-          calendarId: googleLocalPrimaryCalendar.calendarId,
-          eventId: eventOld.googleId,
-          requestBody: {
-            summary: eventBody.title,
-            description: eventBody.description,
-            start: { dateTime: eventBody.start, timeZone: 'GMT' },
-            end: { dateTime: eventBody.end, timeZone: 'GMT' },
-          },
-        });
+        async function googleEventUpdater() {
+          await googleCalendarClient.events.update({
+            calendarId: googleLocalPrimaryCalendar.calendarId,
+            eventId: eventOld.googleId,
+            requestBody: {
+              summary: eventBody.title,
+              description: eventBody.description,
+              start: { dateTime: eventBody.start, timeZone: 'GMT' },
+              end: { dateTime: eventBody.end, timeZone: 'GMT' },
+            },
+          });
+        }
+
+        eventUpdaters.push(googleEventUpdater);
       }
 
       if (outlookToken) {
@@ -379,20 +421,26 @@ export class CalendarEventService {
             isPrimary: true,
           });
 
-        await outlookCalendarClient
-          .api(
-            `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events/${eventOld.outlookId}`,
-          )
-          .update({
-            subject: eventBody.title,
-            bodyPreview: eventBody.description,
-            body: {
-              content: eventBody.description,
-            },
-            start: { dateTime: eventBody.start, timeZone: 'GMT' },
-            end: { dateTime: eventBody.end, timeZone: 'GMT' },
-          });
+        async function outlookEventUpdater() {
+          await outlookCalendarClient
+            .api(
+              `/me/calendars/${outlookLocalPrimaryCalendar.calendarId}/events/${eventOld.outlookId}`,
+            )
+            .update({
+              subject: eventBody.title,
+              bodyPreview: eventBody.description,
+              body: {
+                content: eventBody.description,
+              },
+              start: { dateTime: eventBody.start, timeZone: 'GMT' },
+              end: { dateTime: eventBody.end, timeZone: 'GMT' },
+            });
+        }
+
+        eventUpdaters.push(outlookEventUpdater);
       }
+
+      await Promise.all(eventUpdaters.map((saver) => saver()));
 
       const eventToUpdate = new CalendarEvent();
 
@@ -550,14 +598,6 @@ export class CalendarEventService {
       CalendarWebhookChannel,
     );
 
-    // const outlookLocalPrimaryCalendar = await manager
-    //   .getRepository(Calendar)
-    //   .findOne({
-    //     owner: { id: user.id },
-    //     calendarType: CalendarTypeEnum.Office365Calendar,
-    //     isPrimary: true,
-    //   });
-
     const tunnel = await locaTunnel({
       port: +this.configService.get<string>('PORT'),
     });
@@ -567,10 +607,6 @@ export class CalendarEventService {
         ? tunnel.url
         : this.configService.get<string>('WEB_PRODUCTION_HOST');
 
-    // const watchCloseResponse = await outlookCalendarClient
-    //   .api('/subscriptions/f48dac3f-04db-032a-1c1c-f10a6c40057e')
-    //   .delete();
-
     const watchResponse = await outlookCalendarClient
       .api('/subscriptions')
       .post({
@@ -579,8 +615,6 @@ export class CalendarEventService {
         resource: 'me/events',
         expirationDateTime: new Date(Date.now() + 250560000).toISOString(),
       });
-
-    // console.log('watchResponse ', watchResponse);
 
     const webhookChannel = new CalendarWebhookChannel();
     webhookChannel.channelId = watchResponse.id;

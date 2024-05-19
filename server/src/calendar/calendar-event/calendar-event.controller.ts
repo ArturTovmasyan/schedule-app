@@ -90,7 +90,13 @@ export class CalendarEventController {
     const webhook = await this.calendarEventService.getWebhookByChannelId(
       resourceId,
     );
-    await this.calendarEventService.syncGoogleCalendarEventList(webhook.owner);
+    setTimeout(async () => {
+      console.log('forGoogleWebhook');
+
+      await this.calendarEventService.syncGoogleCalendarEventList(
+        webhook.owner,
+      );
+    }, 1000);
 
     if (resourceState === 'sync') {
       return res.status(200).send();
@@ -110,9 +116,12 @@ export class CalendarEventController {
         resourceId,
       );
 
-      await this.calendarEventService.syncOutlookCalendarEventList(
-        webhook.owner,
-      );
+      setTimeout(async () => {
+        console.log('forOutlookWebhook');
+        await this.calendarEventService.syncOutlookCalendarEventList(
+          webhook.owner,
+        );
+      }, 1000);
     }
 
     res.status(200);

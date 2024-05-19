@@ -29,6 +29,12 @@ export class CalendarEvent {
   creator: string;
 
   @Column({ type: 'varchar', nullable: true })
+  creatorFromGoogle: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  creatorFromOutlook: string;
+
+  @Column({ type: 'varchar', nullable: true })
   title: string;
 
   @Column({ type: 'varchar', nullable: true })
