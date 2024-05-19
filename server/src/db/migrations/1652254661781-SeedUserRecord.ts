@@ -1,18 +1,12 @@
-import { User } from '@user/entity/user.entity';
 import { MigrationInterface, QueryRunner } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 export class SeedUserRecord1652254661781 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const userRepo = queryRunner.manager.getRepository(User);
+    const password = await bcrypt.hash('Test@1234', 10);
 
-    const user = userRepo.create({
-      email: 'local@test.com',
-      firstName: 'Local',
-      lastName: 'User',
-      password: 'Test@12345',
-    });
-
-    await userRepo.save(user);
+    const query = `INSERT INTO "user" ("email", "firstName", "lastName", "password") VALUES ('local@test.com', 'Test', 'User', '${password}')`;
+    await queryRunner.query(query);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {}

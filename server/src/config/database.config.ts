@@ -5,7 +5,7 @@ const DatabaseConfig = () => ({
   database: process.env.DB_NAME || '',
   username: process.env.DB_USERNAME || '',
   password: process.env.DB_PASSWORD || '',
-  synchronize: process.env.DB_SYNCHRONIZE || false,
+  synchronize: false,
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/db/migrations/**/*.js'],
   subscribers: ['dist/subscriber/**/*.js'],
