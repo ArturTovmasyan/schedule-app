@@ -7,7 +7,6 @@
     <div class="sharable-link-body">
       <div class="accordion" [ngClass]="{ open: showJointAvailability }">
         <div class="accordian-header">
-          
           <div class="user-label">
             <img src="{{currentUser?.avatar}}" alt="user icon" *ngIf="currentUser?.avatar">
             <span id="initials" *ngIf="!currentUser?.avatar">{{ currentUser?.fullName?.charAt(0) ?? '' }}</span>

@@ -40,6 +40,7 @@ export class ChipUserInputComponent {
     }
 
     this.error = false;
+    
     this.addUser({
       email: email,
       avatar: '',

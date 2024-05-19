@@ -18,6 +18,7 @@
         <div class="duration-radio-wrapper">
           <input type="radio" name="duration" id="15minutes" value="15 minutes">
           <label for="15minutes">15m</label>
+
         </div>
         <div class="duration-radio-wrapper">
           <input type="radio" name="duration" id="30minutes" value="30 minutes">
@@ -42,11 +43,19 @@
         <h3 class="section-title-secondary">
           Attendees
         </h3>
+        <div class="accordion">
+          <div class="accordian-content">
+            <app-chip-user-input [users]="selectedAttendees" [contacts]="attendeesOptions"
+            [contactsOnly]="true" (userUpdateEvent)="updateAttendees($event)"
+            (userAddEvent)="onItemSelect($event)" (userRemoveEvent)="onRemoveItem($event)"></app-chip-user-input>
+          </div>
+        </div>
 
-        <ng-multiselect-dropdown formControlName="attendees" [placeholder]="'Select Attendees'"
+
+        <!-- <ng-multiselect-dropdown formControlName="attendees" [placeholder]="'Select Attendees'"
           [settings]="dropdownSettings" [data]="attendeesOptions" (onSelect)="onItemSelect($event)"
           (onDeSelect)="onRemoveItem($event)" [(ngModel)]="selectedAttendees">
-        </ng-multiselect-dropdown>
+        </ng-multiselect-dropdown> -->
 
       </div>
       <div class="form-group">
@@ -90,10 +99,62 @@
         <h3 class="section-title-secondary">
           Location
         </h3>
-        <input class="form-control" type="text" name="meetingLocation" formControlName="meetingLocation"
-          id="meetingLocation" placeholder="">
-        <app-control-messages [control]="f['meetingLocation']" [showRequiredErrors]="showRequiredErrors">
-        </app-control-messages>
+        <div class="select-wrapper">
+          <div class="select open">
+            <div class="select__trigger" (click)="showLocation = !showLocation">
+              <span  *ngIf="!choosedLocationObj?.title">Choose...</span>
+              <div *ngIf="choosedLocationObj?.title" class="d-flex custom-option">
+                <span class="logo">
+                  <img [src]="choosedLocationObj?.image" alt="{{choosedLocationObj?.title}}">
+                </span>
+                <div class="text">
+                  <span>
+                    {{ choosedLocationObj?.title }}
+                  </span>
+                  <p>
+                    {{ choosedLocationObj?.sub_title }}
+                  </p>
+                </div>
+              </div>
+              <img src="assets/ic_expand.svg">
+            </div>
+            <div class="custom-options" *ngIf="showLocation">
+              <span class="custom-option" *ngFor="let loc of locations" (click)="chooseLocation(loc)">
+                <span class="logo">
+                  <img [src]="loc.image" alt="{{loc.title}}">
+                </span>
+                <div class="text">
+                  <span>
+                    {{ loc.title }}
+                  </span>
+                  <p>
+                    {{ loc.sub_title }}
+                  </p>
+                </div>
+              </span>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.InboundCall">
+          <h3 class="section-title-secondary mt-4 mb-2">
+            Phone number
+          </h3>
+          <input type="text" [(ngModel)]="phoneNumber" name="phoneNumber">
+        </ng-container>
+
+        <ng-container *ngIf="choosedLocationObj?.value == MeetViaEnum.PhysicalAddress">
+          <h3 class="section-title-secondary mt-4 mb-2">
+            Address
+          </h3>
+          <input type="text" [(ngModel)]="address" name="address">
+        </ng-container>
+
+        <div class="connect-message" *ngIf="connectMessage.title != ''">
+          Please <a href="javascript:void(0)" (click)="connect(connectMessage.type)">connect</a><span class="">
+            {{connectMessage.title}}</span>
+          to your account
+        </div>
+
       </div>
       <div class="form-group">
         <h3 class="section-title-secondary">

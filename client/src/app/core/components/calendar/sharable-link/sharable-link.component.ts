@@ -207,7 +207,6 @@ export class SharableLinkComponent implements OnInit, OnDestroy {
               return moment(a, "dd-MMM-YY").diff(moment(b, "dd-MMM-YY"));
             })
           )
-          console.log(sortedObject);
           this.selectedDates$.next(sortedObject);
 
           // for preselect events on calendar
