@@ -9,7 +9,7 @@ import {CalendarPermissionService} from 'src/app/core/services/calendar/permissi
 import {CommonService} from 'src/app/core/services/common.service';
 import {CalendarType} from '../connect-calendar/connect-calendar.component';
 import {AvailabilityService} from "../../../services/calendar/availability.service";
-import {BroadcasterService, ValidationService} from "../../../../shared/services";
+import {BroadcasterService} from "../../../../shared/services";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CalendarAccess} from "../../../interfaces/calendar/calendar-access.interface";
 import {CalendarAccessService} from "../../../services/calendar/access.service";
@@ -247,7 +247,7 @@ export class MeetingComponent implements OnInit, OnDestroy {
   }
 
   close() {
-    this.router.navigate(['/calendar/contacts'])
+    this.broadcaster.broadcast('calendar_full_size', true);
   }
 
   get f() {

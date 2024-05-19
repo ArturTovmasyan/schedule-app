@@ -1,11 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import * as moment from 'moment';
-import { Moment } from 'moment';
-import { first } from 'rxjs';
-import { AccessRequest } from 'src/app/core/interfaces/calendar/access-request.interface';
-import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
-import { CommonService } from 'src/app/core/services/common.service';
+import {Moment} from 'moment';
+import {first} from 'rxjs';
+import {AccessRequest} from 'src/app/core/interfaces/calendar/access-request.interface';
+import {CalendarAccessService} from 'src/app/core/services/calendar/access.service';
+import {CommonService} from 'src/app/core/services/common.service';
+import {BroadcasterService} from "../../../../shared/services";
 
 @Component({
   selector: 'app-access-request',
@@ -23,10 +24,10 @@ export class AccessRequestComponent implements OnInit {
 
   constructor(
     private readonly accessService: CalendarAccessService,
+    private readonly changeDetectorRef: ChangeDetectorRef,
+    private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
-    private readonly router: Router,
-    private readonly changeDetectorRef: ChangeDetectorRef
-  ) { }
+    private readonly router: Router) { }
 
   ngOnInit() {
     this.message = `Hey all,\n\nPlease Share your calendars with me so I can schedule with ease.`;
@@ -37,8 +38,7 @@ export class AccessRequestComponent implements OnInit {
   }
 
   onMessageUpdate(event: Event) {
-    const value = (event.target as any).value;
-    this.message = value;
+    this.message = (event.target as any).value;
   }
 
   onCustomDateUpdate(event: Event) {
@@ -98,6 +98,6 @@ export class AccessRequestComponent implements OnInit {
   }
 
   close() {
-    this.router.navigate(['/calendar/contacts'])
+    this.broadcaster.broadcast('calendar_full_size', true);
   }
 }

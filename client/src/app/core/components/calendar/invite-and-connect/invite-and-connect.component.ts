@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { first } from 'rxjs';
 import { CommonService } from 'src/app/core/services/common.service';
 import { CalendarInvitationService } from '../../../services/calendar/invitation.service';
+import {BroadcasterService} from "../../../../shared/services";
 
 @Component({
   selector: 'app-invite-and-connect',
@@ -22,7 +22,7 @@ export class InviteAndConnectComponent implements OnInit {
     private formBuilder: FormBuilder,
     private readonly invitationService: CalendarInvitationService,
     private readonly commonService: CommonService,
-    private readonly router: Router
+    private readonly broadcaster: BroadcasterService,
   ) { }
 
   ngOnInit(): void {
@@ -37,7 +37,6 @@ export class InviteAndConnectComponent implements OnInit {
     });
 
     this.initFormValue();
-
   }
 
   get f() {
@@ -112,7 +111,6 @@ export class InviteAndConnectComponent implements OnInit {
   }
 
   close() {
-    this.router.navigate(['/calendar/contacts'])
+    this.broadcaster.broadcast('calendar_full_size', true);
   }
-
 }

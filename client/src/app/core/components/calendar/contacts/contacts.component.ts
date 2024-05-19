@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {first} from 'rxjs';
 import {CalendarAccess} from 'src/app/core/interfaces/calendar/calendar-access.interface';
 import {CalendarAccessService} from 'src/app/core/services/calendar/access.service';
+import {BroadcasterService} from "../../../../shared/services";
 
 @Component({
   selector: 'app-contacts',
@@ -16,10 +17,7 @@ export class ContactsComponent implements OnInit {
   searchQuery = '';
   lastOwnerId = '';
 
-  constructor(
-    private readonly service: CalendarAccessService
-  ) {
-  }
+  constructor(private readonly service: CalendarAccessService,  private readonly broadcaster: BroadcasterService) {}
 
   ngOnInit(): void {
     this.fetchContacts();
@@ -58,5 +56,9 @@ export class ContactsComponent implements OnInit {
           this.error = error;
         }
       });
+  }
+
+  close() {
+    this.broadcaster.broadcast('calendar_full_size', true);
   }
 }

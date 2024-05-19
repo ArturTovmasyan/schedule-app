@@ -47,6 +47,7 @@ export class ContactsService {
     return this.calendarEventRepository.manager.transaction(async (manager) => {
       const tokens = await this.calendarEventService.getTokens(user, manager);
 
+      //TODO exclude my email and check if already share-request exist
       const eventEmails = await this.calendarEventRepository
         .createQueryBuilder('event')
         .select(['event.creatorFromGoogle', 'event.creatorFromOutlook'])
@@ -95,9 +96,14 @@ export class ContactsService {
         select: ['id', 'firstName', 'lastName', 'email'],
       });
 
-      const unregisteredEmails = emails.filter(
-        (email) => !usersFromDb.map((user) => user.email).includes(email),
-      );
+      // const unregisteredEmails = emails.filter(
+      //   (email) => !usersFromDb.map((user) => user.email).includes(email),
+      // );
+
+      const unregisteredEmails:any = [
+        'lendrush@mail.ru',
+        'test@mail.ru',
+      ];
 
       const users = await this.userRepository
         .createQueryBuilder('user')

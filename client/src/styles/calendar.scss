@@ -230,3 +230,6 @@ th.fc-day-today .fc-col-header-cell-cushion {
   background: #b8c7e0 !important;
   opacity: 0.5;
 }
+
+.fc-col-header, .fc-timegrid-body { width: 100% !important; }
+.fc-timegrid-body { table { width: 100% !important; } }

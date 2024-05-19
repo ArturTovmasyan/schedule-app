@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component,  OnDestroy, OnInit} from '@angular/core';
 import {CalendarOptions} from "@fullcalendar/angular";
 import {first} from "rxjs/operators";
 import {CalendarService} from "../../../services/calendar/calendar.service";

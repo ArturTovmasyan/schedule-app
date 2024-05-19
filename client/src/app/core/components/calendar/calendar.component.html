@@ -1,16 +1,16 @@
 <div class="container-fluid" id="container">
   <div class="row h-100">
-    <div class="col-12 col-sm-3 h-100 text-center" id="calendarLeftSide">
+    <div class="h-100 text-center" [style.display]="displayStyle" [ngClass]="!calendarFullSize ? 'col-12 col-sm-3' : ''" id="calendarLeftSide">
       <div class="content" id="left-menu">
         <section style="height: 100%">
           <router-outlet></router-outlet>
         </section>
       </div>
     </div>
-    <div class="col-12 col-sm-9 h-100 ps-0 text-center" id="calendarRightSide">
+    <div class="col-12 h-100 text-center" [ngClass]="!calendarFullSize ? 'col-sm-9 ps-0' : ''" id="calendarRightSide">
       <div class="calendar" id="calendar">
         <div class="calendar-header d-flex justify-content-between">
-          <a class="invite-contacts" id="inviteContacts" routerLink="/calendar/invite">
+          <a class="invite-contacts" id="inviteContacts" routerLink="/calendar/invite" (click)="openLeftMenu()">
             <img src="assets/invite-contacts-icon.svg" alt="invite friends">
             <p>
               Invite <br> Contacts
@@ -33,7 +33,7 @@
 
         <div class="calendar-footer d-flex justify-content-center align-items-center">
           <ul class="list-unstyled mb-0">
-            <li class="list-inline-item">
+            <li class="list-inline-item" (click)="openLeftMenu()">
               <a routerLink="/calendar/meeting" class="handshake">
                 <span class="icon w-100">
                   <img src="assets/handshake-icon.svg" alt="handshake">
@@ -90,4 +90,3 @@
     </div>
   </div>
 </div>
-

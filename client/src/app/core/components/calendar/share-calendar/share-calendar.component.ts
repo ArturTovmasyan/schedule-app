@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component} from '@angular/core';
 import * as moment from 'moment';
-import { Moment } from 'moment';
-import { first } from 'rxjs';
-import { AccessRequest } from 'src/app/core/interfaces/calendar/access-request.interface';
-import { CalendarAccessService } from 'src/app/core/services/calendar/access.service';
-import { CommonService } from 'src/app/core/services/common.service';
+import {Moment} from 'moment';
+import {first} from 'rxjs';
+import {AccessRequest} from 'src/app/core/interfaces/calendar/access-request.interface';
+import {CalendarAccessService} from 'src/app/core/services/calendar/access.service';
+import {CommonService} from 'src/app/core/services/common.service';
+import {BroadcasterService} from "../../../../shared/services";
 
 @Component({
   selector: 'app-share-calendar',
@@ -23,8 +23,8 @@ export class ShareCalendarComponent {
 
   constructor(
     private readonly accessService: CalendarAccessService,
+    private readonly broadcaster: BroadcasterService,
     private readonly commonService: CommonService,
-    private readonly router: Router
   ) { }
 
   ngOnInit() {
@@ -36,8 +36,7 @@ export class ShareCalendarComponent {
   }
 
   onMessageUpdate(event: Event) {
-    const value = (event.target as any).value;
-    this.message = value;
+    this.message = (event.target as any).value;
   }
 
   onCustomDateUpdate(event: Event) {
@@ -96,6 +95,6 @@ export class ShareCalendarComponent {
   }
 
   close() {
-    this.router.navigate(['/calendar/contacts'])
+    this.broadcaster.broadcast('calendar_full_size', true);
   }
 }
