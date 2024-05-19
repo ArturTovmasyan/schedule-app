@@ -2,15 +2,15 @@
     <div>
         <span id="title">{{ title }}</span>
     </div>
-    <div id="nav">
-        <div *ngIf="!isAuthenticated && !isLoginPage">
+    <div id="nav" *ngIf="{ val: isLoggedIn$ | async } as isLoggedIn">
+        <div *ngIf="!isLoggedIn.val && !isLoginPage">
             <span>Have an account?</span>
             <button (click)="login()">Sign in</button>
         </div>
-        <div *ngIf="!isAuthenticated && isLoginPage">
+        <div *ngIf="!isLoggedIn.val && isLoginPage">
             <span>Need an account?</span>
             <button (click)="register()">Register</button>
         </div>
-        <span *ngIf="isAuthenticated" class="button" (click)="logout()">Log out</span>
+        <span *ngIf="isLoggedIn.val" class="button" (click)="logout()">Log out</span>
     </div>
 </div>

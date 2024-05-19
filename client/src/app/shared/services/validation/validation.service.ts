@@ -7,7 +7,7 @@ export class ValidationService {
   static getValidatorErrorMessage(validatorName: string = 'required', validatorValue: any = '') {
       const config: AssociativeArray = {
           'required': 'This field cannot be blank',
-          'invalidEmailAddress': 'Invalid email address',
+          'invalidEmailAddress': 'Please make sure you input a correct email address',
           'invalidFullName': 'Invalid Full Name',
           'currentPassword': 'Invalid current password',
           'addEmail': 'This email already exists',

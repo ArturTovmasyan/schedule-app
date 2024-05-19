@@ -15,6 +15,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoginPage = true;
   loggedUser = false;
   subscription: BehaviorSubject<string>;
+  isLoggedIn$ = this.authService.currentUser;
 
   constructor(
     private authService: AuthService,
