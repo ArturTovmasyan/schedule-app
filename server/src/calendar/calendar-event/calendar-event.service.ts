@@ -164,9 +164,105 @@ export class CalendarEventService {
       calendarType: CalendarTypeEnum.Office365Calendar,
     });
 
+<<<<<<< HEAD
     const client = graph.Client.init({
       authProvider: (done) => {
         done(null, accessToken);
+=======
+  async syncOutlookCalendarEventList(
+    user: User,
+    calendar: Calendar,
+    manager?: EntityManager,
+  ) {
+    return transactionManagerWrapper(
+      manager,
+      this.calendarTokenRepository,
+      async (manager) => {
+        const cal = await manager.getRepository(Calendar).findOne({
+          where: { id: calendar.id },
+          relations: ['calendarToken'],
+        });
+        const token = cal.calendarToken;
+
+        if (!token) {
+          throw new NotFoundException(
+            'You have not calendar-event access token',
+          );
+        }
+
+        const { accessToken } = token;
+
+        const eventsFromDb = await manager.getRepository(CalendarEvent).find({
+          owner: { id: user.id },
+          outlookId: Not(IsNull()),
+        });
+
+        const calendarClient = await this.getOutlookCredentials(accessToken);
+        const events = await calendarClient
+          .api(`/me/calendars/${calendar.calendarId}/events`)
+          .options({ timeZone: 'GMT' })
+          .get();
+
+        const serializedEvents = events.value.map((item) => {
+          const event = new CalendarEvent();
+          event.outlookId = item.id;
+          event.calendar = calendar;
+          event.eventType = EventTypeEnum.Office365CalendarEvent;
+          event.owner = user;
+          event.start = item.start.dateTime
+            ? new Date(item.start.dateTime)
+            : null;
+          event.end = item.end.dateTime ? new Date(item.end.dateTime) : null;
+          event.title = item.subject || null;
+          event.creatorFromOutlook =
+            item.organizer.emailAddress.address || null;
+          event.meetLink = item.onlineMeeting || null;
+          event.createdOn = new Date(item.createdDateTime);
+          event.updatedOn = new Date(item.lastModifiedDateTime);
+          event.description = item.bodyPreview || null;
+
+          if (item.recurrence) {
+            this.serializedOutlookEventRecurrence(event, item);
+          }
+
+          return event;
+        });
+
+        const delta = this.compareEvents(
+          eventsFromDb,
+          serializedEvents,
+          'outlookId',
+        );
+
+        if (delta.changed.length > 0) {
+          const outlookId = delta.changed[0].outlookId;
+
+          await manager
+            .getRepository(CalendarEvent)
+            .createQueryBuilder()
+            .update()
+            .set(delta.changed[0])
+            .where('"calendar_event"."outlookId" = :outlookId', {
+              outlookId: outlookId,
+            })
+            .execute();
+        }
+
+        if (delta.deleted.length > 0) {
+          const outlookId = delta.deleted[0].outlookId;
+
+          await manager
+            .createQueryBuilder()
+            .delete()
+            .from(CalendarEvent)
+            .where('"calendar_event"."outlookId" = :outlookId', {
+              outlookId: outlookId,
+            })
+            .execute();
+        }
+
+        return await manager.getRepository(CalendarEvent).save(delta.added);
+>>>>>>> 5bbcccc (fix reccurence event update)
       },
     });
     const calendars = await client
@@ -724,17 +820,17 @@ export class CalendarEventService {
         a.start.getTime() === b.start.getTime() &&
         a.end.getTime() === b.end.getTime() &&
         a.title === b.title &&
-        a.description === b.description
-        // a.recurrenceType === b.recurrenceType &&
-        // a.recurrenceInterval === b.recurrenceInterval &&
-        // a.recurrenceDaysOfWeek === b.recurrenceDaysOfWeek &&
-        // a.recurrenceIndexOfWeek === b.recurrenceIndexOfWeek &&
-        // a.recurrenceDayOfMonth === b.recurrenceDayOfMonth &&
-        // a.recurrenceMonth === b.recurrenceMonth &&
-        // a.recurrenceFirstDayOfWeek === b.recurrenceFirstDayOfWeek &&
-        // a.recurrenceStartDate.getTime() === b.recurrenceStartDate.getTime() &&
-        // a.recurrenceEndDate.getTime() === b.recurrenceEndDate.getTime() &&
-        // a.recurrenceNumberOfOccurrences === b.recurrenceNumberOfOccurrences
+        a.description === b.description &&
+        a.recurrenceType === b.recurrenceType &&
+        a.recurrenceInterval === b.recurrenceInterval &&
+        a.recurrenceDaysOfWeek === b.recurrenceDaysOfWeek &&
+        a.recurrenceIndexOfWeek === b.recurrenceIndexOfWeek &&
+        a.recurrenceDayOfMonth === b.recurrenceDayOfMonth &&
+        a.recurrenceMonth === b.recurrenceMonth &&
+        a.recurrenceFirstDayOfWeek === b.recurrenceFirstDayOfWeek &&
+        a.recurrenceStartDate.getTime() === b.recurrenceStartDate.getTime() &&
+        a.recurrenceEndDate.getTime() === b.recurrenceEndDate.getTime() &&
+        a.recurrenceNumberOfOccurrences === b.recurrenceNumberOfOccurrences
       );
     }
 
@@ -874,9 +970,8 @@ export class CalendarEventService {
             const byDayArr = [byDay.slice(0, index), byDay.slice(index)];
             const byDayIndex = Number(byDayArr[0]);
             const byDayWeekDay = byDayArr[1];
-            const daysOfWeekArr = [GoogleWeekDaysEnum[byDayWeekDay]];
 
-            event.recurrenceDaysOfWeek = daysOfWeekArr;
+            event.recurrenceDaysOfWeek = [GoogleWeekDaysEnum[byDayWeekDay]];
             event.recurrenceIndexOfWeek = GoogleIndexOfWeekEnum[byDayIndex];
             break;
           }
