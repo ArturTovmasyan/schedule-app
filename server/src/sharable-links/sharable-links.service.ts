@@ -18,11 +18,11 @@ import {ErrorMessages} from 'src/components/constants/error.messages';
 import {UpdateSharableLinkDto} from './dto/update-sharable-link.dto';
 import {SharableLinkEntity} from './entities/sharable-link.entity';
 import {ZoomService} from 'src/integrations/zoom/zoom.service';
-import {FindLinkByEnum, MeetViaEnum} from './enums/sharable-links.enum';
+import {MeetViaEnum} from './enums/sharable-links.enum';
 import {User} from '@user/entity/user.entity';
 import {
     IResponse,
-    IResponseMessageWithData,
+
 } from 'src/components/interfaces/response.interface';
 import {
     SharableLinkSlot,
